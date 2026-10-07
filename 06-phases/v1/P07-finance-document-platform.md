@@ -1,7 +1,7 @@
 # P07 — Finance & Document Platform
 
 **Release family:** V1
-**Status:** PLANNED
+**Status:** PASS
 **HARD phase dependencies:** P06
 
 ## Objective
