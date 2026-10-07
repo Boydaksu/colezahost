@@ -147,6 +147,25 @@ final class CoreServiceProvider implements ServiceProviderInterface
                 $c->get(\Psr\Log\LoggerInterface::class)
             );
         });
+
+        // Bind PasswordHasher
+        $container->singleton(\Coleza\Domain\Identity\Security\PasswordHasher::class, static function (): \Coleza\Domain\Identity\Security\PasswordHasher {
+            return new \Coleza\Domain\Identity\Security\PasswordHasher();
+        });
+
+        // Bind DatabaseSessionHandler
+        $container->singleton(\Coleza\Domain\Identity\Session\DatabaseSessionHandler::class, static function (Container $c): \Coleza\Domain\Identity\Session\DatabaseSessionHandler {
+            return new \Coleza\Domain\Identity\Session\DatabaseSessionHandler($c->get(\Coleza\Foundation\Database\Connection::class));
+        });
+
+        // Bind AuthService
+        $container->singleton(\Coleza\Domain\Identity\Auth\AuthService::class, static function (Container $c): \Coleza\Domain\Identity\Auth\AuthService {
+            return new \Coleza\Domain\Identity\Auth\AuthService(
+                $c->get(\Coleza\Foundation\Database\Connection::class),
+                $c->get(\Coleza\Domain\Identity\Security\PasswordHasher::class),
+                $c->get(\Coleza\Domain\Identity\Session\DatabaseSessionHandler::class)
+            );
+        });
     }
 
     public function boot(Container $container): void
