@@ -245,6 +245,27 @@ final class InvoiceService
     }
 
     /**
+     * Increment paid amount and adjust invoice status (partially_paid / paid).
+     */
+    public function applyPayment(int $invoiceId, int $amountMinor, ?string $paidAt = null): Invoice
+    {
+        $invoice = $this->findInvoiceById($invoiceId);
+        if ($invoice === null) {
+            throw new RuntimeException("Invoice {$invoiceId} not found.");
+        }
+
+        $newPaidAmount = $invoice->getPaidAmountMinor() + $amountMinor;
+        $isFullyPaid = $newPaidAmount >= $invoice->getTotalMinor();
+        $newStatus = $isFullyPaid ? Invoice::STATUS_PAID : Invoice::STATUS_PARTIALLY_PAID;
+        $resolvedPaidAt = $isFullyPaid ? ($paidAt ?? date('Y-m-d H:i:s')) : $invoice->getPaidAt();
+
+        $sql = sprintf('UPDATE %s SET paid_amount_minor = ?, status = ?, paid_at = ? WHERE id = ?', $this->invoicesTable);
+        $this->db->statement($sql, [$newPaidAmount, $newStatus, $resolvedPaidAt, $invoiceId]);
+
+        return $this->findInvoiceById($invoiceId);
+    }
+
+    /**
      * Generate sequential invoice number (e.g. INV-2026-000001).
      */
     public function nextInvoiceNumber(): string
