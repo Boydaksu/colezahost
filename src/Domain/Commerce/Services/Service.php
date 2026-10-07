@@ -32,8 +32,20 @@ final class Service
         private ?string $terminationDate = null,
         private ?string $notes = null,
         private array $metadata = [],
-        private ?string $createdAt = null
+        private ?string $createdAt = null,
+        private ?ServicePlacement $placement = null,
+        private ?ServiceBillingRelation $billingRelation = null,
+        private ?ServiceCancellationRequest $cancellationRequest = null
     ) {
+        if ($this->billingRelation === null) {
+            $this->billingRelation = new ServiceBillingRelation(
+                billingCycle: $this->billingCycle,
+                recurringAmountMinor: $this->recurringAmountMinor,
+                currencyCode: $this->currencyCode,
+                registrationDate: $this->registrationDate,
+                nextDueDate: $this->nextDueDate
+            );
+        }
     }
 
     public function getId(): ?int
@@ -154,14 +166,50 @@ final class Service
         return $this->createdAt;
     }
 
-    public function isActive(): bool
+    public function getPlacement(): ?ServicePlacement
     {
-        return $this->status === ServiceStateMachine::STATUS_ACTIVE;
+        return $this->placement;
+    }
+
+    public function setPlacement(?ServicePlacement $placement): void
+    {
+        $this->placement = $placement;
+    }
+
+    public function getBillingRelation(): ServiceBillingRelation
+    {
+        return $this->billingRelation ?? new ServiceBillingRelation(
+            billingCycle: $this->billingCycle,
+            recurringAmountMinor: $this->recurringAmountMinor,
+            currencyCode: $this->currencyCode,
+            registrationDate: $this->registrationDate,
+            nextDueDate: $this->nextDueDate
+        );
+    }
+
+    public function getCancellationRequest(): ?ServiceCancellationRequest
+    {
+        return $this->cancellationRequest;
+    }
+
+    public function setCancellationRequest(?ServiceCancellationRequest $request): void
+    {
+        $this->cancellationRequest = $request;
+    }
+
+    public function hasPendingCancellation(): bool
+    {
+        return $this->cancellationRequest !== null && $this->cancellationRequest->isPending();
     }
 
     public function isPending(): bool
     {
         return $this->status === ServiceStateMachine::STATUS_PENDING;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === ServiceStateMachine::STATUS_ACTIVE;
     }
 
     public function isSuspended(): bool
@@ -206,6 +254,9 @@ final class Service
             'termination_date' => $this->terminationDate,
             'notes' => $this->notes,
             'metadata' => $this->metadata,
+            'placement' => $this->placement?->toArray(),
+            'billing_relation' => $this->getBillingRelation()->toArray(),
+            'cancellation_request' => $this->cancellationRequest?->toArray(),
             'created_at' => $this->createdAt,
         ];
     }

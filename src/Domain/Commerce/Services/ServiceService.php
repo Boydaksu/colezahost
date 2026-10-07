@@ -15,6 +15,8 @@ final class ServiceService
 {
     private string $servicesTable = 'services';
     private string $sequencesTable = 'service_sequences';
+    private string $placementsTable = 'service_placements';
+    private string $cancellationsTable = 'service_cancellations';
 
     public function __construct(
         private Connection $db
@@ -53,12 +55,28 @@ final class ServiceService
                 termination_date TIMESTAMP NULL,
                 notes TEXT NULL,
                 metadata_json TEXT NULL,
+                auto_renew INT NOT NULL DEFAULT 1,
+                grace_period_days INT NOT NULL DEFAULT 7,
+                termination_grace_period_days INT NOT NULL DEFAULT 30,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )',
             $this->servicesTable,
             $autoInc
         );
         $this->db->statement($sql);
+
+        try {
+            $this->db->statement(sprintf('ALTER TABLE %s ADD COLUMN auto_renew INT NOT NULL DEFAULT 1', $this->servicesTable));
+        } catch (\Throwable) {
+        }
+        try {
+            $this->db->statement(sprintf('ALTER TABLE %s ADD COLUMN grace_period_days INT NOT NULL DEFAULT 7', $this->servicesTable));
+        } catch (\Throwable) {
+        }
+        try {
+            $this->db->statement(sprintf('ALTER TABLE %s ADD COLUMN termination_grace_period_days INT NOT NULL DEFAULT 30', $this->servicesTable));
+        } catch (\Throwable) {
+        }
 
         $sqlSeq = sprintf(
             'CREATE TABLE IF NOT EXISTS %s (
@@ -68,6 +86,45 @@ final class ServiceService
             $this->sequencesTable
         );
         $this->db->statement($sqlSeq);
+
+        $sqlPlacements = sprintf(
+            'CREATE TABLE IF NOT EXISTS %s (
+                id %s,
+                service_id INT NOT NULL,
+                server_id INT NULL,
+                server_pool_id INT NULL,
+                location_id INT NULL,
+                status VARCHAR(50) NOT NULL DEFAULT "unassigned",
+                package_identifier VARCHAR(100) NULL,
+                dedicated_ip VARCHAR(100) NULL,
+                hostname VARCHAR(255) NULL,
+                disk_limit_mb INT NOT NULL DEFAULT 0,
+                bandwidth_limit_mb INT NOT NULL DEFAULT 0,
+                resource_quotas_json TEXT NULL,
+                assigned_at TIMESTAMP NULL,
+                released_at TIMESTAMP NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )',
+            $this->placementsTable,
+            $autoInc
+        );
+        $this->db->statement($sqlPlacements);
+
+        $sqlCancellations = sprintf(
+            'CREATE TABLE IF NOT EXISTS %s (
+                id %s,
+                service_id INT NOT NULL,
+                user_id INT NOT NULL,
+                type VARCHAR(30) NOT NULL DEFAULT "end_of_period",
+                reason TEXT NOT NULL,
+                status VARCHAR(30) NOT NULL DEFAULT "pending",
+                requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                processed_at TIMESTAMP NULL
+            )',
+            $this->cancellationsTable,
+            $autoInc
+        );
+        $this->db->statement($sqlCancellations);
     }
 
     /**
@@ -110,10 +167,13 @@ final class ServiceService
         $metadata = (array)($data['metadata'] ?? []);
 
         $serviceNumber = $this->nextServiceNumber();
+        $autoRenew = isset($data['auto_renew']) ? ((bool)$data['auto_renew'] ? 1 : 0) : 1;
+        $gracePeriodDays = isset($data['grace_period_days']) ? max(0, (int)$data['grace_period_days']) : 7;
+        $termGraceDays = isset($data['termination_grace_period_days']) ? max(0, (int)$data['termination_grace_period_days']) : 30;
 
         $sql = sprintf(
-            'INSERT INTO %s (service_number, user_id, organization_id, order_id, order_item_id, product_id, status, billing_cycle, recurring_amount_minor, currency_code, registration_date, next_due_date, domain, username, password_encrypted, server_name, ip_address, notes, metadata_json)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            'INSERT INTO %s (service_number, user_id, organization_id, order_id, order_item_id, product_id, status, billing_cycle, recurring_amount_minor, currency_code, registration_date, next_due_date, domain, username, password_encrypted, server_name, ip_address, notes, metadata_json, auto_renew, grace_period_days, termination_grace_period_days)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
             $this->servicesTable
         );
 
@@ -137,33 +197,19 @@ final class ServiceService
             $ipAddress,
             $notes,
             json_encode($metadata),
+            $autoRenew,
+            $gracePeriodDays,
+            $termGraceDays,
         ]);
 
         $id = (int)$this->db->getPdo()->lastInsertId();
 
-        return new Service(
-            id: $id,
-            serviceNumber: $serviceNumber,
-            userId: $userId,
-            organizationId: $orgId,
-            orderId: $orderId,
-            orderItemId: $orderItemId,
-            productId: $productId,
-            status: $status,
-            billingCycle: $cycle,
-            recurringAmountMinor: $recurringAmountMinor,
-            currencyCode: $currencyCode,
-            registrationDate: $regDate,
-            nextDueDate: $nextDueDate,
-            domain: $domain,
-            username: $username,
-            passwordEncrypted: $password,
-            serverName: $serverName,
-            ipAddress: $ipAddress,
-            notes: $notes,
-            metadata: $metadata,
-            createdAt: date('Y-m-d H:i:s')
-        );
+        $service = $this->findServiceById($id);
+        if ($service === null) {
+            throw new RuntimeException("Failed to load newly created service {$id}.");
+        }
+
+        return $service;
     }
 
     /**
@@ -327,6 +373,371 @@ final class ServiceService
         return $this->findServiceById($serviceId);
     }
 
+    /**
+     * Assign or update placement for a service.
+     *
+     * @param array<string, mixed> $data
+     */
+    public function assignPlacement(int $serviceId, array $data): ServicePlacement
+    {
+        $service = $this->findServiceById($serviceId);
+        if ($service === null) {
+            throw new RuntimeException("Service {$serviceId} not found.");
+        }
+
+        // Release/evict any active previous placement
+        $this->db->statement(
+            sprintf(
+                'UPDATE %s SET status = ?, released_at = ? WHERE service_id = ? AND released_at IS NULL',
+                $this->placementsTable
+            ),
+            [ServicePlacement::STATUS_EVICTED, date('Y-m-d H:i:s'), $serviceId]
+        );
+
+        $serverId = isset($data['server_id']) && $data['server_id'] !== null ? (int)$data['server_id'] : null;
+        $serverPoolId = isset($data['server_pool_id']) && $data['server_pool_id'] !== null ? (int)$data['server_pool_id'] : null;
+        $locationId = isset($data['location_id']) && $data['location_id'] !== null ? (int)$data['location_id'] : null;
+        $status = (string)($data['status'] ?? ServicePlacement::STATUS_PLACED);
+        $packageIdentifier = isset($data['package_identifier']) ? (string)$data['package_identifier'] : null;
+        $dedicatedIp = isset($data['dedicated_ip']) ? (string)$data['dedicated_ip'] : null;
+        $hostname = isset($data['hostname']) ? (string)$data['hostname'] : null;
+        $diskLimitMb = max(0, (int)($data['disk_limit_mb'] ?? 0));
+        $bandwidthLimitMb = max(0, (int)($data['bandwidth_limit_mb'] ?? 0));
+        $resourceQuotas = (array)($data['resource_quotas'] ?? []);
+        $assignedAt = date('Y-m-d H:i:s');
+
+        $sql = sprintf(
+            'INSERT INTO %s (service_id, server_id, server_pool_id, location_id, status, package_identifier, dedicated_ip, hostname, disk_limit_mb, bandwidth_limit_mb, resource_quotas_json, assigned_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            $this->placementsTable
+        );
+
+        $this->db->statement($sql, [
+            $serviceId,
+            $serverId,
+            $serverPoolId,
+            $locationId,
+            $status,
+            $packageIdentifier,
+            $dedicatedIp,
+            $hostname,
+            $diskLimitMb,
+            $bandwidthLimitMb,
+            json_encode($resourceQuotas),
+            $assignedAt,
+        ]);
+
+        // If dedicated IP or hostname provided, sync to service server_name / ip_address if blank
+        $serverName = $hostname ?? $service->getServerName();
+        $ip = $dedicatedIp ?? $service->getIpAddress();
+        if ($serverName !== $service->getServerName() || $ip !== $service->getIpAddress()) {
+            $this->db->statement(
+                sprintf('UPDATE %s SET server_name = ?, ip_address = ? WHERE id = ?', $this->servicesTable),
+                [$serverName, $ip, $serviceId]
+            );
+        }
+
+        $placement = $this->getPlacementForService($serviceId);
+        if ($placement === null) {
+            throw new RuntimeException("Failed to load assigned placement for service {$serviceId}.");
+        }
+        return $placement;
+    }
+
+    /**
+     * Release placement for a service.
+     */
+    public function releasePlacement(int $serviceId, string $status = ServicePlacement::STATUS_EVICTED): ?ServicePlacement
+    {
+        $this->db->statement(
+            sprintf(
+                'UPDATE %s SET status = ?, released_at = ? WHERE service_id = ? AND released_at IS NULL',
+                $this->placementsTable
+            ),
+            [$status, date('Y-m-d H:i:s'), $serviceId]
+        );
+
+        return $this->getPlacementForService($serviceId);
+    }
+
+    public function getPlacementForService(int $serviceId): ?ServicePlacement
+    {
+        try {
+            $row = $this->db->selectOne(
+                sprintf('SELECT * FROM %s WHERE service_id = ? ORDER BY id DESC LIMIT 1', $this->placementsTable),
+                [$serviceId]
+            );
+            if (!$row) {
+                return null;
+            }
+            return $this->hydratePlacement($row);
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    /**
+     * Request cancellation for a service.
+     */
+    public function requestCancellation(
+        int $serviceId,
+        int $userId,
+        string $type = ServiceCancellationRequest::TYPE_END_OF_PERIOD,
+        string $reason = ''
+    ): ServiceCancellationRequest {
+        $service = $this->findServiceById($serviceId);
+        if ($service === null) {
+            throw new RuntimeException("Service {$serviceId} not found.");
+        }
+
+        if ($service->getUserId() !== $userId) {
+            throw new ValidationException(['user_id' => 'Unauthorized service cancellation request.'], 'Unauthorized cancellation');
+        }
+
+        if ($service->isTerminated() || $service->isCancelled()) {
+            throw new ValidationException(['status' => 'Cannot cancel a service that is already terminated or cancelled.'], 'Service already inactive');
+        }
+
+        $validTypes = [ServiceCancellationRequest::TYPE_IMMEDIATE, ServiceCancellationRequest::TYPE_END_OF_PERIOD];
+        if (!in_array($type, $validTypes, true)) {
+            throw new ValidationException(['type' => "Invalid cancellation type: {$type}"], 'Invalid cancellation type');
+        }
+
+        $existing = $this->db->selectOne(
+            sprintf('SELECT id FROM %s WHERE service_id = ? AND status = ?', $this->cancellationsTable),
+            [$serviceId, ServiceCancellationRequest::STATUS_PENDING]
+        );
+        if ($existing) {
+            throw new ValidationException(['service_id' => 'A pending cancellation request already exists for this service.'], 'Cancellation already pending');
+        }
+
+        $now = date('Y-m-d H:i:s');
+        if ($type === ServiceCancellationRequest::TYPE_IMMEDIATE) {
+            $sql = sprintf(
+                'INSERT INTO %s (service_id, user_id, type, reason, status, requested_at, processed_at)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)',
+                $this->cancellationsTable
+            );
+            $this->db->statement($sql, [
+                $serviceId,
+                $userId,
+                $type,
+                $reason,
+                ServiceCancellationRequest::STATUS_PROCESSED,
+                $now,
+                $now,
+            ]);
+
+            $this->cancelService($serviceId, $reason);
+            $this->releasePlacement($serviceId, ServicePlacement::STATUS_EVICTED);
+        } else {
+            $sql = sprintf(
+                'INSERT INTO %s (service_id, user_id, type, reason, status, requested_at, processed_at)
+                 VALUES (?, ?, ?, ?, ?, ?, NULL)',
+                $this->cancellationsTable
+            );
+            $this->db->statement($sql, [
+                $serviceId,
+                $userId,
+                $type,
+                $reason,
+                ServiceCancellationRequest::STATUS_PENDING,
+                $now,
+            ]);
+        }
+
+        $cancellation = $this->getCancellationForService($serviceId);
+        if ($cancellation === null) {
+            throw new RuntimeException("Failed to load cancellation request for service {$serviceId}.");
+        }
+        return $cancellation;
+    }
+
+    /**
+     * Revoke a pending cancellation request.
+     */
+    public function revokeCancellation(int $serviceId, int $userId): ServiceCancellationRequest
+    {
+        $row = $this->db->selectOne(
+            sprintf('SELECT * FROM %s WHERE service_id = ? AND status = ? ORDER BY id DESC LIMIT 1', $this->cancellationsTable),
+            [$serviceId, ServiceCancellationRequest::STATUS_PENDING]
+        );
+
+        if (!$row) {
+            throw new RuntimeException("No pending cancellation request found for service {$serviceId}.");
+        }
+
+        if ((int)$row['user_id'] !== $userId) {
+            throw new ValidationException(['user_id' => 'Unauthorized cancellation revocation.'], 'Unauthorized revocation');
+        }
+
+        $now = date('Y-m-d H:i:s');
+        $this->db->statement(
+            sprintf('UPDATE %s SET status = ?, processed_at = ? WHERE id = ?', $this->cancellationsTable),
+            [ServiceCancellationRequest::STATUS_REVOKED, $now, (int)$row['id']]
+        );
+
+        $cancellation = $this->getCancellationForService($serviceId);
+        if ($cancellation === null) {
+            throw new RuntimeException("Failed to reload cancellation request for service {$serviceId}.");
+        }
+        return $cancellation;
+    }
+
+    public function getCancellationForService(int $serviceId): ?ServiceCancellationRequest
+    {
+        try {
+            $row = $this->db->selectOne(
+                sprintf('SELECT * FROM %s WHERE service_id = ? ORDER BY id DESC LIMIT 1', $this->cancellationsTable),
+                [$serviceId]
+            );
+            if (!$row) {
+                return null;
+            }
+            return $this->hydrateCancellation($row);
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    /**
+     * Process pending cancellations whose next_due_date has arrived.
+     *
+     * @return array<array<string, mixed>>
+     */
+    public function processDueCancellations(?string $referenceDate = null): array
+    {
+        $refDate = $referenceDate ?? date('Y-m-d');
+        $sql = sprintf(
+            'SELECT c.id as cancellation_id, c.service_id, c.reason, s.next_due_date
+             FROM %s c
+             JOIN %s s ON c.service_id = s.id
+             WHERE c.status = ? AND c.type = ? AND s.next_due_date <= ?',
+            $this->cancellationsTable,
+            $this->servicesTable
+        );
+
+        $rows = $this->db->select($sql, [
+            ServiceCancellationRequest::STATUS_PENDING,
+            ServiceCancellationRequest::TYPE_END_OF_PERIOD,
+            $refDate,
+        ]);
+
+        $processed = [];
+        $now = date('Y-m-d H:i:s');
+
+        foreach ($rows as $row) {
+            $serviceId = (int)$row['service_id'];
+            $cancellationId = (int)$row['cancellation_id'];
+            $reason = (string)$row['reason'];
+
+            $this->cancelService($serviceId, $reason);
+            $this->releasePlacement($serviceId, ServicePlacement::STATUS_EVICTED);
+
+            $this->db->statement(
+                sprintf('UPDATE %s SET status = ?, processed_at = ? WHERE id = ?', $this->cancellationsTable),
+                [ServiceCancellationRequest::STATUS_PROCESSED, $now, $cancellationId]
+            );
+
+            $processed[] = [
+                'cancellation_id' => $cancellationId,
+                'service_id' => $serviceId,
+                'reason' => $reason,
+                'next_due_date' => $row['next_due_date'],
+            ];
+        }
+
+        return $processed;
+    }
+
+    /**
+     * Evaluate service billing lifecycle status relative to a reference date.
+     *
+     * @return array<string, mixed>
+     */
+    public function evaluateBillingLifecycle(int $serviceId, ?string $referenceDate = null): array
+    {
+        $service = $this->findServiceById($serviceId);
+        if ($service === null) {
+            throw new RuntimeException("Service {$serviceId} not found.");
+        }
+
+        $billing = $service->getBillingRelation();
+        $isOverdue = $billing->isOverdue($referenceDate);
+        $daysOverdue = $billing->daysOverdue($referenceDate);
+        $isSuspensionDue = $billing->isSuspensionDue($referenceDate);
+        $isTerminationDue = $billing->isTerminationDue($referenceDate);
+
+        $recommendedAction = match (true) {
+            $service->isTerminated() || $service->isCancelled() => 'none',
+            $service->hasPendingCancellation() && $isOverdue => 'process_cancellation',
+            $service->isSuspended() && $isTerminationDue => 'terminate',
+            $service->isActive() && $isSuspensionDue => 'suspend',
+            $isOverdue => 'send_reminder',
+            default => 'none',
+        };
+
+        return [
+            'service_id' => $serviceId,
+            'service_number' => $service->getServiceNumber(),
+            'status' => $service->getStatus(),
+            'next_due_date' => $service->getNextDueDate(),
+            'next_invoice_date' => $billing->getNextInvoiceDate(),
+            'is_overdue' => $isOverdue,
+            'days_overdue' => $daysOverdue,
+            'grace_period_days' => $billing->getGracePeriodDays(),
+            'termination_grace_period_days' => $billing->getTerminationGracePeriodDays(),
+            'is_suspension_due' => $isSuspensionDue,
+            'is_termination_due' => $isTerminationDue,
+            'recommended_action' => $recommendedAction,
+            'has_pending_cancellation' => $service->hasPendingCancellation(),
+        ];
+    }
+
+    /**
+     * Process overdue services: automatically suspend or terminate services based on grace thresholds.
+     *
+     * @return array<array<string, mixed>>
+     */
+    public function processOverdueServices(?string $referenceDate = null): array
+    {
+        $refDate = $referenceDate ?? date('Y-m-d');
+        $actions = [];
+
+        // 1. Check suspended services for termination
+        $suspended = $this->listServicesByStatus(ServiceStateMachine::STATUS_SUSPENDED);
+        foreach ($suspended as $service) {
+            $billing = $service->getBillingRelation();
+            if ($billing->isTerminationDue($refDate)) {
+                $days = $billing->daysOverdue($refDate);
+                $this->terminateService($service->getId(), "Automatic termination: overdue by {$days} days exceeding termination grace threshold");
+                $this->releasePlacement($service->getId(), ServicePlacement::STATUS_EVICTED);
+                $actions[] = [
+                    'service_id' => $service->getId(),
+                    'action' => 'terminated',
+                    'days_overdue' => $days,
+                ];
+            }
+        }
+
+        // 2. Check active services for suspension
+        $active = $this->listServicesByStatus(ServiceStateMachine::STATUS_ACTIVE);
+        foreach ($active as $service) {
+            $billing = $service->getBillingRelation();
+            if ($billing->isSuspensionDue($refDate)) {
+                $days = $billing->daysOverdue($refDate);
+                $this->suspendService($service->getId(), "Automatic suspension: overdue by {$days} days exceeding grace threshold");
+                $actions[] = [
+                    'service_id' => $service->getId(),
+                    'action' => 'suspended',
+                    'days_overdue' => $days,
+                ];
+            }
+        }
+
+        return $actions;
+    }
+
     public function findServiceById(int $id): ?Service
     {
         $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE id = ?', $this->servicesTable), [$id]);
@@ -393,12 +804,69 @@ final class ServiceService
     /**
      * @param array<string, mixed> $row
      */
+    private function hydratePlacement(array $row): ServicePlacement
+    {
+        $quotas = !empty($row['resource_quotas_json']) ? json_decode((string)$row['resource_quotas_json'], true) : [];
+
+        return new ServicePlacement(
+            id: (int)$row['id'],
+            serviceId: (int)$row['service_id'],
+            serverId: $row['server_id'] !== null ? (int)$row['server_id'] : null,
+            serverPoolId: $row['server_pool_id'] !== null ? (int)$row['server_pool_id'] : null,
+            locationId: $row['location_id'] !== null ? (int)$row['location_id'] : null,
+            status: (string)($row['status'] ?? ServicePlacement::STATUS_UNASSIGNED),
+            packageIdentifier: $row['package_identifier'] !== null ? (string)$row['package_identifier'] : null,
+            dedicatedIp: $row['dedicated_ip'] !== null ? (string)$row['dedicated_ip'] : null,
+            hostname: $row['hostname'] !== null ? (string)$row['hostname'] : null,
+            diskLimitMb: (int)($row['disk_limit_mb'] ?? 0),
+            bandwidthLimitMb: (int)($row['bandwidth_limit_mb'] ?? 0),
+            resourceQuotas: is_array($quotas) ? $quotas : [],
+            assignedAt: $row['assigned_at'] !== null ? (string)$row['assigned_at'] : null,
+            releasedAt: $row['released_at'] !== null ? (string)$row['released_at'] : null
+        );
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     */
+    private function hydrateCancellation(array $row): ServiceCancellationRequest
+    {
+        return new ServiceCancellationRequest(
+            id: (int)$row['id'],
+            serviceId: (int)$row['service_id'],
+            userId: (int)$row['user_id'],
+            type: (string)($row['type'] ?? ServiceCancellationRequest::TYPE_END_OF_PERIOD),
+            reason: (string)($row['reason'] ?? ''),
+            status: (string)($row['status'] ?? ServiceCancellationRequest::STATUS_PENDING),
+            requestedAt: $row['requested_at'] !== null ? (string)$row['requested_at'] : null,
+            processedAt: $row['processed_at'] !== null ? (string)$row['processed_at'] : null
+        );
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     */
     private function hydrateService(array $row): Service
     {
         $meta = !empty($row['metadata_json']) ? json_decode((string)$row['metadata_json'], true) : [];
+        $serviceId = (int)$row['id'];
+
+        $billingRelation = new ServiceBillingRelation(
+            billingCycle: (string)$row['billing_cycle'],
+            recurringAmountMinor: (int)$row['recurring_amount_minor'],
+            currencyCode: (string)$row['currency_code'],
+            registrationDate: (string)$row['registration_date'],
+            nextDueDate: (string)$row['next_due_date'],
+            autoRenew: isset($row['auto_renew']) ? (bool)$row['auto_renew'] : true,
+            gracePeriodDays: isset($row['grace_period_days']) ? (int)$row['grace_period_days'] : 7,
+            terminationGracePeriodDays: isset($row['termination_grace_period_days']) ? (int)$row['termination_grace_period_days'] : 30
+        );
+
+        $placement = $this->getPlacementForService($serviceId);
+        $cancellationRequest = $this->getCancellationForService($serviceId);
 
         return new Service(
-            id: (int)$row['id'],
+            id: $serviceId,
             serviceNumber: (string)$row['service_number'],
             userId: (int)$row['user_id'],
             organizationId: $row['organization_id'] !== null ? (int)$row['organization_id'] : null,
@@ -420,7 +888,10 @@ final class ServiceService
             terminationDate: $row['termination_date'] !== null ? (string)$row['termination_date'] : null,
             notes: $row['notes'] !== null ? (string)$row['notes'] : null,
             metadata: is_array($meta) ? $meta : [],
-            createdAt: (string)$row['created_at']
+            createdAt: (string)$row['created_at'],
+            placement: $placement,
+            billingRelation: $billingRelation,
+            cancellationRequest: $cancellationRequest
         );
     }
 }
