@@ -270,5 +270,109 @@ final class PricingServiceTest extends TestCase
         $this->assertSame(12000, $quote->getBasePriceMinor());
         $this->assertSame(12000, $quote->getRecurringTotalMinor());
     }
+
+    public function testCalculateProrataDayRatio(): void
+    {
+        // 300.00 TRY total period of 30 days, used 10 days
+        $prorata = $this->service->calculateProrata(
+            amountMinor: 30000,
+            daysUsed: 10,
+            daysTotal: 30
+        );
+
+        $this->assertSame(10, $prorata->getDaysUsed());
+        $this->assertSame(30, $prorata->getDaysTotal());
+        $this->assertSame(10000, $prorata->getProratedMinor()); // exactly 1/3 = 100.00 TRY
+        $this->assertEqualsWithDelta(0.333333, $prorata->getRatio(), 0.0001);
+    }
+
+    public function testCalculateUpgradeQuoteWithNetDue(): void
+    {
+        $serviceId = 501;
+        $oldProduct = 10; // Starter: 120.00 TRY/mo
+        $newProduct = 20; // Pro: 240.00 TRY/mo
+
+        $this->service->setPricePoint([
+            'target_type' => PricePoint::TARGET_PRODUCT,
+            'target_id' => $oldProduct,
+            'currency_code' => 'TRY',
+            'cycle' => PriceCycle::MONTHLY,
+            'price_minor' => 12000,
+        ]);
+
+        $this->service->setPricePoint([
+            'target_type' => PricePoint::TARGET_PRODUCT,
+            'target_id' => $newProduct,
+            'currency_code' => 'TRY',
+            'cycle' => PriceCycle::MONTHLY,
+            'price_minor' => 24000,
+        ]);
+
+        // 30 days total period, upgraded exactly mid-cycle (15 days remaining)
+        $quote = $this->service->calculateUpgradeQuote(
+            serviceId: $serviceId,
+            oldProductId: $oldProduct,
+            newProductId: $newProduct,
+            currencyCode: 'TRY',
+            cycle: PriceCycle::MONTHLY,
+            periodStartDate: '2026-10-01',
+            periodEndDate: '2026-10-31',
+            changeDate: '2026-10-16' // 15 days remaining
+        );
+
+        $this->assertSame(\Coleza\Domain\Pricing\Entities\UpgradeDowngradeQuote::TYPE_UPGRADE, $quote->getType());
+        $this->assertSame(15, $quote->getDaysRemaining());
+        $this->assertSame(30, $quote->getTotalPeriodDays());
+
+        // Old credit for 15/30 days = 60.00 TRY (6000 minor)
+        $this->assertSame(6000, $quote->getOldProrataCreditMinor());
+
+        // New charge for 15/30 days = 120.00 TRY (12000 minor)
+        $this->assertSame(12000, $quote->getNewProrataChargeMinor());
+
+        // Net due = 120 - 60 = 60.00 TRY (6000 minor)
+        $this->assertSame(6000, $quote->getNetDueMinor());
+        $this->assertSame(0, $quote->getCreditIssuedMinor());
+    }
+
+    public function testCalculateDowngradeQuoteIssuesCredit(): void
+    {
+        $serviceId = 502;
+        $oldProduct = 20; // Pro: 240.00 TRY/mo
+        $newProduct = 10; // Starter: 120.00 TRY/mo
+
+        $this->service->setPricePoint([
+            'target_type' => PricePoint::TARGET_PRODUCT,
+            'target_id' => $oldProduct,
+            'currency_code' => 'TRY',
+            'cycle' => PriceCycle::MONTHLY,
+            'price_minor' => 24000,
+        ]);
+
+        $this->service->setPricePoint([
+            'target_type' => PricePoint::TARGET_PRODUCT,
+            'target_id' => $newProduct,
+            'currency_code' => 'TRY',
+            'cycle' => PriceCycle::MONTHLY,
+            'price_minor' => 12000,
+        ]);
+
+        // Downgrade with 15 days remaining
+        $quote = $this->service->calculateUpgradeQuote(
+            serviceId: $serviceId,
+            oldProductId: $oldProduct,
+            newProductId: $newProduct,
+            currencyCode: 'TRY',
+            cycle: PriceCycle::MONTHLY,
+            periodStartDate: '2026-10-01',
+            periodEndDate: '2026-10-31',
+            changeDate: '2026-10-16'
+        );
+
+        $this->assertSame(\Coleza\Domain\Pricing\Entities\UpgradeDowngradeQuote::TYPE_DOWNGRADE, $quote->getType());
+        $this->assertSame(0, $quote->getNetDueMinor());
+        $this->assertSame(6000, $quote->getCreditIssuedMinor()); // 60.00 TRY credit issued
+    }
 }
+
 

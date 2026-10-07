@@ -10,6 +10,8 @@ use Coleza\Domain\Pricing\Entities\PriceCycle;
 use Coleza\Domain\Pricing\Entities\PriceOverride;
 use Coleza\Domain\Pricing\Entities\PricePoint;
 use Coleza\Domain\Pricing\Entities\PriceQuote;
+use Coleza\Domain\Pricing\Entities\ProrataCalculation;
+use Coleza\Domain\Pricing\Entities\UpgradeDowngradeQuote;
 use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Exceptions\ValidationException;
 use RuntimeException;
@@ -458,6 +460,127 @@ final class PricingService
             setupFeeMinor: (int)$row['setup_fee_minor'],
             isActive: (bool)$row['is_active'],
             createdAt: (string)$row['created_at']
+        );
+    }
+
+    // ==========================================
+    // Prorata & Upgrade/Downgrade Calculations
+    // ==========================================
+
+    /**
+     * Calculate prorated minor unit amount based on day count.
+     */
+    public function calculateProrata(int $amountMinor, int $daysUsed, int $daysTotal): ProrataCalculation
+    {
+        if ($daysTotal <= 0) {
+            throw new ValidationException(['days_total' => ['Total days must be greater than zero.']], 'Invalid days total.');
+        }
+
+        $clampedUsed = max(0, min($daysUsed, $daysTotal));
+        $ratio = round($clampedUsed / $daysTotal, 6);
+        $prorated = (int)round(($amountMinor * $clampedUsed) / $daysTotal);
+
+        return new ProrataCalculation(
+            daysUsed: $clampedUsed,
+            daysTotal: $daysTotal,
+            amountMinor: $amountMinor,
+            proratedMinor: $prorated,
+            ratio: $ratio
+        );
+    }
+
+    /**
+     * Calculate upgrade/downgrade quote between existing service and new target product.
+     *
+     * @param int $serviceId
+     * @param int $oldProductId
+     * @param int $newProductId
+     * @param string $currencyCode
+     * @param string $cycle
+     * @param string $periodStartDate YYYY-MM-DD
+     * @param string $periodEndDate YYYY-MM-DD
+     * @param string|null $changeDate YYYY-MM-DD (defaults to today)
+     */
+    public function calculateUpgradeQuote(
+        int $serviceId,
+        int $oldProductId,
+        int $newProductId,
+        string $currencyCode,
+        string $cycle,
+        string $periodStartDate,
+        string $periodEndDate,
+        ?string $changeDate = null,
+        ?int $customerId = null
+    ): UpgradeDowngradeQuote {
+        $currency = strtoupper($currencyCode);
+        $change = $changeDate ?? date('Y-m-d');
+
+        $startTs = strtotime($periodStartDate);
+        $endTs = strtotime($periodEndDate);
+        $changeTs = strtotime($change);
+
+        if ($startTs === false || $endTs === false || $changeTs === false || $endTs <= $startTs) {
+            throw new ValidationException(['period' => ['Invalid period dates.']], 'Invalid billing period range.');
+        }
+
+        // Period days calculation
+        $totalDays = (int)round(($endTs - $startTs) / 86400);
+        if ($totalDays <= 0) {
+            $totalDays = 1;
+        }
+
+        $remainingDays = (int)round(($endTs - $changeTs) / 86400);
+        $remainingDays = max(0, min($remainingDays, $totalDays));
+
+        // Get effective prices for old and new product
+        $oldPoint = $this->findPricePoint(PricePoint::TARGET_PRODUCT, $oldProductId, $currency, $cycle);
+        if ($oldPoint === null) {
+            throw new RuntimeException("Old product pricing not found for {$oldProductId} in {$currency}/{$cycle}.");
+        }
+        $oldPrice = $this->resolvePrice(PricePoint::TARGET_PRODUCT, $oldProductId, $oldPoint->getPriceMinor(), $currency, $cycle, $customerId, $serviceId);
+
+        $newPoint = $this->findPricePoint(PricePoint::TARGET_PRODUCT, $newProductId, $currency, $cycle);
+        if ($newPoint === null) {
+            throw new RuntimeException("New product pricing not found for {$newProductId} in {$currency}/{$cycle}.");
+        }
+        $newPrice = $this->resolvePrice(PricePoint::TARGET_PRODUCT, $newProductId, $newPoint->getPriceMinor(), $currency, $cycle, $customerId, null);
+
+        // Prorata credit of old product for remaining days
+        $oldCreditMinor = (int)round(($oldPrice * $remainingDays) / $totalDays);
+
+        // Prorata charge of new product for remaining days
+        $newChargeMinor = (int)round(($newPrice * $remainingDays) / $totalDays);
+
+        $difference = $newChargeMinor - $oldCreditMinor;
+
+        if ($difference > 0) {
+            $type = UpgradeDowngradeQuote::TYPE_UPGRADE;
+            $netDue = $difference;
+            $creditIssued = 0;
+        } elseif ($difference < 0) {
+            $type = UpgradeDowngradeQuote::TYPE_DOWNGRADE;
+            $netDue = 0;
+            $creditIssued = abs($difference);
+        } else {
+            $type = UpgradeDowngradeQuote::TYPE_LATERAL;
+            $netDue = 0;
+            $creditIssued = 0;
+        }
+
+        return new UpgradeDowngradeQuote(
+            type: $type,
+            currentServiceId: $serviceId,
+            oldProductId: $oldProductId,
+            newProductId: $newProductId,
+            currencyCode: $currency,
+            cycle: $cycle,
+            daysRemaining: $remainingDays,
+            totalPeriodDays: $totalDays,
+            oldProrataCreditMinor: $oldCreditMinor,
+            newProrataChargeMinor: $newChargeMinor,
+            netDueMinor: $netDue,
+            creditIssuedMinor: $creditIssued,
+            effectiveDate: $change
         );
     }
 }
