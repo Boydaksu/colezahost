@@ -118,6 +118,27 @@ final class CoreServiceProvider implements ServiceProviderInterface
                 $c->get(\Psr\Log\LoggerInterface::class)
             );
         });
+
+        // Bind HealthManager
+        $container->singleton(\Coleza\Foundation\Health\HealthManager::class, static function (Container $c): \Coleza\Foundation\Health\HealthManager {
+            $manager = new \Coleza\Foundation\Health\HealthManager();
+            $manager->register(new \Coleza\Foundation\Health\DatabaseHealthCheck($c->get(\Coleza\Foundation\Database\Connection::class)));
+            $manager->register(new \Coleza\Foundation\Health\StorageHealthCheck($c->get(\Coleza\Foundation\Storage\StorageInterface::class)));
+            return $manager;
+        });
+
+        // Bind InstallerSkeleton
+        $container->singleton(\Coleza\Foundation\Installer\InstallerSkeleton::class, static function (Container $c): \Coleza\Foundation\Installer\InstallerSkeleton {
+            return new \Coleza\Foundation\Installer\InstallerSkeleton($c->get(\Coleza\Foundation\Database\Connection::class));
+        });
+
+        // Bind BackupSkeleton
+        $container->singleton(\Coleza\Foundation\Backup\BackupSkeleton::class, static function (Container $c): \Coleza\Foundation\Backup\BackupSkeleton {
+            return new \Coleza\Foundation\Backup\BackupSkeleton(
+                $c->get(\Coleza\Foundation\Database\Connection::class),
+                $c->get(\Coleza\Foundation\Storage\StorageInterface::class)
+            );
+        });
     }
 
     public function boot(Container $container): void
