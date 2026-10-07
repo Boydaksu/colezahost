@@ -1,0 +1,28 @@
+{
+  "phase": "P06",
+  "title": "Manual Commerce Vertical",
+  "version": "V1",
+  "status": "PASS",
+  "subphases": [
+    {"id": "P06.1", "status": "PASS"},
+    {"id": "P06.2", "status": "PASS"},
+    {"id": "P06.3", "status": "PASS"},
+    {"id": "P06.4", "status": "PASS"},
+    {"id": "P06.5", "status": "PASS"},
+    {"id": "P06.6", "status": "PASS"},
+    {"id": "P06.7", "status": "PASS"},
+    {"id": "P06.8", "status": "PASS"}
+  ],
+  "evidence_files": [
+    "evidence/v1/P06/P06.1-execution-record.md",
+    "evidence/v1/P06/P06.2-execution-record.md",
+    "evidence/v1/P06/P06.3-execution-record.md",
+    "evidence/v1/P06/P06.4-execution-record.md",
+    "evidence/v1/P06/P06.5-execution-record.md",
+    "evidence/v1/P06/P06.6-execution-record.md",
+    "evidence/v1/P06/P06.7-execution-record.md",
+    "evidence/v1/P06/P06.8-execution-record.md",
+    "evidence/v1/P06/test-results.txt",
+    "evidence/v1/P06/gate-decision.md"
+  ]
+}

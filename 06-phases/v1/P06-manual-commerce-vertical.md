@@ -1,7 +1,7 @@
 # P06 — Manual Commerce Vertical
 
 **Release family:** V1
-**Status:** PLANNED
+**Status:** PASS
 **HARD phase dependencies:** P05
 
 ## Objective
