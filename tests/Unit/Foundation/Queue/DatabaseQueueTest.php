@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Foundation\Queue;
+namespace Coleza\Tests\Unit\Foundation\Queue;
 
 use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Queue\DatabaseQueue;

@@ -109,6 +109,15 @@ final class CoreServiceProvider implements ServiceProviderInterface
                 $c->get(\Psr\Log\LoggerInterface::class)
             );
         });
+
+        // Bind Scheduler
+        $container->singleton(\Coleza\Foundation\Scheduler\Scheduler::class, static function (Container $c): \Coleza\Foundation\Scheduler\Scheduler {
+            return new \Coleza\Foundation\Scheduler\Scheduler(
+                $c->get(\Coleza\Foundation\Database\Connection::class),
+                $c->get(\Coleza\Foundation\Lock\LockInterface::class),
+                $c->get(\Psr\Log\LoggerInterface::class)
+            );
+        });
     }
 
     public function boot(Container $container): void
