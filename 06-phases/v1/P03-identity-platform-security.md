@@ -1,7 +1,7 @@
 # P03 — Identity & Platform Security
 
 **Release family:** V1
-**Status:** PLANNED
+**Status:** PASS
 **HARD phase dependencies:** P02
 
 ## Objective

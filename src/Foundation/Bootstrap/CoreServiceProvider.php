@@ -240,6 +240,15 @@ final class CoreServiceProvider implements ServiceProviderInterface
                 $c->get(\Coleza\Domain\Identity\Audit\AuditLogger::class)
             );
         });
+
+        // Bind ModuleLifecycleService
+        $container->singleton(\Coleza\Domain\Module\ModuleLifecycleService::class, static function (Container $c): \Coleza\Domain\Module\ModuleLifecycleService {
+            return new \Coleza\Domain\Module\ModuleLifecycleService(
+                $c->get(\Coleza\Foundation\Database\Connection::class),
+                coreVersion: '1.0.0',
+                auditLogger: $c->get(\Coleza\Domain\Identity\Audit\AuditLogger::class)
+            );
+        });
     }
 
     public function boot(Container $container): void

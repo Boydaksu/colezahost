@@ -1,0 +1,32 @@
+{
+  "phase": "P03",
+  "title": "Identity & Platform Security",
+  "version": "V1",
+  "status": "PASS",
+  "subphases": [
+    {"id": "P03.1", "status": "PASS"},
+    {"id": "P03.2", "status": "PASS"},
+    {"id": "P03.3", "status": "PASS"},
+    {"id": "P03.4", "status": "PASS"},
+    {"id": "P03.5", "status": "PASS"},
+    {"id": "P03.6", "status": "PASS"},
+    {"id": "P03.7", "status": "PASS"},
+    {"id": "P03.8", "status": "PASS"},
+    {"id": "P03.9", "status": "PASS"},
+    {"id": "P03.10", "status": "PASS"}
+  ],
+  "evidence_files": [
+    "evidence/v1/P03/P03.1-execution-record.md",
+    "evidence/v1/P03/P03.2-execution-record.md",
+    "evidence/v1/P03/P03.3-execution-record.md",
+    "evidence/v1/P03/P03.4-execution-record.md",
+    "evidence/v1/P03/P03.5-execution-record.md",
+    "evidence/v1/P03/P03.6-execution-record.md",
+    "evidence/v1/P03/P03.7-execution-record.md",
+    "evidence/v1/P03/P03.8-execution-record.md",
+    "evidence/v1/P03/P03.9-execution-record.md",
+    "evidence/v1/P03/P03.10-execution-record.md",
+    "evidence/v1/P03/test-results.txt",
+    "evidence/v1/P03/gate-decision.md"
+  ]
+}
