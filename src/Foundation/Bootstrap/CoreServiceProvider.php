@@ -78,6 +78,20 @@ final class CoreServiceProvider implements ServiceProviderInterface
         $container->singleton(\Coleza\Foundation\Cache\CacheInterface::class, static function (Container $c): \Coleza\Foundation\Cache\CacheInterface {
             return $c->get(\Coleza\Foundation\Cache\CacheManager::class)->store();
         });
+
+        // Bind DatabaseLock and LockInterface
+        $container->singleton(\Coleza\Foundation\Lock\DatabaseLock::class, static function (Container $c): \Coleza\Foundation\Lock\DatabaseLock {
+            return new \Coleza\Foundation\Lock\DatabaseLock($c->get(\Coleza\Foundation\Database\Connection::class));
+        });
+
+        $container->singleton(\Coleza\Foundation\Lock\LockInterface::class, static function (Container $c): \Coleza\Foundation\Lock\LockInterface {
+            return $c->get(\Coleza\Foundation\Lock\DatabaseLock::class);
+        });
+
+        // Bind IdempotencyManager
+        $container->singleton(\Coleza\Foundation\Idempotency\IdempotencyManager::class, static function (Container $c): \Coleza\Foundation\Idempotency\IdempotencyManager {
+            return new \Coleza\Foundation\Idempotency\IdempotencyManager($c->get(\Coleza\Foundation\Database\Connection::class));
+        });
     }
 
     public function boot(Container $container): void
