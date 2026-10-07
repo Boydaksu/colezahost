@@ -212,6 +212,11 @@ final class CoreServiceProvider implements ServiceProviderInterface
         $container->singleton(\Coleza\Foundation\Localization\Translator::class, static function (): \Coleza\Foundation\Localization\Translator {
             return new \Coleza\Foundation\Localization\Translator(__DIR__ . '/../../../config/lang', 'tr_TR');
         });
+
+        // Bind BrandService
+        $container->singleton(\Coleza\Domain\Brand\BrandService::class, static function (Container $c): \Coleza\Domain\Brand\BrandService {
+            return new \Coleza\Domain\Brand\BrandService($c->get(\Coleza\Foundation\Database\Connection::class));
+        });
     }
 
     public function boot(Container $container): void
