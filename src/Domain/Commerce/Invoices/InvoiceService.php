@@ -93,13 +93,28 @@ final class InvoiceService
     }
 
     /**
-     * Generate invoice from an existing Order, snapshotting currency and taxes.
+     * Create an invoice with items, computing and freezing currency and tax snapshots.
+     *
+     * @param array<string, mixed> $invoiceData
+     * @param array<array<string, mixed>> $itemsData
      */
-    public function createInvoiceFromOrder(Order $order, ?string $dueDate = null): Invoice
+    public function createInvoice(array $invoiceData, array $itemsData): Invoice
     {
-        $currencyCode = $order->getCurrencyCode();
-        $issueDate = date('Y-m-d');
-        $due = $dueDate ?? date('Y-m-d', strtotime('+7 days'));
+        $userId = (int)($invoiceData['user_id'] ?? 0);
+        if ($userId <= 0) {
+            throw new ValidationException(['user_id' => 'Valid user_id is required.'], 'Invalid invoice user');
+        }
+
+        if (empty($itemsData)) {
+            throw new ValidationException(['items' => 'Invoice must have at least one line item.'], 'No invoice items');
+        }
+
+        $currencyCode = strtoupper(trim((string)($invoiceData['currency_code'] ?? 'USD')));
+        $orgId = isset($invoiceData['organization_id']) && $invoiceData['organization_id'] !== null ? (int)$invoiceData['organization_id'] : null;
+        $orderId = isset($invoiceData['order_id']) && $invoiceData['order_id'] !== null ? (int)$invoiceData['order_id'] : null;
+        $issueDate = (string)($invoiceData['issue_date'] ?? date('Y-m-d'));
+        $dueDate = (string)($invoiceData['due_date'] ?? date('Y-m-d', strtotime('+7 days')));
+        $notes = isset($invoiceData['notes']) ? (string)$invoiceData['notes'] : null;
 
         // 1. Snapshot currency metadata
         $currencySnapshot = [
@@ -118,101 +133,167 @@ final class InvoiceService
             }
         }
 
+        // Calculate totals across items
+        $subtotalMinor = 0;
+        $taxTotalMinor = 0;
+        $processedItems = [];
+
+        foreach ($itemsData as $itemData) {
+            $desc = trim((string)($itemData['description'] ?? 'Item'));
+            $qty = max(1, (int)($itemData['quantity'] ?? 1));
+            $unitAmount = (int)($itemData['unit_amount_minor'] ?? 0);
+            $subtotal = isset($itemData['subtotal_minor']) ? (int)$itemData['subtotal_minor'] : ($qty * $unitAmount);
+            $taxAmount = max(0, (int)($itemData['tax_amount_minor'] ?? 0));
+            $total = isset($itemData['total_minor']) ? (int)$itemData['total_minor'] : ($subtotal + $taxAmount);
+
+            $subtotalMinor += $subtotal;
+            $taxTotalMinor += $taxAmount;
+
+            $processedItems[] = [
+                'description' => $desc,
+                'quantity' => $qty,
+                'unit_amount_minor' => $unitAmount,
+                'subtotal_minor' => $subtotal,
+                'tax_amount_minor' => $taxAmount,
+                'total_minor' => $total,
+                'order_item_id' => $itemData['order_item_id'] ?? null,
+                'service_id' => $itemData['service_id'] ?? null,
+                'tax_snapshot' => $itemData['tax_snapshot'] ?? [],
+                'metadata' => (array)($itemData['metadata'] ?? []),
+            ];
+        }
+
+        $totalMinor = $subtotalMinor + $taxTotalMinor;
+
         // 2. Snapshot taxes
         $taxSnapshot = [
-            'tax_total_minor' => $order->getTaxTotalMinor(),
+            'tax_total_minor' => $taxTotalMinor,
             'captured_at' => date('Y-m-d H:i:s'),
         ];
 
         $invoiceNumber = $this->nextInvoiceNumber();
 
         $sql = sprintf(
-            'INSERT INTO %s (invoice_number, user_id, organization_id, order_id, status, currency_code, subtotal_minor, tax_total_minor, total_minor, paid_amount_minor, issue_date, due_date, currency_snapshot_json, tax_snapshot_json)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            'INSERT INTO %s (invoice_number, user_id, organization_id, order_id, status, currency_code, subtotal_minor, tax_total_minor, total_minor, paid_amount_minor, issue_date, due_date, currency_snapshot_json, tax_snapshot_json, notes)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
             $this->invoicesTable
         );
 
         $this->db->statement($sql, [
             $invoiceNumber,
-            $order->getUserId(),
-            $order->getOrganizationId(),
-            $order->getId(),
+            $userId,
+            $orgId,
+            $orderId,
             Invoice::STATUS_UNPAID,
             $currencyCode,
-            $order->getSubtotalMinor(),
-            $order->getTaxTotalMinor(),
-            $order->getTotalMinor(),
+            $subtotalMinor,
+            $taxTotalMinor,
+            $totalMinor,
             0,
             $issueDate,
-            $due,
+            $dueDate,
             json_encode($currencySnapshot),
             json_encode($taxSnapshot),
+            $notes,
         ]);
 
         $invoiceId = (int)$this->db->getPdo()->lastInsertId();
 
-        // Populate items
         $items = [];
-        foreach ($order->getItems() as $oItem) {
-            $itemSubtotal = $oItem->getTotalMinor();
-            // Prorate item tax proportionally if order has tax
-            $itemTax = 0;
-            if ($order->getSubtotalMinor() > 0 && $order->getTaxTotalMinor() > 0) {
-                $itemTax = (int)round(($itemSubtotal / $order->getSubtotalMinor()) * $order->getTaxTotalMinor());
-            }
-            $itemTotal = $itemSubtotal + $itemTax;
-
+        foreach ($processedItems as $pItem) {
             $itemSql = sprintf(
-                'INSERT INTO %s (invoice_id, description, quantity, unit_amount_minor, subtotal_minor, tax_amount_minor, total_minor, order_item_id, metadata_json)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                'INSERT INTO %s (invoice_id, description, quantity, unit_amount_minor, subtotal_minor, tax_amount_minor, total_minor, order_item_id, service_id, tax_snapshot_json, metadata_json)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                 $this->invoiceItemsTable
             );
 
             $this->db->statement($itemSql, [
                 $invoiceId,
-                $oItem->getProductName(),
-                $oItem->getQuantity(),
-                $oItem->getUnitPriceMinor() + $oItem->getUnitSetupFeeMinor(),
-                $itemSubtotal,
-                $itemTax,
-                $itemTotal,
-                $oItem->getId(),
-                json_encode($oItem->getMetadata()),
+                $pItem['description'],
+                $pItem['quantity'],
+                $pItem['unit_amount_minor'],
+                $pItem['subtotal_minor'],
+                $pItem['tax_amount_minor'],
+                $pItem['total_minor'],
+                $pItem['order_item_id'],
+                $pItem['service_id'],
+                json_encode($pItem['tax_snapshot']),
+                json_encode($pItem['metadata']),
             ]);
 
             $itemId = (int)$this->db->getPdo()->lastInsertId();
             $items[] = new InvoiceItem(
                 id: $itemId,
                 invoiceId: $invoiceId,
-                description: $oItem->getProductName(),
-                quantity: $oItem->getQuantity(),
-                unitAmountMinor: $oItem->getUnitPriceMinor() + $oItem->getUnitSetupFeeMinor(),
-                subtotalMinor: $itemSubtotal,
-                taxAmountMinor: $itemTax,
-                totalMinor: $itemTotal,
-                orderItemId: $oItem->getId(),
-                metadata: $oItem->getMetadata()
+                description: $pItem['description'],
+                quantity: $pItem['quantity'],
+                unitAmountMinor: $pItem['unit_amount_minor'],
+                subtotalMinor: $pItem['subtotal_minor'],
+                taxAmountMinor: $pItem['tax_amount_minor'],
+                totalMinor: $pItem['total_minor'],
+                orderItemId: $pItem['order_item_id'],
+                serviceId: $pItem['service_id'],
+                taxSnapshot: $pItem['tax_snapshot'],
+                metadata: $pItem['metadata']
             );
         }
 
         return new Invoice(
             id: $invoiceId,
             invoiceNumber: $invoiceNumber,
-            userId: $order->getUserId(),
-            organizationId: $order->getOrganizationId(),
-            orderId: $order->getId(),
+            userId: $userId,
+            organizationId: $orgId,
+            orderId: $orderId,
             status: Invoice::STATUS_UNPAID,
             currencyCode: $currencyCode,
-            subtotalMinor: $order->getSubtotalMinor(),
-            taxTotalMinor: $order->getTaxTotalMinor(),
-            totalMinor: $order->getTotalMinor(),
+            subtotalMinor: $subtotalMinor,
+            taxTotalMinor: $taxTotalMinor,
+            totalMinor: $totalMinor,
             paidAmountMinor: 0,
             issueDate: $issueDate,
-            dueDate: $due,
+            dueDate: $dueDate,
             currencySnapshot: $currencySnapshot,
             taxSnapshot: $taxSnapshot,
+            notes: $notes,
             items: $items,
             createdAt: date('Y-m-d H:i:s')
+        );
+    }
+
+    /**
+     * Generate invoice from an existing Order, snapshotting currency and taxes.
+     */
+    public function createInvoiceFromOrder(Order $order, ?string $dueDate = null): Invoice
+    {
+        $itemsData = [];
+        foreach ($order->getItems() as $oItem) {
+            $itemSubtotal = $oItem->getTotalMinor();
+            $itemTax = 0;
+            if ($order->getSubtotalMinor() > 0 && $order->getTaxTotalMinor() > 0) {
+                $itemTax = (int)round(($itemSubtotal / $order->getSubtotalMinor()) * $order->getTaxTotalMinor());
+            }
+
+            $itemsData[] = [
+                'description' => $oItem->getProductName(),
+                'quantity' => $oItem->getQuantity(),
+                'unit_amount_minor' => $oItem->getUnitPriceMinor() + $oItem->getUnitSetupFeeMinor(),
+                'subtotal_minor' => $itemSubtotal,
+                'tax_amount_minor' => $itemTax,
+                'total_minor' => $itemSubtotal + $itemTax,
+                'order_item_id' => $oItem->getId(),
+                'metadata' => $oItem->getMetadata(),
+            ];
+        }
+
+        return $this->createInvoice(
+            [
+                'user_id' => $order->getUserId(),
+                'organization_id' => $order->getOrganizationId(),
+                'order_id' => $order->getId(),
+                'currency_code' => $order->getCurrencyCode(),
+                'due_date' => $dueDate ?? date('Y-m-d', strtotime('+7 days')),
+            ],
+            $itemsData
         );
     }
 
