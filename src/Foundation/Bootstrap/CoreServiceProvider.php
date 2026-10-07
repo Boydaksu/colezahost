@@ -68,6 +68,16 @@ final class CoreServiceProvider implements ServiceProviderInterface
         $container->singleton(\Coleza\Foundation\Storage\StorageInterface::class, static function (Container $c): \Coleza\Foundation\Storage\StorageInterface {
             return $c->get(\Coleza\Foundation\Storage\StorageManager::class)->private();
         });
+
+        // Bind CacheManager and default CacheInterface
+        $container->singleton(\Coleza\Foundation\Cache\CacheManager::class, static function (Container $c): \Coleza\Foundation\Cache\CacheManager {
+            $cacheDir = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . 'cache';
+            return new \Coleza\Foundation\Cache\CacheManager('file', $cacheDir, $c);
+        });
+
+        $container->singleton(\Coleza\Foundation\Cache\CacheInterface::class, static function (Container $c): \Coleza\Foundation\Cache\CacheInterface {
+            return $c->get(\Coleza\Foundation\Cache\CacheManager::class)->store();
+        });
     }
 
     public function boot(Container $container): void
