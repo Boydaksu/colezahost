@@ -1,7 +1,7 @@
 # P01 — Core Foundation
 
 **Release family:** V1
-**Status:** PLANNED
+**Status:** PASS
 **HARD phase dependencies:** P00
 
 ## Objective
