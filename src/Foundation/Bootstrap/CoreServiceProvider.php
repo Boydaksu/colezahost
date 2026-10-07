@@ -27,6 +27,14 @@ final class CoreServiceProvider implements ServiceProviderInterface
         $container->singleton(Environment::class, static function (): Environment {
             return Bootstrap::boot();
         });
+
+        // Bind Database Connection as singleton
+        $container->singleton(\Coleza\Foundation\Database\Connection::class, static function (Container $c): \Coleza\Foundation\Database\Connection {
+            $config = $c->get(ConfigRepository::class);
+            $defaultDriver = $config->get('database.default', 'mysql');
+            $dbConfig = $config->get("database.connections.{$defaultDriver}", []);
+            return \Coleza\Foundation\Database\ConnectionFactory::create($dbConfig);
+        });
     }
 
     public function boot(Container $container): void
