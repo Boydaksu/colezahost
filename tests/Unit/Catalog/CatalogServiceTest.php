@@ -203,4 +203,144 @@ final class CatalogServiceTest extends TestCase
             'type' => 'unsupported_type',
         ]);
     }
+
+    public function testConfigurableOptionsAndSubOptions(): void
+    {
+        $group = $this->service->createProductGroup(['name' => 'Cloud Servers', 'slug' => 'cloud-servers']);
+        $product = $this->service->createProduct([
+            'group_id' => $group->getId(),
+            'name' => 'Cloud Compute 1',
+            'slug' => 'compute-1',
+            'type' => Product::TYPE_SERVER,
+        ]);
+
+        $option = $this->service->createConfigurableOption([
+            'product_id' => $product->getId(),
+            'name' => 'Operating System',
+            'code' => 'operating-system',
+            'type' => \Coleza\Domain\Catalog\Entities\ConfigurableOption::TYPE_DROPDOWN,
+            'is_required' => true,
+            'translations' => [
+                'tr_TR' => ['name' => 'İşletim Sistemi'],
+            ],
+            'sub_options' => [
+                [
+                    'name' => 'Ubuntu 24.04 LTS',
+                    'code' => 'ubuntu-2404',
+                    'sort_order' => 1,
+                ],
+                [
+                    'name' => 'AlmaLinux 9',
+                    'code' => 'almalinux-9',
+                    'sort_order' => 2,
+                ],
+                [
+                    'name' => 'Debian 12',
+                    'code' => 'debian-12',
+                    'sort_order' => 3,
+                ],
+            ],
+        ]);
+
+        $this->assertNotNull($option->getId());
+        $this->assertSame('operating-system', $option->getCode());
+        $this->assertSame('İşletim Sistemi', $option->getName('tr_TR'));
+        $this->assertTrue($option->isRequired());
+        $this->assertCount(3, $option->getSubOptions());
+
+        $fetchedOptions = $this->service->getOptionsForProduct($product->getId(), $group->getId());
+        $this->assertCount(1, $fetchedOptions);
+        $this->assertSame('Ubuntu 24.04 LTS', $fetchedOptions[0]->getSubOptions()[0]->getName());
+    }
+
+    public function testProductAddonsTargetingAndRetrieval(): void
+    {
+        $group = $this->service->createProductGroup(['name' => 'VPS', 'slug' => 'vps']);
+        $p1 = $this->service->createProduct(['group_id' => $group->getId(), 'name' => 'VPS A', 'slug' => 'vps-a']);
+        $p2 = $this->service->createProduct(['group_id' => $group->getId(), 'name' => 'VPS B', 'slug' => 'vps-b']);
+
+        // Addon 1: Applicable only to p1
+        $this->service->createProductAddon([
+            'name' => 'Dedicated IP Address',
+            'code' => 'dedicated-ip',
+            'description' => 'Static IPv4 allocation',
+            'applicable_product_ids' => [$p1->getId()],
+            'translations' => [
+                'tr_TR' => [
+                    'name' => 'Statik IP Adresi',
+                    'description' => 'Sabit IPv4 tahsisi',
+                ],
+            ],
+        ]);
+
+        // Addon 2: Global addon (applicable to all)
+        $this->service->createProductAddon([
+            'name' => 'Automated Daily Backups',
+            'code' => 'daily-backups',
+            'description' => 'Automated nightly snapshot and offsite backup',
+            'applicable_product_ids' => [],
+        ]);
+
+        $addonsP1 = $this->service->getAddonsForProduct($p1->getId());
+        $addonsP2 = $this->service->getAddonsForProduct($p2->getId());
+
+        $this->assertCount(2, $addonsP1);
+        $this->assertCount(1, $addonsP2);
+        $this->assertSame('dedicated-ip', $addonsP1[0]->getCode());
+        $this->assertSame('Statik IP Adresi', $addonsP1[0]->getName('tr_TR'));
+        $this->assertSame('daily-backups', $addonsP2[0]->getCode());
+    }
+
+    public function testProductAvailabilityAndStockControl(): void
+    {
+        $group = $this->service->createProductGroup(['name' => 'Hardware', 'slug' => 'hardware']);
+        $product = $this->service->createProduct([
+            'group_id' => $group->getId(),
+            'name' => 'Dedicated Xeon E3',
+            'slug' => 'xeon-e3',
+            'type' => Product::TYPE_SERVER,
+        ]);
+
+        // Initially without availability record -> default purchasable
+        $defaultAvail = $this->service->getProductAvailability($product->getId());
+        $this->assertTrue($defaultAvail->isPurchasable());
+
+        // Configure stock tracking: 2 in stock, no backorders
+        $avail = $this->service->setProductAvailability($product->getId(), [
+            'status' => \Coleza\Domain\Catalog\Entities\ProductAvailability::STATUS_AVAILABLE,
+            'stock_tracking_enabled' => true,
+            'stock_quantity' => 2,
+            'allow_backorders' => false,
+            'max_per_customer' => 1,
+        ]);
+
+        $this->assertTrue($avail->isPurchasable());
+        $this->assertSame(2, $avail->getStockQuantity());
+        $this->assertSame(1, $avail->getMaxPerCustomer());
+
+        // Decrement stock by 1
+        $ok1 = $this->service->decrementStock($product->getId(), 1);
+        $this->assertTrue($ok1);
+        $this->assertSame(1, $this->service->getProductAvailability($product->getId())->getStockQuantity());
+
+        // Decrement stock by 1 -> becomes 0
+        $ok2 = $this->service->decrementStock($product->getId(), 1);
+        $this->assertTrue($ok2);
+        $emptyAvail = $this->service->getProductAvailability($product->getId());
+        $this->assertSame(0, $emptyAvail->getStockQuantity());
+        $this->assertFalse($emptyAvail->isPurchasable());
+
+        // Attempting to decrement further fails without backorders
+        $ok3 = $this->service->decrementStock($product->getId(), 1);
+        $this->assertFalse($ok3);
+
+        // Status override to retired makes it unpurchasable regardless
+        $this->service->setProductAvailability($product->getId(), [
+            'status' => \Coleza\Domain\Catalog\Entities\ProductAvailability::STATUS_RETIRED,
+            'stock_tracking_enabled' => false,
+        ]);
+        $retired = $this->service->getProductAvailability($product->getId());
+        $this->assertFalse($retired->isPurchasable());
+    }
 }
+
