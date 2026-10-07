@@ -19,6 +19,7 @@ final class PaymentVerificationResponse
         private ?string $cardAssociation = null,
         private ?string $cardFamily = null,
         private int $installments = 1,
+        private ?string $paymentNumber = null,
         private ?string $errorMessage = null,
         private array $rawPayload = []
     ) {
@@ -33,6 +34,7 @@ final class PaymentVerificationResponse
         ?string $cardAssociation = null,
         ?string $cardFamily = null,
         int $installments = 1,
+        ?string $paymentNumber = null,
         array $rawPayload = []
     ): self {
         return new self(
@@ -45,6 +47,7 @@ final class PaymentVerificationResponse
             cardAssociation: $cardAssociation,
             cardFamily: $cardFamily,
             installments: $installments,
+            paymentNumber: $paymentNumber,
             errorMessage: null,
             rawPayload: $rawPayload
         );
@@ -102,6 +105,11 @@ final class PaymentVerificationResponse
     public function getInstallments(): int
     {
         return $this->installments;
+    }
+
+    public function getPaymentNumber(): ?string
+    {
+        return $this->paymentNumber;
     }
 
     public function getErrorMessage(): ?string

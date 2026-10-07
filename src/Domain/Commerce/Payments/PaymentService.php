@@ -6,6 +6,10 @@ namespace Coleza\Domain\Commerce\Payments;
 
 use Coleza\Domain\Commerce\Invoices\Invoice;
 use Coleza\Domain\Commerce\Invoices\InvoiceService;
+use Coleza\Domain\Commerce\Payments\Exceptions\PaymentRefundFailedException;
+use Coleza\Domain\Commerce\Payments\Gateways\PaymentGatewayInterface;
+use Coleza\Domain\Commerce\Payments\Gateways\PaymentRefundRequest;
+use Coleza\Domain\Commerce\Payments\RefundAttempt;
 use Coleza\Domain\Commerce\Orders\OrderService;
 use Coleza\Domain\Commerce\Orders\OrderStateMachine;
 use Coleza\Foundation\Database\Connection;
@@ -19,6 +23,8 @@ final class PaymentService
     private string $paymentSequencesTable = 'payment_sequences';
     private string $refundsTable = 'refunds';
     private string $refundSequencesTable = 'refund_sequences';
+    private string $refundAttemptsTable = 'payment_refund_attempts';
+    private string $webhookEventsTable = 'payment_webhook_events';
 
     public function __construct(
         private Connection $db,
@@ -117,6 +123,46 @@ final class PaymentService
             $this->refundSequencesTable
         );
         $this->db->statement($sqlRefundSeq);
+
+        // Refund Attempts table
+        $sqlRefundAttempts = sprintf(
+            'CREATE TABLE IF NOT EXISTS %s (
+                id %s,
+                payment_id INT NOT NULL,
+                amount_minor INT NOT NULL,
+                reason VARCHAR(255) NOT NULL,
+                gateway VARCHAR(50) NOT NULL,
+                status VARCHAR(50) NOT NULL,
+                error_code VARCHAR(100) NULL,
+                error_message TEXT NULL,
+                transaction_reference VARCHAR(255) NULL,
+                metadata_json TEXT NULL,
+                attempted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )',
+            $this->refundAttemptsTable,
+            $autoInc
+        );
+        $this->db->statement($sqlRefundAttempts);
+
+        // Payment Webhook Events table
+        $sqlWebhookEvents = sprintf(
+            'CREATE TABLE IF NOT EXISTS %s (
+                id %s,
+                gateway VARCHAR(50) NOT NULL,
+                event_id VARCHAR(150) NOT NULL,
+                event_type VARCHAR(100) NOT NULL,
+                payload_hash VARCHAR(64) NOT NULL,
+                status VARCHAR(50) NOT NULL,
+                payment_id INT NULL,
+                error_message TEXT NULL,
+                payload_json TEXT NULL,
+                processed_at TIMESTAMP NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )',
+            $this->webhookEventsTable,
+            $autoInc
+        );
+        $this->db->statement($sqlWebhookEvents);
     }
 
     /**
@@ -704,5 +750,265 @@ final class PaymentService
             refundedAt: (string)$row['refunded_at'],
             metadata: is_array($meta) ? $meta : []
         );
+    }
+
+    /**
+     * Execute a refund via a payment gateway with failure protection and audit recording.
+     *
+     * @param array<string, mixed> $metadata
+     */
+    public function refundViaGateway(
+        int $paymentId,
+        int $amountMinor,
+        string $reason,
+        PaymentGatewayInterface $gateway,
+        array $metadata = []
+    ): Refund {
+        $payment = $this->findPaymentById($paymentId);
+        if ($payment === null) {
+            throw new RuntimeException("Payment {$paymentId} not found.");
+        }
+
+        if (!$payment->isCompleted() && !$payment->isPartiallyRefunded()) {
+            throw new ValidationException(['payment' => 'Can only refund completed or partially refunded payments.'], 'Invalid payment status for refund');
+        }
+
+        if ($amountMinor <= 0) {
+            throw new ValidationException(['amount_minor' => 'Refund amount must be greater than zero.'], 'Invalid refund amount');
+        }
+
+        if ($amountMinor > $payment->getRefundableAmountMinor()) {
+            throw new ValidationException(['amount_minor' => 'Refund amount exceeds refundable balance of payment.'], 'Excessive refund amount');
+        }
+
+        $txRef = $payment->getTransactionReference();
+        if ($txRef === null || trim($txRef) === '') {
+            throw new ValidationException(['transaction_reference' => 'Payment has no transaction reference to refund with gateway.'], 'Missing transaction reference');
+        }
+
+        $refundReq = new PaymentRefundRequest(
+            paymentTransactionId: $txRef,
+            refundAmountMinor: $amountMinor,
+            currencyCode: $payment->getCurrencyCode(),
+            reason: $reason
+        );
+
+        $gatewayName = $gateway->getIdentifier();
+        $response = $gateway->refund($refundReq);
+
+        if (!$response->isSuccess()) {
+            $errorCode = $response->getErrorCode() ?? 'GATEWAY_ERROR';
+            $errorMessage = $response->getErrorMessage() ?? 'Gateway declined refund.';
+
+            $this->recordRefundAttempt(
+                paymentId: $paymentId,
+                amountMinor: $amountMinor,
+                reason: $reason,
+                gateway: $gatewayName,
+                status: RefundAttempt::STATUS_FAILED,
+                errorCode: $errorCode,
+                errorMessage: $errorMessage,
+                metadata: $response->getRawPayload()
+            );
+
+            throw new PaymentRefundFailedException(
+                message: $errorMessage,
+                paymentId: $paymentId,
+                amountMinor: $amountMinor,
+                errorCode: $errorCode,
+                rawDetails: $response->getRawPayload()
+            );
+        }
+
+        $this->recordRefundAttempt(
+            paymentId: $paymentId,
+            amountMinor: $amountMinor,
+            reason: $reason,
+            gateway: $gatewayName,
+            status: RefundAttempt::STATUS_SUCCESS,
+            transactionReference: $response->getRefundId(),
+            metadata: $response->getRawPayload()
+        );
+
+        return $this->recordRefund([
+            'payment_id' => $paymentId,
+            'amount_minor' => $amountMinor,
+            'reason' => $reason,
+            'refund_method' => $gatewayName,
+            'transaction_reference' => $response->getRefundId(),
+            'metadata' => array_merge($metadata, ['gateway_response' => $response->getRawPayload()]),
+        ]);
+    }
+
+    /**
+     * Record an audit attempt for a refund operation.
+     *
+     * @param array<string, mixed> $metadata
+     */
+    public function recordRefundAttempt(
+        int $paymentId,
+        int $amountMinor,
+        string $reason,
+        string $gateway,
+        string $status,
+        ?string $errorCode = null,
+        ?string $errorMessage = null,
+        ?string $transactionReference = null,
+        array $metadata = []
+    ): RefundAttempt {
+        $now = date('Y-m-d H:i:s');
+        $sql = sprintf(
+            'INSERT INTO %s (payment_id, amount_minor, reason, gateway, status, error_code, error_message, transaction_reference, metadata_json, attempted_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            $this->refundAttemptsTable
+        );
+
+        $this->db->statement($sql, [
+            $paymentId,
+            $amountMinor,
+            $reason,
+            $gateway,
+            $status,
+            $errorCode,
+            $errorMessage,
+            $transactionReference,
+            json_encode($metadata),
+            $now,
+        ]);
+
+        $attemptId = (int)$this->db->getPdo()->lastInsertId();
+
+        return new RefundAttempt(
+            id: $attemptId,
+            paymentId: $paymentId,
+            amountMinor: $amountMinor,
+            reason: $reason,
+            gateway: $gateway,
+            status: $status,
+            errorCode: $errorCode,
+            errorMessage: $errorMessage,
+            transactionReference: $transactionReference,
+            metadata: $metadata,
+            attemptedAt: $now
+        );
+    }
+
+    /**
+     * @return array<RefundAttempt>
+     */
+    public function listRefundAttemptsForPayment(int $paymentId): array
+    {
+        $rows = $this->db->select(
+            sprintf('SELECT * FROM %s WHERE payment_id = ? ORDER BY id DESC', $this->refundAttemptsTable),
+            [$paymentId]
+        );
+
+        $attempts = [];
+        foreach ($rows as $row) {
+            $meta = !empty($row['metadata_json']) ? json_decode((string)$row['metadata_json'], true) : [];
+            $attempts[] = new RefundAttempt(
+                id: (int)$row['id'],
+                paymentId: (int)$row['payment_id'],
+                amountMinor: (int)$row['amount_minor'],
+                reason: (string)$row['reason'],
+                gateway: (string)$row['gateway'],
+                status: (string)$row['status'],
+                errorCode: $row['error_code'] !== null ? (string)$row['error_code'] : null,
+                errorMessage: $row['error_message'] !== null ? (string)$row['error_message'] : null,
+                transactionReference: $row['transaction_reference'] !== null ? (string)$row['transaction_reference'] : null,
+                metadata: is_array($meta) ? $meta : [],
+                attemptedAt: (string)$row['attempted_at']
+            );
+        }
+
+        return $attempts;
+    }
+
+    /**
+     * Mark a pending payment as completed following successful gateway webhook/callback settlement.
+     */
+    public function completePaymentFromGateway(
+        int $paymentId,
+        string $transactionRef,
+        int $feeMinor = 0,
+        ?string $paidAt = null
+    ): Payment {
+        $payment = $this->findPaymentById($paymentId);
+        if ($payment === null) {
+            throw new RuntimeException("Payment {$paymentId} not found.");
+        }
+
+        if ($payment->isCompleted()) {
+            return $payment;
+        }
+
+        $paidTimestamp = $paidAt ?? date('Y-m-d H:i:s');
+        $feeMinor = max(0, $feeMinor);
+        $netAmountMinor = max(0, $payment->getAmountMinor() - $feeMinor);
+
+        $sql = sprintf(
+            'UPDATE %s SET status = ?, transaction_reference = ?, fee_minor = ?, net_amount_minor = ?, paid_at = ? WHERE id = ?',
+            $this->paymentsTable
+        );
+        $this->db->statement($sql, [
+            Payment::STATUS_COMPLETED,
+            $transactionRef,
+            $feeMinor,
+            $netAmountMinor,
+            $paidTimestamp,
+            $paymentId,
+        ]);
+
+        // Allocate to invoice if linked
+        if ($payment->getInvoiceId() !== null && $this->invoiceService !== null) {
+            $invoice = $this->invoiceService->findInvoiceById($payment->getInvoiceId());
+            if ($invoice !== null) {
+                $allocationAmount = min($payment->getAmountMinor(), $invoice->getBalanceDueMinor());
+                if ($allocationAmount > 0) {
+                    $this->executeAllocation($paymentId, $invoice, $allocationAmount, $paidTimestamp);
+                }
+            }
+        }
+
+        return $this->findPaymentById($paymentId);
+    }
+
+    /**
+     * Mark a pending payment as failed following gateway callback failure.
+     */
+    public function failPaymentFromGateway(int $paymentId, string $reason): Payment
+    {
+        $payment = $this->findPaymentById($paymentId);
+        if ($payment === null) {
+            throw new RuntimeException("Payment {$paymentId} not found.");
+        }
+
+        if ($payment->isCompleted()) {
+            throw new ValidationException(['status' => 'Cannot mark a completed payment as failed.'], 'Invalid transition');
+        }
+
+        $updatedNotes = trim($payment->getNotes() . "\nGateway failure: " . $reason);
+        $sql = sprintf('UPDATE %s SET status = ?, notes = ? WHERE id = ?', $this->paymentsTable);
+        $this->db->statement($sql, [Payment::STATUS_FAILED, $updatedNotes, $paymentId]);
+
+        return $this->findPaymentById($paymentId);
+    }
+
+    /**
+     * Find payment by token or reference stored in metadata or transaction_reference.
+     */
+    public function findPaymentByToken(string $token): ?Payment
+    {
+        $token = trim($token);
+        if ($token === '') {
+            return null;
+        }
+
+        $row = $this->db->selectOne(
+            sprintf('SELECT * FROM %s WHERE transaction_reference = ? OR metadata_json LIKE ? ORDER BY id DESC', $this->paymentsTable),
+            [$token, '%' . $token . '%']
+        );
+
+        return $row ? $this->hydratePayment($row) : null;
     }
 }

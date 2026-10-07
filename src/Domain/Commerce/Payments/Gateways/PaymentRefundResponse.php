@@ -13,6 +13,7 @@ final class PaymentRefundResponse
         private bool $success,
         private ?string $refundId = null,
         private int $refundedAmountMinor = 0,
+        private ?string $errorCode = null,
         private ?string $errorMessage = null,
         private array $rawPayload = []
     ) {
@@ -24,17 +25,19 @@ final class PaymentRefundResponse
             success: true,
             refundId: $refundId,
             refundedAmountMinor: $refundedAmountMinor,
+            errorCode: null,
             errorMessage: null,
             rawPayload: $rawPayload
         );
     }
 
-    public static function failure(string $errorMessage, array $rawPayload = []): self
+    public static function failure(string $errorMessage, ?string $errorCode = null, array $rawPayload = []): self
     {
         return new self(
             success: false,
             refundId: null,
             refundedAmountMinor: 0,
+            errorCode: $errorCode,
             errorMessage: $errorMessage,
             rawPayload: $rawPayload
         );
@@ -53,6 +56,11 @@ final class PaymentRefundResponse
     public function getRefundedAmountMinor(): int
     {
         return $this->refundedAmountMinor;
+    }
+
+    public function getErrorCode(): ?string
+    {
+        return $this->errorCode;
     }
 
     public function getErrorMessage(): ?string

@@ -8,6 +8,8 @@ interface PaymentGatewayInterface
 {
     public function getGatewayId(): string;
 
+    public function getIdentifier(): string;
+
     public function getDisplayName(): string;
 
     public function initializeCheckout(PaymentCheckoutRequest $request): PaymentCheckoutResponse;

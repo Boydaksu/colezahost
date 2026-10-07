@@ -32,6 +32,11 @@ final class IyzicoPaymentGateway implements PaymentGatewayInterface
         return 'iyzico';
     }
 
+    public function getIdentifier(): string
+    {
+        return 'iyzico';
+    }
+
     public function getDisplayName(): string
     {
         return 'iyzico (Kredi / Banka Kartı)';
@@ -150,6 +155,8 @@ final class IyzicoPaymentGateway implements PaymentGatewayInterface
                     ? (string) ($itemTransactions[0]['paymentTransactionId'] ?? $paymentId) 
                     : $paymentId;
 
+                $paymentNumber = isset($response['conversationId']) ? (string) $response['conversationId'] : null;
+
                 return PaymentVerificationResponse::successful(
                     paymentId: $paymentId,
                     paymentTransactionId: $paymentTransactionId,
@@ -159,6 +166,7 @@ final class IyzicoPaymentGateway implements PaymentGatewayInterface
                     cardAssociation: $response['cardAssociation'] ?? null,
                     cardFamily: $response['cardFamily'] ?? null,
                     installments: (int) ($response['installment'] ?? 1),
+                    paymentNumber: $paymentNumber,
                     rawPayload: $response
                 );
             }
@@ -196,9 +204,10 @@ final class IyzicoPaymentGateway implements PaymentGatewayInterface
             }
 
             $errorMessage = $response['errorMessage'] ?? 'iyzico refund execution failed.';
-            return PaymentRefundResponse::failure($errorMessage, $response);
+            $errorCode = isset($response['errorCode']) ? (string) $response['errorCode'] : null;
+            return PaymentRefundResponse::failure($errorMessage, $errorCode, $response);
         } catch (Throwable $e) {
-            return PaymentRefundResponse::failure($e->getMessage());
+            return PaymentRefundResponse::failure($e->getMessage(), 'EXCEPTION');
         }
     }
 
