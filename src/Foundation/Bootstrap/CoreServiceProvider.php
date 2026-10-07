@@ -217,6 +217,21 @@ final class CoreServiceProvider implements ServiceProviderInterface
         $container->singleton(\Coleza\Domain\Brand\BrandService::class, static function (Container $c): \Coleza\Domain\Brand\BrandService {
             return new \Coleza\Domain\Brand\BrandService($c->get(\Coleza\Foundation\Database\Connection::class));
         });
+
+        // Bind Encryptor
+        $container->singleton(\Coleza\Domain\Vault\Encryptor::class, static function (Container $c): \Coleza\Domain\Vault\Encryptor {
+            $key = (string) $c->get(\Coleza\Foundation\Config\ConfigRepository::class)->get('app.key', 'base64:' . base64_encode(str_repeat('c', 32)));
+            return new \Coleza\Domain\Vault\Encryptor($key);
+        });
+
+        // Bind VaultService
+        $container->singleton(\Coleza\Domain\Vault\VaultService::class, static function (Container $c): \Coleza\Domain\Vault\VaultService {
+            return new \Coleza\Domain\Vault\VaultService(
+                $c->get(\Coleza\Foundation\Database\Connection::class),
+                $c->get(\Coleza\Domain\Vault\Encryptor::class),
+                $c->get(\Coleza\Domain\Identity\Audit\AuditLogger::class)
+            );
+        });
     }
 
     public function boot(Container $container): void
