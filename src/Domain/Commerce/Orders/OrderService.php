@@ -113,6 +113,9 @@ final class OrderService
             $optionSubIds = isset($itemData['option_sub_ids']) && is_array($itemData['option_sub_ids']) ? $itemData['option_sub_ids'] : [];
             $addonIds = isset($itemData['addon_ids']) && is_array($itemData['addon_ids']) ? $itemData['addon_ids'] : [];
             $metadata = isset($itemData['metadata']) && is_array($itemData['metadata']) ? $itemData['metadata'] : [];
+            if (isset($itemData['domain']) && !isset($metadata['domain'])) {
+                $metadata['domain'] = (string)$itemData['domain'];
+            }
 
             if (isset($itemData['unit_price_minor'])) {
                 // Direct custom/override price passed (e.g. manual admin order)
