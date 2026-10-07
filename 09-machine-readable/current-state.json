@@ -3,6 +3,6 @@
   "release_family": "V1",
   "active_phase": "P07",
   "active_subphase": "P07.1",
-  "status": "READY",
+  "status": "IN_PROGRESS",
   "rule": "Only one subphase may be READY/IN_PROGRESS unless an approved parallel-track record explicitly lists non-conflicting scopes."
 }
