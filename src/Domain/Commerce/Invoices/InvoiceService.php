@@ -310,6 +310,19 @@ final class InvoiceService
     }
 
     /**
+     * @return array<Invoice>
+     */
+    public function listInvoicesForUser(int $userId): array
+    {
+        $rows = $this->db->select(
+            sprintf('SELECT * FROM %s WHERE user_id = ? ORDER BY id DESC', $this->invoicesTable),
+            [$userId]
+        );
+
+        return array_map([$this, 'hydrateInvoice'], $rows);
+    }
+
+    /**
      * Mark invoice as finalized / updated status.
      */
     public function updateStatus(int $invoiceId, string $status, ?string $paidAt = null): Invoice

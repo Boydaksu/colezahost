@@ -109,6 +109,11 @@ final class Order
         return $this->status === OrderStateMachine::STATUS_CANCELLED;
     }
 
+    public function getCreatedAt(): ?string
+    {
+        return $this->createdAt;
+    }
+
     /**
      * @return array<string, mixed>
      */
