@@ -166,4 +166,109 @@ final class PricingServiceTest extends TestCase
             cycle: PriceCycle::MONTHLY
         );
     }
+
+    public function testCustomerPercentageDiscountOverride(): void
+    {
+        $productId = 20;
+        $customerId = 42;
+
+        // Base price: 100.00 TRY/mo
+        $this->service->setPricePoint([
+            'target_type' => PricePoint::TARGET_PRODUCT,
+            'target_id' => $productId,
+            'currency_code' => 'TRY',
+            'cycle' => PriceCycle::MONTHLY,
+            'price_minor' => 10000,
+            'setup_fee_minor' => 0,
+        ]);
+
+        // Standard quote for normal customer
+        $normalQuote = $this->service->calculateQuote($productId, 'TRY', PriceCycle::MONTHLY);
+        $this->assertSame(10000, $normalQuote->getBasePriceMinor());
+
+        // Create 20% discount override for VIP customer 42
+        $override = $this->service->createPriceOverride([
+            'scope' => \Coleza\Domain\Pricing\Entities\PriceOverride::SCOPE_CUSTOMER,
+            'scope_id' => $customerId,
+            'target_type' => PricePoint::TARGET_PRODUCT,
+            'target_id' => $productId,
+            'override_type' => \Coleza\Domain\Pricing\Entities\PriceOverride::TYPE_PERCENT,
+            'override_value' => 20, // 20%
+            'reason' => 'VIP corporate discount',
+        ]);
+
+        $this->assertNotNull($override->getId());
+        $this->assertSame(20, $override->getOverrideValue());
+
+        // Quote for customer 42 receives 20% discount (100.00 -> 80.00 TRY)
+        $discountedQuote = $this->service->calculateQuote(
+            productId: $productId,
+            currencyCode: 'TRY',
+            cycle: PriceCycle::MONTHLY,
+            customerId: $customerId
+        );
+
+        $this->assertSame(8000, $discountedQuote->getBasePriceMinor());
+        $this->assertSame(8000, $discountedQuote->getRecurringTotalMinor());
+
+        // Other customer still gets standard price
+        $otherCustomerQuote = $this->service->calculateQuote(
+            productId: $productId,
+            currencyCode: 'TRY',
+            cycle: PriceCycle::MONTHLY,
+            customerId: 99
+        );
+        $this->assertSame(10000, $otherCustomerQuote->getBasePriceMinor());
+    }
+
+    public function testServiceSpecificFixedPriceOverrideHasHighestPrecedence(): void
+    {
+        $productId = 30;
+        $customerId = 50;
+        $serviceId = 1001;
+
+        // Base price: 200.00 TRY/mo
+        $this->service->setPricePoint([
+            'target_type' => PricePoint::TARGET_PRODUCT,
+            'target_id' => $productId,
+            'currency_code' => 'TRY',
+            'cycle' => PriceCycle::MONTHLY,
+            'price_minor' => 20000,
+        ]);
+
+        // Customer has 10% discount override (200.00 -> 180.00)
+        $this->service->createPriceOverride([
+            'scope' => \Coleza\Domain\Pricing\Entities\PriceOverride::SCOPE_CUSTOMER,
+            'scope_id' => $customerId,
+            'target_type' => PricePoint::TARGET_PRODUCT,
+            'target_id' => $productId,
+            'override_type' => \Coleza\Domain\Pricing\Entities\PriceOverride::TYPE_PERCENT,
+            'override_value' => 10,
+        ]);
+
+        // But this specific grandfathered service has fixed price override of 120.00 TRY
+        $this->service->createPriceOverride([
+            'scope' => \Coleza\Domain\Pricing\Entities\PriceOverride::SCOPE_SERVICE,
+            'scope_id' => $serviceId,
+            'target_type' => PricePoint::TARGET_PRODUCT,
+            'target_id' => $productId,
+            'override_type' => \Coleza\Domain\Pricing\Entities\PriceOverride::TYPE_FIXED,
+            'override_value' => 12000,
+            'currency_code' => 'TRY',
+            'reason' => 'Grandfathered legacy service contract',
+        ]);
+
+        // Quote with both customer and service -> service fixed price takes precedence
+        $quote = $this->service->calculateQuote(
+            productId: $productId,
+            currencyCode: 'TRY',
+            cycle: PriceCycle::MONTHLY,
+            customerId: $customerId,
+            serviceId: $serviceId
+        );
+
+        $this->assertSame(12000, $quote->getBasePriceMinor());
+        $this->assertSame(12000, $quote->getRecurringTotalMinor());
+    }
 }
+
