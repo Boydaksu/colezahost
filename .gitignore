@@ -44,3 +44,5 @@ __pycache__/
 .phpunit.result.cache
 coverage/
 .php-cs-fixer.cache
+
+.phpunit.cache/

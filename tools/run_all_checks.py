@@ -28,6 +28,7 @@ def run_cmd(name, cmd):
 def main():
     root = Path(__file__).resolve().parent.parent
     checks = [
+        ("PHPUnit Test Suite", "vendor\\bin\\phpunit"),
         ("Plan Validation", f"python {root / '09-machine-readable' / 'validate_plan.py'}"),
         ("Manifest Integrity", f"python {root / 'tools' / 'verify_manifest.py'}"),
         ("Constitutions Verification", f"python {root / 'tools' / 'verify_constitutions.py'}"),
@@ -43,7 +44,7 @@ def main():
 
     print("\n==================================================")
     if failed == 0:
-        print("ALL SUITES PASSED CLEANLY (6/6).")
+        print(f"ALL SUITES PASSED CLEANLY ({len(checks)}/{len(checks)}).")
         return 0
     else:
         print(f"FAILURES DETECTED: {failed}/{len(checks)} failed.")
