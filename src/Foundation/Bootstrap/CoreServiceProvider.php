@@ -48,6 +48,16 @@ final class CoreServiceProvider implements ServiceProviderInterface
         $container->singleton(\Coleza\Foundation\Events\EventBus::class, static function (Container $c): \Coleza\Foundation\Events\EventBus {
             return new \Coleza\Foundation\Events\EventBus($c);
         });
+
+        // Bind LogManager and default LoggerInterface
+        $container->singleton(\Coleza\Foundation\Logging\LogManager::class, static function (): \Coleza\Foundation\Logging\LogManager {
+            $logsDir = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . 'logs';
+            return new \Coleza\Foundation\Logging\LogManager($logsDir);
+        });
+
+        $container->singleton(\Psr\Log\LoggerInterface::class, static function (Container $c): \Psr\Log\LoggerInterface {
+            return $c->get(\Coleza\Foundation\Logging\LogManager::class)->app();
+        });
     }
 
     public function boot(Container $container): void
