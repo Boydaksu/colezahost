@@ -188,6 +188,11 @@ final class CoreServiceProvider implements ServiceProviderInterface
                 $c->get(\Coleza\Domain\Identity\Session\DatabaseSessionHandler::class)
             );
         });
+
+        // Bind RbacService
+        $container->singleton(\Coleza\Domain\Identity\Rbac\RbacService::class, static function (Container $c): \Coleza\Domain\Identity\Rbac\RbacService {
+            return new \Coleza\Domain\Identity\Rbac\RbacService($c->get(\Coleza\Foundation\Database\Connection::class));
+        });
     }
 
     public function boot(Container $container): void
