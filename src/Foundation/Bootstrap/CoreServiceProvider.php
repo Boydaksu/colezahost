@@ -207,6 +207,11 @@ final class CoreServiceProvider implements ServiceProviderInterface
                 $c->get(\Coleza\Domain\Identity\Audit\AuditLogger::class)
             );
         });
+
+        // Bind Translator
+        $container->singleton(\Coleza\Foundation\Localization\Translator::class, static function (): \Coleza\Foundation\Localization\Translator {
+            return new \Coleza\Foundation\Localization\Translator(__DIR__ . '/../../../config/lang', 'tr_TR');
+        });
     }
 
     public function boot(Container $container): void
