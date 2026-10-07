@@ -180,6 +180,14 @@ final class CoreServiceProvider implements ServiceProviderInterface
                 $c->get(\Coleza\Domain\Identity\Security\PasswordHasher::class)
             );
         });
+
+        // Bind OrganizationService
+        $container->singleton(\Coleza\Domain\Identity\Organization\OrganizationService::class, static function (Container $c): \Coleza\Domain\Identity\Organization\OrganizationService {
+            return new \Coleza\Domain\Identity\Organization\OrganizationService(
+                $c->get(\Coleza\Foundation\Database\Connection::class),
+                $c->get(\Coleza\Domain\Identity\Session\DatabaseSessionHandler::class)
+            );
+        });
     }
 
     public function boot(Container $container): void
