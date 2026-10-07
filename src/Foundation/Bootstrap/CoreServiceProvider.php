@@ -193,6 +193,20 @@ final class CoreServiceProvider implements ServiceProviderInterface
         $container->singleton(\Coleza\Domain\Identity\Rbac\RbacService::class, static function (Container $c): \Coleza\Domain\Identity\Rbac\RbacService {
             return new \Coleza\Domain\Identity\Rbac\RbacService($c->get(\Coleza\Foundation\Database\Connection::class));
         });
+
+        // Bind AuditLogger
+        $container->singleton(\Coleza\Domain\Identity\Audit\AuditLogger::class, static function (Container $c): \Coleza\Domain\Identity\Audit\AuditLogger {
+            return new \Coleza\Domain\Identity\Audit\AuditLogger($c->get(\Coleza\Foundation\Database\Connection::class));
+        });
+
+        // Bind ImpersonationService
+        $container->singleton(\Coleza\Domain\Identity\Impersonation\ImpersonationService::class, static function (Container $c): \Coleza\Domain\Identity\Impersonation\ImpersonationService {
+            return new \Coleza\Domain\Identity\Impersonation\ImpersonationService(
+                $c->get(\Coleza\Domain\Identity\Session\DatabaseSessionHandler::class),
+                $c->get(\Coleza\Domain\Identity\Rbac\RbacService::class),
+                $c->get(\Coleza\Domain\Identity\Audit\AuditLogger::class)
+            );
+        });
     }
 
     public function boot(Container $container): void
