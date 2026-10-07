@@ -92,6 +92,23 @@ final class CoreServiceProvider implements ServiceProviderInterface
         $container->singleton(\Coleza\Foundation\Idempotency\IdempotencyManager::class, static function (Container $c): \Coleza\Foundation\Idempotency\IdempotencyManager {
             return new \Coleza\Foundation\Idempotency\IdempotencyManager($c->get(\Coleza\Foundation\Database\Connection::class));
         });
+
+        // Bind DatabaseQueue and QueueInterface
+        $container->singleton(\Coleza\Foundation\Queue\DatabaseQueue::class, static function (Container $c): \Coleza\Foundation\Queue\DatabaseQueue {
+            return new \Coleza\Foundation\Queue\DatabaseQueue($c->get(\Coleza\Foundation\Database\Connection::class));
+        });
+
+        $container->singleton(\Coleza\Foundation\Queue\QueueInterface::class, static function (Container $c): \Coleza\Foundation\Queue\QueueInterface {
+            return $c->get(\Coleza\Foundation\Queue\DatabaseQueue::class);
+        });
+
+        // Bind QueueWorker
+        $container->singleton(\Coleza\Foundation\Queue\QueueWorker::class, static function (Container $c): \Coleza\Foundation\Queue\QueueWorker {
+            return new \Coleza\Foundation\Queue\QueueWorker(
+                $c->get(\Coleza\Foundation\Queue\QueueInterface::class),
+                $c->get(\Psr\Log\LoggerInterface::class)
+            );
+        });
     }
 
     public function boot(Container $container): void
