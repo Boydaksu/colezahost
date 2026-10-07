@@ -17,6 +17,8 @@ final class PaymentService
     private string $paymentsTable = 'payments';
     private string $paymentAllocationsTable = 'payment_allocations';
     private string $paymentSequencesTable = 'payment_sequences';
+    private string $refundsTable = 'refunds';
+    private string $refundSequencesTable = 'refund_sequences';
 
     public function __construct(
         private Connection $db,
@@ -84,6 +86,37 @@ final class PaymentService
             $this->paymentSequencesTable
         );
         $this->db->statement($sqlSequences);
+
+        // Refunds table
+        $sqlRefunds = sprintf(
+            'CREATE TABLE IF NOT EXISTS %s (
+                id %s,
+                refund_number VARCHAR(50) NOT NULL UNIQUE,
+                payment_id INT NOT NULL,
+                invoice_id INT NULL,
+                user_id INT NOT NULL,
+                amount_minor INT NOT NULL,
+                currency_code VARCHAR(3) NOT NULL,
+                reason VARCHAR(255) NOT NULL,
+                refund_method VARCHAR(50) NOT NULL DEFAULT "manual",
+                transaction_reference VARCHAR(255) NULL,
+                refunded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                metadata_json TEXT NULL
+            )',
+            $this->refundsTable,
+            $autoInc
+        );
+        $this->db->statement($sqlRefunds);
+
+        // Refund Sequences table
+        $sqlRefundSeq = sprintf(
+            'CREATE TABLE IF NOT EXISTS %s (
+                date_prefix VARCHAR(8) PRIMARY KEY,
+                last_number INT NOT NULL DEFAULT 0
+            )',
+            $this->refundSequencesTable
+        );
+        $this->db->statement($sqlRefundSeq);
     }
 
     /**
@@ -465,6 +498,12 @@ final class PaymentService
 
         $meta = !empty($row['metadata_json']) ? json_decode((string)$row['metadata_json'], true) : [];
 
+        $refundRow = $this->db->selectOne(
+            sprintf('SELECT COALESCE(SUM(amount_minor), 0) AS total_refunded FROM %s WHERE payment_id = ?', $this->refundsTable),
+            [$paymentId]
+        );
+        $refundedAmountMinor = $refundRow ? (int)$refundRow['total_refunded'] : 0;
+
         return new Payment(
             id: $paymentId,
             paymentNumber: (string)$row['payment_number'],
@@ -483,7 +522,187 @@ final class PaymentService
             paidAt: $row['paid_at'] !== null ? (string)$row['paid_at'] : null,
             metadata: is_array($meta) ? $meta : [],
             allocations: $allocations,
+            refundedAmountMinor: $refundedAmountMinor,
             createdAt: (string)$row['created_at']
+        );
+    }
+
+    /**
+     * Record a refund against a completed payment.
+     *
+     * @param array<string, mixed> $data
+     */
+    public function recordRefund(array $data): Refund
+    {
+        $paymentId = (int)($data['payment_id'] ?? 0);
+        $payment = $this->findPaymentById($paymentId);
+        if ($payment === null) {
+            throw new RuntimeException("Payment {$paymentId} not found.");
+        }
+
+        if (!$payment->isCompleted() && !$payment->isPartiallyRefunded()) {
+            throw new ValidationException(['payment' => 'Can only refund completed or partially refunded payments.'], 'Invalid payment status for refund');
+        }
+
+        $amountMinor = (int)($data['amount_minor'] ?? 0);
+        if ($amountMinor <= 0) {
+            throw new ValidationException(['amount_minor' => 'Refund amount must be greater than zero.'], 'Invalid refund amount');
+        }
+
+        if ($amountMinor > $payment->getRefundableAmountMinor()) {
+            throw new ValidationException(['amount_minor' => 'Refund amount exceeds refundable balance of payment.'], 'Excessive refund amount');
+        }
+
+        $reason = trim((string)($data['reason'] ?? 'Customer refund request'));
+        if ($reason === '') {
+            throw new ValidationException(['reason' => 'Refund reason is required.'], 'Reason missing');
+        }
+
+        $refundMethod = (string)($data['refund_method'] ?? Refund::METHOD_MANUAL);
+        $txRef = isset($data['transaction_reference']) ? (string)$data['transaction_reference'] : null;
+        $refundNumber = $this->nextRefundNumber();
+        $invoiceId = $payment->getInvoiceId();
+        $userId = $payment->getUserId();
+        $currencyCode = $payment->getCurrencyCode();
+        $refundedAt = date('Y-m-d H:i:s');
+        $metadata = (array)($data['metadata'] ?? []);
+
+        $sql = sprintf(
+            'INSERT INTO %s (refund_number, payment_id, invoice_id, user_id, amount_minor, currency_code, reason, refund_method, transaction_reference, refunded_at, metadata_json)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            $this->refundsTable
+        );
+
+        $this->db->statement($sql, [
+            $refundNumber,
+            $paymentId,
+            $invoiceId,
+            $userId,
+            $amountMinor,
+            $currencyCode,
+            $reason,
+            $refundMethod,
+            $txRef,
+            $refundedAt,
+            json_encode($metadata),
+        ]);
+
+        $refundId = (int)$this->db->getPdo()->lastInsertId();
+
+        // Update payment status (partially_refunded or refunded)
+        $newTotalRefunded = $payment->getRefundedAmountMinor() + $amountMinor;
+        $isFullPaymentRefund = $newTotalRefunded >= $payment->getAmountMinor();
+        $newPaymentStatus = $isFullPaymentRefund ? Payment::STATUS_REFUNDED : Payment::STATUS_PARTIALLY_REFUNDED;
+
+        $this->db->statement(
+            sprintf('UPDATE %s SET status = ? WHERE id = ?', $this->paymentsTable),
+            [$newPaymentStatus, $paymentId]
+        );
+
+        // Adjust invoice balance if payment was allocated to an invoice
+        if ($invoiceId !== null && $this->invoiceService !== null) {
+            $this->invoiceService->applyRefund($invoiceId, $amountMinor);
+        }
+
+        return new Refund(
+            id: $refundId,
+            refundNumber: $refundNumber,
+            paymentId: $paymentId,
+            invoiceId: $invoiceId,
+            userId: $userId,
+            amountMinor: $amountMinor,
+            currencyCode: $currencyCode,
+            reason: $reason,
+            refundMethod: $refundMethod,
+            transactionReference: $txRef,
+            refundedAt: $refundedAt,
+            metadata: $metadata
+        );
+    }
+
+    public function nextRefundNumber(): string
+    {
+        $date = date('Ymd');
+
+        $this->db->statement(
+            sprintf(
+                'INSERT INTO %s (date_prefix, last_number) VALUES (?, 1)
+                 ON CONFLICT(date_prefix) DO UPDATE SET last_number = last_number + 1',
+                $this->refundSequencesTable
+            ),
+            [$date]
+        );
+
+        $row = $this->db->selectOne(
+            sprintf('SELECT last_number FROM %s WHERE date_prefix = ?', $this->refundSequencesTable),
+            [$date]
+        );
+
+        $num = $row ? (int)$row['last_number'] : 1;
+        $formattedNum = str_pad((string)$num, 6, '0', STR_PAD_LEFT);
+
+        return "REF-{$date}-{$formattedNum}";
+    }
+
+    public function findRefundById(int $id): ?Refund
+    {
+        $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE id = ?', $this->refundsTable), [$id]);
+        return $row ? $this->hydrateRefund($row) : null;
+    }
+
+    public function findRefundByNumber(string $refundNumber): ?Refund
+    {
+        $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE refund_number = ?', $this->refundsTable), [$refundNumber]);
+        return $row ? $this->hydrateRefund($row) : null;
+    }
+
+    /**
+     * @return array<Refund>
+     */
+    public function listRefundsForPayment(int $paymentId): array
+    {
+        $rows = $this->db->select(sprintf('SELECT * FROM %s WHERE payment_id = ? ORDER BY id DESC', $this->refundsTable), [$paymentId]);
+        return array_map([$this, 'hydrateRefund'], $rows);
+    }
+
+    /**
+     * @return array<Refund>
+     */
+    public function listRefundsForInvoice(int $invoiceId): array
+    {
+        $rows = $this->db->select(sprintf('SELECT * FROM %s WHERE invoice_id = ? ORDER BY id DESC', $this->refundsTable), [$invoiceId]);
+        return array_map([$this, 'hydrateRefund'], $rows);
+    }
+
+    /**
+     * @return array<Refund>
+     */
+    public function listRefundsForUser(int $userId): array
+    {
+        $rows = $this->db->select(sprintf('SELECT * FROM %s WHERE user_id = ? ORDER BY id DESC', $this->refundsTable), [$userId]);
+        return array_map([$this, 'hydrateRefund'], $rows);
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     */
+    private function hydrateRefund(array $row): Refund
+    {
+        $meta = !empty($row['metadata_json']) ? json_decode((string)$row['metadata_json'], true) : [];
+
+        return new Refund(
+            id: (int)$row['id'],
+            refundNumber: (string)$row['refund_number'],
+            paymentId: (int)$row['payment_id'],
+            invoiceId: $row['invoice_id'] !== null ? (int)$row['invoice_id'] : null,
+            userId: (int)$row['user_id'],
+            amountMinor: (int)$row['amount_minor'],
+            currencyCode: (string)$row['currency_code'],
+            reason: (string)$row['reason'],
+            refundMethod: (string)$row['refund_method'],
+            transactionReference: $row['transaction_reference'] !== null ? (string)$row['transaction_reference'] : null,
+            refundedAt: (string)$row['refunded_at'],
+            metadata: is_array($meta) ? $meta : []
         );
     }
 }

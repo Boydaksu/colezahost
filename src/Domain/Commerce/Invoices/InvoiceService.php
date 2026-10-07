@@ -266,6 +266,29 @@ final class InvoiceService
     }
 
     /**
+     * Decrement paid amount and adjust invoice status (partially_paid / unpaid / refunded).
+     */
+    public function applyRefund(int $invoiceId, int $refundAmountMinor): Invoice
+    {
+        $invoice = $this->findInvoiceById($invoiceId);
+        if ($invoice === null) {
+            throw new RuntimeException("Invoice {$invoiceId} not found.");
+        }
+
+        $newPaidAmount = max(0, $invoice->getPaidAmountMinor() - $refundAmountMinor);
+        $newStatus = match (true) {
+            $newPaidAmount === 0 && $invoice->getPaidAmountMinor() > 0 => Invoice::STATUS_REFUNDED,
+            $newPaidAmount > 0 => Invoice::STATUS_PARTIALLY_PAID,
+            default => Invoice::STATUS_UNPAID,
+        };
+
+        $sql = sprintf('UPDATE %s SET paid_amount_minor = ?, status = ? WHERE id = ?', $this->invoicesTable);
+        $this->db->statement($sql, [$newPaidAmount, $newStatus, $invoiceId]);
+
+        return $this->findInvoiceById($invoiceId);
+    }
+
+    /**
      * Generate sequential invoice number (e.g. INV-2026-000001).
      */
     public function nextInvoiceNumber(): string

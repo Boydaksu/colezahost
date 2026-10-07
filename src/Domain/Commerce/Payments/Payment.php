@@ -38,6 +38,7 @@ final class Payment
         private ?string $paidAt = null,
         private array $metadata = [],
         private array $allocations = [],
+        private int $refundedAmountMinor = 0,
         private ?string $createdAt = null
     ) {
         if ($this->netAmountMinor === 0 && $this->amountMinor > 0) {
@@ -150,6 +151,16 @@ final class Payment
         return max(0, $this->amountMinor - $this->getAllocatedAmountMinor());
     }
 
+    public function getRefundedAmountMinor(): int
+    {
+        return $this->refundedAmountMinor;
+    }
+
+    public function getRefundableAmountMinor(): int
+    {
+        return max(0, $this->amountMinor - $this->refundedAmountMinor);
+    }
+
     public function isCompleted(): bool
     {
         return $this->status === self::STATUS_COMPLETED;
@@ -158,6 +169,16 @@ final class Payment
     public function isPending(): bool
     {
         return $this->status === self::STATUS_PENDING;
+    }
+
+    public function isRefunded(): bool
+    {
+        return $this->status === self::STATUS_REFUNDED;
+    }
+
+    public function isPartiallyRefunded(): bool
+    {
+        return $this->status === self::STATUS_PARTIALLY_REFUNDED;
     }
 
     public function getCreatedAt(): ?string
@@ -189,6 +210,8 @@ final class Payment
             'metadata' => $this->metadata,
             'allocated_amount_minor' => $this->getAllocatedAmountMinor(),
             'unallocated_amount_minor' => $this->getUnallocatedAmountMinor(),
+            'refunded_amount_minor' => $this->getRefundedAmountMinor(),
+            'refundable_amount_minor' => $this->getRefundableAmountMinor(),
             'allocations' => array_map(fn($a) => $a->toArray(), $this->allocations),
             'created_at' => $this->createdAt,
         ];
