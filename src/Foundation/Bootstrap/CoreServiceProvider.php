@@ -58,6 +58,16 @@ final class CoreServiceProvider implements ServiceProviderInterface
         $container->singleton(\Psr\Log\LoggerInterface::class, static function (Container $c): \Psr\Log\LoggerInterface {
             return $c->get(\Coleza\Foundation\Logging\LogManager::class)->app();
         });
+
+        // Bind StorageManager and default StorageInterface
+        $container->singleton(\Coleza\Foundation\Storage\StorageManager::class, static function (): \Coleza\Foundation\Storage\StorageManager {
+            $storageDir = dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . 'app';
+            return new \Coleza\Foundation\Storage\StorageManager($storageDir);
+        });
+
+        $container->singleton(\Coleza\Foundation\Storage\StorageInterface::class, static function (Container $c): \Coleza\Foundation\Storage\StorageInterface {
+            return $c->get(\Coleza\Foundation\Storage\StorageManager::class)->private();
+        });
     }
 
     public function boot(Container $container): void
