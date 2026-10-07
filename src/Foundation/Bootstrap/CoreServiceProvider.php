@@ -139,6 +139,14 @@ final class CoreServiceProvider implements ServiceProviderInterface
                 $c->get(\Coleza\Foundation\Storage\StorageInterface::class)
             );
         });
+
+        // Bind WorkerSupervisor
+        $container->singleton(\Coleza\Foundation\Worker\WorkerSupervisor::class, static function (Container $c): \Coleza\Foundation\Worker\WorkerSupervisor {
+            return new \Coleza\Foundation\Worker\WorkerSupervisor(
+                $c->get(\Coleza\Foundation\Queue\QueueInterface::class),
+                $c->get(\Psr\Log\LoggerInterface::class)
+            );
+        });
     }
 
     public function boot(Container $container): void

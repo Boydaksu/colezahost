@@ -1,7 +1,7 @@
 # P02 — Platform Primitives
 
 **Release family:** V1
-**Status:** PLANNED
+**Status:** PASS
 **HARD phase dependencies:** P01
 
 ## Objective
