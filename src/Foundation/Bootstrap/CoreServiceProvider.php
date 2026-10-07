@@ -35,6 +35,19 @@ final class CoreServiceProvider implements ServiceProviderInterface
             $dbConfig = $config->get("database.connections.{$defaultDriver}", []);
             return \Coleza\Foundation\Database\ConnectionFactory::create($dbConfig);
         });
+
+        // Bind CommandBus, QueryBus and EventBus
+        $container->singleton(\Coleza\Foundation\Bus\CommandBus::class, static function (Container $c): \Coleza\Foundation\Bus\CommandBus {
+            return new \Coleza\Foundation\Bus\CommandBus($c);
+        });
+
+        $container->singleton(\Coleza\Foundation\Bus\QueryBus::class, static function (Container $c): \Coleza\Foundation\Bus\QueryBus {
+            return new \Coleza\Foundation\Bus\QueryBus($c);
+        });
+
+        $container->singleton(\Coleza\Foundation\Events\EventBus::class, static function (Container $c): \Coleza\Foundation\Events\EventBus {
+            return new \Coleza\Foundation\Events\EventBus($c);
+        });
     }
 
     public function boot(Container $container): void
