@@ -232,6 +232,14 @@ final class CoreServiceProvider implements ServiceProviderInterface
                 $c->get(\Coleza\Domain\Identity\Audit\AuditLogger::class)
             );
         });
+
+        // Bind PrivacyConsentService
+        $container->singleton(\Coleza\Domain\Privacy\PrivacyConsentService::class, static function (Container $c): \Coleza\Domain\Privacy\PrivacyConsentService {
+            return new \Coleza\Domain\Privacy\PrivacyConsentService(
+                $c->get(\Coleza\Foundation\Database\Connection::class),
+                $c->get(\Coleza\Domain\Identity\Audit\AuditLogger::class)
+            );
+        });
     }
 
     public function boot(Container $container): void
