@@ -1,0 +1,1503 @@
+{
+  "schema_version": 1,
+  "phases": [
+    {
+      "id": "P00",
+      "version": "V1",
+      "title": "Project Control Bootstrap",
+      "hard_dependencies": [],
+      "subphases": [
+        {
+          "id": "P00.1",
+          "title": "Repository conventions & protected control paths"
+        },
+        {
+          "id": "P00.2",
+          "title": "Lock Product/Architecture/Security/Data/Extension/UI/Release constitutions"
+        },
+        {
+          "id": "P00.3",
+          "title": "Lock V1/V1.1/V2 scope and machine-readable dependency graph"
+        },
+        {
+          "id": "P00.4",
+          "title": "Bootstrap CI/evidence structure and gate statuses"
+        },
+        {
+          "id": "P00.5",
+          "title": "Validate AI roles, change-control and forbidden actions"
+        }
+      ],
+      "outcome": "A repository that can enforce the plan before product code exists.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P01",
+      "version": "V1",
+      "title": "Core Foundation",
+      "hard_dependencies": [
+        "P00"
+      ],
+      "subphases": [
+        {
+          "id": "P01.1",
+          "title": "Runtime/environment bootstrap"
+        },
+        {
+          "id": "P01.2",
+          "title": "Config/container/service registration"
+        },
+        {
+          "id": "P01.3",
+          "title": "HTTP request/response/router/middleware"
+        },
+        {
+          "id": "P01.4",
+          "title": "DB connection/transactions/migrations"
+        },
+        {
+          "id": "P01.5",
+          "title": "Validation + centralized exception/error-code model"
+        },
+        {
+          "id": "P01.6",
+          "title": "Event bus + Application Command/Query contracts"
+        },
+        {
+          "id": "P01.7",
+          "title": "Architecture dependency tests and public contract conventions"
+        }
+      ],
+      "outcome": "Minimal framework capable of safely hosting business domains.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P02",
+      "version": "V1",
+      "title": "Platform Primitives",
+      "hard_dependencies": [
+        "P01"
+      ],
+      "subphases": [
+        {
+          "id": "P02.1",
+          "title": "Structured logging + correlation/request/operation IDs"
+        },
+        {
+          "id": "P02.2",
+          "title": "Private storage abstraction"
+        },
+        {
+          "id": "P02.3",
+          "title": "Cache contract + DB/file baseline"
+        },
+        {
+          "id": "P02.4",
+          "title": "Lock/idempotency primitives"
+        },
+        {
+          "id": "P02.5",
+          "title": "Database queue + priority/retry/DLQ"
+        },
+        {
+          "id": "P02.6",
+          "title": "Scheduler + overlap/missed-run/heartbeat"
+        },
+        {
+          "id": "P02.7",
+          "title": "Health contracts + installer/backup skeletons"
+        },
+        {
+          "id": "P02.8",
+          "title": "Runtime/memory budget and graceful worker stop"
+        }
+      ],
+      "outcome": "Shared-host compatible operational primitives.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P03",
+      "version": "V1",
+      "title": "Identity & Platform Security",
+      "hard_dependencies": [
+        "P02"
+      ],
+      "subphases": [
+        {
+          "id": "P03.1",
+          "title": "Sessions/password/login/reset/email verification"
+        },
+        {
+          "id": "P03.2",
+          "title": "TOTP 2FA/recovery/trusted devices/admin 2FA policy"
+        },
+        {
+          "id": "P03.3",
+          "title": "Organizations/memberships/invitations/switching"
+        },
+        {
+          "id": "P03.4",
+          "title": "Admin + organization RBAC and permission matrix"
+        },
+        {
+          "id": "P03.5",
+          "title": "Admin impersonation restrictions/audit"
+        },
+        {
+          "id": "P03.6",
+          "title": "TR/EN localization + CI key parity"
+        },
+        {
+          "id": "P03.7",
+          "title": "Single-active Brand foundation"
+        },
+        {
+          "id": "P03.8",
+          "title": "Vault/encryption/secret audit"
+        },
+        {
+          "id": "P03.9",
+          "title": "Privacy data-classification/consent foundation"
+        },
+        {
+          "id": "P03.10",
+          "title": "Module manifest/discovery/lifecycle/capability foundation"
+        }
+      ],
+      "outcome": "Secure identity/platform ownership and extension foundations.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P04",
+      "version": "V1",
+      "title": "UI & API Foundation",
+      "hard_dependencies": [
+        "P03"
+      ],
+      "subphases": [
+        {
+          "id": "P04.1",
+          "title": "Design tokens + core component library"
+        },
+        {
+          "id": "P04.2",
+          "title": "Admin shell/sidebar/density/theme/Action Center skeleton"
+        },
+        {
+          "id": "P04.3",
+          "title": "Client shell/navigation"
+        },
+        {
+          "id": "P04.4",
+          "title": "DataTable/drawers/modals/workspace patterns"
+        },
+        {
+          "id": "P04.5",
+          "title": "Keyboard/Ctrl+K/global search foundation"
+        },
+        {
+          "id": "P04.6",
+          "title": "Accessibility test harness"
+        },
+        {
+          "id": "P04.7",
+          "title": "REST /api/v1 auth/scopes/errors/pagination/rate-limit/idempotency"
+        },
+        {
+          "id": "P04.8",
+          "title": "OpenAPI generation + API logs"
+        }
+      ],
+      "outcome": "Usable admin/client shells and API surface with no duplicated business logic.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P05",
+      "version": "V1",
+      "title": "Catalog, Currency, Pricing & Tax",
+      "hard_dependencies": [
+        "P04"
+      ],
+      "subphases": [
+        {
+          "id": "P05.1",
+          "title": "Product groups/products/localized content"
+        },
+        {
+          "id": "P05.2",
+          "title": "Configurable options/addons/availability basics"
+        },
+        {
+          "id": "P05.3",
+          "title": "Currency model + FX snapshots/provider abstraction"
+        },
+        {
+          "id": "P05.4",
+          "title": "One-time/recurring/setup and cycle pricing"
+        },
+        {
+          "id": "P05.5",
+          "title": "Customer/service price overrides"
+        },
+        {
+          "id": "P05.6",
+          "title": "Prorata + upgrade/downgrade quote calculations"
+        },
+        {
+          "id": "P05.7",
+          "title": "Tax classes/zones/rates/exemption/inclusive/exclusive"
+        },
+        {
+          "id": "P05.8",
+          "title": "Pricing/tax property & mutation golden tests"
+        }
+      ],
+      "outcome": "Stable commercial definitions and authoritative quote calculations.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P06",
+      "version": "V1",
+      "title": "Manual Commerce Vertical",
+      "hard_dependencies": [
+        "P05"
+      ],
+      "subphases": [
+        {
+          "id": "P06.1",
+          "title": "Order state machine and admin/client order creation"
+        },
+        {
+          "id": "P06.2",
+          "title": "Invoice finalization/numbering/line-tax-currency snapshots"
+        },
+        {
+          "id": "P06.3",
+          "title": "Payment entity + allocations + manual/bank payment"
+        },
+        {
+          "id": "P06.4",
+          "title": "Partial/split payments and basic refunds"
+        },
+        {
+          "id": "P06.5",
+          "title": "Credit ledger and adjustments"
+        },
+        {
+          "id": "P06.6",
+          "title": "Recurring/renewal invoice primitives"
+        },
+        {
+          "id": "P06.7",
+          "title": "Manual service creation/state model"
+        },
+        {
+          "id": "P06.8",
+          "title": "Golden Manual Commerce E2E"
+        }
+      ],
+      "outcome": "First real vertical slice without external providers.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P07",
+      "version": "V1",
+      "title": "Finance & Document Platform",
+      "hard_dependencies": [
+        "P06"
+      ],
+      "subphases": [
+        {
+          "id": "P07.1",
+          "title": "Financial accounts/bank/cash/gateway ledger views"
+        },
+        {
+          "id": "P07.2",
+          "title": "Income/expense/categories/vendors/recurring expense basics"
+        },
+        {
+          "id": "P07.3",
+          "title": "Gateway settlement model and basic profitability"
+        },
+        {
+          "id": "P07.4",
+          "title": "Common template/view-model/PDF renderer"
+        },
+        {
+          "id": "P07.5",
+          "title": "Central document numbering/version/snapshot/hash/private storage"
+        },
+        {
+          "id": "P07.6",
+          "title": "Quote revisions/expiry/accept-reject/order conversion"
+        },
+        {
+          "id": "P07.7",
+          "title": "Proforma separate entity"
+        },
+        {
+          "id": "P07.8",
+          "title": "Basic contract/service/commitment/internal acceptance"
+        }
+      ],
+      "outcome": "Operational finance baseline and common commercial document platform.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P08",
+      "version": "V1",
+      "title": "Integration Foundation",
+      "hard_dependencies": [
+        "P07"
+      ],
+      "subphases": [
+        {
+          "id": "P08.1",
+          "title": "Notification Engine + SMTP + TR/EN templates"
+        },
+        {
+          "id": "P08.2",
+          "title": "Notification preferences/delivery history/panel Notification Center"
+        },
+        {
+          "id": "P08.3",
+          "title": "Transactional vs marketing separation + announcements basic"
+        },
+        {
+          "id": "P08.4",
+          "title": "Webhooks HMAC/retry/delivery/manual redelivery"
+        },
+        {
+          "id": "P08.5",
+          "title": "iyzico provider contract implementation"
+        },
+        {
+          "id": "P08.6",
+          "title": "Payment webhook/idempotency/refund failure scenarios"
+        },
+        {
+          "id": "P08.7",
+          "title": "Expose commerce domain API endpoints through Application layer"
+        },
+        {
+          "id": "P08.8",
+          "title": "Integration health hooks"
+        }
+      ],
+      "outcome": "Production payment and outbound communication/integration path.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P09",
+      "version": "V1",
+      "title": "Service & Provider Core",
+      "hard_dependencies": [
+        "P08"
+      ],
+      "subphases": [
+        {
+          "id": "P09.1",
+          "title": "Service lifecycle/billing/placement relations"
+        },
+        {
+          "id": "P09.2",
+          "title": "Provider capability contracts and operation DTOs"
+        },
+        {
+          "id": "P09.3",
+          "title": "Server/Server Pool/location/capacity models"
+        },
+        {
+          "id": "P09.4",
+          "title": "Placement Engine basic health/capacity/priority"
+        },
+        {
+          "id": "P09.5",
+          "title": "Capacity reserve→commit/release workflow"
+        },
+        {
+          "id": "P09.6",
+          "title": "Provisioning operation/error classification contracts"
+        },
+        {
+          "id": "P09.7",
+          "title": "Provider module settings/Vault mappings"
+        },
+        {
+          "id": "P09.8",
+          "title": "Service concurrency and optimistic-edit tests"
+        }
+      ],
+      "outcome": "Provider-independent service operations ready for adapter.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P10",
+      "version": "V1",
+      "title": "Automated Hosting & cPanel",
+      "hard_dependencies": [
+        "P09"
+      ],
+      "subphases": [
+        {
+          "id": "P10.1",
+          "title": "cPanel authentication/package mapping/health"
+        },
+        {
+          "id": "P10.2",
+          "title": "Create/suspend/unsuspend/terminate capabilities"
+        },
+        {
+          "id": "P10.3",
+          "title": "Upgrade/downgrade where supported"
+        },
+        {
+          "id": "P10.4",
+          "title": "Provision workflow validate→place→reserve→remote→verify→activate"
+        },
+        {
+          "id": "P10.5",
+          "title": "Retry/backoff/idempotency/uncertain-response reconciliation"
+        },
+        {
+          "id": "P10.6",
+          "title": "No-duplicate remote account failure tests"
+        },
+        {
+          "id": "P10.7",
+          "title": "Automated Hosting Golden E2E with iyzico + email"
+        }
+      ],
+      "outcome": "One deep production hosting provider path.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P11",
+      "version": "V1",
+      "title": "Renewal & Automation Hardening",
+      "hard_dependencies": [
+        "P10"
+      ],
+      "subphases": [
+        {
+          "id": "P11.1",
+          "title": "Automation engine trigger/conditions/IF-ELSE/actions"
+        },
+        {
+          "id": "P11.2",
+          "title": "Approval/delay/observe/dry-run/version/run history"
+        },
+        {
+          "id": "P11.3",
+          "title": "Domain command adapters for automation (no direct repository)"
+        },
+        {
+          "id": "P11.4",
+          "title": "Service renewal scheduler and invoice generation"
+        },
+        {
+          "id": "P11.5",
+          "title": "Overdue/grace policy and suspend/unsuspend workflow"
+        },
+        {
+          "id": "P11.6",
+          "title": "Emergency Pause All/Destructive actions"
+        },
+        {
+          "id": "P11.7",
+          "title": "Renewal Golden E2E and missed-scheduler catchup"
+        }
+      ],
+      "outcome": "Lifecycle beyond first sale is production-ready.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P12",
+      "version": "V1",
+      "title": "Domains & Registrar",
+      "hard_dependencies": [
+        "P11"
+      ],
+      "subphases": [
+        {
+          "id": "P12.1",
+          "title": "TLD catalog/policies/pricing/multi-year basics"
+        },
+        {
+          "id": "P12.2",
+          "title": "Domain/contact profile/lifecycle/timeline"
+        },
+        {
+          "id": "P12.3",
+          "title": "Registrar capability contract + Vault settings"
+        },
+        {
+          "id": "P12.4",
+          "title": "Production registrar adapter selection + implementation"
+        },
+        {
+          "id": "P12.5",
+          "title": "Availability/register/renew/transfer/nameservers/lock/EPP"
+        },
+        {
+          "id": "P12.6",
+          "title": "Operation idempotency/uncertain timeout/reconciliation"
+        },
+        {
+          "id": "P12.7",
+          "title": "Expiry/grace/redemption metadata + reminders"
+        },
+        {
+          "id": "P12.8",
+          "title": "Domain Golden E2E"
+        }
+      ],
+      "outcome": "Complete domain sale/renewal vertical.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P13",
+      "version": "V1",
+      "title": "Support & Announcements",
+      "hard_dependencies": [
+        "P12"
+      ],
+      "subphases": [
+        {
+          "id": "P13.1",
+          "title": "Departments/agents/status/priority"
+        },
+        {
+          "id": "P13.2",
+          "title": "Ticket/conversation/replies/internal notes"
+        },
+        {
+          "id": "P13.3",
+          "title": "Private attachments and file security"
+        },
+        {
+          "id": "P13.4",
+          "title": "Manual + round-robin assignment"
+        },
+        {
+          "id": "P13.5",
+          "title": "Basic first-response/resolution SLA scheduler"
+        },
+        {
+          "id": "P13.6",
+          "title": "Relations to service/domain/invoice/order and contextual commands"
+        },
+        {
+          "id": "P13.7",
+          "title": "Organization own/all ticket permissions"
+        },
+        {
+          "id": "P13.8",
+          "title": "Canned responses/basic announcement UI"
+        },
+        {
+          "id": "P13.9",
+          "title": "Support Golden E2E"
+        }
+      ],
+      "outcome": "Production service desk baseline.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P14",
+      "version": "V1",
+      "title": "Fraud, Abuse & Privacy Enforcement",
+      "hard_dependencies": [
+        "P13"
+      ],
+      "subphases": [
+        {
+          "id": "P14.1",
+          "title": "Rule-based order/payment/identity risk scoring"
+        },
+        {
+          "id": "P14.2",
+          "title": "Velocity/related-account indicators + allow/watch/deny lists"
+        },
+        {
+          "id": "P14.3",
+          "title": "Manual Risk Review + immutable decision snapshot + override reason"
+        },
+        {
+          "id": "P14.4",
+          "title": "Basic Abuse Case severity/category/resource/deadline/response"
+        },
+        {
+          "id": "P14.5",
+          "title": "Privacy requests + step-up export"
+        },
+        {
+          "id": "P14.6",
+          "title": "Erasure dry-run/delete-anonymize-retain/restrict"
+        },
+        {
+          "id": "P14.7",
+          "title": "Retention + basic Legal Hold"
+        },
+        {
+          "id": "P14.8",
+          "title": "Privacy Tombstone and old-backup restore test"
+        },
+        {
+          "id": "P14.9",
+          "title": "Module/domain privacy handlers and redaction audits"
+        }
+      ],
+      "outcome": "Risk controls and enforceable data lifecycle.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P15",
+      "version": "V1",
+      "title": "Analytics & Business Intelligence Baseline",
+      "hard_dependencies": [
+        "P14"
+      ],
+      "subphases": [
+        {
+          "id": "P15.1",
+          "title": "Metric Registry + Semantic Layer definitions"
+        },
+        {
+          "id": "P15.2",
+          "title": "MRR/ARR/new/churned MRR and subscription snapshots"
+        },
+        {
+          "id": "P15.3",
+          "title": "Invoice vs cash vs outstanding/refund/contribution metrics"
+        },
+        {
+          "id": "P15.4",
+          "title": "Daily/monthly read models/aggregations + rebuild"
+        },
+        {
+          "id": "P15.5",
+          "title": "Owner/Finance/Sales/Operations/Support dashboards"
+        },
+        {
+          "id": "P15.6",
+          "title": "Currency/timezone/data freshness semantics"
+        },
+        {
+          "id": "P15.7",
+          "title": "Golden Financial Dataset + ledger reconciliation"
+        },
+        {
+          "id": "P15.8",
+          "title": "Analytics permission/data-scope tests"
+        }
+      ],
+      "outcome": "Trusted dashboards without making analytics source-of-truth.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P16",
+      "version": "V1",
+      "title": "Import & WHMCS Migration",
+      "hard_dependencies": [
+        "P15"
+      ],
+      "subphases": [
+        {
+          "id": "P16.1",
+          "title": "Generic source/staging/canonical DTO/mapping/validation engine"
+        },
+        {
+          "id": "P16.2",
+          "title": "CSV import + locale-aware parsing"
+        },
+        {
+          "id": "P16.3",
+          "title": "Adopt existing service/domain/provider identity workflows"
+        },
+        {
+          "id": "P16.4",
+          "title": "WHMCS source scan/version/capability/read-only connector"
+        },
+        {
+          "id": "P16.5",
+          "title": "Migrate clients/orgs/products/services/domains"
+        },
+        {
+          "id": "P16.6",
+          "title": "Migrate invoices/payments/credits with financial reconciliation"
+        },
+        {
+          "id": "P16.7",
+          "title": "Tickets/attachments/custom fields and unsupported-data accounting"
+        },
+        {
+          "id": "P16.8",
+          "title": "Dry-run/conflict/quarantine/checkpoint/resume/idempotency"
+        },
+        {
+          "id": "P16.9",
+          "title": "Migration Hold/automation+notification suppression"
+        },
+        {
+          "id": "P16.10",
+          "title": "Cutover checklist/final reconciliation/seal + Golden Migration E2E"
+        }
+      ],
+      "outcome": "Safe production transition from WHMCS with zero silent data loss.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P17",
+      "version": "V1",
+      "title": "Installer, Update, Backup, Recovery & Health Hardening",
+      "hard_dependencies": [
+        "P16"
+      ],
+      "subphases": [
+        {
+          "id": "P17.1",
+          "title": "Web installer requirements/DB/admin/locale/brand/email/cron"
+        },
+        {
+          "id": "P17.2",
+          "title": "Fresh-install migration mode"
+        },
+        {
+          "id": "P17.3",
+          "title": "Signed/checksummed staged update + module compatibility"
+        },
+        {
+          "id": "P17.4",
+          "title": "Mandatory verified pre-update backup"
+        },
+        {
+          "id": "P17.5",
+          "title": "Backup full/DB/files; Local/SFTP/S3; encryption/manifest/retention"
+        },
+        {
+          "id": "P17.6",
+          "title": "Restore wizard + disaster recovery on fresh hosting"
+        },
+        {
+          "id": "P17.7",
+          "title": "Normal/Safe/Recovery/read-only/full-maintenance modes"
+        },
+        {
+          "id": "P17.8",
+          "title": "System Health/Doctor for cron/queue/storage/DB/providers/modules/backup"
+        },
+        {
+          "id": "P17.9",
+          "title": "Rollback paths and privacy tombstone application after restore"
+        }
+      ],
+      "outcome": "System can be installed, updated, moved and recovered safely.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P18",
+      "version": "V1",
+      "title": "V1 Release Candidate & Stable Gate",
+      "hard_dependencies": [
+        "P17"
+      ],
+      "subphases": [
+        {
+          "id": "P18.1",
+          "title": "Freeze V1 feature scope and run full dependency/gate audit"
+        },
+        {
+          "id": "P18.2",
+          "title": "Run G01–G08 Golden E2E"
+        },
+        {
+          "id": "P18.3",
+          "title": "Full static/architecture/security/secret/dependency scans"
+        },
+        {
+          "id": "P18.4",
+          "title": "Concurrency/failure/chaos/provider uncertainty suite"
+        },
+        {
+          "id": "P18.5",
+          "title": "Performance/N+1/reference-budget regression"
+        },
+        {
+          "id": "P18.6",
+          "title": "Minimum shared-host compatibility matrix"
+        },
+        {
+          "id": "P18.7",
+          "title": "Fresh install + upgrade + backup/restore + WHMCS cutover rehearsal"
+        },
+        {
+          "id": "P18.8",
+          "title": "TR/EN completeness + accessibility/visual regression"
+        },
+        {
+          "id": "P18.9",
+          "title": "Release package vendor/assets/checksum/signature/release notes"
+        },
+        {
+          "id": "P18.10",
+          "title": "RC soak/issue closure → independent Stable approval"
+        }
+      ],
+      "outcome": "Signed, reproducible, evidence-backed V1 stable release.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P110",
+      "version": "V1.1",
+      "title": "Multi-brand & Theme Activation",
+      "hard_dependencies": [
+        "P18"
+      ],
+      "subphases": [
+        {
+          "id": "P110.1",
+          "title": "Enable multiple active brands"
+        },
+        {
+          "id": "P110.2",
+          "title": "Brand routing/isolation/security matrix"
+        },
+        {
+          "id": "P110.3",
+          "title": "Brand-specific client UI/templates/sender identities"
+        },
+        {
+          "id": "P110.4",
+          "title": "Additional client theme packaging/contracts"
+        },
+        {
+          "id": "P110.5",
+          "title": "Cross-brand reporting/permissions tests"
+        }
+      ],
+      "outcome": "Turn the already-present brand foundation into product functionality.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P111",
+      "version": "V1.1",
+      "title": "Provider Expansion",
+      "hard_dependencies": [
+        "P110"
+      ],
+      "subphases": [
+        {
+          "id": "P111.1",
+          "title": "Plesk adapter"
+        },
+        {
+          "id": "P111.2",
+          "title": "DirectAdmin adapter"
+        },
+        {
+          "id": "P111.3",
+          "title": "Additional registrar adapters"
+        },
+        {
+          "id": "P111.4",
+          "title": "Additional payment gateway adapters"
+        },
+        {
+          "id": "P111.5",
+          "title": "Capability/contract-suite hardening based on V1 field experience"
+        }
+      ],
+      "outcome": "Broaden integration breadth without changing business semantics.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P112",
+      "version": "V1.1",
+      "title": "Communication Expansion",
+      "hard_dependencies": [
+        "P111"
+      ],
+      "subphases": [
+        {
+          "id": "P112.1",
+          "title": "SMS channel/provider"
+        },
+        {
+          "id": "P112.2",
+          "title": "Telegram admin/channel provider"
+        },
+        {
+          "id": "P112.3",
+          "title": "WhatsApp optional provider"
+        },
+        {
+          "id": "P112.4",
+          "title": "Push foundation/provider"
+        },
+        {
+          "id": "P112.5",
+          "title": "Fallback routing/digest/quiet hours/bounce/suppression enhancements"
+        }
+      ],
+      "outcome": "Multichannel notification layer.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P113",
+      "version": "V1.1",
+      "title": "Advanced Support, Incident & Status",
+      "hard_dependencies": [
+        "P112"
+      ],
+      "subphases": [
+        {
+          "id": "P113.1",
+          "title": "Advanced SLA calendars/pause/escalation"
+        },
+        {
+          "id": "P113.2",
+          "title": "Least-busy and optional skill-based assignment"
+        },
+        {
+          "id": "P113.3",
+          "title": "Merge/split/collision detection"
+        },
+        {
+          "id": "P113.4",
+          "title": "Incident/parent-ticket bulk communication"
+        },
+        {
+          "id": "P113.5",
+          "title": "Client-facing Status Page integration"
+        },
+        {
+          "id": "P113.6",
+          "title": "Email piping/IMAP/provider inbound improvements"
+        }
+      ],
+      "outcome": "Mature service desk and incident communication.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P114",
+      "version": "V1.1",
+      "title": "Finance & Reconciliation Expansion",
+      "hard_dependencies": [
+        "P113"
+      ],
+      "subphases": [
+        {
+          "id": "P114.1",
+          "title": "Bank statement import CSV/OFX/MT940"
+        },
+        {
+          "id": "P114.2",
+          "title": "Matching suggestions + reconciliation sessions"
+        },
+        {
+          "id": "P114.3",
+          "title": "Cost centers/vendor statement improvements"
+        },
+        {
+          "id": "P114.4",
+          "title": "Additional backup destinations (Google Drive/WebDAV etc.)"
+        },
+        {
+          "id": "P114.5",
+          "title": "Operational finance dashboards and controls hardening"
+        }
+      ],
+      "outcome": "Stronger finance operations without becoming a full accounting ERP.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P115",
+      "version": "V1.1",
+      "title": "Analytics & Reporting Expansion",
+      "hard_dependencies": [
+        "P114"
+      ],
+      "subphases": [
+        {
+          "id": "P115.1",
+          "title": "Controlled Dataset Registry/Report Builder"
+        },
+        {
+          "id": "P115.2",
+          "title": "Saved/scheduled reports and export policies"
+        },
+        {
+          "id": "P115.3",
+          "title": "Cohort and funnel analytics"
+        },
+        {
+          "id": "P115.4",
+          "title": "Explainable basic forecasting"
+        },
+        {
+          "id": "P115.5",
+          "title": "Report snapshots/goals/metric alerts/drill-down"
+        }
+      ],
+      "outcome": "Self-service analytics on top of locked semantic metrics.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P116",
+      "version": "V1.1",
+      "title": "Privacy & Risk Expansion",
+      "hard_dependencies": [
+        "P115"
+      ],
+      "subphases": [
+        {
+          "id": "P116.1",
+          "title": "Processor/subprocessor/transfer registry UI"
+        },
+        {
+          "id": "P116.2",
+          "title": "Advanced privacy operations dashboard"
+        },
+        {
+          "id": "P116.3",
+          "title": "External fraud-signal provider integration"
+        },
+        {
+          "id": "P116.4",
+          "title": "Fraud simulation/false-positive analysis improvements"
+        },
+        {
+          "id": "P116.5",
+          "title": "Advanced abuse intake/evidence/appeal/provider sync"
+        }
+      ],
+      "outcome": "Operational compliance/risk maturity.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P117",
+      "version": "V1.1",
+      "title": "Migration Expansion",
+      "hard_dependencies": [
+        "P116"
+      ],
+      "subphases": [
+        {
+          "id": "P117.1",
+          "title": "WiseCP source adapter"
+        },
+        {
+          "id": "P117.2",
+          "title": "Delta sync/watermarks/final delta cutover"
+        },
+        {
+          "id": "P117.3",
+          "title": "Additional legacy password compatibility adapters where safe"
+        },
+        {
+          "id": "P117.4",
+          "title": "Migration SDK/third-party source contract hardening"
+        },
+        {
+          "id": "P117.5",
+          "title": "More extensive migration performance/huge-dataset tests"
+        }
+      ],
+      "outcome": "Second migration ecosystem and lower-downtime cutovers.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P118",
+      "version": "V1.1",
+      "title": "Enhanced Operations & Performance",
+      "hard_dependencies": [
+        "P117"
+      ],
+      "subphases": [
+        {
+          "id": "P118.1",
+          "title": "Redis cache/queue/lock adapters"
+        },
+        {
+          "id": "P118.2",
+          "title": "Continuous worker/Supervisor profile documentation"
+        },
+        {
+          "id": "P118.3",
+          "title": "Advanced placement/resource pools"
+        },
+        {
+          "id": "P118.4",
+          "title": "Optional search adapter after proven need"
+        },
+        {
+          "id": "P118.5",
+          "title": "Contract amendments + document QR verification"
+        },
+        {
+          "id": "P118.6",
+          "title": "Additional theme/operator UX improvements"
+        },
+        {
+          "id": "P118.7",
+          "title": "V1.1 full regression and release gate"
+        }
+      ],
+      "outcome": "Enhanced-server profile and V1.1 stable release.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P200",
+      "version": "V2+",
+      "title": "Reseller Platform",
+      "hard_dependencies": [
+        "P118"
+      ],
+      "subphases": [
+        {
+          "id": "P200.1",
+          "title": "Reseller entity/contracts and hierarchy"
+        },
+        {
+          "id": "P200.2",
+          "title": "Downstream client/product/pricing control"
+        },
+        {
+          "id": "P200.3",
+          "title": "Reseller API/scopes"
+        },
+        {
+          "id": "P200.4",
+          "title": "Billing/credit/commission boundaries"
+        },
+        {
+          "id": "P200.5",
+          "title": "Isolation/security/analytics suite"
+        }
+      ],
+      "outcome": "Full reseller product.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P201",
+      "version": "V2+",
+      "title": "Affiliate & Acquisition",
+      "hard_dependencies": [
+        "P200"
+      ],
+      "subphases": [
+        {
+          "id": "P201.1",
+          "title": "Affiliate identities/referral attribution"
+        },
+        {
+          "id": "P201.2",
+          "title": "Commission lifecycle/anti-fraud"
+        },
+        {
+          "id": "P201.3",
+          "title": "Campaign/UTM acquisition reports"
+        },
+        {
+          "id": "P201.4",
+          "title": "Payout integration boundaries"
+        },
+        {
+          "id": "P201.5",
+          "title": "Privacy/consent controls"
+        }
+      ],
+      "outcome": "Acquisition/affiliate product.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P202",
+      "version": "V2+",
+      "title": "Live Chat & Omnichannel",
+      "hard_dependencies": [
+        "P201"
+      ],
+      "subphases": [
+        {
+          "id": "P202.1",
+          "title": "Realtime/inbox conversation domain"
+        },
+        {
+          "id": "P202.2",
+          "title": "Agent presence/routing"
+        },
+        {
+          "id": "P202.3",
+          "title": "Website/client widget"
+        },
+        {
+          "id": "P202.4",
+          "title": "Inbound email/SMS/WhatsApp convergence where legal/provider-supported"
+        },
+        {
+          "id": "P202.5",
+          "title": "Ticket escalation/history integration"
+        }
+      ],
+      "outcome": "Live communication product.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P203",
+      "version": "V2+",
+      "title": "Marketplace & Ecosystem",
+      "hard_dependencies": [
+        "P202"
+      ],
+      "subphases": [
+        {
+          "id": "P203.1",
+          "title": "Public package registry"
+        },
+        {
+          "id": "P203.2",
+          "title": "Verified signing/trust/review workflow"
+        },
+        {
+          "id": "P203.3",
+          "title": "Commercial licensing boundaries"
+        },
+        {
+          "id": "P203.4",
+          "title": "Developer SDK/docs/samples/certification"
+        },
+        {
+          "id": "P203.5",
+          "title": "Marketplace update/security response process"
+        }
+      ],
+      "outcome": "Third-party commercial ecosystem.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P204",
+      "version": "V2+",
+      "title": "AI Assistants",
+      "hard_dependencies": [
+        "P203"
+      ],
+      "subphases": [
+        {
+          "id": "P204.1",
+          "title": "Support summary/classification/reply suggestions"
+        },
+        {
+          "id": "P204.2",
+          "title": "Risk case summarization/recommendation only"
+        },
+        {
+          "id": "P204.3",
+          "title": "Analytics explanations/natural-language intent→validated query"
+        },
+        {
+          "id": "P204.4",
+          "title": "Human approval/audit/privacy/prompt data controls"
+        },
+        {
+          "id": "P204.5",
+          "title": "Model/provider abstraction and evaluation suites"
+        }
+      ],
+      "outcome": "Advisory AI without authoritative business decisions.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P205",
+      "version": "V2+",
+      "title": "CMS / Public Frontend",
+      "hard_dependencies": [
+        "P204"
+      ],
+      "subphases": [
+        {
+          "id": "P205.1",
+          "title": "Public site/content bounded context"
+        },
+        {
+          "id": "P205.2",
+          "title": "Blog/pages/content localization"
+        },
+        {
+          "id": "P205.3",
+          "title": "SEO/cache/theme integration"
+        },
+        {
+          "id": "P205.4",
+          "title": "Commerce/catalog public presentation"
+        },
+        {
+          "id": "P205.5",
+          "title": "Strict separation from client/admin business logic"
+        }
+      ],
+      "outcome": "Optional public web presence.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P206",
+      "version": "V2+",
+      "title": "Advanced Documents & e-Sign",
+      "hard_dependencies": [
+        "P205"
+      ],
+      "subphases": [
+        {
+          "id": "P206.1",
+          "title": "Qualified e-sign provider adapters"
+        },
+        {
+          "id": "P206.2",
+          "title": "Advanced contract amendment/renewal workflows"
+        },
+        {
+          "id": "P206.3",
+          "title": "Visual document designer with safe DSL"
+        },
+        {
+          "id": "P206.4",
+          "title": "Document verification/QR/public minimal validation"
+        },
+        {
+          "id": "P206.5",
+          "title": "Legal/compliance provider abstractions"
+        }
+      ],
+      "outcome": "Advanced document lifecycle.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P207",
+      "version": "V2+",
+      "title": "Advanced Finance & Open Banking",
+      "hard_dependencies": [
+        "P206"
+      ],
+      "subphases": [
+        {
+          "id": "P207.1",
+          "title": "Open Banking connectors where available"
+        },
+        {
+          "id": "P207.2",
+          "title": "Automated bank feed reconciliation"
+        },
+        {
+          "id": "P207.3",
+          "title": "Budget/scenario planning"
+        },
+        {
+          "id": "P207.4",
+          "title": "Unrealized FX revaluation"
+        },
+        {
+          "id": "P207.5",
+          "title": "Deeper external accounting connectors/export packs"
+        }
+      ],
+      "outcome": "Finance sophistication without silently redefining accounting semantics.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P208",
+      "version": "V2+",
+      "title": "Mobile & Realtime Experience",
+      "hard_dependencies": [
+        "P207"
+      ],
+      "subphases": [
+        {
+          "id": "P208.1",
+          "title": "Native mobile/client/admin priorities"
+        },
+        {
+          "id": "P208.2",
+          "title": "Push-first security/operations"
+        },
+        {
+          "id": "P208.3",
+          "title": "Enhanced realtime worker/WebSocket/SSE profile"
+        },
+        {
+          "id": "P208.4",
+          "title": "Offline-safe read/approval patterns where justified"
+        },
+        {
+          "id": "P208.5",
+          "title": "Mobile accessibility/security testing"
+        }
+      ],
+      "outcome": "Optional native/realtime experience.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P209",
+      "version": "V2+",
+      "title": "Data Platform & Scale",
+      "hard_dependencies": [
+        "P208"
+      ],
+      "subphases": [
+        {
+          "id": "P209.1",
+          "title": "Dedicated analytics warehouse adapter"
+        },
+        {
+          "id": "P209.2",
+          "title": "ETL/event export with privacy controls"
+        },
+        {
+          "id": "P209.3",
+          "title": "Advanced search/OpenSearch/Meilisearch adapter as justified"
+        },
+        {
+          "id": "P209.4",
+          "title": "Large-scale retention/archive strategy"
+        },
+        {
+          "id": "P209.5",
+          "title": "Cross-system observability/data quality"
+        }
+      ],
+      "outcome": "Scale-out only after operational evidence.",
+      "status": "PLANNED"
+    },
+    {
+      "id": "P210",
+      "version": "V2+",
+      "title": "Enterprise Identity & Compliance Packs",
+      "hard_dependencies": [
+        "P209"
+      ],
+      "subphases": [
+        {
+          "id": "P210.1",
+          "title": "OIDC/SAML/enterprise SSO"
+        },
+        {
+          "id": "P210.2",
+          "title": "Service accounts/OAuth app ecosystem maturity"
+        },
+        {
+          "id": "P210.3",
+          "title": "Jurisdiction compliance policy packs"
+        },
+        {
+          "id": "P210.4",
+          "title": "Advanced approval/governance controls"
+        },
+        {
+          "id": "P210.5",
+          "title": "V2+ enterprise release certification"
+        }
+      ],
+      "outcome": "Enterprise identity/compliance layer.",
+      "status": "PLANNED"
+    }
+  ]
+}

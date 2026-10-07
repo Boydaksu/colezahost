@@ -1,0 +1,494 @@
+{
+  "schema_version": 1,
+  "dependency_types": [
+    "hard",
+    "soft"
+  ],
+  "domains": {
+    "foundation": {
+      "hard": [
+        "governance"
+      ],
+      "soft": []
+    },
+    "database": {
+      "hard": [
+        "foundation"
+      ],
+      "soft": [
+        "logging"
+      ]
+    },
+    "events_application": {
+      "hard": [
+        "foundation"
+      ],
+      "soft": [
+        "queue"
+      ]
+    },
+    "logging": {
+      "hard": [
+        "foundation"
+      ],
+      "soft": [
+        "database"
+      ]
+    },
+    "storage": {
+      "hard": [
+        "foundation"
+      ],
+      "soft": [
+        "security_primitives"
+      ]
+    },
+    "cache": {
+      "hard": [
+        "foundation"
+      ],
+      "soft": []
+    },
+    "locks": {
+      "hard": [
+        "database"
+      ],
+      "soft": []
+    },
+    "queue": {
+      "hard": [
+        "database",
+        "foundation",
+        "locks"
+      ],
+      "soft": []
+    },
+    "scheduler": {
+      "hard": [
+        "queue",
+        "locks"
+      ],
+      "soft": [
+        "system_health"
+      ]
+    },
+    "localization": {
+      "hard": [
+        "foundation"
+      ],
+      "soft": [
+        "brand"
+      ]
+    },
+    "security_primitives": {
+      "hard": [
+        "foundation"
+      ],
+      "soft": [
+        "logging"
+      ]
+    },
+    "identity": {
+      "hard": [
+        "security_primitives",
+        "database"
+      ],
+      "soft": [
+        "notifications"
+      ]
+    },
+    "organizations": {
+      "hard": [
+        "identity"
+      ],
+      "soft": [
+        "billing"
+      ]
+    },
+    "rbac": {
+      "hard": [
+        "identity",
+        "organizations"
+      ],
+      "soft": [
+        "audit"
+      ]
+    },
+    "audit": {
+      "hard": [
+        "identity",
+        "logging"
+      ],
+      "soft": [
+        "organizations"
+      ]
+    },
+    "brand": {
+      "hard": [
+        "localization",
+        "foundation"
+      ],
+      "soft": [
+        "organizations"
+      ]
+    },
+    "vault": {
+      "hard": [
+        "security_primitives",
+        "audit",
+        "rbac"
+      ],
+      "soft": [
+        "module_core"
+      ]
+    },
+    "privacy_foundation": {
+      "hard": [
+        "identity",
+        "audit"
+      ],
+      "soft": [
+        "notifications"
+      ]
+    },
+    "module_core": {
+      "hard": [
+        "events_application",
+        "database",
+        "rbac",
+        "vault",
+        "localization",
+        "logging",
+        "storage"
+      ],
+      "soft": [
+        "queue",
+        "scheduler"
+      ]
+    },
+    "catalog": {
+      "hard": [
+        "localization",
+        "organizations"
+      ],
+      "soft": [
+        "module_core"
+      ]
+    },
+    "currency_fx": {
+      "hard": [
+        "foundation",
+        "scheduler"
+      ],
+      "soft": []
+    },
+    "pricing": {
+      "hard": [
+        "catalog",
+        "currency_fx"
+      ],
+      "soft": [
+        "documents"
+      ]
+    },
+    "tax": {
+      "hard": [
+        "catalog",
+        "organizations",
+        "currency_fx"
+      ],
+      "soft": []
+    },
+    "orders": {
+      "hard": [
+        "catalog",
+        "pricing",
+        "tax",
+        "organizations"
+      ],
+      "soft": [
+        "fraud"
+      ]
+    },
+    "billing": {
+      "hard": [
+        "orders",
+        "pricing",
+        "tax",
+        "currency_fx",
+        "locks"
+      ],
+      "soft": [
+        "documents"
+      ]
+    },
+    "credit": {
+      "hard": [
+        "billing",
+        "organizations",
+        "locks"
+      ],
+      "soft": [
+        "finance"
+      ]
+    },
+    "payments": {
+      "hard": [
+        "billing",
+        "vault",
+        "module_core",
+        "locks"
+      ],
+      "soft": [
+        "fraud",
+        "notifications"
+      ]
+    },
+    "finance": {
+      "hard": [
+        "billing",
+        "payments",
+        "credit"
+      ],
+      "soft": [
+        "analytics"
+      ]
+    },
+    "services": {
+      "hard": [
+        "organizations",
+        "catalog",
+        "pricing"
+      ],
+      "soft": [
+        "contracts"
+      ]
+    },
+    "provider_contracts": {
+      "hard": [
+        "services",
+        "module_core",
+        "vault"
+      ],
+      "soft": [
+        "system_health"
+      ]
+    },
+    "servers_placement": {
+      "hard": [
+        "provider_contracts",
+        "locks"
+      ],
+      "soft": [
+        "analytics"
+      ]
+    },
+    "provisioning": {
+      "hard": [
+        "services",
+        "provider_contracts",
+        "servers_placement",
+        "queue",
+        "locks"
+      ],
+      "soft": [
+        "notifications"
+      ]
+    },
+    "domains": {
+      "hard": [
+        "organizations",
+        "pricing",
+        "billing"
+      ],
+      "soft": [
+        "documents"
+      ]
+    },
+    "registrar_contract": {
+      "hard": [
+        "domains",
+        "module_core",
+        "vault"
+      ],
+      "soft": [
+        "system_health"
+      ]
+    },
+    "support": {
+      "hard": [
+        "identity",
+        "organizations",
+        "rbac",
+        "storage"
+      ],
+      "soft": [
+        "notifications"
+      ]
+    },
+    "notifications": {
+      "hard": [
+        "queue",
+        "localization",
+        "brand",
+        "organizations"
+      ],
+      "soft": [
+        "module_core"
+      ]
+    },
+    "automation": {
+      "hard": [
+        "events_application",
+        "queue",
+        "scheduler",
+        "audit",
+        "rbac"
+      ],
+      "soft": []
+    },
+    "api": {
+      "hard": [
+        "identity",
+        "rbac",
+        "events_application"
+      ],
+      "soft": [
+        "audit"
+      ]
+    },
+    "webhooks": {
+      "hard": [
+        "events_application",
+        "queue",
+        "vault"
+      ],
+      "soft": [
+        "api"
+      ]
+    },
+    "documents": {
+      "hard": [
+        "localization",
+        "storage",
+        "brand",
+        "rbac"
+      ],
+      "soft": [
+        "notifications"
+      ]
+    },
+    "contracts": {
+      "hard": [
+        "documents",
+        "organizations"
+      ],
+      "soft": [
+        "services",
+        "pricing"
+      ]
+    },
+    "fraud": {
+      "hard": [
+        "identity",
+        "organizations"
+      ],
+      "soft": [
+        "orders",
+        "payments"
+      ]
+    },
+    "abuse": {
+      "hard": [
+        "services",
+        "domains",
+        "support",
+        "storage"
+      ],
+      "soft": [
+        "notifications"
+      ]
+    },
+    "privacy_enforcement": {
+      "hard": [
+        "privacy_foundation"
+      ],
+      "soft": [
+        "backup"
+      ]
+    },
+    "analytics": {
+      "hard": [
+        "billing",
+        "finance",
+        "services"
+      ],
+      "soft": [
+        "support",
+        "fraud"
+      ]
+    },
+    "import_engine": {
+      "hard": [
+        "organizations",
+        "catalog",
+        "services",
+        "billing"
+      ],
+      "soft": [
+        "domains",
+        "support"
+      ]
+    },
+    "whmcs_migration": {
+      "hard": [
+        "import_engine",
+        "payments",
+        "domains",
+        "support",
+        "provisioning"
+      ],
+      "soft": [
+        "backup"
+      ]
+    },
+    "backup": {
+      "hard": [
+        "storage",
+        "database",
+        "queue"
+      ],
+      "soft": [
+        "privacy_enforcement"
+      ]
+    },
+    "update": {
+      "hard": [
+        "database",
+        "backup",
+        "module_core"
+      ],
+      "soft": [
+        "system_health"
+      ]
+    },
+    "recovery": {
+      "hard": [
+        "backup",
+        "module_core",
+        "logging"
+      ],
+      "soft": [
+        "system_health"
+      ]
+    },
+    "system_health": {
+      "hard": [
+        "logging"
+      ],
+      "soft": [
+        "analytics"
+      ]
+    }
+  }
+}

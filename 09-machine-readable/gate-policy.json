@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "required": [
+    "gate_id",
+    "type",
+    "subject",
+    "spec_version",
+    "commit",
+    "dependency_status",
+    "tests",
+    "reviews",
+    "status"
+  ],
+  "status_values": [
+    "PLANNED",
+    "READY",
+    "IN_PROGRESS",
+    "REVIEW",
+    "PASS",
+    "REJECTED",
+    "BLOCKED"
+  ],
+  "rules": {
+    "pass_requires_all_hard_dependencies": true,
+    "pass_requires_required_tests": true,
+    "pass_requires_independent_review": true,
+    "required_skips_default_max": 0,
+    "builder_can_self_approve": false
+  }
+}
