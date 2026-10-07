@@ -1,7 +1,7 @@
 # P00 — Project Control Bootstrap
 
 **Release family:** V1
-**Status:** PLANNED
+**Status:** PASS
 **HARD phase dependencies:** None
 
 ## Objective

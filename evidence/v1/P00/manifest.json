@@ -1,0 +1,30 @@
+{
+  "phase": "P00",
+  "title": "Project Control Bootstrap",
+  "version": "V1",
+  "status": "PASS",
+  "subphases": [
+    {"id": "P00.1", "status": "PASS"},
+    {"id": "P00.2", "status": "PASS"},
+    {"id": "P00.3", "status": "PASS"},
+    {"id": "P00.4", "status": "PASS"},
+    {"id": "P00.5", "status": "PASS"}
+  ],
+  "evidence_files": [
+    "evidence/v1/P00/P00.1-execution-record.md",
+    "evidence/v1/P00/P00.2-execution-record.md",
+    "evidence/v1/P00/P00.3-execution-record.md",
+    "evidence/v1/P00/P00.4-execution-record.md",
+    "evidence/v1/P00/P00.5-execution-record.md",
+    "evidence/v1/P00/test-results.txt",
+    "evidence/v1/P00/gate-decision.md"
+  ],
+  "tooling": [
+    "tools/verify_manifest.py",
+    "tools/verify_constitutions.py",
+    "tools/verify_scope_dependencies.py",
+    "tools/check_gate.py",
+    "tools/scan_forbidden_actions.py",
+    "tools/run_all_checks.py"
+  ]
+}

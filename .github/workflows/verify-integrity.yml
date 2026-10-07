@@ -1,0 +1,25 @@
+name: Project Control & Integrity Verification
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Validate Plan & Machine-Readable Dependencies
+        run: python 09-machine-readable/validate_plan.py
+
+      - name: Validate Protected Files & Manifest Integrity
+        run: python tools/verify_manifest.py
