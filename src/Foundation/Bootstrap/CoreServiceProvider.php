@@ -166,6 +166,20 @@ final class CoreServiceProvider implements ServiceProviderInterface
                 $c->get(\Coleza\Domain\Identity\Session\DatabaseSessionHandler::class)
             );
         });
+
+        // Bind TotpEngine
+        $container->singleton(\Coleza\Domain\Identity\TwoFactor\TotpEngine::class, static function (): \Coleza\Domain\Identity\TwoFactor\TotpEngine {
+            return new \Coleza\Domain\Identity\TwoFactor\TotpEngine();
+        });
+
+        // Bind TwoFactorService
+        $container->singleton(\Coleza\Domain\Identity\TwoFactor\TwoFactorService::class, static function (Container $c): \Coleza\Domain\Identity\TwoFactor\TwoFactorService {
+            return new \Coleza\Domain\Identity\TwoFactor\TwoFactorService(
+                $c->get(\Coleza\Foundation\Database\Connection::class),
+                $c->get(\Coleza\Domain\Identity\TwoFactor\TotpEngine::class),
+                $c->get(\Coleza\Domain\Identity\Security\PasswordHasher::class)
+            );
+        });
     }
 
     public function boot(Container $container): void
