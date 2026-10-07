@@ -1,0 +1,28 @@
+{
+  "phase": "P05",
+  "title": "Catalog, Currency, Pricing & Tax",
+  "version": "V1",
+  "status": "PASS",
+  "subphases": [
+    {"id": "P05.1", "status": "PASS"},
+    {"id": "P05.2", "status": "PASS"},
+    {"id": "P05.3", "status": "PASS"},
+    {"id": "P05.4", "status": "PASS"},
+    {"id": "P05.5", "status": "PASS"},
+    {"id": "P05.6", "status": "PASS"},
+    {"id": "P05.7", "status": "PASS"},
+    {"id": "P05.8", "status": "PASS"}
+  ],
+  "evidence_files": [
+    "evidence/v1/P05/P05.1-execution-record.md",
+    "evidence/v1/P05/P05.2-execution-record.md",
+    "evidence/v1/P05/P05.3-execution-record.md",
+    "evidence/v1/P05/P05.4-execution-record.md",
+    "evidence/v1/P05/P05.5-execution-record.md",
+    "evidence/v1/P05/P05.6-execution-record.md",
+    "evidence/v1/P05/P05.7-execution-record.md",
+    "evidence/v1/P05/P05.8-execution-record.md",
+    "evidence/v1/P05/test-results.txt",
+    "evidence/v1/P05/gate-decision.md"
+  ]
+}

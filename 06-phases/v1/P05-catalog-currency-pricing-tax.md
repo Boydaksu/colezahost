@@ -1,7 +1,7 @@
 # P05 — Catalog, Currency, Pricing & Tax
 
 **Release family:** V1
-**Status:** PLANNED
+**Status:** PASS
 **HARD phase dependencies:** P04
 
 ## Objective
