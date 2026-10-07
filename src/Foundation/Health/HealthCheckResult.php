@@ -64,6 +64,11 @@ final class HealthCheckResult
         return $this->status === self::STATUS_HEALTHY;
     }
 
+    public function isWarning(): bool
+    {
+        return $this->status === self::STATUS_WARNING;
+    }
+
     public function isUnhealthy(): bool
     {
         return $this->status === self::STATUS_UNHEALTHY;
