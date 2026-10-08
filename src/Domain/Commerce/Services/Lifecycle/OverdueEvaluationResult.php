@@ -52,6 +52,11 @@ final class OverdueEvaluationResult
         return new self($serviceId, $serviceNumber, 'pending_approval', 0, $reason);
     }
 
+    public static function paused(int $serviceId, string $serviceNumber, string $reason): self
+    {
+        return new self($serviceId, $serviceNumber, 'paused_emergency', 0, $reason);
+    }
+
     public static function failed(int $serviceId, string $serviceNumber, string $errorMessage): self
     {
         return new self($serviceId, $serviceNumber, 'failed', 0, '', false, $errorMessage);
@@ -95,6 +100,11 @@ final class OverdueEvaluationResult
     public function isSuccessful(): bool
     {
         return $this->errorMessage === null;
+    }
+
+    public function isPaused(): bool
+    {
+        return $this->action === 'paused_emergency';
     }
 
     /**

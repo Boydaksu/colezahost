@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Coleza\Domain\Commerce\Services\Lifecycle;
 
+use Coleza\Domain\Automation\Safety\EmergencyPauseManagerInterface;
 use Coleza\Domain\Commerce\Invoices\Invoice;
 use Coleza\Domain\Commerce\Invoices\InvoiceService;
 use Coleza\Domain\Commerce\Services\Service;
@@ -21,7 +22,8 @@ final class OverdueLifecycleWorkflow
         private readonly ServiceService $serviceService,
         private readonly InvoiceService $invoiceService,
         private readonly ?NotificationEngine $notificationEngine = null,
-        private readonly ?LoggerInterface $logger = null
+        private readonly ?LoggerInterface $logger = null,
+        private readonly ?EmergencyPauseManagerInterface $emergencyPauseManager = null
     ) {
     }
 
@@ -141,6 +143,10 @@ final class OverdueLifecycleWorkflow
 
         // Due for suspension
         if ($daysOverdue >= $policy->getGracePeriodDays()) {
+            if ($this->emergencyPauseManager !== null && $this->emergencyPauseManager->isPaused('service.suspend', 'SERVICES')) {
+                return OverdueEvaluationResult::paused($serviceId, $serviceNumber, 'Suspension blocked: emergency pause active');
+            }
+
             try {
                 $reason = "Auto-suspended: overdue by {$daysOverdue} days exceeding {$policy->getGracePeriodDays()} day grace threshold";
                 $this->serviceService->suspendService($serviceId, $reason);
@@ -192,6 +198,10 @@ final class OverdueLifecycleWorkflow
 
         // Due for termination
         if ($daysOverdue >= $policy->getTerminationGraceDays()) {
+            if ($this->emergencyPauseManager !== null && $this->emergencyPauseManager->isPaused('service.terminate', 'DESTRUCTIVE')) {
+                return OverdueEvaluationResult::paused($serviceId, $serviceNumber, 'Termination blocked: emergency pause active');
+            }
+
             if ($policy->requiresApprovalForTermination()) {
                 return OverdueEvaluationResult::pendingApproval(
                     $serviceId,

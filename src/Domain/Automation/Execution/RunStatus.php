@@ -13,10 +13,11 @@ enum RunStatus: string
     case OBSERVED = 'OBSERVED';
     case DRY_RUN = 'DRY_RUN';
     case SKIPPED = 'SKIPPED';
+    case PAUSED = 'PAUSED';
 
     public function isCompleted(): bool
     {
-        return in_array($this, [self::SUCCESS, self::OBSERVED, self::DRY_RUN, self::SKIPPED], true);
+        return in_array($this, [self::SUCCESS, self::OBSERVED, self::DRY_RUN, self::SKIPPED, self::PAUSED], true);
     }
 
     public function isPending(): bool

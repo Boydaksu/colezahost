@@ -14,6 +14,8 @@ use Coleza\Domain\Automation\Execution\AutomationRunRecord;
 use Coleza\Domain\Automation\Execution\ExecutionMode;
 use Coleza\Domain\Automation\Execution\RunHistoryRepositoryInterface;
 use Coleza\Domain\Automation\Execution\RunStatus;
+use Coleza\Domain\Automation\Safety\BlastRadiusLimiter;
+use Coleza\Domain\Automation\Safety\EmergencyPauseManagerInterface;
 use Coleza\Domain\Automation\Triggers\TriggerContext;
 use Psr\Log\LoggerInterface;
 use Throwable;
@@ -25,7 +27,9 @@ final class AutomationEngine
         private readonly ?LoggerInterface $logger = null,
         private readonly ?ApprovalManagerInterface $approvalManager = null,
         private readonly ?DelayManagerInterface $delayManager = null,
-        private readonly ?RunHistoryRepositoryInterface $historyRepository = null
+        private readonly ?RunHistoryRepositoryInterface $historyRepository = null,
+        private readonly ?EmergencyPauseManagerInterface $emergencyPauseManager = null,
+        private readonly ?BlastRadiusLimiter $blastRadiusLimiter = null
     ) {
     }
 
@@ -47,6 +51,16 @@ final class AutomationEngine
     public function getHistoryRepository(): ?RunHistoryRepositoryInterface
     {
         return $this->historyRepository;
+    }
+
+    public function getEmergencyPauseManager(): ?EmergencyPauseManagerInterface
+    {
+        return $this->emergencyPauseManager;
+    }
+
+    public function getBlastRadiusLimiter(): ?BlastRadiusLimiter
+    {
+        return $this->blastRadiusLimiter;
     }
 
     /**
@@ -75,6 +89,18 @@ final class AutomationEngine
             );
             $this->recordRunHistory($rule, $skipped, $context);
             return $skipped;
+        }
+
+        if ($this->emergencyPauseManager !== null && $this->emergencyPauseManager->isPaused(scope: 'ALL')) {
+            $reason = 'Emergency pause active: ' . ($this->emergencyPauseManager->getState()->getReason() ?? 'Global pause');
+            $paused = RuleExecutionResult::paused(
+                $rule->getId(),
+                $rule->getName(),
+                $reason
+            );
+            $this->recordRunHistory($rule, $paused, $context);
+            $this->logExecution($rule, $paused, $context);
+            return $paused;
         }
 
         $start = microtime(true);
@@ -337,6 +363,25 @@ final class AutomationEngine
     {
         $actionType = $action->getType();
 
+        if ($this->emergencyPauseManager !== null && $this->emergencyPauseManager->isPaused(actionType: $actionType)) {
+            $scope = $this->emergencyPauseManager->getState()->getScope();
+            $reason = $this->emergencyPauseManager->getState()->getReason() ?? 'Emergency pause';
+            return ActionResult::failed(
+                $action->getId(),
+                $actionType,
+                "Action execution blocked by emergency pause (scope: {$scope}): {$reason}"
+            );
+        }
+
+        if ($this->blastRadiusLimiter !== null && !$this->blastRadiusLimiter->canExecute($actionType)) {
+            $this->blastRadiusLimiter->recordAndCheck($actionType);
+            return ActionResult::failed(
+                $action->getId(),
+                $actionType,
+                "Action execution blocked: blast radius limit exceeded for destructive action '{$actionType}'"
+            );
+        }
+
         if (!$this->actionRegistry->has($actionType)) {
             return ActionResult::failed(
                 $action->getId(),
@@ -348,7 +393,11 @@ final class AutomationEngine
         $handler = $this->actionRegistry->get($actionType);
 
         try {
-            return $handler->execute($action, $context);
+            $result = $handler->execute($action, $context);
+            if ($result->isSuccessful() && $this->blastRadiusLimiter !== null) {
+                $this->blastRadiusLimiter->recordAndCheck($actionType);
+            }
+            return $result;
         } catch (Throwable $e) {
             return ActionResult::failed(
                 $action->getId(),

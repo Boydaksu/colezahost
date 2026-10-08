@@ -72,6 +72,25 @@ final class RuleExecutionResult
         );
     }
 
+    public static function paused(
+        string $ruleId,
+        string $ruleName,
+        string $reason
+    ): self {
+        return new self(
+            $ruleId,
+            $ruleName,
+            false,
+            $reason,
+            false,
+            'NONE',
+            [],
+            0.0,
+            RunStatus::PAUSED,
+            ExecutionMode::ACTIVE
+        );
+    }
+
     public static function pendingApproval(
         string $ruleId,
         string $ruleName,
@@ -181,7 +200,12 @@ final class RuleExecutionResult
 
     public function isSkipped(): bool
     {
-        return !$this->executed;
+        return !$this->executed && $this->status !== RunStatus::PAUSED;
+    }
+
+    public function isPaused(): bool
+    {
+        return $this->status === RunStatus::PAUSED;
     }
 
     public function getSkippedReason(): ?string

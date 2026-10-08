@@ -57,6 +57,11 @@ final class OverdueBatchReport
         return count(array_filter($this->results, fn (OverdueEvaluationResult $r) => $r->getAction() === 'unsuspended'));
     }
 
+    public function getPausedCount(): int
+    {
+        return count(array_filter($this->results, fn (OverdueEvaluationResult $r) => $r->isPaused()));
+    }
+
     public function getFailedCount(): int
     {
         return count(array_filter($this->results, fn (OverdueEvaluationResult $r) => !$r->isSuccessful()));
@@ -84,6 +89,7 @@ final class OverdueBatchReport
             'terminated_count' => $this->getTerminatedCount(),
             'reminders_count' => $this->getRemindersCount(),
             'unsuspended_count' => $this->getUnsuspendedCount(),
+            'paused_count' => $this->getPausedCount(),
             'failed_count' => $this->getFailedCount(),
             'duration_ms' => $this->durationMs,
             'evaluated_at' => $this->getEvaluatedAt()->format(DateTimeImmutable::ATOM),

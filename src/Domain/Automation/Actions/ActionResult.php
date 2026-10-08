@@ -67,6 +67,11 @@ final class ActionResult
         return $this->status === ActionStatus::SUCCESS;
     }
 
+    public function isSuccessful(): bool
+    {
+        return $this->isSuccess();
+    }
+
     public function isFailed(): bool
     {
         return $this->status === ActionStatus::FAILED;
