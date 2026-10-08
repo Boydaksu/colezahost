@@ -31,6 +31,11 @@ final class DomainTransferCommand
         return trim($this->eppCode);
     }
 
+    public function getAuthCode(): string
+    {
+        return $this->getEppCode();
+    }
+
     /**
      * @return array<int, string>
      */
@@ -48,6 +53,11 @@ final class DomainTransferCommand
     }
 
     public function isWhoisPrivacy(): bool
+    {
+        return $this->whoisPrivacy;
+    }
+
+    public function hasWhoisPrivacy(): bool
     {
         return $this->whoisPrivacy;
     }

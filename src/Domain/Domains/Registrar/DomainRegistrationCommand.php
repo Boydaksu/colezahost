@@ -60,6 +60,11 @@ final class DomainRegistrationCommand
         return $this->whoisPrivacy;
     }
 
+    public function hasWhoisPrivacy(): bool
+    {
+        return $this->whoisPrivacy;
+    }
+
     public function isAutoRenew(): bool
     {
         return $this->autoRenew;

@@ -23,14 +23,20 @@ final class RegistrarOperationResult
 
     /**
      * @param array<string, mixed> $metadata
+     * @param array<string, mixed> $rawResponse
      */
     public static function success(
         string $operation,
         string $domain,
         ?string $remoteTransactionId = null,
         ?string $expirationDate = null,
-        array $metadata = []
+        array $metadata = [],
+        array $rawResponse = []
     ): self {
+        if (!empty($rawResponse)) {
+            $metadata['raw_response'] = $rawResponse;
+        }
+
         return new self(
             isSuccessful: true,
             operation: $operation,
@@ -53,6 +59,36 @@ final class RegistrarOperationResult
         ?string $errorCode = null,
         array $metadata = []
     ): self {
+        return new self(
+            isSuccessful: false,
+            operation: $operation,
+            domain: $domain,
+            remoteTransactionId: null,
+            expirationDate: null,
+            errorMessage: $errorMessage,
+            errorCode: $errorCode,
+            metadata: $metadata
+        );
+    }
+
+    /**
+     * Alias for failure result with optional raw response.
+     *
+     * @param array<string, mixed> $rawResponse
+     * @param array<string, mixed> $metadata
+     */
+    public static function failure(
+        string $operation,
+        string $domain,
+        ?string $errorCode = null,
+        string $errorMessage = 'Operation failed',
+        array $rawResponse = [],
+        array $metadata = []
+    ): self {
+        if (!empty($rawResponse)) {
+            $metadata['raw_response'] = $rawResponse;
+        }
+
         return new self(
             isSuccessful: false,
             operation: $operation,
@@ -106,6 +142,17 @@ final class RegistrarOperationResult
     public function getMetadata(): array
     {
         return $this->metadata;
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function getRawResponse(): ?array
+    {
+        if (isset($this->metadata['raw_response']) && is_array($this->metadata['raw_response'])) {
+            return $this->metadata['raw_response'];
+        }
+        return !empty($this->metadata) ? $this->metadata : null;
     }
 
     /**

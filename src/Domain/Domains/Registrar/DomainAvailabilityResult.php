@@ -12,13 +12,14 @@ final class DomainAvailabilityResult
         private readonly bool $isPremium = false,
         private readonly ?int $premiumPriceMinor = null,
         private readonly string $currency = 'USD',
-        private readonly ?string $reason = null
+        private readonly ?string $reason = null,
+        private readonly ?float $price = null
     ) {
     }
 
-    public static function available(string $domain): self
+    public static function available(string $domain, ?float $price = null, string $currency = 'USD'): self
     {
-        return new self($domain, true);
+        return new self($domain, true, false, null, $currency, null, $price);
     }
 
     public static function unavailable(string $domain, ?string $reason = null): self
@@ -61,6 +62,11 @@ final class DomainAvailabilityResult
         return $this->reason;
     }
 
+    public function getPrice(): ?float
+    {
+        return $this->price;
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -71,6 +77,7 @@ final class DomainAvailabilityResult
             'is_available' => $this->isAvailable,
             'is_premium' => $this->isPremium,
             'premium_price_minor' => $this->premiumPriceMinor,
+            'price' => $this->price,
             'currency' => $this->currency,
             'reason' => $this->reason,
         ];
