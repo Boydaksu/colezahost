@@ -195,6 +195,27 @@ HTML;
             'body_tr' => '<p>Bilgilendirme: <strong>{{ service_name }}</strong> hizmetiniz şu gerekçeyle askıya alınmıştır: {{ reason }}. Lütfen gecikmiş faturalarınızı ödeyiniz veya destek ekibimizle iletişime geçiniz.</p>',
         ];
 
+        $this->templates['service_unsuspended'] = [
+            'subject_en' => 'Service Reactivated: {{ service_name }}',
+            'subject_tr' => 'Hizmet Yeniden Aktifleştirildi: {{ service_name }}',
+            'body_en' => '<p>Hello {{ customer_name }},</p><p>Your service <strong>{{ service_name }}</strong> has been successfully reactivated following payment settlement. Thank you!</p>',
+            'body_tr' => '<p>Merhaba {{ customer_name }},</p><p><strong>{{ service_name }}</strong> hizmetiniz ödeme tahsilatı sonrası yeniden aktifleştirilmiştir. Teşekkür ederiz!</p>',
+        ];
+
+        $this->templates['service_terminated'] = [
+            'subject_en' => 'Service Terminated: {{ service_name }}',
+            'subject_tr' => 'Hizmet Sonlandırıldı: {{ service_name }}',
+            'body_en' => '<p>Notice: Your service <strong>{{ service_name }}</strong> has been terminated due to non-payment beyond the grace threshold.</p>',
+            'body_tr' => '<p>Bilgilendirme: <strong>{{ service_name }}</strong> hizmetiniz ek süre aşılarak ödeme yapılmadığı için kalıcı olarak sonlandırılmıştır.</p>',
+        ];
+
+        $this->templates['service_overdue_reminder'] = [
+            'subject_en' => 'Overdue Payment Reminder: {{ service_name }}',
+            'subject_tr' => 'Gecikmiş Ödeme Hatırlatması: {{ service_name }}',
+            'body_en' => '<p>Dear {{ customer_name }},</p><p>This is a reminder that your service <strong>{{ service_name }}</strong> is {{ days_overdue }} days past due. Please settle your invoice to avoid suspension.</p>',
+            'body_tr' => '<p>Sayın {{ customer_name }},</p><p><strong>{{ service_name }}</strong> hizmetinizin ödeme vadesi {{ days_overdue }} gün geçmiştir. Hizmet kesintisi yaşamamak için lütfen faturanızı ödeyiniz.</p>',
+        ];
+
         $this->templates['password_reset'] = [
             'subject_en' => 'Password Reset Request',
             'subject_tr' => 'Şifre Sıfırlama Talebi',
