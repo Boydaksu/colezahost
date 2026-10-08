@@ -187,6 +187,7 @@ final class CpanelProvider extends AbstractProvider
                     'admin_advice' => $classification->getAdminActionableMessage(),
                     'category' => $classification->getCategory(),
                     'exception_class' => get_class($e),
+                    'exception_message' => $e->getMessage(),
                 ]
             );
         }

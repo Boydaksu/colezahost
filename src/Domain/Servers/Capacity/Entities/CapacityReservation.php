@@ -43,6 +43,11 @@ final class CapacityReservation
         return $this->token;
     }
 
+    public function getReservationToken(): string
+    {
+        return $this->token;
+    }
+
     public function getServerId(): int
     {
         return $this->serverId;
