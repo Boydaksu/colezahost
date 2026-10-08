@@ -112,6 +112,14 @@ final class Connection
         return $this->executeStatement($query, $bindings)->rowCount() >= 0;
     }
 
+    /**
+     * @param array<int|string, mixed> $bindings
+     */
+    public function affectingStatement(string $query, array $bindings = []): int
+    {
+        return $this->executeStatement($query, $bindings)->rowCount();
+    }
+
     public function beginTransaction(): void
     {
         if ($this->transactionDepth === 0) {

@@ -35,7 +35,8 @@ final class Service
         private ?string $createdAt = null,
         private ?ServicePlacement $placement = null,
         private ?ServiceBillingRelation $billingRelation = null,
-        private ?ServiceCancellationRequest $cancellationRequest = null
+        private ?ServiceCancellationRequest $cancellationRequest = null,
+        private int $lockVersion = 1
     ) {
         if ($this->billingRelation === null) {
             $this->billingRelation = new ServiceBillingRelation(
@@ -227,6 +228,11 @@ final class Service
         return $this->status === ServiceStateMachine::STATUS_CANCELLED;
     }
 
+    public function getLockVersion(): int
+    {
+        return $this->lockVersion;
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -257,6 +263,7 @@ final class Service
             'placement' => $this->placement?->toArray(),
             'billing_relation' => $this->getBillingRelation()->toArray(),
             'cancellation_request' => $this->cancellationRequest?->toArray(),
+            'lock_version' => $this->lockVersion,
             'created_at' => $this->createdAt,
         ];
     }

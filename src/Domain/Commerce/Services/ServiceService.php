@@ -7,6 +7,7 @@ namespace Coleza\Domain\Commerce\Services;
 use Coleza\Domain\Commerce\Orders\Order;
 use Coleza\Domain\Commerce\Recurring\BillingPeriod;
 use Coleza\Domain\Pricing\Entities\PriceCycle;
+use Coleza\Domain\Commerce\Services\Exceptions\ServiceConcurrencyException;
 use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Exceptions\ValidationException;
 use RuntimeException;
@@ -58,6 +59,7 @@ final class ServiceService
                 auto_renew INT NOT NULL DEFAULT 1,
                 grace_period_days INT NOT NULL DEFAULT 7,
                 termination_grace_period_days INT NOT NULL DEFAULT 30,
+                lock_version INT NOT NULL DEFAULT 1,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )',
             $this->servicesTable,
@@ -75,6 +77,10 @@ final class ServiceService
         }
         try {
             $this->db->statement(sprintf('ALTER TABLE %s ADD COLUMN termination_grace_period_days INT NOT NULL DEFAULT 30', $this->servicesTable));
+        } catch (\Throwable) {
+        }
+        try {
+            $this->db->statement(sprintf('ALTER TABLE %s ADD COLUMN lock_version INT NOT NULL DEFAULT 1', $this->servicesTable));
         } catch (\Throwable) {
         }
 
@@ -172,8 +178,8 @@ final class ServiceService
         $termGraceDays = isset($data['termination_grace_period_days']) ? max(0, (int)$data['termination_grace_period_days']) : 30;
 
         $sql = sprintf(
-            'INSERT INTO %s (service_number, user_id, organization_id, order_id, order_item_id, product_id, status, billing_cycle, recurring_amount_minor, currency_code, registration_date, next_due_date, domain, username, password_encrypted, server_name, ip_address, notes, metadata_json, auto_renew, grace_period_days, termination_grace_period_days)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            'INSERT INTO %s (service_number, user_id, organization_id, order_id, order_item_id, product_id, status, billing_cycle, recurring_amount_minor, currency_code, registration_date, next_due_date, domain, username, password_encrypted, server_name, ip_address, notes, metadata_json, auto_renew, grace_period_days, termination_grace_period_days, lock_version)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)',
             $this->servicesTable
         );
 
@@ -243,15 +249,134 @@ final class ServiceService
     }
 
     /**
+     * Update service properties with optimistic concurrency verification.
+     *
+     * @param array<string, mixed> $data
+     * @throws ServiceConcurrencyException
+     */
+    public function updateService(int $serviceId, array $data, ?int $expectedLockVersion = null): Service
+    {
+        $existing = $this->findServiceById($serviceId);
+        if ($existing === null) {
+            throw new RuntimeException("Service {$serviceId} not found.");
+        }
+
+        if ($expectedLockVersion !== null && $existing->getLockVersion() !== $expectedLockVersion) {
+            throw ServiceConcurrencyException::versionMismatch($serviceId, $expectedLockVersion, $existing->getLockVersion());
+        }
+
+        $fields = [];
+        $bindings = [];
+
+        $allowedStringFields = [
+            'domain', 'username', 'password_encrypted', 'server_name', 'ip_address', 'notes'
+        ];
+        foreach ($allowedStringFields as $field) {
+            if (array_key_exists($field, $data)) {
+                $fields[] = "{$field} = ?";
+                $bindings[] = $data[$field] !== null ? (string)$data[$field] : null;
+            }
+        }
+
+        if (array_key_exists('billing_cycle', $data)) {
+            $cycle = strtolower(trim((string)$data['billing_cycle']));
+            if (!PriceCycle::isValid($cycle)) {
+                throw new ValidationException("Invalid billing cycle '{$cycle}' for service.");
+            }
+            $fields[] = 'billing_cycle = ?';
+            $bindings[] = $cycle;
+        }
+
+        if (array_key_exists('recurring_amount_minor', $data)) {
+            $fields[] = 'recurring_amount_minor = ?';
+            $bindings[] = max(0, (int)$data['recurring_amount_minor']);
+        }
+
+        if (array_key_exists('currency_code', $data)) {
+            $fields[] = 'currency_code = ?';
+            $bindings[] = strtoupper(trim((string)$data['currency_code']));
+        }
+
+        if (array_key_exists('registration_date', $data)) {
+            $fields[] = 'registration_date = ?';
+            $bindings[] = (string)$data['registration_date'];
+        }
+
+        if (array_key_exists('next_due_date', $data)) {
+            $fields[] = 'next_due_date = ?';
+            $bindings[] = (string)$data['next_due_date'];
+        }
+
+        if (array_key_exists('metadata', $data)) {
+            $fields[] = 'metadata_json = ?';
+            $bindings[] = json_encode((array)$data['metadata']);
+        }
+
+        if (array_key_exists('auto_renew', $data)) {
+            $fields[] = 'auto_renew = ?';
+            $bindings[] = (bool)$data['auto_renew'] ? 1 : 0;
+        }
+
+        if (array_key_exists('grace_period_days', $data)) {
+            $fields[] = 'grace_period_days = ?';
+            $bindings[] = max(0, (int)$data['grace_period_days']);
+        }
+
+        if (array_key_exists('termination_grace_period_days', $data)) {
+            $fields[] = 'termination_grace_period_days = ?';
+            $bindings[] = max(0, (int)$data['termination_grace_period_days']);
+        }
+
+        if (empty($fields)) {
+            return $existing;
+        }
+
+        $fields[] = 'lock_version = lock_version + 1';
+
+        if ($expectedLockVersion !== null) {
+            $sql = sprintf(
+                'UPDATE %s SET %s WHERE id = ? AND lock_version = ?',
+                $this->servicesTable,
+                implode(', ', $fields)
+            );
+            $bindings[] = $serviceId;
+            $bindings[] = $expectedLockVersion;
+
+            $affected = $this->db->affectingStatement($sql, $bindings);
+            if ($affected === 0) {
+                $current = $this->findServiceById($serviceId);
+                if ($current === null) {
+                    throw new RuntimeException("Service {$serviceId} not found.");
+                }
+                throw ServiceConcurrencyException::versionMismatch($serviceId, $expectedLockVersion, $current->getLockVersion());
+            }
+        } else {
+            $sql = sprintf(
+                'UPDATE %s SET %s WHERE id = ?',
+                $this->servicesTable,
+                implode(', ', $fields)
+            );
+            $bindings[] = $serviceId;
+            $this->db->affectingStatement($sql, $bindings);
+        }
+
+        return $this->findServiceById($serviceId) ?? throw new RuntimeException("Failed to reload service {$serviceId}.");
+    }
+
+    /**
      * Activate a service and set provisioning parameters.
      *
      * @param array<string, mixed> $provisioningDetails
      */
-    public function activateService(int $serviceId, array $provisioningDetails = []): Service
+    public function activateService(int $serviceId, array $provisioningDetails = [], ?int $expectedLockVersion = null): Service
     {
         $service = $this->findServiceById($serviceId);
         if ($service === null) {
             throw new RuntimeException("Service {$serviceId} not found.");
+        }
+
+        if ($expectedLockVersion !== null && $service->getLockVersion() !== $expectedLockVersion) {
+            throw ServiceConcurrencyException::versionMismatch($serviceId, $expectedLockVersion, $service->getLockVersion());
         }
 
         ServiceStateMachine::assertCanTransition($service->getStatus(), ServiceStateMachine::STATUS_ACTIVE);
@@ -262,115 +387,246 @@ final class ServiceService
         $serverName = $provisioningDetails['server_name'] ?? $service->getServerName();
         $ipAddress = $provisioningDetails['ip_address'] ?? $service->getIpAddress();
 
-        $sql = sprintf(
-            'UPDATE %s SET status = ?, domain = ?, username = ?, password_encrypted = ?, server_name = ?, ip_address = ?, suspension_reason = NULL WHERE id = ?',
-            $this->servicesTable
-        );
-        $this->db->statement($sql, [
-            ServiceStateMachine::STATUS_ACTIVE,
-            $domain,
-            $username,
-            $password,
-            $serverName,
-            $ipAddress,
-            $serviceId,
-        ]);
+        if ($expectedLockVersion !== null) {
+            $sql = sprintf(
+                'UPDATE %s SET status = ?, domain = ?, username = ?, password_encrypted = ?, server_name = ?, ip_address = ?, suspension_reason = NULL, lock_version = lock_version + 1 WHERE id = ? AND lock_version = ?',
+                $this->servicesTable
+            );
+            $affected = $this->db->affectingStatement($sql, [
+                ServiceStateMachine::STATUS_ACTIVE,
+                $domain,
+                $username,
+                $password,
+                $serverName,
+                $ipAddress,
+                $serviceId,
+                $expectedLockVersion,
+            ]);
+            if ($affected === 0) {
+                $current = $this->findServiceById($serviceId);
+                if ($current === null) {
+                    throw new RuntimeException("Service {$serviceId} not found.");
+                }
+                throw ServiceConcurrencyException::versionMismatch($serviceId, $expectedLockVersion, $current->getLockVersion());
+            }
+        } else {
+            $sql = sprintf(
+                'UPDATE %s SET status = ?, domain = ?, username = ?, password_encrypted = ?, server_name = ?, ip_address = ?, suspension_reason = NULL, lock_version = lock_version + 1 WHERE id = ?',
+                $this->servicesTable
+            );
+            $this->db->statement($sql, [
+                ServiceStateMachine::STATUS_ACTIVE,
+                $domain,
+                $username,
+                $password,
+                $serverName,
+                $ipAddress,
+                $serviceId,
+            ]);
+        }
 
-        return $this->findServiceById($serviceId);
+        return $this->findServiceById($serviceId) ?? throw new RuntimeException("Failed to reload service {$serviceId}.");
     }
 
     /**
      * Suspend a service.
+     *
+     * @throws ServiceConcurrencyException
      */
-    public function suspendService(int $serviceId, string $reason): Service
+    public function suspendService(int $serviceId, string $reason, ?int $expectedLockVersion = null): Service
     {
         $service = $this->findServiceById($serviceId);
         if ($service === null) {
             throw new RuntimeException("Service {$serviceId} not found.");
+        }
+
+        if ($expectedLockVersion !== null && $service->getLockVersion() !== $expectedLockVersion) {
+            throw ServiceConcurrencyException::versionMismatch($serviceId, $expectedLockVersion, $service->getLockVersion());
         }
 
         ServiceStateMachine::assertCanTransition($service->getStatus(), ServiceStateMachine::STATUS_SUSPENDED);
 
-        $sql = sprintf('UPDATE %s SET status = ?, suspension_reason = ? WHERE id = ?', $this->servicesTable);
-        $this->db->statement($sql, [ServiceStateMachine::STATUS_SUSPENDED, $reason, $serviceId]);
+        if ($expectedLockVersion !== null) {
+            $sql = sprintf(
+                'UPDATE %s SET status = ?, suspension_reason = ?, lock_version = lock_version + 1 WHERE id = ? AND lock_version = ?',
+                $this->servicesTable
+            );
+            $affected = $this->db->affectingStatement($sql, [ServiceStateMachine::STATUS_SUSPENDED, $reason, $serviceId, $expectedLockVersion]);
+            if ($affected === 0) {
+                $current = $this->findServiceById($serviceId);
+                if ($current === null) {
+                    throw new RuntimeException("Service {$serviceId} not found.");
+                }
+                throw ServiceConcurrencyException::versionMismatch($serviceId, $expectedLockVersion, $current->getLockVersion());
+            }
+        } else {
+            $sql = sprintf('UPDATE %s SET status = ?, suspension_reason = ?, lock_version = lock_version + 1 WHERE id = ?', $this->servicesTable);
+            $this->db->statement($sql, [ServiceStateMachine::STATUS_SUSPENDED, $reason, $serviceId]);
+        }
 
-        return $this->findServiceById($serviceId);
+        return $this->findServiceById($serviceId) ?? throw new RuntimeException("Failed to reload service {$serviceId}.");
     }
 
     /**
      * Unsuspend a suspended service.
+     *
+     * @throws ServiceConcurrencyException
      */
-    public function unsuspendService(int $serviceId): Service
+    public function unsuspendService(int $serviceId, ?int $expectedLockVersion = null): Service
     {
         $service = $this->findServiceById($serviceId);
         if ($service === null) {
             throw new RuntimeException("Service {$serviceId} not found.");
+        }
+
+        if ($expectedLockVersion !== null && $service->getLockVersion() !== $expectedLockVersion) {
+            throw ServiceConcurrencyException::versionMismatch($serviceId, $expectedLockVersion, $service->getLockVersion());
         }
 
         ServiceStateMachine::assertCanTransition($service->getStatus(), ServiceStateMachine::STATUS_ACTIVE);
 
-        $sql = sprintf('UPDATE %s SET status = ?, suspension_reason = NULL WHERE id = ?', $this->servicesTable);
-        $this->db->statement($sql, [ServiceStateMachine::STATUS_ACTIVE, $serviceId]);
+        if ($expectedLockVersion !== null) {
+            $sql = sprintf(
+                'UPDATE %s SET status = ?, suspension_reason = NULL, lock_version = lock_version + 1 WHERE id = ? AND lock_version = ?',
+                $this->servicesTable
+            );
+            $affected = $this->db->affectingStatement($sql, [ServiceStateMachine::STATUS_ACTIVE, $serviceId, $expectedLockVersion]);
+            if ($affected === 0) {
+                $current = $this->findServiceById($serviceId);
+                if ($current === null) {
+                    throw new RuntimeException("Service {$serviceId} not found.");
+                }
+                throw ServiceConcurrencyException::versionMismatch($serviceId, $expectedLockVersion, $current->getLockVersion());
+            }
+        } else {
+            $sql = sprintf('UPDATE %s SET status = ?, suspension_reason = NULL, lock_version = lock_version + 1 WHERE id = ?', $this->servicesTable);
+            $this->db->statement($sql, [ServiceStateMachine::STATUS_ACTIVE, $serviceId]);
+        }
 
-        return $this->findServiceById($serviceId);
+        return $this->findServiceById($serviceId) ?? throw new RuntimeException("Failed to reload service {$serviceId}.");
     }
 
     /**
      * Terminate a service permanently.
+     *
+     * @throws ServiceConcurrencyException
      */
-    public function terminateService(int $serviceId, string $reason = ''): Service
+    public function terminateService(int $serviceId, string $reason = '', ?int $expectedLockVersion = null): Service
     {
         $service = $this->findServiceById($serviceId);
         if ($service === null) {
             throw new RuntimeException("Service {$serviceId} not found.");
+        }
+
+        if ($expectedLockVersion !== null && $service->getLockVersion() !== $expectedLockVersion) {
+            throw ServiceConcurrencyException::versionMismatch($serviceId, $expectedLockVersion, $service->getLockVersion());
         }
 
         ServiceStateMachine::assertCanTransition($service->getStatus(), ServiceStateMachine::STATUS_TERMINATED);
 
-        $sql = sprintf('UPDATE %s SET status = ?, termination_date = ?, notes = ? WHERE id = ?', $this->servicesTable);
         $notes = trim($service->getNotes() . "\nTerminated: " . $reason);
-        $this->db->statement($sql, [ServiceStateMachine::STATUS_TERMINATED, date('Y-m-d H:i:s'), $notes, $serviceId]);
 
-        return $this->findServiceById($serviceId);
+        if ($expectedLockVersion !== null) {
+            $sql = sprintf(
+                'UPDATE %s SET status = ?, termination_date = ?, notes = ?, lock_version = lock_version + 1 WHERE id = ? AND lock_version = ?',
+                $this->servicesTable
+            );
+            $affected = $this->db->affectingStatement($sql, [ServiceStateMachine::STATUS_TERMINATED, date('Y-m-d H:i:s'), $notes, $serviceId, $expectedLockVersion]);
+            if ($affected === 0) {
+                $current = $this->findServiceById($serviceId);
+                if ($current === null) {
+                    throw new RuntimeException("Service {$serviceId} not found.");
+                }
+                throw ServiceConcurrencyException::versionMismatch($serviceId, $expectedLockVersion, $current->getLockVersion());
+            }
+        } else {
+            $sql = sprintf('UPDATE %s SET status = ?, termination_date = ?, notes = ?, lock_version = lock_version + 1 WHERE id = ?', $this->servicesTable);
+            $this->db->statement($sql, [ServiceStateMachine::STATUS_TERMINATED, date('Y-m-d H:i:s'), $notes, $serviceId]);
+        }
+
+        return $this->findServiceById($serviceId) ?? throw new RuntimeException("Failed to reload service {$serviceId}.");
     }
 
     /**
      * Cancel a service.
+     *
+     * @throws ServiceConcurrencyException
      */
-    public function cancelService(int $serviceId, string $reason = ''): Service
+    public function cancelService(int $serviceId, string $reason = '', ?int $expectedLockVersion = null): Service
     {
         $service = $this->findServiceById($serviceId);
         if ($service === null) {
             throw new RuntimeException("Service {$serviceId} not found.");
         }
 
+        if ($expectedLockVersion !== null && $service->getLockVersion() !== $expectedLockVersion) {
+            throw ServiceConcurrencyException::versionMismatch($serviceId, $expectedLockVersion, $service->getLockVersion());
+        }
+
         ServiceStateMachine::assertCanTransition($service->getStatus(), ServiceStateMachine::STATUS_CANCELLED);
 
-        $sql = sprintf('UPDATE %s SET status = ?, notes = ? WHERE id = ?', $this->servicesTable);
         $notes = trim($service->getNotes() . "\nCancelled: " . $reason);
-        $this->db->statement($sql, [ServiceStateMachine::STATUS_CANCELLED, $notes, $serviceId]);
 
-        return $this->findServiceById($serviceId);
+        if ($expectedLockVersion !== null) {
+            $sql = sprintf(
+                'UPDATE %s SET status = ?, notes = ?, lock_version = lock_version + 1 WHERE id = ? AND lock_version = ?',
+                $this->servicesTable
+            );
+            $affected = $this->db->affectingStatement($sql, [ServiceStateMachine::STATUS_CANCELLED, $notes, $serviceId, $expectedLockVersion]);
+            if ($affected === 0) {
+                $current = $this->findServiceById($serviceId);
+                if ($current === null) {
+                    throw new RuntimeException("Service {$serviceId} not found.");
+                }
+                throw ServiceConcurrencyException::versionMismatch($serviceId, $expectedLockVersion, $current->getLockVersion());
+            }
+        } else {
+            $sql = sprintf('UPDATE %s SET status = ?, notes = ?, lock_version = lock_version + 1 WHERE id = ?', $this->servicesTable);
+            $this->db->statement($sql, [ServiceStateMachine::STATUS_CANCELLED, $notes, $serviceId]);
+        }
+
+        return $this->findServiceById($serviceId) ?? throw new RuntimeException("Failed to reload service {$serviceId}.");
     }
 
     /**
      * Advance next due date on renewal settlement. Reactivates suspended service if suspended for overdue.
+     *
+     * @throws ServiceConcurrencyException
      */
-    public function renewService(int $serviceId): Service
+    public function renewService(int $serviceId, ?int $expectedLockVersion = null): Service
     {
         $service = $this->findServiceById($serviceId);
         if ($service === null) {
             throw new RuntimeException("Service {$serviceId} not found.");
+        }
+
+        if ($expectedLockVersion !== null && $service->getLockVersion() !== $expectedLockVersion) {
+            throw ServiceConcurrencyException::versionMismatch($serviceId, $expectedLockVersion, $service->getLockVersion());
         }
 
         $newDueDate = BillingPeriod::calculateNextDueDate($service->getNextDueDate(), $service->getBillingCycle());
         $newStatus = $service->isSuspended() ? ServiceStateMachine::STATUS_ACTIVE : $service->getStatus();
         $suspensionReason = $service->isSuspended() ? null : $service->getSuspensionReason();
 
-        $sql = sprintf('UPDATE %s SET next_due_date = ?, status = ?, suspension_reason = ? WHERE id = ?', $this->servicesTable);
-        $this->db->statement($sql, [$newDueDate, $newStatus, $suspensionReason, $serviceId]);
+        if ($expectedLockVersion !== null) {
+            $sql = sprintf(
+                'UPDATE %s SET next_due_date = ?, status = ?, suspension_reason = ?, lock_version = lock_version + 1 WHERE id = ? AND lock_version = ?',
+                $this->servicesTable
+            );
+            $affected = $this->db->affectingStatement($sql, [$newDueDate, $newStatus, $suspensionReason, $serviceId, $expectedLockVersion]);
+            if ($affected === 0) {
+                $current = $this->findServiceById($serviceId);
+                if ($current === null) {
+                    throw new RuntimeException("Service {$serviceId} not found.");
+                }
+                throw ServiceConcurrencyException::versionMismatch($serviceId, $expectedLockVersion, $current->getLockVersion());
+            }
+        } else {
+            $sql = sprintf('UPDATE %s SET next_due_date = ?, status = ?, suspension_reason = ?, lock_version = lock_version + 1 WHERE id = ?', $this->servicesTable);
+            $this->db->statement($sql, [$newDueDate, $newStatus, $suspensionReason, $serviceId]);
+        }
 
-        return $this->findServiceById($serviceId);
+        return $this->findServiceById($serviceId) ?? throw new RuntimeException("Failed to reload service {$serviceId}.");
     }
 
     /**
@@ -891,7 +1147,8 @@ final class ServiceService
             createdAt: (string)$row['created_at'],
             placement: $placement,
             billingRelation: $billingRelation,
-            cancellationRequest: $cancellationRequest
+            cancellationRequest: $cancellationRequest,
+            lockVersion: isset($row['lock_version']) ? (int)$row['lock_version'] : 1
         );
     }
 }
