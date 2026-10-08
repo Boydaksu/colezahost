@@ -38,6 +38,7 @@ final class DomainStateMachine
             self::STATUS_PENDING_TRANSFER,
             self::STATUS_EXPIRED,
             self::STATUS_GRACE,
+            self::STATUS_REDEMPTION,
             self::STATUS_CANCELLED,
             self::STATUS_TRANSFERRED_OUT,
         ],
