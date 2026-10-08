@@ -163,6 +163,39 @@ final class CpanelApiClient
     }
 
     /**
+     * Change / upgrade / downgrade hosting package for a cPanel user via WHM changepackage.
+     *
+     * @return array<string, mixed>
+     * @throws ProviderException
+     */
+    public function changePackage(string $username, string $newPackage): array
+    {
+        return $this->call('changepackage', ['user' => $username, 'pkg' => $newPackage], 'POST', throwOnError: false);
+    }
+
+    /**
+     * Modify disk quota for a cPanel user via WHM editquota.
+     *
+     * @return array<string, mixed>
+     * @throws ProviderException
+     */
+    public function editQuota(string $username, int $quotaMb): array
+    {
+        return $this->call('editquota', ['user' => $username, 'quota' => $quotaMb], 'POST', throwOnError: false);
+    }
+
+    /**
+     * Modify monthly bandwidth limit for a cPanel user via WHM limitbw.
+     *
+     * @return array<string, mixed>
+     * @throws ProviderException
+     */
+    public function limitBandwidth(string $username, int $bwlimitMb): array
+    {
+        return $this->call('limitbw', ['user' => $username, 'bwlimit' => $bwlimitMb], 'POST', throwOnError: false);
+    }
+
+    /**
      * Execute a WHM JSON-API 1 call.
      *
      * @param array<string, mixed> $params

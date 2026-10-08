@@ -9,6 +9,7 @@ use Coleza\Domain\Providers\Contracts\ProviderCapability;
 use Coleza\Domain\Providers\Contracts\ProviderCapabilitySet;
 use Coleza\Domain\Providers\DTO\ProviderOperationResult;
 use Coleza\Domain\Providers\DTO\ServerConnectionDto;
+use Coleza\Domain\Providers\Operations\ChangePackageOperation;
 use Coleza\Domain\Providers\Operations\CreateAccountOperation;
 use Coleza\Domain\Providers\Operations\SuspendAccountOperation;
 use Coleza\Domain\Providers\Operations\TerminateAccountOperation;
@@ -378,4 +379,104 @@ final class CpanelProvider extends AbstractProvider
             );
         }
     }
+
+    public function changePackage(ChangePackageOperation $operation): ProviderOperationResult
+    {
+        $this->assertCapability(ProviderCapability::CHANGE_PACKAGE);
+
+        $server = $operation->getServer();
+        if ($server === null) {
+            return ProviderOperationResult::failure(
+                operationType: ProviderCapability::CHANGE_PACKAGE,
+                message: 'No server connection provided for package change.',
+                errorCode: 'MISSING_SERVER_CONNECTION'
+            );
+        }
+
+        try {
+            $client = $this->createClient($server);
+            $username = $operation->getUsername();
+            $resolvedPackage = $this->packageService->resolvePackage($client, $operation->getNewPackageIdentifier());
+            $quotas = $operation->getResourceQuotas();
+            $hasCustomQuotas = (isset($quotas['disk_limit_mb']) && (int)$quotas['disk_limit_mb'] > 0)
+                || (isset($quotas['bandwidth_limit_mb']) && (int)$quotas['bandwidth_limit_mb'] > 0);
+
+            // Check current package if summary is available
+            $summary = $client->getAccountSummary($username);
+            $currentPackage = $summary['plan'] ?? null;
+            if ($currentPackage !== null
+                && strcasecmp((string)$currentPackage, $resolvedPackage->getName()) === 0
+                && !$hasCustomQuotas) {
+                return ProviderOperationResult::success(
+                    operationType: ProviderCapability::CHANGE_PACKAGE,
+                    message: "cPanel account '{$username}' is already on package '{$resolvedPackage->getName()}'.",
+                    externalIdentifier: $username,
+                    data: [
+                        'username' => $username,
+                        'package' => $resolvedPackage->getName(),
+                        'previous_package' => (string)$currentPackage,
+                        'idempotent' => true,
+                    ]
+                );
+            }
+
+            $response = $client->changePackage($username, $resolvedPackage->getName());
+            $result = (int)($response['metadata']['result'] ?? ($response['result'][0]['status'] ?? 0));
+            $msg = (string)($response['metadata']['reason'] ?? ($response['result'][0]['statusmsg'] ?? ''));
+
+            $isAlreadyOnPkg = str_contains(strtolower($msg), 'already') && (str_contains(strtolower($msg), 'package') || str_contains(strtolower($msg), 'plan'));
+
+            if ($result === 1 || $isAlreadyOnPkg) {
+                $quotasApplied = [];
+                if (isset($quotas['disk_limit_mb']) && (int)$quotas['disk_limit_mb'] > 0) {
+                    $client->editQuota($username, (int)$quotas['disk_limit_mb']);
+                    $quotasApplied['disk_limit_mb'] = (int)$quotas['disk_limit_mb'];
+                }
+                if (isset($quotas['bandwidth_limit_mb']) && (int)$quotas['bandwidth_limit_mb'] > 0) {
+                    $client->limitBandwidth($username, (int)$quotas['bandwidth_limit_mb']);
+                    $quotasApplied['bandwidth_limit_mb'] = (int)$quotas['bandwidth_limit_mb'];
+                }
+
+                return ProviderOperationResult::success(
+                    operationType: ProviderCapability::CHANGE_PACKAGE,
+                    message: "cPanel account '{$username}' package changed to '{$resolvedPackage->getName()}'.",
+                    externalIdentifier: $username,
+                    data: [
+                        'username' => $username,
+                        'package' => $resolvedPackage->getName(),
+                        'previous_package' => $currentPackage,
+                        'idempotent' => $isAlreadyOnPkg,
+                        'quotas_applied' => $quotasApplied,
+                    ],
+                    rawResponse: $response
+                );
+            }
+
+            $classification = ProvisioningErrorClassifier::classify($msg, 'WHM_CHANGEPACKAGE_FAILED', null, $response);
+            return ProviderOperationResult::failure(
+                operationType: ProviderCapability::CHANGE_PACKAGE,
+                message: $classification->getClientSafeMessage(),
+                errorCode: $classification->getErrorCode(),
+                data: [
+                    'admin_advice' => $classification->getAdminActionableMessage(),
+                    'category' => $classification->getCategory(),
+                    'raw_reason' => $msg,
+                ],
+                rawResponse: $response
+            );
+        } catch (\Throwable $e) {
+            $classification = ProvisioningErrorClassifier::classifyThrowable($e);
+            return ProviderOperationResult::failure(
+                operationType: ProviderCapability::CHANGE_PACKAGE,
+                message: $classification->getClientSafeMessage(),
+                errorCode: 'PROVIDER_EXCEPTION',
+                data: [
+                    'admin_advice' => $classification->getAdminActionableMessage(),
+                    'category' => $classification->getCategory(),
+                    'exception_class' => get_class($e),
+                ]
+            );
+        }
+    }
 }
+
