@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Coleza\Domain\Automation\Engine;
 
 use Coleza\Domain\Automation\Actions\ActionResult;
+use Coleza\Domain\Automation\Execution\ExecutionMode;
+use Coleza\Domain\Automation\Execution\RunStatus;
 
 final class RuleExecutionResult
 {
@@ -19,7 +21,11 @@ final class RuleExecutionResult
         private readonly bool $conditionPassed = false,
         private readonly string $branchTaken = 'NONE',
         private readonly array $actionResults = [],
-        private readonly float $executionTimeMs = 0.0
+        private readonly float $executionTimeMs = 0.0,
+        private readonly RunStatus $status = RunStatus::SUCCESS,
+        private readonly ExecutionMode $executionMode = ExecutionMode::ACTIVE,
+        private readonly ?string $approvalId = null,
+        private readonly ?string $delayId = null
     ) {
     }
 
@@ -29,7 +35,9 @@ final class RuleExecutionResult
         bool $conditionPassed,
         string $branchTaken,
         array $actionResults,
-        float $executionTimeMs
+        float $executionTimeMs,
+        RunStatus $status = RunStatus::SUCCESS,
+        ExecutionMode $executionMode = ExecutionMode::ACTIVE
     ): self {
         return new self(
             $ruleId,
@@ -39,7 +47,9 @@ final class RuleExecutionResult
             $conditionPassed,
             $branchTaken,
             $actionResults,
-            $executionTimeMs
+            $executionTimeMs,
+            $status,
+            $executionMode
         );
     }
 
@@ -56,7 +66,101 @@ final class RuleExecutionResult
             false,
             'NONE',
             [],
-            0.0
+            0.0,
+            RunStatus::SKIPPED,
+            ExecutionMode::ACTIVE
+        );
+    }
+
+    public static function pendingApproval(
+        string $ruleId,
+        string $ruleName,
+        string $approvalId,
+        bool $conditionPassed,
+        string $branchTaken,
+        float $executionTimeMs
+    ): self {
+        return new self(
+            $ruleId,
+            $ruleName,
+            true,
+            null,
+            $conditionPassed,
+            $branchTaken,
+            [],
+            $executionTimeMs,
+            RunStatus::PENDING_APPROVAL,
+            ExecutionMode::ACTIVE,
+            $approvalId,
+            null
+        );
+    }
+
+    public static function delayed(
+        string $ruleId,
+        string $ruleName,
+        string $delayId,
+        bool $conditionPassed,
+        string $branchTaken,
+        float $executionTimeMs
+    ): self {
+        return new self(
+            $ruleId,
+            $ruleName,
+            true,
+            null,
+            $conditionPassed,
+            $branchTaken,
+            [],
+            $executionTimeMs,
+            RunStatus::DELAYED,
+            ExecutionMode::ACTIVE,
+            null,
+            $delayId
+        );
+    }
+
+    public static function observed(
+        string $ruleId,
+        string $ruleName,
+        bool $conditionPassed,
+        string $branchTaken,
+        array $simulatedActionResults,
+        float $executionTimeMs
+    ): self {
+        return new self(
+            $ruleId,
+            $ruleName,
+            true,
+            null,
+            $conditionPassed,
+            $branchTaken,
+            $simulatedActionResults,
+            $executionTimeMs,
+            RunStatus::OBSERVED,
+            ExecutionMode::OBSERVE
+        );
+    }
+
+    public static function dryRun(
+        string $ruleId,
+        string $ruleName,
+        bool $conditionPassed,
+        string $branchTaken,
+        array $simulatedActionResults,
+        float $executionTimeMs
+    ): self {
+        return new self(
+            $ruleId,
+            $ruleName,
+            true,
+            null,
+            $conditionPassed,
+            $branchTaken,
+            $simulatedActionResults,
+            $executionTimeMs,
+            RunStatus::DRY_RUN,
+            ExecutionMode::DRY_RUN
         );
     }
 
@@ -103,6 +207,26 @@ final class RuleExecutionResult
         return $this->actionResults;
     }
 
+    public function getStatus(): RunStatus
+    {
+        return $this->status;
+    }
+
+    public function getExecutionMode(): ExecutionMode
+    {
+        return $this->executionMode;
+    }
+
+    public function getApprovalId(): ?string
+    {
+        return $this->approvalId;
+    }
+
+    public function getDelayId(): ?string
+    {
+        return $this->delayId;
+    }
+
     public function hasActionFailures(): bool
     {
         foreach ($this->actionResults as $result) {
@@ -115,6 +239,10 @@ final class RuleExecutionResult
 
     public function isSuccessful(): bool
     {
+        if ($this->status === RunStatus::PENDING_APPROVAL || $this->status === RunStatus::DELAYED) {
+            return true;
+        }
+
         return $this->executed && !$this->hasActionFailures();
     }
 
@@ -137,6 +265,10 @@ final class RuleExecutionResult
             'branch_taken' => $this->branchTaken,
             'action_results' => array_map(fn (ActionResult $r) => $r->toArray(), $this->actionResults),
             'execution_time_ms' => $this->executionTimeMs,
+            'status' => $this->status->value,
+            'execution_mode' => $this->executionMode->value,
+            'approval_id' => $this->approvalId,
+            'delay_id' => $this->delayId,
             'is_successful' => $this->isSuccessful(),
         ];
     }

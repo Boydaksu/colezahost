@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Coleza\Domain\Automation\Engine;
 
+use Coleza\Domain\Automation\Approval\ApprovalRequirement;
 use Coleza\Domain\Automation\Branching\IfElseBranch;
+use Coleza\Domain\Automation\Execution\ExecutionMode;
 use Coleza\Domain\Automation\Triggers\TriggerContext;
 use Coleza\Domain\Automation\Triggers\TriggerInterface;
 
@@ -21,7 +23,11 @@ final class AutomationRule
         private bool $enabled = true,
         private int $priority = 100,
         private string $description = '',
-        private array $metadata = []
+        private array $metadata = [],
+        private int $version = 1,
+        private ExecutionMode $executionMode = ExecutionMode::ACTIVE,
+        private ?ApprovalRequirement $approvalRequirement = null,
+        private int $delaySeconds = 0
     ) {
     }
 
@@ -102,6 +108,60 @@ final class AutomationRule
     public function getMetadata(): array
     {
         return $this->metadata;
+    }
+
+    public function getVersion(): int
+    {
+        return $this->version;
+    }
+
+    public function setVersion(int $version): self
+    {
+        $this->version = $version;
+        return $this;
+    }
+
+    public function getExecutionMode(): ExecutionMode
+    {
+        return $this->executionMode;
+    }
+
+    public function setExecutionMode(ExecutionMode $mode): self
+    {
+        $this->executionMode = $mode;
+        return $this;
+    }
+
+    public function getApprovalRequirement(): ?ApprovalRequirement
+    {
+        return $this->approvalRequirement;
+    }
+
+    public function setApprovalRequirement(?ApprovalRequirement $requirement): self
+    {
+        $this->approvalRequirement = $requirement;
+        return $this;
+    }
+
+    public function requiresApproval(): bool
+    {
+        return $this->approvalRequirement !== null;
+    }
+
+    public function getDelaySeconds(): int
+    {
+        return $this->delaySeconds;
+    }
+
+    public function setDelaySeconds(int $delaySeconds): self
+    {
+        $this->delaySeconds = max(0, $delaySeconds);
+        return $this;
+    }
+
+    public function hasDelay(): bool
+    {
+        return $this->delaySeconds > 0;
     }
 
     public function matchesTrigger(TriggerContext $context): bool
