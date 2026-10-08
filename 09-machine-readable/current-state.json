@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "release_family": "V1",
-  "active_phase": "P09",
-  "active_subphase": "P09.8",
-  "status": "IN_PROGRESS",
+  "active_phase": "P10",
+  "active_subphase": "P10.1",
+  "status": "READY",
   "rule": "Only one subphase may be READY/IN_PROGRESS unless an approved parallel-track record explicitly lists non-conflicting scopes."
 }

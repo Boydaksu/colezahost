@@ -1,7 +1,7 @@
 # P09 — Service & Provider Core
 
 **Release family:** V1
-**Status:** PLANNED
+**Status:** PASS
 **HARD phase dependencies:** P08
 
 ## Objective
