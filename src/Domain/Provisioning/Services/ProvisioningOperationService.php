@@ -250,6 +250,31 @@ final class ProvisioningOperationService
         return array_map([$this, 'hydrateOperation'], $rows);
     }
 
+    public function findActiveOperationForService(int $serviceId, ?string $action = null): ?ProvisioningOperation
+    {
+        $statuses = [ProvisioningOperation::STATUS_QUEUED, ProvisioningOperation::STATUS_RETRYING];
+        $placeholders = implode(',', array_fill(0, count($statuses), '?'));
+
+        if ($action !== null) {
+            $sql = sprintf(
+                'SELECT * FROM %s WHERE service_id = ? AND action = ? AND status IN (%s) ORDER BY id DESC LIMIT 1',
+                $this->opsTable,
+                $placeholders
+            );
+            $params = array_merge([$serviceId, $action], $statuses);
+        } else {
+            $sql = sprintf(
+                'SELECT * FROM %s WHERE service_id = ? AND status IN (%s) ORDER BY id DESC LIMIT 1',
+                $this->opsTable,
+                $placeholders
+            );
+            $params = array_merge([$serviceId], $statuses);
+        }
+
+        $row = $this->db->selectOne($sql, $params);
+        return $row ? $this->hydrateOperation($row) : null;
+    }
+
     /**
      * @return array<ProvisioningOperation>
      */
