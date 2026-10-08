@@ -25,14 +25,17 @@ final class DomainStateMachine
     private const ALLOWED_TRANSITIONS = [
         self::STATUS_PENDING_REGISTRATION => [
             self::STATUS_ACTIVE,
+            self::STATUS_PENDING_TRANSFER,
             self::STATUS_CANCELLED,
         ],
         self::STATUS_PENDING_TRANSFER => [
             self::STATUS_ACTIVE,
             self::STATUS_CANCELLED,
+            self::STATUS_TRANSFERRED_OUT,
         ],
         self::STATUS_ACTIVE => [
             self::STATUS_ACTIVE, // renewal retains active
+            self::STATUS_PENDING_TRANSFER,
             self::STATUS_EXPIRED,
             self::STATUS_GRACE,
             self::STATUS_CANCELLED,
