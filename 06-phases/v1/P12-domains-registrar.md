@@ -1,7 +1,7 @@
 # P12 — Domains & Registrar
 
 **Release family:** V1
-**Status:** PLANNED
+**Status:** PASS
 **HARD phase dependencies:** P11
 
 ## Objective
