@@ -1033,6 +1033,22 @@ final class ServiceService
         return array_map([$this, 'hydrateService'], $rows);
     }
 
+    /**
+     * Find active services that are due for renewal invoice generation as of a given date and lead threshold.
+     *
+     * @return array<Service>
+     */
+    public function findServicesDueForRenewal(string $asOfDate, int $leadDays = 14): array
+    {
+        $cutoffDate = (new \DateTimeImmutable($asOfDate))->modify("+{$leadDays} days")->format('Y-m-d');
+        $sql = sprintf(
+            'SELECT * FROM %s WHERE status = ? AND auto_renew = 1 AND next_due_date <= ? ORDER BY next_due_date ASC',
+            $this->servicesTable
+        );
+        $rows = $this->db->select($sql, [ServiceStateMachine::STATUS_ACTIVE, $cutoffDate]);
+        return array_map([$this, 'hydrateService'], $rows);
+    }
+
     public function nextServiceNumber(): string
     {
         $date = date('Ymd');
