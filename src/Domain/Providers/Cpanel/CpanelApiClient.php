@@ -101,13 +101,75 @@ final class CpanelApiClient
     }
 
     /**
+     * Create a remote cPanel account via WHM createacct.
+     *
+     * @param array<string, mixed> $params
+     * @return array<string, mixed>
+     * @throws ProviderException
+     */
+    public function createAccount(array $params): array
+    {
+        return $this->call('createacct', $params, 'POST', throwOnError: false);
+    }
+
+    /**
+     * Suspend a remote cPanel account via WHM suspendacct.
+     *
+     * @return array<string, mixed>
+     * @throws ProviderException
+     */
+    public function suspendAccount(string $username, string $reason = 'Overdue payment'): array
+    {
+        return $this->call('suspendacct', ['user' => $username, 'reason' => $reason], 'POST', throwOnError: false);
+    }
+
+    /**
+     * Unsuspend a remote cPanel account via WHM unsuspendacct.
+     *
+     * @return array<string, mixed>
+     * @throws ProviderException
+     */
+    public function unsuspendAccount(string $username): array
+    {
+        return $this->call('unsuspendacct', ['user' => $username], 'POST', throwOnError: false);
+    }
+
+    /**
+     * Terminate and remove a remote cPanel account via WHM removeacct.
+     *
+     * @return array<string, mixed>
+     * @throws ProviderException
+     */
+    public function terminateAccount(string $username, bool $keepDns = false): array
+    {
+        return $this->call('removeacct', ['user' => $username, 'keepdns' => $keepDns ? 1 : 0], 'POST', throwOnError: false);
+    }
+
+    /**
+     * Retrieve remote cPanel account summary.
+     *
+     * @return array<string, mixed>|null
+     * @throws ProviderException
+     */
+    public function getAccountSummary(string $username): ?array
+    {
+        $response = $this->call('accountsummary', ['user' => $username], 'GET', throwOnError: false);
+        $result = (int)($response['metadata']['result'] ?? ($response['result'][0]['status'] ?? 0));
+        if ($result === 0) {
+            return null;
+        }
+        $data = $response['data']['acct'] ?? ($response['data'] ?? []);
+        return is_array($data) ? (isset($data[0]) ? $data[0] : $data) : null;
+    }
+
+    /**
      * Execute a WHM JSON-API 1 call.
      *
      * @param array<string, mixed> $params
      * @return array<string, mixed>
      * @throws ProviderException
      */
-    public function call(string $function, array $params = [], string $method = 'GET'): array
+    public function call(string $function, array $params = [], string $method = 'GET', bool $throwOnError = true): array
     {
         $url = $this->buildUrl($function);
         $headers = $this->buildHeaders();
@@ -208,18 +270,20 @@ final class CpanelApiClient
                     rawResponse: $decoded
                 );
 
-                throw new ProviderException(
-                    message: "cPanel/WHM API error ({$function}): {$reason}",
-                    errorCode: 'WHM_API_ERROR',
-                    context: [
-                        'hostname' => $this->config->getHostname(),
-                        'function' => $function,
-                        'reason' => $reason,
-                        'category' => $classification->getCategory(),
-                        'is_transient' => $classification->isRetryable(),
-                        'admin_advice' => $classification->getAdminActionableMessage(),
-                    ]
-                );
+                if ($throwOnError) {
+                    throw new ProviderException(
+                        message: "cPanel/WHM API error ({$function}): {$reason}",
+                        errorCode: 'WHM_API_ERROR',
+                        context: [
+                            'hostname' => $this->config->getHostname(),
+                            'function' => $function,
+                            'reason' => $reason,
+                            'category' => $classification->getCategory(),
+                            'is_transient' => $classification->isRetryable(),
+                            'admin_advice' => $classification->getAdminActionableMessage(),
+                        ]
+                    );
+                }
             }
         }
 
@@ -228,16 +292,18 @@ final class CpanelApiClient
             $reason = (string)($decoded['result'][0]['statusmsg'] ?? 'Unknown legacy WHM error');
             $classification = ProvisioningErrorClassifier::classify($reason, 'WHM_LEGACY_FAILED', null, $decoded);
 
-            throw new ProviderException(
-                message: "cPanel/WHM error ({$function}): {$reason}",
-                errorCode: 'WHM_API_ERROR',
-                context: [
-                    'hostname' => $this->config->getHostname(),
-                    'function' => $function,
-                    'reason' => $reason,
-                    'category' => $classification->getCategory(),
-                ]
-            );
+            if ($throwOnError) {
+                throw new ProviderException(
+                    message: "cPanel/WHM error ({$function}): {$reason}",
+                    errorCode: 'WHM_API_ERROR',
+                    context: [
+                        'hostname' => $this->config->getHostname(),
+                        'function' => $function,
+                        'reason' => $reason,
+                        'category' => $classification->getCategory(),
+                    ]
+                );
+            }
         }
 
         $decoded['_meta'] = [
