@@ -1,7 +1,7 @@
 # P10 — Automated Hosting & cPanel
 
 **Release family:** V1
-**Status:** PLANNED
+**Status:** PASS
 **HARD phase dependencies:** P09
 
 ## Objective

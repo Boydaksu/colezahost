@@ -49,6 +49,11 @@ final class DeliveryResult
         return $this->success;
     }
 
+    public function isSuccessful(): bool
+    {
+        return $this->success;
+    }
+
     public function getMessageId(): ?string
     {
         return $this->messageId;

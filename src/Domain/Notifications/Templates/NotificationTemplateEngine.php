@@ -181,6 +181,13 @@ HTML;
             'body_tr' => '<p>Merhaba {{ customer_name }},</p><p><strong>{{ service_name }}</strong> (Alan Adı/Host: {{ domain }}) hizmetiniz başarıyla aktif edilmiş ve kullanıma açılmıştır.</p>',
         ];
 
+        $this->templates['hosting_account_welcome'] = [
+            'subject_en' => 'Your Hosting Account Details for {{ domain }}',
+            'subject_tr' => '{{ domain }} için Hosting Hesap Bilgileriniz',
+            'body_en' => '<p>Hello {{ customer_name }},</p><p>Your hosting account for <strong>{{ domain }}</strong> is active!</p><p>Package: {{ package }}<br>cPanel Username: {{ username }}<br>Server: {{ server_name }} ({{ server_ip }})<br>Nameservers: {{ nameservers }}</p>',
+            'body_tr' => '<p>Merhaba {{ customer_name }},</p><p><strong>{{ domain }}</strong> alan adınız için hosting hesabınız aktif edildi!</p><p>Paket: {{ package }}<br>cPanel Kullanıcı Adı: {{ username }}<br>Sunucu: {{ server_name }} ({{ server_ip }})<br>İsim Sunucuları (NS): {{ nameservers }}</p>',
+        ];
+
         $this->templates['service_suspended'] = [
             'subject_en' => 'Service Suspended: {{ service_name }}',
             'subject_tr' => 'Hizmet Askıya Alındı: {{ service_name }}',
