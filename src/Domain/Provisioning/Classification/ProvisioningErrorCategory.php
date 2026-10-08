@@ -8,6 +8,7 @@ final class ProvisioningErrorCategory
 {
     public const TRANSIENT_NETWORK = 'transient_network';
     public const RATE_LIMITED = 'rate_limited';
+    public const RATE_LIMIT = self::RATE_LIMITED;
     public const AUTHENTICATION = 'authentication';
     public const RESOURCE_EXHAUSTED = 'resource_exhausted';
     public const VALIDATION = 'validation';
