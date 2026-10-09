@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Coleza\Domain\Privacy\Erasure;
 
 use Coleza\Domain\Privacy\Retention\RetentionAndLegalHoldService;
+use Coleza\Domain\Privacy\Tombstone\PrivacyTombstoneService;
 use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Exceptions\ValidationException;
 use DateTimeImmutable;
@@ -16,7 +17,8 @@ final class PrivacyErasureService
 
     public function __construct(
         private readonly Connection $db,
-        private readonly ?RetentionAndLegalHoldService $legalHoldService = null
+        private readonly ?RetentionAndLegalHoldService $legalHoldService = null,
+        private readonly ?PrivacyTombstoneService $tombstoneService = null
     ) {
     }
 
@@ -214,6 +216,17 @@ final class PrivacyErasureService
         $deleted = [];
         $retained = [];
 
+        // 0. Capture original email for tombstone cryptographic fingerprint
+        $originalEmail = '';
+        try {
+            $userRow = $this->db->selectOne("SELECT email FROM users WHERE id = :id", ['id' => $userId]);
+            if ($userRow !== null && isset($userRow['email'])) {
+                $originalEmail = (string) $userRow['email'];
+            }
+        } catch (\Throwable) {
+            // Ignore
+        }
+
         // 1. Anonymize user record
         $pseudoName = sprintf('[Anonymized User #%d]', $userId);
         $pseudoEmail = sprintf('erased_%d_%s@anonymized.local', $userId, bin2hex(random_bytes(3)));
@@ -289,6 +302,21 @@ final class PrivacyErasureService
             'audit_checksum' => $auditChecksum,
             'created_at' => $now->format('Y-m-d H:i:s'),
         ]);
+
+        // 6. Record permanent privacy tombstone (ensuring erasure persists across backup restores)
+        $this->tombstoneService?->recordTombstone(
+            userId: $userId,
+            email: $originalEmail,
+            erasureType: 'ANONYMIZE',
+            reason: $trimmedReason,
+            erasureChecksum: $auditChecksum,
+            metadata: [
+                'executed_by' => $executedBy,
+                'anonymized_count' => count($anonymized),
+                'deleted_count' => count($deleted),
+                'retained_count' => count($retained),
+            ]
+        );
 
         return new ErasureExecutionResult(
             userId: $userId,
