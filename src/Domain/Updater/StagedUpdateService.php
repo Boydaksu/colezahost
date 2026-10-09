@@ -25,7 +25,8 @@ final class StagedUpdateService
         private PackageSignatureVerifier $signatureVerifier,
         private ModuleCompatibilityChecker $moduleChecker,
         private string $currentCoreVersion = '1.0.0',
-        private ?Connection $db = null
+        private ?Connection $db = null,
+        private ?\Coleza\Domain\Backup\PreUpdateBackupService $backupService = null
     ) {
     }
 
@@ -175,13 +176,20 @@ final class StagedUpdateService
 
     /**
      * Applies a validated update package from staging to production target directory.
+     * Enforces mandatory verified pre-update backup creation before applying files or running migrations.
      *
      * @param string $stagedDir
      * @param string $targetAppDir Target root where files are deployed
-     * @return array{success: bool, target_version: string, files_applied: int, migrations_run: int}
+     * @param bool $requireBackup Require pre-update backup to succeed before applying (default true)
+     * @param array<int, string> $backupExtraFiles Extra file paths to preserve in pre-update backup
+     * @return array{success: bool, target_version: string, files_applied: int, migrations_run: int, backup_id: ?string}
      */
-    public function applyValidatedUpdate(string $stagedDir, string $targetAppDir): array
-    {
+    public function applyValidatedUpdate(
+        string $stagedDir,
+        string $targetAppDir,
+        bool $requireBackup = true,
+        array $backupExtraFiles = []
+    ): array {
         $report = $this->validateStagedPackage($stagedDir);
         if (!$report->isReadyToApply()) {
             throw new RuntimeException(
@@ -191,6 +199,20 @@ final class StagedUpdateService
 
         $manifestContent = (string) file_get_contents(rtrim($stagedDir, '/\\') . '/manifest.json');
         $manifest = UpdatePackageManifest::fromArray((array) json_decode($manifestContent, true));
+
+        // Mandatory Verified Pre-Update Backup
+        $backupId = null;
+        if ($requireBackup) {
+            if ($this->backupService === null) {
+                throw new RuntimeException('Mandatory pre-update backup failed: Backup service is not configured.');
+            }
+
+            $backupResult = $this->backupService->createVerifiedPreUpdateBackup($manifest->getVersion(), $backupExtraFiles);
+            if (!$backupResult['verification']->isValid()) {
+                throw new RuntimeException('Mandatory pre-update backup was created but failed integrity verification.');
+            }
+            $backupId = $backupResult['manifest']->getBackupId();
+        }
 
         $filesDir = rtrim($stagedDir, '/\\') . '/files';
         $appliedCount = 0;
@@ -224,6 +246,7 @@ final class StagedUpdateService
             'target_version' => $manifest->getVersion(),
             'files_applied' => $appliedCount,
             'migrations_run' => $migrationsRun,
+            'backup_id' => $backupId,
         ];
     }
 }

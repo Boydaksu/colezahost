@@ -217,7 +217,7 @@ final class StagedUpdateAndCompatibilityTest extends TestCase
         $checker = new ModuleCompatibilityChecker($this->db);
         $updater = new StagedUpdateService($verifier, $checker, '1.0.0', $this->db);
 
-        $applyResult = $updater->applyValidatedUpdate($this->tempDir, $this->targetAppDir);
+        $applyResult = $updater->applyValidatedUpdate($this->tempDir, $this->targetAppDir, requireBackup: false);
 
         $this->assertTrue($applyResult['success']);
         $this->assertSame(1, $applyResult['files_applied']);
