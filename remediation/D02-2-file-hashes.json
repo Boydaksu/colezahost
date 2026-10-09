@@ -1,0 +1,78 @@
+[
+  {
+    "path": "src/Domain/Commerce/Credit/CreditService.php",
+    "sha256": "c4f71ef8a6076d26ae7ce31766d3ac22664cd1f6634d0b63c33b0de7994759ac"
+  },
+  {
+    "path": "src/Domain/Commerce/Invoices/InvoiceService.php",
+    "sha256": "9f5bb76f1c6d01752be38eb3284e9382acacb131180f7260f703e1ec2260ce24"
+  },
+  {
+    "path": "src/Domain/Commerce/Payments/Gateways/PaymentWebhookHandler.php",
+    "sha256": "11bee1d968da120d3e4ae5863dbcc63639d15deef8ed206b0a68b2f546cd3c85"
+  },
+  {
+    "path": "src/Domain/Commerce/Payments/PaymentService.php",
+    "sha256": "7ef5a2de42f8c7d30301eeeb7782a2fb6fcbdf1a0c4b1589d5c278ed54c61aeb"
+  },
+  {
+    "path": "src/Foundation/Database/Connection.php",
+    "sha256": "f90f389fc05351bfcbbed99bbb2f5ef1b92b011d2e01990baf50b30422365932"
+  },
+  {
+    "path": "src/Foundation/Queue/DatabaseQueue.php",
+    "sha256": "4a41c75b8462d657a356cb6bfc0afcc9eb21b88e9ba740717b94d0445cce32de"
+  },
+  {
+    "path": "src/Foundation/Queue/QueueJob.php",
+    "sha256": "dda725e6ffa9bc91c055d3f31a2bb92b04a20ef9472329dc37e7f8a5b407e55a"
+  },
+  {
+    "path": "tests/MariaDb/DatabaseFoundationTest.php",
+    "sha256": "5c010095548b47309ee1879d1c7e81e527ea54560a3d94bb9a4c292066f058a6"
+  },
+  {
+    "path": "tests/Unit/Foundation/Database/IdentitySchemaMigrationRegressionTest.php",
+    "sha256": "8434a332ea3a841332f449cccb82c92d1a958fedfb36d18eb02f088f8f8c323d"
+  },
+  {
+    "path": "tests/Unit/Payments/PaymentSecurityRegressionTest.php",
+    "sha256": "21820784a41b47d2c0e36a110f05a55c83e8dac74c592c283cc9c3ced6f4108e"
+  },
+  {
+    "path": "database/migrations/2026_10_09_000002_payment_concurrency.php",
+    "sha256": "6d85cde9e514901ae9b9d2c9089a03eaf65720af2b7a48aa88639c6fe5c7a572"
+  },
+  {
+    "path": "src/Domain/Commerce/Payments/GatewayRefundCoordinator.php",
+    "sha256": "8433d333fd58e1fb8ef4e223014ac263dbc828002039a99398067555ae9474fa"
+  },
+  {
+    "path": "src/Domain/Commerce/Payments/PaymentConcurrencySchema.php",
+    "sha256": "7631c687418da6c1120c6c4e55cd9549434134381589e76c9e1679a9c6515e6c"
+  },
+  {
+    "path": "tests/MariaDb/FinancialConcurrencyTest.php",
+    "sha256": "8687ef8c875e7738b03ed86018d3d9aa0a22029be6b9767d6ef00ed2f287601f"
+  },
+  {
+    "path": "tests/MariaDb/fixtures/financial-worker.php",
+    "sha256": "3d16a51a32452e025ef60f5a1b4d2a2cf25a47a0d8057d260e29a407a1409ebc"
+  },
+  {
+    "path": "tests/Support/MariaDbTestCase.php",
+    "sha256": "9bbd3f83bd6fd1d29d80a9d5c67fe539e901c0b3f2e41d5a863a287b501475dd"
+  },
+  {
+    "path": "tests/Support/ConcurrencyTestJob.php",
+    "sha256": "d31c86611debdbc14ce8349bde6aee24b0d202c520aec05da8c64e3308a886f6"
+  },
+  {
+    "path": "tests/Unit/Payments/FinancialAtomicityRegressionTest.php",
+    "sha256": "b0b880fa34da4abeac82fc443a5a602a4d63c143262c254dc21ab7209e02d129"
+  },
+  {
+    "path": "tests/Unit/Payments/TokenIndexMigrationTest.php",
+    "sha256": "175f957fb7b52642cfbc87cae78c99feccecbaf2ff23d73dd48914f5ee235d27"
+  }
+]

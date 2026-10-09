@@ -27,6 +27,9 @@ final class CreditService
 
     public function ensureTables(): void
     {
+        if ($this->db->getDriverName() === 'mysql' && $this->db->inTransaction()) {
+            throw new RuntimeException('Initialize credit schema before starting an application transaction.');
+        }
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -63,6 +66,7 @@ final class CreditService
             $this->sequencesTable
         );
         $this->db->statement($sqlSequences);
+        (new \Coleza\Domain\Commerce\Payments\PaymentConcurrencySchema($this->db))->ensureSupportingTables();
     }
 
     /**
@@ -86,7 +90,7 @@ final class CreditService
 
         $sql .= ' ORDER BY id DESC LIMIT 1';
 
-        $row = $this->db->selectOne($sql, $params);
+        $row = $this->db->selectOne($sql . $this->db->forUpdate(), $params);
         return $row ? (int)$row['balance_after_minor'] : 0;
     }
 
@@ -96,6 +100,24 @@ final class CreditService
      * @param array<string, mixed> $metadata
      */
     public function addCredit(
+        int $userId,
+        int $amountMinor,
+        string $currencyCode,
+        string $reason,
+        ?string $referenceType = null,
+        ?int $referenceId = null,
+        ?int $adminUserId = null,
+        ?int $orgId = null,
+        array $metadata = []
+    ): CreditEntry
+    {
+        return $this->db->transaction(function () use ($userId, $amountMinor, $currencyCode, $reason, $referenceType, $referenceId, $adminUserId, $orgId, $metadata) {
+            $this->lockBalance($userId, $currencyCode, $orgId);
+            return $this->addCreditLocked($userId, $amountMinor, $currencyCode, $reason, $referenceType, $referenceId, $adminUserId, $orgId, $metadata);
+        });
+    }
+
+    private function addCreditLocked(
         int $userId,
         int $amountMinor,
         string $currencyCode,
@@ -173,6 +195,24 @@ final class CreditService
         ?int $adminUserId = null,
         ?int $orgId = null,
         array $metadata = []
+    ): CreditEntry
+    {
+        return $this->db->transaction(function () use ($userId, $amountMinor, $currencyCode, $reason, $referenceType, $referenceId, $adminUserId, $orgId, $metadata) {
+            $this->lockBalance($userId, $currencyCode, $orgId);
+            return $this->deductCreditLocked($userId, $amountMinor, $currencyCode, $reason, $referenceType, $referenceId, $adminUserId, $orgId, $metadata);
+        });
+    }
+
+    private function deductCreditLocked(
+        int $userId,
+        int $amountMinor,
+        string $currencyCode,
+        string $reason,
+        ?string $referenceType = null,
+        ?int $referenceId = null,
+        ?int $adminUserId = null,
+        ?int $orgId = null,
+        array $metadata = []
     ): CreditEntry {
         if ($amountMinor <= 0) {
             throw new ValidationException(['amount_minor' => 'Deduction amount must be greater than zero.'], 'Invalid deduction amount');
@@ -238,9 +278,24 @@ final class CreditService
         int $invoiceId,
         int $amountMinor,
         ?int $adminUserId = null
+    ): CreditEntry
+    {
+        $scope = $this->invoiceService?->findInvoiceById($invoiceId);
+        if ($scope === null) { throw new RuntimeException('InvoiceService and a valid invoice are required.'); }
+        return $this->db->transaction(function () use ($userId, $invoiceId, $amountMinor, $adminUserId, $scope) {
+            $this->lockBalance($userId, $scope->getCurrencyCode(), $scope->getOrganizationId());
+            return $this->applyCreditToInvoiceLocked($userId, $invoiceId, $amountMinor, $adminUserId);
+        });
+    }
+
+    private function applyCreditToInvoiceLocked(
+        int $userId,
+        int $invoiceId,
+        int $amountMinor,
+        ?int $adminUserId = null
     ): CreditEntry {
-        if ($this->invoiceService === null) {
-            throw new RuntimeException('InvoiceService required to apply credit.');
+        if ($this->invoiceService === null || $this->paymentService === null) {
+            throw new RuntimeException('InvoiceService and PaymentService required to apply credit.');
         }
 
         $invoice = $this->invoiceService->findInvoiceById($invoiceId);
@@ -303,6 +358,21 @@ final class CreditService
         int $amountMinor,
         string $reason,
         ?int $adminUserId = null
+    ): CreditEntry
+    {
+        $scope = $this->paymentService?->findPaymentById($paymentId);
+        if ($scope === null) { throw new RuntimeException('PaymentService and a valid payment are required.'); }
+        return $this->db->transaction(function () use ($paymentId, $amountMinor, $reason, $adminUserId, $scope) {
+            $this->lockBalance($scope->getUserId(), $scope->getCurrencyCode(), $scope->getOrganizationId());
+            return $this->refundToCreditLocked($paymentId, $amountMinor, $reason, $adminUserId);
+        });
+    }
+
+    private function refundToCreditLocked(
+        int $paymentId,
+        int $amountMinor,
+        string $reason,
+        ?int $adminUserId = null
     ): CreditEntry {
         if ($this->paymentService === null) {
             throw new RuntimeException('PaymentService required for refund to credit.');
@@ -338,6 +408,21 @@ final class CreditService
      * Admin manual balance adjustment.
      */
     public function adjustBalance(
+        int $userId,
+        int $targetBalanceMinor,
+        string $currencyCode,
+        string $reason,
+        ?int $adminUserId = null,
+        ?int $orgId = null
+    ): CreditEntry
+    {
+        return $this->db->transaction(function () use ($userId, $targetBalanceMinor, $currencyCode, $reason, $adminUserId, $orgId) {
+            $this->lockBalance($userId, $currencyCode, $orgId);
+            return $this->adjustBalanceLocked($userId, $targetBalanceMinor, $currencyCode, $reason, $adminUserId, $orgId);
+        });
+    }
+
+    private function adjustBalanceLocked(
         int $userId,
         int $targetBalanceMinor,
         string $currencyCode,
@@ -446,6 +531,17 @@ final class CreditService
     /**
      * @param array<string, mixed> $row
      */
+    private function lockBalance(int $userId, string $currency, ?int $orgId): void
+    {
+        $values = [$userId, $orgId ?? 0, strtoupper(trim($currency))];
+        $sql = 'INSERT INTO credit_balance_locks (user_id, organization_id, currency_code) VALUES (?, ?, ?)';
+        $sql .= $this->db->getDriverName() === 'sqlite'
+            ? ' ON CONFLICT(user_id, organization_id, currency_code) DO NOTHING'
+            : ' ON DUPLICATE KEY UPDATE user_id = user_id';
+        $this->db->statement($sql, $values);
+        $this->db->selectOne('SELECT user_id FROM credit_balance_locks WHERE user_id = ? AND organization_id = ? AND currency_code = ?' . $this->db->forUpdate(), $values);
+    }
+
     private function hydrateEntry(array $row): CreditEntry
     {
         $meta = !empty($row['metadata_json']) ? json_decode((string)$row['metadata_json'], true) : [];

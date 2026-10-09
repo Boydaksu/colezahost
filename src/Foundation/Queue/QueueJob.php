@@ -10,7 +10,8 @@ final class QueueJob
         private int|string $id,
         private string $queue,
         private JobInterface $job,
-        private int $attempts
+        private int $attempts,
+        private ?string $reservationToken = null
     ) {
     }
 
@@ -32,5 +33,10 @@ final class QueueJob
     public function getAttempts(): int
     {
         return $this->attempts;
+    }
+
+    public function getReservationToken(): ?string
+    {
+        return $this->reservationToken;
     }
 }

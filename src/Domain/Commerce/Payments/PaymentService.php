@@ -35,6 +35,9 @@ final class PaymentService
 
     public function ensureTables(): void
     {
+        if ($this->db->getDriverName() === 'mysql' && $this->db->inTransaction()) {
+            throw new RuntimeException('Initialize payment schema before starting an application transaction.');
+        }
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -60,6 +63,7 @@ final class PaymentService
                 notes TEXT NULL,
                 paid_at TIMESTAMP NULL,
                 metadata_json TEXT NULL,
+                checkout_token_hash VARCHAR(64) NULL UNIQUE,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )',
             $this->paymentsTable,
@@ -157,12 +161,14 @@ final class PaymentService
                 error_message TEXT NULL,
                 payload_json TEXT NULL,
                 processed_at TIMESTAMP NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE (gateway, event_id)
             )',
             $this->webhookEventsTable,
             $autoInc
         );
         $this->db->statement($sqlWebhookEvents);
+        (new PaymentConcurrencySchema($this->db))->ensureSupportingTables();
     }
 
     /**
@@ -171,6 +177,13 @@ final class PaymentService
      * @param array<string, mixed> $data
      */
     public function recordPayment(array $data): Payment
+    {
+        return $this->paymentTransaction(function () use ($data) {
+            return $this->recordPaymentLocked($data);
+        });
+    }
+
+    private function recordPaymentLocked(array $data): Payment
     {
         $userId = (int)($data['user_id'] ?? 0);
         if ($userId <= 0) {
@@ -206,13 +219,17 @@ final class PaymentService
             if ($targetInvoice->getCurrencyCode() !== $currencyCode) {
                 throw new ValidationException(['currency_code' => 'Payment currency does not match invoice currency.'], 'Currency mismatch');
             }
+            if ($targetInvoice->getUserId() !== $userId || ($orgId !== null && $orgId !== $targetInvoice->getOrganizationId())) {
+                throw new ValidationException(['invoice_id' => 'Payment must belong to the invoice customer and organization.'], 'Payment owner mismatch');
+            }
+            $orgId = $targetInvoice->getOrganizationId();
         }
 
         $paymentNumber = $this->nextPaymentNumber();
 
         $sql = sprintf(
-            'INSERT INTO %s (payment_number, user_id, organization_id, invoice_id, payment_method, amount_minor, fee_minor, net_amount_minor, currency_code, status, transaction_reference, proof_document_url, notes, paid_at, metadata_json)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            'INSERT INTO %s (payment_number, user_id, organization_id, invoice_id, payment_method, amount_minor, fee_minor, net_amount_minor, currency_code, status, transaction_reference, proof_document_url, notes, paid_at, metadata_json, checkout_token_hash)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
             $this->paymentsTable
         );
 
@@ -231,7 +248,8 @@ final class PaymentService
             $proofUrl,
             $notes,
             $paidAt,
-            json_encode($metadata),
+            json_encode($metadata, JSON_THROW_ON_ERROR),
+            isset($metadata['checkout_token']) ? $this->tokenHash($metadata['checkout_token']) : null,
         ]);
 
         $paymentId = (int)$this->db->getPdo()->lastInsertId();
@@ -272,6 +290,14 @@ final class PaymentService
      */
     public function approveManualPayment(int $paymentId, ?string $notes = null): Payment
     {
+        return $this->db->transaction(function () use ($paymentId, $notes) {
+            $this->db->lockRow($this->paymentsTable, $paymentId);
+            return $this->approveManualPaymentLocked($paymentId, $notes);
+        });
+    }
+
+    private function approveManualPaymentLocked(int $paymentId, ?string $notes = null): Payment
+    {
         $payment = $this->findPaymentById($paymentId);
         if ($payment === null) {
             throw new RuntimeException("Payment {$paymentId} not found.");
@@ -306,6 +332,14 @@ final class PaymentService
      */
     public function rejectManualPayment(int $paymentId, string $reason): Payment
     {
+        return $this->db->transaction(function () use ($paymentId, $reason) {
+            $this->db->lockRow($this->paymentsTable, $paymentId);
+            return $this->rejectManualPaymentLocked($paymentId, $reason);
+        });
+    }
+
+    private function rejectManualPaymentLocked(int $paymentId, string $reason): Payment
+    {
         $payment = $this->findPaymentById($paymentId);
         if ($payment === null) {
             throw new RuntimeException("Payment {$paymentId} not found.");
@@ -326,6 +360,20 @@ final class PaymentService
      * Allocate payment amount to an invoice.
      */
     public function allocatePayment(
+        int $paymentId,
+        int $invoiceId,
+        int $amountMinor,
+        ?int $invoiceItemId = null,
+        array $metadata = []
+    ): PaymentAllocation
+    {
+        return $this->db->transaction(function () use ($paymentId, $invoiceId, $amountMinor, $invoiceItemId, $metadata) {
+            $this->db->lockRow($this->paymentsTable, $paymentId);
+            return $this->allocatePaymentLocked($paymentId, $invoiceId, $amountMinor, $invoiceItemId, $metadata);
+        });
+    }
+
+    private function allocatePaymentLocked(
         int $paymentId,
         int $invoiceId,
         int $amountMinor,
@@ -361,6 +409,9 @@ final class PaymentService
         if ($invoice->getCurrencyCode() !== $payment->getCurrencyCode()) {
             throw new ValidationException(['currency' => 'Payment currency does not match invoice currency.'], 'Currency mismatch');
         }
+        if ($invoice->getUserId() !== $payment->getUserId() || $invoice->getOrganizationId() !== $payment->getOrganizationId()) {
+            throw new ValidationException(['invoice_id' => 'Cannot allocate across customers or organizations.'], 'Allocation owner mismatch');
+        }
 
         if ($invoice->getBalanceDueMinor() < $amountMinor) {
             throw new ValidationException(['amount_minor' => 'Allocation amount exceeds invoice balance due.'], 'Over-allocation not permitted');
@@ -371,7 +422,7 @@ final class PaymentService
 
     public function findPaymentById(int $id): ?Payment
     {
-        $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE id = ?', $this->paymentsTable), [$id]);
+        $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE id = ?', $this->paymentsTable) . $this->db->forUpdate(), [$id]);
         return $row ? $this->hydratePayment($row) : null;
     }
 
@@ -510,7 +561,7 @@ final class PaymentService
     {
         $paymentId = (int)$row['id'];
         $allocRows = $this->db->select(
-            sprintf('SELECT * FROM %s WHERE payment_id = ?', $this->paymentAllocationsTable),
+            sprintf('SELECT * FROM %s WHERE payment_id = ? ORDER BY id ASC', $this->paymentAllocationsTable) . $this->db->forUpdate(),
             [$paymentId]
         );
 
@@ -531,7 +582,7 @@ final class PaymentService
         $meta = !empty($row['metadata_json']) ? json_decode((string)$row['metadata_json'], true) : [];
 
         $refundRow = $this->db->selectOne(
-            sprintf('SELECT COALESCE(SUM(amount_minor), 0) AS total_refunded FROM %s WHERE payment_id = ?', $this->refundsTable),
+            sprintf('SELECT COALESCE(SUM(amount_minor), 0) AS total_refunded FROM %s WHERE payment_id = ?', $this->refundsTable) . $this->db->forUpdate(),
             [$paymentId]
         );
         $refundedAmountMinor = $refundRow ? (int)$refundRow['total_refunded'] : 0;
@@ -566,6 +617,14 @@ final class PaymentService
      */
     public function recordRefund(array $data): Refund
     {
+        return $this->db->transaction(function () use ($data) {
+            $this->db->lockRow($this->paymentsTable, (int) ($data['payment_id'] ?? 0));
+            return $this->recordRefundLocked($data);
+        });
+    }
+
+    private function recordRefundLocked(array $data, ?string $reservationId = null): Refund
+    {
         $paymentId = (int)($data['payment_id'] ?? 0);
         $payment = $this->findPaymentById($paymentId);
         if ($payment === null) {
@@ -581,6 +640,10 @@ final class PaymentService
             throw new ValidationException(['amount_minor' => 'Refund amount must be greater than zero.'], 'Invalid refund amount');
         }
 
+        $reserved = $this->reservedRefundAmount($paymentId, $reservationId);
+        if ($reserved > 0) {
+            throw new ValidationException(['refund' => 'An outstanding provider refund must be reconciled first.'], 'Refund reservation unresolved');
+        }
         if ($amountMinor > $payment->getRefundableAmountMinor()) {
             throw new ValidationException(['amount_minor' => 'Refund amount exceeds refundable balance of payment.'], 'Excessive refund amount');
         }
@@ -632,9 +695,7 @@ final class PaymentService
         );
 
         // Adjust invoice balance if payment was allocated to an invoice
-        if ($invoiceId !== null && $this->invoiceService !== null) {
-            $this->invoiceService->applyRefund($invoiceId, $amountMinor);
-        }
+        $this->refundInvoiceAllocations($payment, $amountMinor);
 
         return new Refund(
             id: $refundId,
@@ -736,80 +797,7 @@ final class PaymentService
         PaymentGatewayInterface $gateway,
         array $metadata = []
     ): Refund {
-        $payment = $this->findPaymentById($paymentId);
-        if ($payment === null) {
-            throw new RuntimeException("Payment {$paymentId} not found.");
-        }
-
-        if (!$payment->isCompleted() && !$payment->isPartiallyRefunded()) {
-            throw new ValidationException(['payment' => 'Can only refund completed or partially refunded payments.'], 'Invalid payment status for refund');
-        }
-
-        if ($amountMinor <= 0) {
-            throw new ValidationException(['amount_minor' => 'Refund amount must be greater than zero.'], 'Invalid refund amount');
-        }
-
-        if ($amountMinor > $payment->getRefundableAmountMinor()) {
-            throw new ValidationException(['amount_minor' => 'Refund amount exceeds refundable balance of payment.'], 'Excessive refund amount');
-        }
-
-        $txRef = $payment->getTransactionReference();
-        if ($txRef === null || trim($txRef) === '') {
-            throw new ValidationException(['transaction_reference' => 'Payment has no transaction reference to refund with gateway.'], 'Missing transaction reference');
-        }
-
-        $refundReq = new PaymentRefundRequest(
-            paymentTransactionId: $txRef,
-            refundAmountMinor: $amountMinor,
-            currencyCode: $payment->getCurrencyCode(),
-            reason: $reason
-        );
-
-        $gatewayName = $gateway->getIdentifier();
-        $response = $gateway->refund($refundReq);
-
-        if (!$response->isSuccess()) {
-            $errorCode = $response->getErrorCode() ?? 'GATEWAY_ERROR';
-            $errorMessage = $response->getErrorMessage() ?? 'Gateway declined refund.';
-
-            $this->recordRefundAttempt(
-                paymentId: $paymentId,
-                amountMinor: $amountMinor,
-                reason: $reason,
-                gateway: $gatewayName,
-                status: RefundAttempt::STATUS_FAILED,
-                errorCode: $errorCode,
-                errorMessage: $errorMessage,
-                metadata: $response->getRawPayload()
-            );
-
-            throw new PaymentRefundFailedException(
-                message: $errorMessage,
-                paymentId: $paymentId,
-                amountMinor: $amountMinor,
-                errorCode: $errorCode,
-                rawDetails: $response->getRawPayload()
-            );
-        }
-
-        $this->recordRefundAttempt(
-            paymentId: $paymentId,
-            amountMinor: $amountMinor,
-            reason: $reason,
-            gateway: $gatewayName,
-            status: RefundAttempt::STATUS_SUCCESS,
-            transactionReference: $response->getRefundId(),
-            metadata: $response->getRawPayload()
-        );
-
-        return $this->recordRefund([
-            'payment_id' => $paymentId,
-            'amount_minor' => $amountMinor,
-            'reason' => $reason,
-            'refund_method' => $gatewayName,
-            'transaction_reference' => $response->getRefundId(),
-            'metadata' => array_merge($metadata, ['gateway_response' => $response->getRawPayload()]),
-        ]);
+        return (new GatewayRefundCoordinator($this->db, $this))->refund($paymentId, $amountMinor, $reason, $gateway, $metadata);
     }
 
     /**
@@ -904,6 +892,19 @@ final class PaymentService
         string $transactionRef,
         int $feeMinor = 0,
         ?string $paidAt = null
+    ): Payment
+    {
+        return $this->db->transaction(function () use ($paymentId, $transactionRef, $feeMinor, $paidAt) {
+            $this->db->lockRow($this->paymentsTable, $paymentId);
+            return $this->completePaymentFromGatewayLocked($paymentId, $transactionRef, $feeMinor, $paidAt);
+        });
+    }
+
+    private function completePaymentFromGatewayLocked(
+        int $paymentId,
+        string $transactionRef,
+        int $feeMinor = 0,
+        ?string $paidAt = null
     ): Payment {
         $payment = $this->findPaymentById($paymentId);
         if ($payment === null) {
@@ -914,6 +915,9 @@ final class PaymentService
             return $payment;
         }
 
+        if (!$payment->isPending()) {
+            throw new ValidationException(['status' => 'Only pending payments can be completed.'], 'Invalid transition');
+        }
         $paidTimestamp = $paidAt ?? date('Y-m-d H:i:s');
         $feeMinor = max(0, $feeMinor);
         $netAmountMinor = max(0, $payment->getAmountMinor() - $feeMinor);
@@ -950,13 +954,22 @@ final class PaymentService
      */
     public function failPaymentFromGateway(int $paymentId, string $reason): Payment
     {
+        return $this->db->transaction(function () use ($paymentId, $reason) {
+            $this->db->lockRow($this->paymentsTable, $paymentId);
+            return $this->failPaymentFromGatewayLocked($paymentId, $reason);
+        });
+    }
+
+    private function failPaymentFromGatewayLocked(int $paymentId, string $reason): Payment
+    {
         $payment = $this->findPaymentById($paymentId);
         if ($payment === null) {
             throw new RuntimeException("Payment {$paymentId} not found.");
         }
 
-        if ($payment->isCompleted()) {
-            throw new ValidationException(['status' => 'Cannot mark a completed payment as failed.'], 'Invalid transition');
+        if ($payment->getStatus() === Payment::STATUS_FAILED) { return $payment; }
+        if (!$payment->isPending()) {
+            throw new ValidationException(['status' => 'Cannot mark a completed or refunded payment as failed.'], 'Invalid transition');
         }
 
         $updatedNotes = trim($payment->getNotes() . "\nGateway failure: " . $reason);
@@ -968,7 +981,7 @@ final class PaymentService
 
     /**
      * Find the unique checkout token, never a substring or an unrelated reference.
-     * A dedicated indexed token column is part of the database remediation phase.
+     * The token digest has a UNIQUE index; metadata is checked for exact correspondence.
      */
     public function findPaymentByToken(string $token): ?Payment
     {
@@ -977,28 +990,99 @@ final class PaymentService
             return null;
         }
 
-        $match = null;
-        foreach ($this->db->select(sprintf('SELECT * FROM %s WHERE metadata_json IS NOT NULL', $this->paymentsTable)) as $row) {
-            $metadata = json_decode((string) $row['metadata_json'], true);
-            if (is_array($metadata) && ($metadata['checkout_token'] ?? null) === $token) {
-                if ($match !== null) {
-                    return null; // Ambiguous tokens must never select an arbitrary payment.
-                }
-                $match = $row;
-            }
-        }
-        return $match !== null ? $this->hydratePayment($match) : null;
+        $row = $this->db->selectOne('SELECT * FROM payments WHERE checkout_token_hash = ?', [$this->tokenHash($token)]);
+        if ($row === null) { return null; }
+        $metadata = json_decode((string) $row['metadata_json'], true);
+        return is_array($metadata) && ($metadata['checkout_token'] ?? null) === $token ? $this->hydratePayment($row) : null;
     }
 
     public function attachCheckoutToken(int $paymentId, string $token): void
+    {
+        $this->paymentTransaction(function () use ($paymentId, $token): void {
+            $this->db->lockRow($this->paymentsTable, $paymentId);
+            $this->attachCheckoutTokenLocked($paymentId, $token);
+        });
+    }
+
+    private function attachCheckoutTokenLocked(int $paymentId, string $token): void
     {
         $payment = $this->findPaymentById($paymentId);
         if ($payment === null || !$payment->isPending() || trim($token) === '') {
             throw new ValidationException(['checkout_token' => 'A pending payment and nonempty token are required.'], 'Invalid checkout token');
         }
         $metadata = $payment->getMetadata();
+        if (isset($metadata['checkout_token']) && $metadata['checkout_token'] !== $token) {
+            throw new ValidationException(['checkout_token' => 'An existing checkout token cannot be replaced.'], 'Invalid checkout token');
+        }
         $metadata['checkout_token'] = $token;
-        $this->db->statement(sprintf('UPDATE %s SET metadata_json = ? WHERE id = ?', $this->paymentsTable),
-            [json_encode($metadata, JSON_THROW_ON_ERROR), $paymentId]);
+        $this->db->statement(sprintf('UPDATE %s SET metadata_json = ?, checkout_token_hash = ? WHERE id = ?', $this->paymentsTable),
+            [json_encode($metadata, JSON_THROW_ON_ERROR), $this->tokenHash($token), $paymentId]);
+    }
+
+    private function tokenHash(mixed $token): string
+    {
+        if (!is_string($token) || trim($token) === '' || trim($token) !== $token || strlen($token) > 2048) {
+            throw new ValidationException(['checkout_token' => 'A nonempty token of at most 2048 bytes is required.'], 'Invalid checkout token');
+        }
+        return hash('sha256', $token);
+    }
+
+    private function paymentTransaction(callable $operation): mixed
+    {
+        try {
+            return $this->db->transaction($operation);
+        } catch (\PDOException $error) {
+            if (str_contains($error->getMessage(), 'checkout_token')) {
+                throw new ValidationException(['checkout_token' => 'Checkout token is already assigned.'], 'Duplicate checkout token');
+            }
+            throw $error;
+        }
+    }
+
+    public function reservedRefundAmount(int $paymentId, ?string $exclude = null): int
+    {
+        $rows = $this->db->select('SELECT amount_minor FROM gateway_refund_reservations
+            WHERE payment_id = ? AND status IN ("processing", "unknown", "verified") AND request_id <> ?' . $this->db->forUpdate(),
+            [$paymentId, $exclude ?? '']);
+        return array_sum(array_map(static fn (array $row): int => (int) $row['amount_minor'], $rows));
+    }
+
+    public function applyReservedGatewayRefund(string $requestId, string $reason, array $metadata = []): Refund
+    {
+        $scope = $this->db->selectOne('SELECT payment_id FROM gateway_refund_reservations WHERE request_id = ?', [$requestId]);
+        if ($scope === null) { throw new RuntimeException('Refund reservation not found.'); }
+        return $this->db->transaction(function () use ($scope, $requestId, $reason, $metadata): Refund {
+            $this->db->lockRow($this->paymentsTable, (int) $scope['payment_id']);
+            $reservation = $this->db->selectOne('SELECT * FROM gateway_refund_reservations WHERE request_id = ?' . $this->db->forUpdate(), [$requestId]);
+            if ($reservation['status'] === 'applied') {
+                return $this->findRefundById((int) $reservation['refund_id']) ?? throw new RuntimeException('Applied refund record is missing.');
+            }
+            if ($reservation['status'] !== 'verified') {
+                throw new ValidationException(['refund' => 'Provider result must be reconciled before applying this refund.'], 'Unverified refund');
+            }
+            $refund = $this->recordRefundLocked(['payment_id' => (int) $reservation['payment_id'],
+                'amount_minor' => (int) $reservation['amount_minor'], 'reason' => $reason,
+                'refund_method' => $reservation['gateway'], 'transaction_reference' => $reservation['provider_reference'],
+                'metadata' => array_merge($metadata, ['reservation_id' => $requestId])], $requestId);
+            $this->db->statement('UPDATE gateway_refund_reservations SET status = "applied", refund_id = ? WHERE request_id = ?', [$refund->getId(), $requestId]);
+            $this->recordRefundAttempt((int) $reservation['payment_id'], (int) $reservation['amount_minor'], $reason,
+                $reservation['gateway'], RefundAttempt::STATUS_SUCCESS, transactionReference: $reservation['provider_reference']);
+            return $refund;
+        });
+    }
+
+    private function refundInvoiceAllocations(Payment $payment, int $amount): void
+    {
+        if ($this->invoiceService === null) { return; }
+        $unallocated = $payment->getAmountMinor() - $payment->getAllocatedAmountMinor();
+        $previous = max(0, $payment->getRefundedAmountMinor() - $unallocated);
+        $remaining = max(0, $payment->getRefundedAmountMinor() + $amount - $unallocated) - $previous;
+        foreach ($payment->getAllocations() as $allocation) {
+            $skip = min($previous, $allocation->getAmountMinor());
+            $previous -= $skip;
+            $portion = min($remaining, $allocation->getAmountMinor() - $skip);
+            if ($portion > 0) { $this->invoiceService->applyRefund((int) $allocation->getInvoiceId(), $portion); }
+            $remaining -= $portion;
+        }
     }
 }

@@ -25,3 +25,7 @@ Sorun: istemci ödeme metodu seçimiyle fatura kapatabiliyor; callback tutar/par
 ## CR-D02.1 / TCR-D02.1
 
 Kurulum ve RBAC aynı şema üzerinden çalışmalı; global roller için NULL içeren bir primary key kullanılmamalı. Mevcut roller ve izinler migration ile korunmalı. SQLite'e özel sıra upsertleri, sürücüye uygun atomik numara üretimiyle değiştirilir. Hedef dosyalar: Connection, Migrator, RBAC şeması/servisi, installer database/admin servisleri, sekiz sıra üretici servis ve bunların migration/entegrasyon testleri. Test ortamı MariaDB 10.11.18; izole localhost sunucusu ve yalnız test verisi. MariaDB DDL transaction geri dönüşü desteklemediğinden migration başarısı gerçek uygulama sonrasında kaydedilir; hata başarı olarak işaretlenmez. Bu adımın tamamlanması F16'nın tamamını kapatmaz.
+
+## CR-D02.2 / TCR-D02.2
+
+Hedefler: PaymentService, InvoiceService, CreditService, PaymentWebhookHandler, Connection, DatabaseQueue/QueueJob; token/webhook/lease ve finans kilidi migration'ları; SQLite hata enjeksiyonu ve gerçek MariaDB paralel işlem testleri. Ödeme/tahsis/fatura/credit/refund bir transaction içinde tutulur; dış sağlayıcı isteği için kalıcı iade rezervasyonu ayrı commit edilir. Token SHA-256 özeti UNIQUE indeksle eşleştirilir. Önceki mükerrer token regresyonu, ikinci token atamasının reddedilmesi ve ilk kaydın bozulmaması ölçütüne yükseltilir. Eski mükerrer/çelişkili kayıtlar migration tarafından sessizce seçilmez veya silinmez; mutabakat gerektiren hata verir. Queue lease sahibi değiştikten sonra eski çalışan delete/retry/DLQ yapamaz.

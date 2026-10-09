@@ -160,19 +160,39 @@ final class Connection
         $this->transactionDepth++;
     }
 
+    public function lockRow(string $table, int $id): void
+    {
+        if (!$this->inTransaction() || !preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/D', $table)) {
+            throw new \LogicException('Row locks require a transaction and a valid table name.');
+        }
+        if ($this->getDriverName() === 'sqlite') {
+            $this->statement("UPDATE {$table} SET id = id WHERE id = ?", [$id]);
+        } else {
+            $this->selectOne("SELECT id FROM {$table} WHERE id = ? FOR UPDATE", [$id]);
+        }
+    }
+
+    public function forUpdate(): string
+    {
+        return $this->inTransaction() && $this->getDriverName() === 'mysql' ? ' FOR UPDATE' : '';
+    }
+
     public function commit(): void
     {
         if ($this->transactionDepth <= 0) {
             return;
         }
 
-        $this->transactionDepth--;
-
-        if ($this->transactionDepth === 0) {
+        if (!$this->pdo->inTransaction()) {
+            $this->transactionDepth = 0;
+            throw new \RuntimeException('Database transaction ended unexpectedly.');
+        }
+        if ($this->transactionDepth === 1) {
             $this->pdo->commit();
         } else {
-            $this->pdo->exec('RELEASE SAVEPOINT trans_' . $this->transactionDepth);
+            $this->pdo->exec('RELEASE SAVEPOINT trans_' . ($this->transactionDepth - 1));
         }
+        $this->transactionDepth--;
     }
 
     public function rollBack(): void
@@ -181,13 +201,19 @@ final class Connection
             return;
         }
 
-        $this->transactionDepth--;
-
-        if ($this->transactionDepth === 0) {
+        if (!$this->pdo->inTransaction()) {
+            // InnoDB may already have rolled back a deadlocked transaction.
+            $this->transactionDepth = 0;
+            return;
+        }
+        if ($this->transactionDepth === 1) {
             $this->pdo->rollBack();
         } else {
-            $this->pdo->exec('ROLLBACK TO SAVEPOINT trans_' . $this->transactionDepth);
+            $savepoint = 'trans_' . ($this->transactionDepth - 1);
+            $this->pdo->exec('ROLLBACK TO SAVEPOINT ' . $savepoint);
+            $this->pdo->exec('RELEASE SAVEPOINT ' . $savepoint);
         }
+        $this->transactionDepth--;
     }
 
     public function inTransaction(): bool

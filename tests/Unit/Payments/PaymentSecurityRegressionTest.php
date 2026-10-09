@@ -151,14 +151,18 @@ final class PaymentSecurityRegressionTest extends TestCase
         self::assertSame(10000, $this->invoices->findInvoiceById($this->invoiceId)->getBalanceDueMinor());
     }
 
-    public function testDuplicateStoredTokensAreAmbiguousAndRejected(): void
+    public function testDuplicateStoredTokenIsRejectedWithoutChangingFirstPayment(): void
     {
-        for ($i = 0; $i < 2; $i++) {
-            $this->payments->recordPayment(['user_id' => 7, 'amount_minor' => 10000,
-                'currency_code' => 'TRY', 'status' => Payment::STATUS_PENDING,
-                'metadata' => ['checkout_token' => 'duplicate']]);
+        $data = ['user_id' => 7, 'amount_minor' => 10000, 'currency_code' => 'TRY',
+            'status' => Payment::STATUS_PENDING, 'metadata' => ['checkout_token' => 'duplicate']];
+        $first = $this->payments->recordPayment($data);
+        try {
+            $this->payments->recordPayment($data);
+            self::fail('Duplicate checkout token must be rejected.');
+        } catch (\Coleza\Foundation\Exceptions\ValidationException) {
+            self::assertSame($first->getId(), $this->payments->findPaymentByToken('duplicate')->getId());
+            self::assertCount(1, $this->payments->listPaymentsForUser(7));
         }
-        self::assertNull($this->payments->findPaymentByToken('duplicate'));
     }
 
     public function testAnonymousPaymentReadIsRejected(): void

@@ -12,6 +12,7 @@ final class DatabaseQueue implements QueueInterface
 {
     private string $jobsTable = 'jobs';
     private string $failedJobsTable = 'failed_jobs';
+    private bool $initialized = false;
 
     public function __construct(private Connection $db)
     {
@@ -19,6 +20,10 @@ final class DatabaseQueue implements QueueInterface
 
     public function ensureTables(): void
     {
+        if ($this->initialized) { return; }
+        if ($this->db->getDriverName() === 'mysql' && $this->db->inTransaction()) {
+            throw new RuntimeException('Initialize queue schema before starting an application transaction.');
+        }
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -33,6 +38,7 @@ final class DatabaseQueue implements QueueInterface
                 payload LONGTEXT NOT NULL,
                 attempts INT NOT NULL DEFAULT 0,
                 reserved_at INT NULL,
+                reservation_token VARCHAR(64) NULL,
                 available_at INT NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )',
@@ -54,6 +60,7 @@ final class DatabaseQueue implements QueueInterface
             $autoInc
         );
         $this->db->statement($sqlFailed);
+        $this->initialized = true;
     }
 
     public function push(JobInterface $job, int $delaySeconds = 0): int|string
@@ -86,7 +93,7 @@ final class DatabaseQueue implements QueueInterface
                      WHERE queue = :q 
                        AND available_at <= :now 
                        AND (reserved_at IS NULL OR reserved_at < :cutoff)
-                     ORDER BY id ASC',
+                     ORDER BY id ASC LIMIT 1' . ($db->getDriverName() === 'mysql' ? ' FOR UPDATE SKIP LOCKED' : ''),
                     $this->jobsTable
                 ),
                 [
@@ -102,16 +109,10 @@ final class DatabaseQueue implements QueueInterface
 
             $id = $row['id'];
             $attempts = (int) $row['attempts'] + 1;
-
-            $db->update(
-                $this->jobsTable,
-                [
-                    'reserved_at' => $now,
-                    'attempts' => $attempts,
-                ],
-                'id = :where_id',
-                ['where_id' => $id]
-            );
+            $token = bin2hex(random_bytes(32));
+            $claimed = $db->affectingStatement('UPDATE jobs SET reserved_at = ?, reservation_token = ?, attempts = attempts + 1
+                WHERE id = ? AND (reserved_at IS NULL OR reserved_at < ?)', [$now, $token, $id, $expirationCutoff]);
+            if ($claimed !== 1) { return null; }
 
             $jobInstance = @unserialize((string) $row['payload']);
             if (!$jobInstance instanceof JobInterface) {
@@ -120,19 +121,31 @@ final class DatabaseQueue implements QueueInterface
                 return null;
             }
 
-            return new QueueJob($id, $queue, $jobInstance, $attempts);
+            return new QueueJob($id, $queue, $jobInstance, $attempts, $token);
         });
     }
 
     public function delete(QueueJob $job): void
     {
         $this->ensureTables();
-        $this->db->delete($this->jobsTable, 'id = :id', ['id' => $job->getId()]);
+        $this->db->delete($this->jobsTable, 'id = :id AND reservation_token = :token',
+            ['id' => $job->getId(), 'token' => $job->getReservationToken()]);
     }
 
     public function releaseOrFail(QueueJob $job, Throwable $exception): void
     {
         $this->ensureTables();
+        $this->db->transaction(function () use ($job, $exception): void {
+            $this->db->lockRow($this->jobsTable, (int) $job->getId());
+            $owned = $this->db->selectOne('SELECT id FROM jobs WHERE id = ? AND reservation_token = ?' . $this->db->forUpdate(),
+                [$job->getId(), $job->getReservationToken()]);
+            if ($owned === null) { return; }
+            $this->releaseOwnedJob($job, $exception);
+        });
+    }
+
+    private function releaseOwnedJob(QueueJob $job, Throwable $exception): void
+    {
         $jobInstance = $job->getJob();
 
         if ($job->getAttempts() >= $jobInstance->maxAttempts()) {
@@ -164,6 +177,7 @@ final class DatabaseQueue implements QueueInterface
             $this->jobsTable,
             [
                 'reserved_at' => null,
+                'reservation_token' => null,
                 'available_at' => $availableAt,
             ],
             'id = :where_id',

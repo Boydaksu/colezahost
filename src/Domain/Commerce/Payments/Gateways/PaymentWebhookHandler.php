@@ -41,7 +41,7 @@ final class PaymentWebhookHandler
             return PaymentWebhookResult::failed('Token missing in callback payload.');
         }
 
-        $eventId = 'iyzico_token_' . $token;
+        $eventId = 'iyzico_token_' . hash('sha256', $token);
         $gatewayName = $gateway->getIdentifier();
         $payloadHash = hash('sha256', $rawPayload ?? (string) json_encode($postData));
 
@@ -65,136 +65,144 @@ final class PaymentWebhookHandler
         $verificationRequest = new PaymentVerificationRequest($token);
         $verificationResponse = $gateway->verifyPayment($verificationRequest);
 
-        // 3. Resolve associated payment
-        $payment = $this->paymentService->findPaymentByToken($token);
-        $verifiedNumber = $verificationResponse->getPaymentNumber();
-        if ($payment !== null && ($payment->getPaymentMethod() !== $gatewayName
-            || ($verifiedNumber !== null && $verifiedNumber !== '' && $verifiedNumber !== $payment->getPaymentNumber()))) {
-            $payment = null;
-        }
-
-        // 4. Handle Verification Failure
-        if (!$verificationResponse->isSuccess()) {
-            $errorMessage = $verificationResponse->getErrorMessage() ?? 'Gateway payment verification failed.';
-
-            if ($payment !== null && $payment->isPending()) {
-                $this->paymentService->failPaymentFromGateway($payment->getId(), $errorMessage);
+        return $this->db->transaction(function () use ($token, $gatewayName, $eventId, $payloadHash, $postData, $verificationResponse): PaymentWebhookResult {
+            $event = $this->claimEvent($gatewayName, $eventId, $payloadHash, $postData);
+            if ($event['status'] === PaymentWebhookEvent::STATUS_PROCESSED) {
+                $payment = $this->paymentService->findPaymentById((int) $event['payment_id']);
+                return PaymentWebhookResult::duplicate((int) $event['payment_id'], $payment?->getPaymentNumber() ?? '',
+                    'Webhook/callback event already processed successfully (idempotent duplicate).', $eventId);
+            }
+            // 3. Resolve associated payment
+            $payment = $this->paymentService->findPaymentByToken($token);
+            $verifiedNumber = $verificationResponse->getPaymentNumber();
+            if ($payment !== null && ($payment->getPaymentMethod() !== $gatewayName
+                || ($verifiedNumber !== null && $verifiedNumber !== '' && $verifiedNumber !== $payment->getPaymentNumber()))) {
+                $payment = null;
             }
 
-            $this->recordEvent(
-                gateway: $gatewayName,
-                eventId: $eventId,
-                eventType: 'callback.failure',
-                payloadHash: $payloadHash,
-                status: PaymentWebhookEvent::STATUS_FAILED,
-                paymentId: $payment?->getId(),
-                errorMessage: $errorMessage,
-                payload: $postData
+            // 4. Handle Verification Failure
+            if (!$verificationResponse->isSuccess()) {
+                $errorMessage = $verificationResponse->getErrorMessage() ?? 'Gateway payment verification failed.';
+
+                if ($payment !== null && $payment->isPending()) {
+                    $this->paymentService->failPaymentFromGateway($payment->getId(), $errorMessage);
+                }
+
+                $this->recordEvent(
+                    gateway: $gatewayName,
+                    eventId: $eventId,
+                    eventType: 'callback.failure',
+                    payloadHash: $payloadHash,
+                    status: PaymentWebhookEvent::STATUS_FAILED,
+                    paymentId: $payment?->getId(),
+                    errorMessage: $errorMessage,
+                    payload: $postData
+                );
+
+                return PaymentWebhookResult::failed(
+                    message: $errorMessage,
+                    paymentId: $payment?->getId(),
+                    paymentNumber: $payment?->getPaymentNumber(),
+                    eventId: $eventId,
+                    metadata: $verificationResponse->getRawPayload()
+                );
+            }
+
+            // 5. Associated Payment Validation
+            if ($payment === null) {
+                $error = 'Associated payment record could not be matched for token.';
+                $this->recordEvent(
+                    gateway: $gatewayName,
+                    eventId: $eventId,
+                    eventType: 'callback.unmatched',
+                    payloadHash: $payloadHash,
+                    status: PaymentWebhookEvent::STATUS_FAILED,
+                    paymentId: null,
+                    errorMessage: $error,
+                    payload: $postData
+                );
+
+                return PaymentWebhookResult::failed(
+                    message: $error,
+                    paymentId: null,
+                    paymentNumber: null,
+                    eventId: $eventId,
+                    metadata: $verificationResponse->getRawPayload()
+                );
+            }
+
+            if ($verificationResponse->getPaidAmountMinor() !== $payment->getAmountMinor()
+                || $verificationResponse->getCurrency() !== $payment->getCurrencyCode()
+                || $verifiedNumber !== $payment->getPaymentNumber()) {
+                $error = 'Verified payment number, amount or currency does not match the pending payment.';
+                $this->recordEvent($gatewayName, $eventId, 'callback.mismatch', $payloadHash,
+                    PaymentWebhookEvent::STATUS_FAILED, $payment->getId(), $error, $postData);
+                return PaymentWebhookResult::failed($error, $payment->getId(), $payment->getPaymentNumber(), $eventId);
+            }
+
+            // 6. Handle Out-Of-Order / Already Completed State
+            if ($payment->isCompleted()) {
+                $this->recordEvent(
+                    gateway: $gatewayName,
+                    eventId: $eventId,
+                    eventType: 'callback.success',
+                    payloadHash: $payloadHash,
+                    status: PaymentWebhookEvent::STATUS_PROCESSED,
+                    paymentId: $payment->getId(),
+                    errorMessage: null,
+                    payload: $postData
+                );
+
+                return PaymentWebhookResult::alreadyCompleted(
+                    paymentId: (int) $payment->getId(),
+                    paymentNumber: $payment->getPaymentNumber(),
+                    message: 'Payment was already completed prior to this callback notification.',
+                    eventId: $eventId,
+                    metadata: $verificationResponse->getRawPayload()
+                );
+            }
+
+            if (!$payment->isPending()) {
+                return PaymentWebhookResult::failed('Only pending payments can be settled.', $payment->getId(), $payment->getPaymentNumber(), $eventId);
+            }
+
+            // 7. Settle Payment & Allocate Funds
+            $txRef = $verificationResponse->getPaymentTransactionId()
+                ?? $verificationResponse->getPaymentId()
+                ?? $token;
+
+            $completedPayment = $this->paymentService->completePaymentFromGateway(
+                paymentId: (int) $payment->getId(),
+                transactionRef: $txRef,
+                feeMinor: $verificationResponse->getFeeMinor(),
+                paidAt: date('Y-m-d H:i:s')
             );
 
-            return PaymentWebhookResult::failed(
-                message: $errorMessage,
-                paymentId: $payment?->getId(),
-                paymentNumber: $payment?->getPaymentNumber(),
-                eventId: $eventId,
-                metadata: $verificationResponse->getRawPayload()
-            );
-        }
-
-        // 5. Associated Payment Validation
-        if ($payment === null) {
-            $error = 'Associated payment record could not be matched for token.';
-            $this->recordEvent(
-                gateway: $gatewayName,
-                eventId: $eventId,
-                eventType: 'callback.unmatched',
-                payloadHash: $payloadHash,
-                status: PaymentWebhookEvent::STATUS_FAILED,
-                paymentId: null,
-                errorMessage: $error,
-                payload: $postData
-            );
-
-            return PaymentWebhookResult::failed(
-                message: $error,
-                paymentId: null,
-                paymentNumber: null,
-                eventId: $eventId,
-                metadata: $verificationResponse->getRawPayload()
-            );
-        }
-
-        if ($verificationResponse->getPaidAmountMinor() !== $payment->getAmountMinor()
-            || $verificationResponse->getCurrency() !== $payment->getCurrencyCode()
-            || $verifiedNumber !== $payment->getPaymentNumber()) {
-            $error = 'Verified payment number, amount or currency does not match the pending payment.';
-            $this->recordEvent($gatewayName, $eventId, 'callback.mismatch', $payloadHash,
-                PaymentWebhookEvent::STATUS_FAILED, $payment->getId(), $error, $postData);
-            return PaymentWebhookResult::failed($error, $payment->getId(), $payment->getPaymentNumber(), $eventId);
-        }
-
-        // 6. Handle Out-Of-Order / Already Completed State
-        if ($payment->isCompleted()) {
+            // 8. Record Successful Event Audit
             $this->recordEvent(
                 gateway: $gatewayName,
                 eventId: $eventId,
                 eventType: 'callback.success',
                 payloadHash: $payloadHash,
                 status: PaymentWebhookEvent::STATUS_PROCESSED,
-                paymentId: $payment->getId(),
+                paymentId: $completedPayment->getId(),
                 errorMessage: null,
                 payload: $postData
             );
 
-            return PaymentWebhookResult::alreadyCompleted(
-                paymentId: (int) $payment->getId(),
-                paymentNumber: $payment->getPaymentNumber(),
-                message: 'Payment was already completed prior to this callback notification.',
+            return PaymentWebhookResult::processed(
+                paymentId: (int) $completedPayment->getId(),
+                paymentNumber: $completedPayment->getPaymentNumber(),
+                message: 'Payment verified and successfully settled.',
                 eventId: $eventId,
-                metadata: $verificationResponse->getRawPayload()
+                metadata: [
+                    'card_association' => $verificationResponse->getCardAssociation(),
+                    'card_family' => $verificationResponse->getCardFamily(),
+                    'installments' => $verificationResponse->getInstallments(),
+                    'transaction_reference' => $txRef,
+                ]
             );
-        }
-
-        if (!$payment->isPending()) {
-            return PaymentWebhookResult::failed('Only pending payments can be settled.', $payment->getId(), $payment->getPaymentNumber(), $eventId);
-        }
-
-        // 7. Settle Payment & Allocate Funds
-        $txRef = $verificationResponse->getPaymentTransactionId() 
-            ?? $verificationResponse->getPaymentId() 
-            ?? $token;
-
-        $completedPayment = $this->paymentService->completePaymentFromGateway(
-            paymentId: (int) $payment->getId(),
-            transactionRef: $txRef,
-            feeMinor: $verificationResponse->getFeeMinor(),
-            paidAt: date('Y-m-d H:i:s')
-        );
-
-        // 8. Record Successful Event Audit
-        $this->recordEvent(
-            gateway: $gatewayName,
-            eventId: $eventId,
-            eventType: 'callback.success',
-            payloadHash: $payloadHash,
-            status: PaymentWebhookEvent::STATUS_PROCESSED,
-            paymentId: $completedPayment->getId(),
-            errorMessage: null,
-            payload: $postData
-        );
-
-        return PaymentWebhookResult::processed(
-            paymentId: (int) $completedPayment->getId(),
-            paymentNumber: $completedPayment->getPaymentNumber(),
-            message: 'Payment verified and successfully settled.',
-            eventId: $eventId,
-            metadata: [
-                'card_association' => $verificationResponse->getCardAssociation(),
-                'card_family' => $verificationResponse->getCardFamily(),
-                'installments' => $verificationResponse->getInstallments(),
-                'transaction_reference' => $txRef,
-            ]
-        );
+        });
     }
 
     /**
@@ -231,6 +239,18 @@ final class PaymentWebhookHandler
     /**
      * @param array<string, mixed> $payload
      */
+    /** @return array<string, mixed> */
+    private function claimEvent(string $gateway, string $eventId, string $hash, array $payload): array
+    {
+        $sql = 'INSERT INTO payment_webhook_events (gateway, event_id, event_type, payload_hash, status, payload_json)
+            VALUES (?, ?, "callback.processing", ?, "processing", ?)';
+        $sql .= $this->db->getDriverName() === 'sqlite'
+            ? ' ON CONFLICT(gateway, event_id) DO NOTHING'
+            : ' ON DUPLICATE KEY UPDATE event_id = event_id';
+        $this->db->statement($sql, [$gateway, $eventId, $hash, json_encode($payload, JSON_THROW_ON_ERROR)]);
+        return $this->db->selectOne('SELECT * FROM payment_webhook_events WHERE gateway = ? AND event_id = ?' . $this->db->forUpdate(), [$gateway, $eventId]);
+    }
+
     private function recordEvent(
         string $gateway,
         string $eventId,
@@ -250,6 +270,10 @@ final class PaymentWebhookHandler
             $this->webhookEventsTable
         );
 
+        $updates = ['event_type', 'payload_hash', 'status', 'payment_id', 'error_message', 'payload_json', 'processed_at'];
+        $sql .= $this->db->getDriverName() === 'sqlite'
+            ? ' ON CONFLICT(gateway, event_id) DO UPDATE SET ' . implode(', ', array_map(static fn ($column) => "$column = excluded.$column", $updates))
+            : ' ON DUPLICATE KEY UPDATE ' . implode(', ', array_map(static fn ($column) => "$column = VALUES($column)", $updates));
         $this->db->statement($sql, [
             $gateway,
             $eventId,

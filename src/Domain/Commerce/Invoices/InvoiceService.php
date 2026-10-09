@@ -26,6 +26,9 @@ final class InvoiceService
 
     public function ensureTables(): void
     {
+        if ($this->db->getDriverName() === 'mysql' && $this->db->inTransaction()) {
+            throw new RuntimeException('Initialize invoice schema before starting an application transaction.');
+        }
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -299,7 +302,7 @@ final class InvoiceService
 
     public function findInvoiceById(int $id): ?Invoice
     {
-        $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE id = ?', $this->invoicesTable), [$id]);
+        $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE id = ?', $this->invoicesTable) . $this->db->forUpdate(), [$id]);
         return $row ? $this->hydrateInvoice($row) : null;
     }
 
@@ -343,11 +346,22 @@ final class InvoiceService
      */
     public function applyPayment(int $invoiceId, int $amountMinor, ?string $paidAt = null): Invoice
     {
+        return $this->db->transaction(function () use ($invoiceId, $amountMinor, $paidAt) {
+            $this->db->lockRow($this->invoicesTable, $invoiceId);
+            return $this->applyPaymentLocked($invoiceId, $amountMinor, $paidAt);
+        });
+    }
+
+    private function applyPaymentLocked(int $invoiceId, int $amountMinor, ?string $paidAt = null): Invoice
+    {
         $invoice = $this->findInvoiceById($invoiceId);
         if ($invoice === null) {
             throw new RuntimeException("Invoice {$invoiceId} not found.");
         }
 
+        if ($amountMinor <= 0 || $amountMinor > $invoice->getBalanceDueMinor()) {
+            throw new ValidationException(['amount_minor' => 'Payment exceeds invoice balance or is not positive.'], 'Invalid payment amount');
+        }
         $newPaidAmount = $invoice->getPaidAmountMinor() + $amountMinor;
         $isFullyPaid = $newPaidAmount >= $invoice->getTotalMinor();
         $newStatus = $isFullyPaid ? Invoice::STATUS_PAID : Invoice::STATUS_PARTIALLY_PAID;
@@ -364,12 +378,23 @@ final class InvoiceService
      */
     public function applyRefund(int $invoiceId, int $refundAmountMinor): Invoice
     {
+        return $this->db->transaction(function () use ($invoiceId, $refundAmountMinor) {
+            $this->db->lockRow($this->invoicesTable, $invoiceId);
+            return $this->applyRefundLocked($invoiceId, $refundAmountMinor);
+        });
+    }
+
+    private function applyRefundLocked(int $invoiceId, int $refundAmountMinor): Invoice
+    {
         $invoice = $this->findInvoiceById($invoiceId);
         if ($invoice === null) {
             throw new RuntimeException("Invoice {$invoiceId} not found.");
         }
 
-        $newPaidAmount = max(0, $invoice->getPaidAmountMinor() - $refundAmountMinor);
+        if ($refundAmountMinor <= 0 || $refundAmountMinor > $invoice->getPaidAmountMinor()) {
+            throw new ValidationException(['amount_minor' => 'Refund exceeds paid invoice balance or is not positive.'], 'Invalid refund amount');
+        }
+        $newPaidAmount = $invoice->getPaidAmountMinor() - $refundAmountMinor;
         $newStatus = match (true) {
             $newPaidAmount === 0 && $invoice->getPaidAmountMinor() > 0 => Invoice::STATUS_REFUNDED,
             $newPaidAmount > 0 => Invoice::STATUS_PARTIALLY_PAID,
