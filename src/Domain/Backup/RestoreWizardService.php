@@ -24,7 +24,8 @@ final class RestoreWizardService
 {
     public function __construct(
         private string $temporaryExtractDir,
-        private ?BackupEncryptionService $encryptionService = null
+        private ?BackupEncryptionService $encryptionService = null,
+        private ?\Coleza\Domain\Privacy\Tombstone\BackupRestoreReconciliationService $reconciliationService = null
     ) {
         if (!is_dir($temporaryExtractDir)) {
             mkdir($temporaryExtractDir, 0755, true);
@@ -223,6 +224,12 @@ final class RestoreWizardService
                 }
             }
 
+            // 7. Privacy Tombstone Reconciliation (Constitution Rule & Golden G08)
+            $reconciliationReport = null;
+            if ($this->reconciliationService !== null) {
+                $reconciliationReport = $this->reconciliationService->reconcileAfterBackupRestore();
+            }
+
             return new RestoreResult(
                 backupId: $backupId,
                 isSuccess: true,
@@ -234,7 +241,8 @@ final class RestoreWizardService
                     'restored_at' => date('c'),
                     'backup_created_at' => $manifest->getCreatedAt(),
                 ],
-                errorMessage: null
+                errorMessage: null,
+                reconciliationReport: $reconciliationReport
             );
         } catch (Throwable $e) {
             return new RestoreResult(

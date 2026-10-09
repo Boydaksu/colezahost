@@ -17,6 +17,7 @@ final class RestoreResult
      * @param array<int, string> $tablesRestored Names of tables successfully recreated/populated
      * @param array<string, mixed> $metadata Restored system metadata (version, brand, settings)
      * @param ?string $errorMessage Error description if restoration failed
+     * @param ?\Coleza\Domain\Privacy\Tombstone\RestoreReconciliationReport $reconciliationReport Privacy tombstone reconciliation report
      */
     public function __construct(
         private string $backupId,
@@ -25,7 +26,8 @@ final class RestoreResult
         private int $filesRestored,
         private array $tablesRestored = [],
         private array $metadata = [],
-        private ?string $errorMessage = null
+        private ?string $errorMessage = null,
+        private ?\Coleza\Domain\Privacy\Tombstone\RestoreReconciliationReport $reconciliationReport = null
     ) {
     }
 
@@ -70,6 +72,11 @@ final class RestoreResult
         return $this->errorMessage;
     }
 
+    public function getReconciliationReport(): ?\Coleza\Domain\Privacy\Tombstone\RestoreReconciliationReport
+    {
+        return $this->reconciliationReport;
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -82,6 +89,7 @@ final class RestoreResult
             'files_restored' => $this->filesRestored,
             'tables_restored' => $this->tablesRestored,
             'metadata' => $this->metadata,
+            'reconciliation_report' => $this->reconciliationReport?->jsonSerialize(),
             'error_message' => $this->errorMessage,
         ];
     }
