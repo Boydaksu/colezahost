@@ -46,6 +46,14 @@ final class WhmcsFinancialMigrator
         return $this->invoiceMap[(string) $sourceInvoiceId] ?? null;
     }
 
+    /**
+     * @return array<string, int>
+     */
+    public function getInvoiceMap(): array
+    {
+        return $this->invoiceMap;
+    }
+
     public function ensureFinancialTables(): void
     {
         $driver = $this->targetDb->getDriverName();

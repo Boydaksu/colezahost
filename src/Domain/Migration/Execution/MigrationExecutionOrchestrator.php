@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Coleza\Domain\Migration\Execution;
 
+use Coleza\Domain\Migration\Hold\MigrationHoldRepository;
+use Coleza\Domain\Migration\Hold\MigrationHoldService;
+use Coleza\Domain\Migration\Hold\NotificationSuppressionManager;
+use Coleza\Domain\Migration\Hold\SuppressedNotificationRepository;
 use Coleza\Domain\Migration\Staging\DatabaseStagingRepository;
 use Coleza\Domain\Migration\Staging\StagingAccountingReport;
 use Coleza\Domain\Migration\Validation\CanonicalValidationEngine;
@@ -23,9 +27,13 @@ use RuntimeException;
  * - Step-by-step checkpointing and interrupted session resumption
  * - Absolute idempotency across repeated runs
  * - End-to-end Zero Silent Data Loss certification
+ * - Migration hold and notification suppression protection
  */
 final class MigrationExecutionOrchestrator
 {
+    private MigrationHoldService $holdService;
+    private NotificationSuppressionManager $suppressionManager;
+
     public function __construct(
         private Connection $targetDb,
         private WhmcsCoreEntityMigrator $coreMigrator,
@@ -38,8 +46,25 @@ final class MigrationExecutionOrchestrator
         private CanonicalValidationEngine $validationEngine,
         private WhmcsCoreEntityExtractor $coreExtractor,
         private WhmcsFinancialExtractor $financialExtractor,
-        private WhmcsSupportExtractor $supportExtractor
+        private WhmcsSupportExtractor $supportExtractor,
+        ?MigrationHoldService $holdService = null,
+        ?NotificationSuppressionManager $suppressionManager = null
     ) {
+        $this->holdService = $holdService ?? new MigrationHoldService(new MigrationHoldRepository($targetDb));
+        $this->suppressionManager = $suppressionManager ?? new NotificationSuppressionManager(
+            $this->holdService,
+            new SuppressedNotificationRepository($targetDb)
+        );
+    }
+
+    public function getHoldService(): MigrationHoldService
+    {
+        return $this->holdService;
+    }
+
+    public function getSuppressionManager(): NotificationSuppressionManager
+    {
+        return $this->suppressionManager;
     }
 
     /**
@@ -216,6 +241,14 @@ final class MigrationExecutionOrchestrator
         $this->financialMigrator->ensureFinancialTables();
         $this->supportMigrator->ensureSupportTables();
         $this->checkpointRepo->ensureTable();
+        $this->holdService->getRepository()->ensureTable();
+        $this->suppressionManager->getRepository()->ensureTable();
+
+        $applyHold = (bool) ($options['apply_migration_hold'] ?? true);
+        if ($applyHold) {
+            // Activate temporary batch execution global hold to intercept any automated runs
+            $this->holdService->activateGlobalHold($batchId, 'Migration batch execution in progress');
+        }
 
         $checkpoint = $this->checkpointRepo->find($batchId);
         if ($checkpoint === null) {
@@ -233,6 +266,14 @@ final class MigrationExecutionOrchestrator
         // Step 1: Clients & Organizations
         if ($step === 'clients') {
             $stepResults['clients'] = $this->coreMigrator->migrateClients($batchId, $options);
+            if ($applyHold && !empty($stepResults['clients']['user_ids'])) {
+                $this->holdService->holdEntities(
+                    $batchId,
+                    'client',
+                    array_values($stepResults['clients']['user_ids']),
+                    'WHMCS migration safety hold: customer notifications suppressed'
+                );
+            }
             $checkpoint->stepComplete('products');
             $this->checkpointRepo->save($checkpoint);
             $step = 'products';
@@ -249,6 +290,14 @@ final class MigrationExecutionOrchestrator
         // Step 3: Services (Hosting Accounts)
         if ($step === 'services') {
             $stepResults['services'] = $this->coreMigrator->migrateServices($batchId, $options);
+            if ($applyHold && !empty($stepResults['services']['service_ids'])) {
+                $this->holdService->holdEntities(
+                    $batchId,
+                    'service',
+                    array_values($stepResults['services']['service_ids']),
+                    'WHMCS migration safety hold: automated suspension/termination suppressed'
+                );
+            }
             $checkpoint->stepComplete('domains');
             $this->checkpointRepo->save($checkpoint);
             $step = 'domains';
@@ -257,6 +306,14 @@ final class MigrationExecutionOrchestrator
         // Step 4: Domains
         if ($step === 'domains') {
             $stepResults['domains'] = $this->coreMigrator->migrateDomains($batchId, $options);
+            if ($applyHold && !empty($stepResults['domains']['domain_ids'])) {
+                $this->holdService->holdEntities(
+                    $batchId,
+                    'domain',
+                    array_values($stepResults['domains']['domain_ids']),
+                    'WHMCS migration safety hold: automated domain renewal actions suppressed'
+                );
+            }
             $checkpoint->stepComplete('invoices');
             $this->checkpointRepo->save($checkpoint);
             $step = 'invoices';
@@ -265,6 +322,17 @@ final class MigrationExecutionOrchestrator
         // Step 5: Invoices & Items
         if ($step === 'invoices') {
             $stepResults['invoices'] = $this->financialMigrator->migrateInvoices($batchId, $options);
+            if ($applyHold) {
+                $invIds = array_values($this->financialMigrator->getInvoiceMap());
+                if (!empty($invIds)) {
+                    $this->holdService->holdEntities(
+                        $batchId,
+                        'invoice',
+                        $invIds,
+                        'WHMCS migration safety hold: auto-collection and reminder notices suppressed'
+                    );
+                }
+            }
             $checkpoint->stepComplete('payments');
             $this->checkpointRepo->save($checkpoint);
             $step = 'payments';
@@ -305,6 +373,16 @@ final class MigrationExecutionOrchestrator
             ));
         }
 
+        if ($applyHold) {
+            $keepGlobal = (bool) ($options['keep_global_hold'] ?? false);
+            if (!$keepGlobal) {
+                $this->holdService->releaseGlobalHold($batchId, 'system', 'Batch execution completed; entity-level holds remain active for administrative inspection.');
+            }
+        }
+
+        $holdSummary = $applyHold ? $this->holdService->getHeldEntitiesSummary($batchId) : null;
+        $suppressedSummary = $this->suppressionManager->getSummary($batchId);
+
         return [
             'batch_id' => $batchId,
             'status' => 'completed',
@@ -313,6 +391,8 @@ final class MigrationExecutionOrchestrator
             'accounting_report' => $accountingReport->toArray(),
             'zero_silent_loss_achieved' => $accountingReport->isZeroSilentLossAchieved(),
             'fully_terminal' => $accountingReport->isFullyTerminal(),
+            'migration_hold_summary' => $holdSummary,
+            'suppressed_notifications_summary' => $suppressedSummary,
         ];
     }
 }
