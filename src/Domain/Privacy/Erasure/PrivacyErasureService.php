@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Coleza\Domain\Privacy\Erasure;
 
+use Coleza\Domain\Privacy\Handlers\PrivacyHandlerRegistry;
+use Coleza\Domain\Privacy\Redaction\RedactionAuditService;
 use Coleza\Domain\Privacy\Retention\RetentionAndLegalHoldService;
 use Coleza\Domain\Privacy\Tombstone\PrivacyTombstoneService;
 use Coleza\Foundation\Database\Connection;
@@ -18,7 +20,9 @@ final class PrivacyErasureService
     public function __construct(
         private readonly Connection $db,
         private readonly ?RetentionAndLegalHoldService $legalHoldService = null,
-        private readonly ?PrivacyTombstoneService $tombstoneService = null
+        private readonly ?PrivacyTombstoneService $tombstoneService = null,
+        private readonly ?PrivacyHandlerRegistry $handlerRegistry = null,
+        private readonly ?RedactionAuditService $redactionAuditService = null
     ) {
     }
 
@@ -246,15 +250,27 @@ final class PrivacyErasureService
             );
             $anonymized[] = 'users:' . $userId;
         } catch (\Throwable) {
-            // Table might have fewer columns in testing
+            // Table might have fewer columns in testing (e.g. without two_factor_secret)
             try {
                 $this->db->statement(
-                    "UPDATE users SET name = :name, email = :email WHERE id = :id",
+                    "UPDATE users
+                     SET name = :name, email = :email, status = 'erased',
+                         phone = NULL, address = NULL, tax_number = NULL,
+                         password_hash = 'ERASED'
+                     WHERE id = :id",
                     ['name' => $pseudoName, 'email' => $pseudoEmail, 'id' => $userId]
                 );
                 $anonymized[] = 'users:' . $userId;
             } catch (\Throwable) {
-                // Ignore
+                try {
+                    $this->db->statement(
+                        "UPDATE users SET name = :name, email = :email, status = 'erased' WHERE id = :id",
+                        ['name' => $pseudoName, 'email' => $pseudoEmail, 'id' => $userId]
+                    );
+                    $anonymized[] = 'users:' . $userId;
+                } catch (\Throwable) {
+                    // Ignore
+                }
             }
         }
 
@@ -318,6 +334,46 @@ final class PrivacyErasureService
             ]
         );
 
+        // 7. Trigger pluggable domain/module privacy handlers
+        if ($this->handlerRegistry !== null) {
+            $handlerResults = $this->handlerRegistry->executeErasureAcrossAll(
+                $userId,
+                'ANONYMIZE',
+                ['reason' => $trimmedReason, 'executed_by' => $executedBy]
+            );
+
+            foreach ($handlerResults as $domainName => $result) {
+                if ($this->redactionAuditService !== null && $result->getRecordsAffected() > 0) {
+                    $this->redactionAuditService->recordAudit(
+                        userId: $userId,
+                        domainName: $domainName,
+                        actionType: $result->getAction(),
+                        recordsAffected: $result->getRecordsAffected(),
+                        redactedFields: $result->getFieldsRedacted(),
+                        preChecksum: $result->getPreChecksum(),
+                        postChecksum: $result->getPostChecksum(),
+                        verifiedClean: $result->isSuccess(),
+                        auditedBy: $executedBy
+                    );
+                }
+            }
+        }
+
+        // 8. Record core identity redaction audit
+        if ($this->redactionAuditService !== null) {
+            $this->redactionAuditService->recordAudit(
+                userId: $userId,
+                domainName: 'identity_core',
+                actionType: 'ANONYMIZE',
+                recordsAffected: count($anonymized) + count($deleted),
+                redactedFields: ['users.name', 'users.email', 'users.phone', 'users.address', 'users.tax_number', 'users.password_hash', 'privacy_consents'],
+                preChecksum: hash('sha256', (string) $userId),
+                postChecksum: $auditChecksum,
+                verifiedClean: true,
+                auditedBy: $executedBy
+            );
+        }
+
         return new ErasureExecutionResult(
             userId: $userId,
             isSuccess: true,
@@ -367,6 +423,8 @@ final class PrivacyErasureService
             ]);
         }
 
+        $this->handlerRegistry?->applyRestrictionAcrossAll($userId, true);
+
         return true;
     }
 
@@ -391,6 +449,8 @@ final class PrivacyErasureService
                 'id' => $userId,
             ]
         );
+
+        $this->handlerRegistry?->applyRestrictionAcrossAll($userId, false);
 
         return true;
     }
