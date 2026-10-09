@@ -36,4 +36,41 @@ abstract class MariaDbTestCase extends TestCase
             $this->root->exec('DROP DATABASE `' . $this->database . '`');
         }
     }
+
+    protected function runParallel(string $action, int $id, string $extra = ''): array
+    {
+        $this->db->statement('CREATE TABLE worker_barrier (worker_id INT PRIMARY KEY, ready INT)');
+        $this->db->statement('CREATE TABLE worker_control (id INT PRIMARY KEY, started INT)');
+        $this->db->statement('INSERT INTO worker_control VALUES (1, 0)');
+        $workers = [];
+        try {
+            for ($i = 0; $i < 4; $i++) {
+                $process = proc_open([PHP_BINARY, dirname(__DIR__) . '/MariaDb/fixtures/financial-worker.php', $this->database, (string) $i, $action, (string) $id, $extra],
+                    [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
+                self::assertIsResource($process);
+                fclose($pipes[0]);
+                $workers[] = [$process, $pipes];
+            }
+            $deadline = microtime(true) + 15;
+            do {
+                $ready = (int) $this->db->selectOne('SELECT COUNT(*) AS n FROM worker_barrier')['n'];
+                if ($ready === 4) { break; }
+                usleep(10000);
+            } while (microtime(true) < $deadline);
+            self::assertSame(4, $ready);
+            $this->db->statement('UPDATE worker_control SET started = 1');
+            $results = [];
+            foreach ($workers as [$process, $pipes]) {
+                stream_set_timeout($pipes[1], 20);
+                $output = stream_get_contents($pipes[1]);
+                self::assertSame('', stream_get_contents($pipes[2]));
+                $results[] = json_decode($output, true, 512, JSON_THROW_ON_ERROR);
+            }
+            return $results;
+        } finally {
+            foreach ($workers as [$process, $pipes]) {
+                fclose($pipes[1]); fclose($pipes[2]); proc_terminate($process); proc_close($process);
+            }
+        }
+    }
 }

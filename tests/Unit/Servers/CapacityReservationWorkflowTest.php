@@ -140,9 +140,10 @@ final class CapacityReservationWorkflowTest extends TestCase
             serverId: $server->getId(),
             accountsCount: 1,
             diskMb: 1000,
-            ttlSeconds: -10 // already expired
+            ttlSeconds: 900
         );
-
+        $this->db->statement('UPDATE capacity_reservations SET expires_at = "2000-01-01 00:00:00" WHERE id = ?', [$res->getId()]);
+        $res = $this->reservationService->findReservationByToken($res->getToken());
         $this->assertTrue($res->hasExpired());
 
         $this->expectException(ReservationException::class);
@@ -202,9 +203,10 @@ final class CapacityReservationWorkflowTest extends TestCase
         ]);
 
         // Stale 1 (expired)
-        $r1 = $this->reservationService->reserve($server->getId(), accountsCount: 1, ttlSeconds: -60);
+        $r1 = $this->reservationService->reserve($server->getId(), accountsCount: 1, ttlSeconds: 900);
         // Stale 2 (expired)
-        $r2 = $this->reservationService->reserve($server->getId(), accountsCount: 1, ttlSeconds: -30);
+        $r2 = $this->reservationService->reserve($server->getId(), accountsCount: 1, ttlSeconds: 900);
+        $this->db->statement('UPDATE capacity_reservations SET expires_at = "2000-01-01 00:00:00" WHERE id IN (?, ?)', [$r1->getId(), $r2->getId()]);
         // Active 3 (valid for 10 minutes)
         $r3 = $this->reservationService->reserve($server->getId(), accountsCount: 1, ttlSeconds: 600);
 

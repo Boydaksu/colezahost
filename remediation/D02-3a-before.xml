@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Servers\CapacityAtomicityRegressionTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Servers\CapacityAtomicityRegressionTest.php" tests="6" assertions="6" errors="0" failures="5" skipped="0" time="0.010656">
+    <testcase name="testFailedReservationInsertDoesNotConsumeCapacity" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Servers\CapacityAtomicityRegressionTest.php" line="33" class="Coleza\Tests\Unit\Servers\CapacityAtomicityRegressionTest" classname="Coleza.Tests.Unit.Servers.CapacityAtomicityRegressionTest" assertions="1" time="0.006797">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Servers\CapacityAtomicityRegressionTest::testFailedReservationInsertDoesNotConsumeCapacity&#13;
+Failed asserting that 1 is identical to 0.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Servers\CapacityAtomicityRegressionTest.php:37</failure>
+    </testcase>
+    <testcase name="testFailedReleaseKeepsCapacityAndReservationTogether" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Servers\CapacityAtomicityRegressionTest.php" line="40" class="Coleza\Tests\Unit\Servers\CapacityAtomicityRegressionTest" classname="Coleza.Tests.Unit.Servers.CapacityAtomicityRegressionTest" assertions="1" time="0.000944">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Servers\CapacityAtomicityRegressionTest::testFailedReleaseKeepsCapacityAndReservationTogether&#13;
+Failed asserting that 0 is identical to 1.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Servers\CapacityAtomicityRegressionTest.php:45</failure>
+    </testcase>
+    <testcase name="testDirectCounterCannotExceedAccountLimit" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Servers\CapacityAtomicityRegressionTest.php" line="49" class="Coleza\Tests\Unit\Servers\CapacityAtomicityRegressionTest" classname="Coleza.Tests.Unit.Servers.CapacityAtomicityRegressionTest" assertions="1" time="0.000602">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Servers\CapacityAtomicityRegressionTest::testDirectCounterCannotExceedAccountLimit&#13;
+Failed asserting that exception of type "Coleza\Foundation\Exceptions\ValidationException" is thrown.</failure>
+    </testcase>
+    <testcase name="testNegativeReservationCannotCreateCapacity" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Servers\CapacityAtomicityRegressionTest.php" line="55" class="Coleza\Tests\Unit\Servers\CapacityAtomicityRegressionTest" classname="Coleza.Tests.Unit.Servers.CapacityAtomicityRegressionTest" assertions="1" time="0.000551">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Servers\CapacityAtomicityRegressionTest::testNegativeReservationCannotCreateCapacity&#13;
+Failed asserting that exception of type "Coleza\Domain\Servers\Capacity\Exceptions\ReservationException" is thrown.</failure>
+    </testcase>
+    <testcase name="testRepeatedServiceReservationReusesOneAllocation" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Servers\CapacityAtomicityRegressionTest.php" line="61" class="Coleza\Tests\Unit\Servers\CapacityAtomicityRegressionTest" classname="Coleza.Tests.Unit.Servers.CapacityAtomicityRegressionTest" assertions="1" time="0.000828">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Servers\CapacityAtomicityRegressionTest::testRepeatedServiceReservationReusesOneAllocation&#13;
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'RES-4b7e22c8a3699dadd42afedde96d0ac7'
++'RES-2de5b3ac056e558f564c148b73b5d960'
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Servers\CapacityAtomicityRegressionTest.php:65</failure>
+    </testcase>
+    <testcase name="testExpiredCommitReleasesCapacityEvenThoughItThrows" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Servers\CapacityAtomicityRegressionTest.php" line="69" class="Coleza\Tests\Unit\Servers\CapacityAtomicityRegressionTest" classname="Coleza.Tests.Unit.Servers.CapacityAtomicityRegressionTest" assertions="1" time="0.000933"/>
+  </testsuite>
+</testsuites>

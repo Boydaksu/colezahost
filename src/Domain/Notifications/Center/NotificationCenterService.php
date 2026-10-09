@@ -121,13 +121,12 @@ final class NotificationCenterService
             return $pref;
         }
 
+        $conflict = $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite'
+            ? ' ON CONFLICT(user_id, category) DO UPDATE SET email_enabled = excluded.email_enabled, in_app_enabled = excluded.in_app_enabled, sms_enabled = excluded.sms_enabled'
+            : ' ON DUPLICATE KEY UPDATE email_enabled = VALUES(email_enabled), in_app_enabled = VALUES(in_app_enabled), sms_enabled = VALUES(sms_enabled)';
         $stmt = $this->pdo->prepare(
             'INSERT INTO notification_preferences (user_id, category, email_enabled, in_app_enabled, sms_enabled)
-             VALUES (:user_id, :category, :email, :in_app, :sms)
-             ON CONFLICT(user_id, category) DO UPDATE SET
-                email_enabled = :email,
-                in_app_enabled = :in_app,
-                sms_enabled = :sms'
+             VALUES (:user_id, :category, :email, :in_app, :sms)' . $conflict
         );
 
         $stmt->execute([
@@ -487,9 +486,11 @@ final class NotificationCenterService
             return;
         }
 
+        if ($this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'mysql' && $this->pdo->inTransaction()) { throw new \RuntimeException('Initialize notifications before starting a transaction.'); }
+        $id = $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite' ? 'INTEGER PRIMARY KEY AUTOINCREMENT' : 'INT AUTO_INCREMENT PRIMARY KEY';
         $this->pdo->exec(
             'CREATE TABLE IF NOT EXISTS notification_preferences (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id ' . $id . ',
                 user_id INTEGER NOT NULL,
                 category VARCHAR(64) NOT NULL,
                 email_enabled INTEGER NOT NULL DEFAULT 1,
@@ -497,8 +498,11 @@ final class NotificationCenterService
                 sms_enabled INTEGER NOT NULL DEFAULT 0,
                 UNIQUE(user_id, category)
             );
-            CREATE TABLE IF NOT EXISTS in_app_notifications (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+'
+        );
+        $this->pdo->exec(
+            'CREATE TABLE IF NOT EXISTS in_app_notifications (
+                id ' . $id . ',
                 user_id INTEGER NOT NULL,
                 title VARCHAR(255) NOT NULL,
                 message TEXT NOT NULL,
@@ -509,8 +513,11 @@ final class NotificationCenterService
                 created_at VARCHAR(64) NOT NULL,
                 metadata_json TEXT
             );
-            CREATE TABLE IF NOT EXISTS notification_logs (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+'
+        );
+        $this->pdo->exec(
+            'CREATE TABLE IF NOT EXISTS notification_logs (
+                id ' . $id . ',
                 user_id INTEGER,
                 channel VARCHAR(32) NOT NULL,
                 template_key VARCHAR(64),

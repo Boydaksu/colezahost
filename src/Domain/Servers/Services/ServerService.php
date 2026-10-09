@@ -25,6 +25,7 @@ final class ServerService
 
     public function ensureTables(): void
     {
+        if ($this->db->getDriverName() === 'mysql' && $this->db->inTransaction()) { throw new RuntimeException('Initialize server schema before starting a transaction.'); }
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -410,6 +411,14 @@ final class ServerService
      */
     public function updateServer(int $id, array $data): Server
     {
+        return $this->db->transaction(function () use ($id, $data) {
+            $this->db->lockRow($this->serversTable, $id);
+            return $this->updateServerLocked($id, $data);
+        });
+    }
+
+    private function updateServerLocked(int $id, array $data): Server
+    {
         $existing = $this->findServerById($id);
         if ($existing === null) {
             throw new RuntimeException("Server {$id} not found.");
@@ -432,6 +441,11 @@ final class ServerService
         $diskCapacityMb = isset($data['disk_capacity_mb']) ? max(0, (int)$data['disk_capacity_mb']) : $existing->getCapacity()->getDiskCapacityMb();
         $bwCapacityMb = isset($data['bandwidth_capacity_mb']) ? max(0, (int)$data['bandwidth_capacity_mb']) : $existing->getCapacity()->getBandwidthCapacityMb();
         $memCapacityMb = isset($data['memory_capacity_mb']) ? max(0, (int)$data['memory_capacity_mb']) : $existing->getCapacity()->getMemoryCapacityMb();
+        if ($maxAccounts < $existing->getCapacity()->getUsedAccounts()
+            || ($diskCapacityMb > 0 && $diskCapacityMb < $existing->getCapacity()->getDiskUsedMb())
+            || ($bwCapacityMb > 0 && $bwCapacityMb < $existing->getCapacity()->getBandwidthUsedMb())) {
+            throw new ValidationException(['capacity' => 'Configured limits cannot be below current allocations.'], 'Invalid capacity limit');
+        }
 
         $port = array_key_exists('port', $data)
             ? ($data['port'] !== null ? (int)$data['port'] : null)
@@ -471,7 +485,7 @@ final class ServerService
 
     public function findServerById(int $id): ?Server
     {
-        $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE id = ?', $this->serversTable), [$id]);
+        $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE id = ?', $this->serversTable) . $this->db->forUpdate(), [$id]);
         return $row ? $this->hydrateServer($row) : null;
     }
 
@@ -515,6 +529,21 @@ final class ServerService
 
     public function incrementAccountCount(int $serverId, int $accounts = 1, int $diskMb = 0, int $bandwidthMb = 0): Server
     {
+        return $this->db->transaction(function () use ($serverId, $accounts, $diskMb, $bandwidthMb) {
+            $this->db->lockRow($this->serversTable, $serverId);
+            return $this->incrementAccountCountLocked($serverId, $accounts, $diskMb, $bandwidthMb);
+        });
+    }
+
+    private function incrementAccountCountLocked(int $serverId, int $accounts = 1, int $diskMb = 0, int $bandwidthMb = 0): Server
+    {
+        $this->validateCapacityDelta($accounts, $diskMb, $bandwidthMb);
+        $current = $this->findServerById($serverId) ?? throw new RuntimeException('Server not found.');
+        $capacity = $current->getCapacity();
+        if (!$current->isActive() || !$capacity->hasAccountHeadroom($accounts)
+            || !$capacity->hasDiskHeadroom($diskMb) || !$capacity->hasBandwidthHeadroom($bandwidthMb)) {
+            throw new ValidationException(['capacity' => 'Requested capacity exceeds an active server limit.'], 'Insufficient server capacity');
+        }
         $sql = sprintf(
             'UPDATE %s SET used_accounts = used_accounts + ?, disk_used_mb = disk_used_mb + ?, bandwidth_used_mb = bandwidth_used_mb + ? WHERE id = ?',
             $this->serversTable
@@ -537,9 +566,19 @@ final class ServerService
 
     public function decrementAccountCount(int $serverId, int $accounts = 1, int $diskMb = 0, int $bandwidthMb = 0): Server
     {
+        return $this->db->transaction(function () use ($serverId, $accounts, $diskMb, $bandwidthMb) {
+            $this->db->lockRow($this->serversTable, $serverId);
+            return $this->decrementAccountCountLocked($serverId, $accounts, $diskMb, $bandwidthMb);
+        });
+    }
+
+    private function decrementAccountCountLocked(int $serverId, int $accounts = 1, int $diskMb = 0, int $bandwidthMb = 0): Server
+    {
+        $this->validateCapacityDelta($accounts, $diskMb, $bandwidthMb);
+        $floor = $this->db->getDriverName() === 'mysql' ? 'GREATEST' : 'MAX';
         $sql = sprintf(
-            'UPDATE %s SET used_accounts = MAX(0, used_accounts - ?), disk_used_mb = MAX(0, disk_used_mb - ?), bandwidth_used_mb = MAX(0, bandwidth_used_mb - ?) WHERE id = ?',
-            $this->serversTable
+            'UPDATE %s SET used_accounts = %s(0, used_accounts - ?), disk_used_mb = %s(0, disk_used_mb - ?), bandwidth_used_mb = %s(0, bandwidth_used_mb - ?) WHERE id = ?',
+            $this->serversTable, $floor, $floor, $floor
         );
         $this->db->statement($sql, [$accounts, $diskMb, $bandwidthMb, $serverId]);
 
@@ -549,6 +588,7 @@ final class ServerService
         }
 
         // If server was full and now has headroom, reactivate
+        $this->assertAllocationFloor($serverId, $server->getCapacity()->getUsedAccounts(), $server->getCapacity()->getDiskUsedMb(), $server->getCapacity()->getBandwidthUsedMb());
         if ($server->getStatus() === Server::STATUS_FULL && $server->getCapacity()->hasAccountHeadroom(1)) {
             $this->setServerStatus($serverId, Server::STATUS_ACTIVE);
             return $this->findServerById($serverId) ?? $server;
@@ -563,7 +603,25 @@ final class ServerService
         int $diskUsedMb,
         int $bandwidthUsedMb,
         int $memoryUsedMb = 0
+    ): Server
+    {
+        return $this->db->transaction(function () use ($serverId, $usedAccounts, $diskUsedMb, $bandwidthUsedMb, $memoryUsedMb) {
+            $this->db->lockRow($this->serversTable, $serverId);
+            return $this->updateServerUsageLocked($serverId, $usedAccounts, $diskUsedMb, $bandwidthUsedMb, $memoryUsedMb);
+        });
+    }
+
+    private function updateServerUsageLocked(
+        int $serverId,
+        int $usedAccounts,
+        int $diskUsedMb,
+        int $bandwidthUsedMb,
+        int $memoryUsedMb = 0
     ): Server {
+        if (min($usedAccounts, $diskUsedMb, $bandwidthUsedMb, $memoryUsedMb) < 0) {
+            throw new ValidationException(['usage' => 'Usage cannot be negative.'], 'Invalid server usage');
+        }
+        $this->assertAllocationFloor($serverId, $usedAccounts, $diskUsedMb, $bandwidthUsedMb);
         $sql = sprintf(
             'UPDATE %s SET used_accounts = ?, disk_used_mb = ?, bandwidth_used_mb = ?, memory_used_mb = ? WHERE id = ?',
             $this->serversTable
@@ -612,6 +670,26 @@ final class ServerService
     /**
      * @param array<string, mixed> $row
      */
+    private function validateCapacityDelta(int $accounts, int $disk, int $bandwidth): void
+    {
+        if ($accounts <= 0 || $disk < 0 || $bandwidth < 0) {
+            throw new ValidationException(['capacity' => 'Account count must be positive and resource amounts nonnegative.'], 'Invalid capacity delta');
+        }
+    }
+
+    private function assertAllocationFloor(int $serverId, int $usedAccounts, int $diskUsedMb, int $bandwidthUsedMb): void
+    {
+        $exists = $this->db->getDriverName() === 'sqlite'
+            ? $this->db->selectOne('SELECT name FROM sqlite_master WHERE type = "table" AND name = "capacity_reservations"')
+            : $this->db->selectOne('SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = "capacity_reservations"');
+        if ($exists === null) { return; }
+        $rows = $this->db->select('SELECT accounts_count, disk_mb, bandwidth_mb FROM capacity_reservations WHERE server_id = ? AND status IN ("reserved", "committed")' . $this->db->forUpdate(), [$serverId]);
+        if ($usedAccounts < array_sum(array_column($rows, 'accounts_count')) || $diskUsedMb < array_sum(array_column($rows, 'disk_mb'))
+            || $bandwidthUsedMb < array_sum(array_column($rows, 'bandwidth_mb'))) {
+            throw new ValidationException(['usage' => 'Usage cannot erase active allocations; reconciliation required.'], 'Usage below reserved capacity');
+        }
+    }
+
     private function hydrateLocation(array $row): Location
     {
         return new Location(

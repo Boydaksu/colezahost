@@ -14,6 +14,8 @@ $payments = new Coleza\Domain\Commerce\Payments\PaymentService($db, $invoices);
 $credit = new Coleza\Domain\Commerce\Credit\CreditService($db, $invoices, $payments);
 $queue = new Coleza\Foundation\Queue\DatabaseQueue($db);
 $queue->ensureTables();
+$servers = new Coleza\Domain\Servers\Services\ServerService($db);
+$reservations = new Coleza\Domain\Servers\Capacity\Services\CapacityReservationService($db, $servers);
 $action = $argv[3];
 $id = (int) $argv[4];
 $number = $action === 'callback' ? $payments->findPaymentById($id)->getPaymentNumber() : '';
@@ -53,9 +55,17 @@ try {
                 $result['jobs'][] = $job->getId();
             }
             break;
+        case 'reserve': $result['token'] = $reservations->reserve($id)->getToken(); break;
+        case 'reserveResource': $result['token'] = $reservations->reserve($id, diskMb: 600, bandwidthMb: 600)->getToken(); break;
+        case 'sameScope': $result['token'] = $reservations->reserve($id, serviceId: 77)->getToken(); break;
+        case 'releaseCapacity': $reservations->release($argv[5]); break;
+        case 'commitExpire':
+            if ((int) $argv[2] % 2 === 0) { $reservations->commit($argv[5]); }
+            else { $reservations->expireStaleReservations('2030-01-01 00:00:00'); }
+            break;
         default: throw new RuntimeException('Unknown worker action.');
     }
-} catch (Coleza\Foundation\Exceptions\ValidationException $error) {
+} catch (Coleza\Foundation\Exceptions\ValidationException|Coleza\Domain\Servers\Capacity\Exceptions\ReservationException $error) {
     $result = ['status' => 'rejected'];
 }
 $result['provider_calls'] = $calls;

@@ -25,7 +25,7 @@ final class IdentitySchemaMigrationRegressionTest extends TestCase
         $db->statement('INSERT INTO role_permissions VALUES (1, "payments.manage"), (2, "org.services.view")');
         $db->statement('INSERT INTO user_roles VALUES (7, 1, NULL), (7, 1, NULL), (8, 2, 10)');
         $runner = new Migrator($db);
-        self::assertCount(2, $runner->migrate(dirname(__DIR__, 4) . '/database/migrations'));
+        self::assertCount(3, $runner->migrate(dirname(__DIR__, 4) . '/database/migrations'));
         self::assertSame([], $runner->migrate(dirname(__DIR__, 4) . '/database/migrations'));
         $rbac = new RbacService($db);
         self::assertTrue($rbac->hasPermission(7, 'payments.manage'));

@@ -1,0 +1,39 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m.                                                              6 / 6 (100%)
+
+Time: 00:00.013, Memory: 20.00 MB
+
+There were 5 failures:
+
+1) Coleza\Tests\Unit\Servers\CapacityAtomicityRegressionTest::testFailedReservationInsertDoesNotConsumeCapacity
+Failed asserting that 1 is identical to 0.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Servers\CapacityAtomicityRegressionTest.php:37
+
+2) Coleza\Tests\Unit\Servers\CapacityAtomicityRegressionTest::testFailedReleaseKeepsCapacityAndReservationTogether
+Failed asserting that 0 is identical to 1.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Servers\CapacityAtomicityRegressionTest.php:45
+
+3) Coleza\Tests\Unit\Servers\CapacityAtomicityRegressionTest::testDirectCounterCannotExceedAccountLimit
+Failed asserting that exception of type "Coleza\Foundation\Exceptions\ValidationException" is thrown.
+
+4) Coleza\Tests\Unit\Servers\CapacityAtomicityRegressionTest::testNegativeReservationCannotCreateCapacity
+Failed asserting that exception of type "Coleza\Domain\Servers\Capacity\Exceptions\ReservationException" is thrown.
+
+5) Coleza\Tests\Unit\Servers\CapacityAtomicityRegressionTest::testRepeatedServiceReservationReusesOneAllocation
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'RES-4b7e22c8a3699dadd42afedde96d0ac7'
++'RES-2de5b3ac056e558f564c148b73b5d960'
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Servers\CapacityAtomicityRegressionTest.php:65
+
+[37;41mFAILURES![0m
+[37;41mTests: 6[0m[37;41m, Assertions: 6[0m[37;41m, Failures: 5[0m[37;41m.[0m

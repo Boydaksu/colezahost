@@ -1,0 +1,50 @@
+[
+  {
+    "path": "src/Domain/Notifications/Center/NotificationCenterService.php",
+    "sha256": "5901911192c20ed7d537c57b3fe5963a74cd57c0e8cccd47ffa1e89d65677cbf"
+  },
+  {
+    "path": "src/Domain/Servers/Capacity/Services/CapacityReservationService.php",
+    "sha256": "2cf6d9f238761b78140d63ac14d98ef0844522258b4f392d31d7f54a138a21a7"
+  },
+  {
+    "path": "src/Domain/Servers/Services/ServerService.php",
+    "sha256": "98ea8a4660675ee3a933a47f44dcaccb90a1fdb391820d924bfeb95363af9400"
+  },
+  {
+    "path": "tests/MariaDb/DatabaseFoundationTest.php",
+    "sha256": "33cf6eea03841ca74c9ff8c1f1891150270765752fc3bd36f9f9dada00ab2be1"
+  },
+  {
+    "path": "tests/MariaDb/fixtures/financial-worker.php",
+    "sha256": "cbe57fecc128fbf363380fc0f7418b9e6f49bb2dd073cce8fbf5ec446395273f"
+  },
+  {
+    "path": "tests/Support/MariaDbTestCase.php",
+    "sha256": "49cfce5e65888abcaa631e26dde2b769765fc882f3dee2f19062b3d50c50ab2b"
+  },
+  {
+    "path": "tests/Unit/Foundation/Database/IdentitySchemaMigrationRegressionTest.php",
+    "sha256": "8d27829fabdf60d1c4c05429eb025b8ccc30de9d30dc2b51c1e7d0bbe4baf149"
+  },
+  {
+    "path": "tests/Unit/Servers/CapacityReservationWorkflowTest.php",
+    "sha256": "0d241f64e2985bdf100f3e8506acda157bf93f67a0a328bba5ca1e969cd44fc0"
+  },
+  {
+    "path": "database/migrations/2026_10_09_000003_capacity_notifications.php",
+    "sha256": "7ed4a033b7efa0ae2c38fa1bac30aa143c7a8a6083c9fdd424de663b0bef9dd9"
+  },
+  {
+    "path": "src/Domain/Servers/Capacity/Services/CapacityScopeSchema.php",
+    "sha256": "dee518077e60068340d79a0f9d6ceaed305128573263b5f4af674a54e2289db2"
+  },
+  {
+    "path": "tests/MariaDb/CapacityAndNotificationTest.php",
+    "sha256": "725516d5645438b1d73d63cf35bec34ac57b9458098c2ed5158c08740fedaf05"
+  },
+  {
+    "path": "tests/Unit/Servers/CapacityAtomicityRegressionTest.php",
+    "sha256": "3b381ae423439c18e9996d53989600304b1c527aa286968c12f6bf2f0ec993bc"
+  }
+]

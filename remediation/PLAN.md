@@ -29,3 +29,7 @@ Kurulum ve RBAC aynı şema üzerinden çalışmalı; global roller için NULL i
 ## CR-D02.2 / TCR-D02.2
 
 Hedefler: PaymentService, InvoiceService, CreditService, PaymentWebhookHandler, Connection, DatabaseQueue/QueueJob; token/webhook/lease ve finans kilidi migration'ları; SQLite hata enjeksiyonu ve gerçek MariaDB paralel işlem testleri. Ödeme/tahsis/fatura/credit/refund bir transaction içinde tutulur; dış sağlayıcı isteği için kalıcı iade rezervasyonu ayrı commit edilir. Token SHA-256 özeti UNIQUE indeksle eşleştirilir. Önceki mükerrer token regresyonu, ikinci token atamasının reddedilmesi ve ilk kaydın bozulmaması ölçütüne yükseltilir. Eski mükerrer/çelişkili kayıtlar migration tarafından sessizce seçilmez veya silinmez; mutabakat gerektiren hata verir. Queue lease sahibi değiştikten sonra eski çalışan delete/retry/DLQ yapamaz.
+
+## CR-D02.3a / TCR-D02.3a
+
+D02.3 iki kabul adımına ayrılır: (a) atomik kapasite/rezervasyon, süre/tekrar koruması ve bildirim SQL şeması; (b) kalan PDO/domain şemaları, WHMCS SQL ve geniş kurulum/migration kabul matrisi. Hedefler (a): ServerService, CapacityReservationService, bildirim merkezi, kapasite scope migration'ı, SQLite hata testleri ve MariaDB çok işlem testleri. Aynı service/order_item için aktif rezervasyon benzersiz scope anahtarıyla korunur. Sayaç ve rezervasyon statüsü beraber commit edilir; süresi dolmuş commit kotayı bıraktıktan sonra hata döndürür. Eski mükerrer kapsamlar migration ile sessizce birleştirilmez.
