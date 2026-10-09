@@ -67,9 +67,11 @@ final class DatabaseSetupService
                 id %s,
                 email VARCHAR(255) NOT NULL UNIQUE,
                 password_hash VARCHAR(255) NOT NULL,
-                first_name VARCHAR(100) NOT NULL,
-                last_name VARCHAR(100) NOT NULL,
+                name VARCHAR(200) NULL,
+                first_name VARCHAR(100) NULL,
+                last_name VARCHAR(100) NULL,
                 status VARCHAR(50) NOT NULL DEFAULT "active",
+                is_active INT NOT NULL DEFAULT 1,
                 email_verified_at TIMESTAMP NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP NULL
@@ -124,6 +126,7 @@ final class DatabaseSetupService
                 id %s,
                 name VARCHAR(255) NOT NULL,
                 slug VARCHAR(255) NOT NULL UNIQUE,
+                owner_user_id INT NULL,
                 status VARCHAR(50) NOT NULL DEFAULT "active",
                 billing_currency VARCHAR(3) NOT NULL DEFAULT "USD",
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -132,6 +135,22 @@ final class DatabaseSetupService
             $autoInc
         ));
         $tables[] = $tOrgs;
+
+        // 4b. Organization Members table
+        $tOrgMembers = $prefix . 'organization_members';
+        $connection->statement(sprintf(
+            'CREATE TABLE IF NOT EXISTS %s (
+                id %s,
+                organization_id INT NOT NULL,
+                user_id INT NOT NULL,
+                role VARCHAR(50) NOT NULL DEFAULT "member",
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(organization_id, user_id)
+            )',
+            $tOrgMembers,
+            $autoInc
+        ));
+        $tables[] = $tOrgMembers;
 
         // 5. Brands table
         $tBrands = $prefix . 'brands';

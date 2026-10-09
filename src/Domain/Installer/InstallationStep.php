@@ -13,5 +13,6 @@ enum InstallationStep: string
     case BRAND = 'brand';
     case EMAIL = 'email';
     case CRON = 'cron';
+    case MIGRATION = 'migration';
     case COMPLETED = 'completed';
 }

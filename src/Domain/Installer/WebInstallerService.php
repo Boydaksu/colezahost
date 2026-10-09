@@ -32,7 +32,8 @@ final class WebInstallerService
         private EmailSetupService $emailSetupService,
         private CronSetupService $cronSetupService,
         private InstallerLock $installerLock,
-        ?Connection $connection = null
+        ?Connection $connection = null,
+        private ?FreshInstallMigrationModeService $freshMigrationService = null
     ) {
         $this->connection = $connection;
     }
@@ -232,6 +233,48 @@ final class WebInstallerService
         $this->currentStep = InstallationStep::COMPLETED;
 
         return $result;
+    }
+
+    /**
+     * Optional Step: Executes fresh-install migration import prior to finalizing installation.
+     * Transitions step to MIGRATION, imports legacy dataset, preserves migration hold, and advances to COMPLETED.
+     */
+    public function executeMigrationStep(FreshInstallMigrationConfig $config, ?string $batchId = null): FreshInstallMigrationResult
+    {
+        $this->assertNotLocked();
+        $this->assertDatabaseConnected();
+
+        if ($this->freshMigrationService === null) {
+            throw new \RuntimeException('Fresh install migration service is not configured.');
+        }
+
+        $this->currentStep = InstallationStep::MIGRATION;
+
+        /** @var Connection $db */
+        $db = $this->connection;
+        $result = $this->freshMigrationService->executeFreshMigration($db, $config, $batchId);
+
+        $this->sessionState['migration_source'] = $config->getSourceType();
+        $this->sessionState['migration_total_migrated'] = $result->getTotalMigrated();
+        $this->sessionState['migration_total_conflicts'] = $result->getTotalConflicts();
+        $this->sessionState['migration_total_quarantined'] = $result->getTotalQuarantined();
+        $this->sessionState['migration_hold_engaged'] = $result->isMigrationHoldEngaged();
+
+        if ($result->isSuccess()) {
+            $this->currentStep = InstallationStep::COMPLETED;
+        }
+
+        return $result;
+    }
+
+    public function setFreshMigrationService(FreshInstallMigrationModeService $service): void
+    {
+        $this->freshMigrationService = $service;
+    }
+
+    public function getFreshMigrationService(): ?FreshInstallMigrationModeService
+    {
+        return $this->freshMigrationService;
     }
 
     /**
