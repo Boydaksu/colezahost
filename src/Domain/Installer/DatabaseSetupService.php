@@ -52,6 +52,7 @@ final class DatabaseSetupService
      */
     public function initializeCoreSchema(Connection $connection, string $prefix = ''): array
     {
+        $identitySchema = new \Coleza\Domain\Identity\Rbac\RbacSchema($connection, $prefix);
         $driver = $connection->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -81,43 +82,13 @@ final class DatabaseSetupService
         ));
         $tables[] = $tUsers;
 
-        // 2. Roles table
-        $tRoles = $prefix . 'roles';
-        $connection->statement(sprintf(
-            'CREATE TABLE IF NOT EXISTS %s (
-                id %s,
-                name VARCHAR(50) NOT NULL UNIQUE,
-                display_name VARCHAR(100) NOT NULL,
-                permissions_json TEXT NULL,
-                is_system INT NOT NULL DEFAULT 1,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )',
-            $tRoles,
-            $autoInc
-        ));
-        $tables[] = $tRoles;
-
-        // Seed default SUPER_ADMIN role if empty
-        $existingAdminRole = $connection->selectOne(sprintf('SELECT id FROM %s WHERE name = ?', $tRoles), ['super_admin']);
-        if ($existingAdminRole === null) {
-            $connection->statement(
-                sprintf('INSERT INTO %s (name, display_name, permissions_json, is_system) VALUES (?, ?, ?, 1)', $tRoles),
-                ['super_admin', 'Super Administrator', json_encode(['*'])]
-            );
-        }
-
-        // 3. User Roles mapping table
-        $tUserRoles = $prefix . 'user_roles';
-        $connection->statement(sprintf(
-            'CREATE TABLE IF NOT EXISTS %s (
-                user_id INT NOT NULL,
-                role_id INT NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                PRIMARY KEY (user_id, role_id)
-            )',
-            $tUserRoles
-        ));
-        $tables[] = $tUserRoles;
+        // Shared canonical RBAC schema, including upgrade of legacy installer tables.
+        $identitySchema->upgrade();
+        $rbac = new \Coleza\Domain\Identity\Rbac\RbacService($connection, $prefix);
+        $roleId = $rbac->findOrCreateRole('super_admin', 'system', 'Super Administrator');
+        $rbac->grantPermission($roleId, '*');
+        $connection->statement(sprintf('UPDATE %sroles SET display_name = ? WHERE id = ?', $prefix), ['Super Administrator', $roleId]);
+        array_push($tables, $prefix . 'roles', $prefix . 'permissions', $prefix . 'role_permissions', $prefix . 'user_roles');
 
         // 4. Organizations table
         $tOrgs = $prefix . 'organizations';

@@ -1,0 +1,525 @@
+{
+  "issues": [],
+  "references": [
+    {
+      "path": "src/Foundation/Bootstrap/Bootstrap.php",
+      "line": 17,
+      "needle": "public static function boot"
+    },
+    {
+      "path": "src/Domain/Installer/WebInstallerService.php",
+      "line": 18,
+      "needle": "final class"
+    },
+    {
+      "path": "RELEASE_NOTES.md",
+      "line": 68,
+      "needle": "Navigate to"
+    },
+    {
+      "path": "src/Domain/Commerce/Invoices/InvoiceService.php",
+      "line": 395,
+      "needle": "ON CONFLICT"
+    },
+    {
+      "path": "src/Domain/Commerce/Payments/PaymentService.php",
+      "line": 447,
+      "needle": "ON CONFLICT"
+    },
+    {
+      "path": "src/Domain/Commerce/Services/ServiceService.php",
+      "line": 1059,
+      "needle": "ON CONFLICT"
+    },
+    {
+      "path": "src/Foundation/Database/Connection.php",
+      "line": 233,
+      "needle": "$stmt = $this->pdo->prepare"
+    },
+    {
+      "path": "src/Domain/Installer/DatabaseSetupService.php",
+      "line": 109,
+      "needle": "// 3. User Roles"
+    },
+    {
+      "path": "src/Domain/Identity/Rbac/RbacService.php",
+      "line": 161,
+      "needle": "organization_id IS NULL"
+    },
+    {
+      "path": "src/Domain/Installer/AdminBootstrapService.php",
+      "line": 45,
+      "needle": "super_admin"
+    },
+    {
+      "path": "src/Foundation/Database/Migrator.php",
+      "line": 9,
+      "needle": "final class"
+    },
+    {
+      "path": "src/Domain/Providers/Cpanel/CpanelCurlTransport.php",
+      "line": 72,
+      "needle": "microtime(true) - startTime"
+    },
+    {
+      "path": "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "line": 269,
+      "needle": "new CpanelMemoryTransport"
+    },
+    {
+      "path": "src/Application/Commerce/Payments/PaymentApplicationService.php",
+      "line": 92,
+      "needle": "public function recordManualPayment"
+    },
+    {
+      "path": "src/Domain/Commerce/Payments/PaymentService.php",
+      "line": 196,
+      "needle": "// Determine initial status"
+    },
+    {
+      "path": "src/Api/Controllers/Commerce/PaymentApiController.php",
+      "line": 82,
+      "needle": "recordManualPayment"
+    },
+    {
+      "path": "src/Domain/Commerce/Payments/Gateways/PaymentWebhookHandler.php",
+      "line": 152,
+      "needle": "// 7. Settle Payment"
+    },
+    {
+      "path": "src/Domain/Commerce/Payments/PaymentService.php",
+      "line": 1000,
+      "needle": "public function findPaymentByToken"
+    },
+    {
+      "path": "src/Api/Controllers/Commerce/OrderApiController.php",
+      "line": 37,
+      "needle": "$items ="
+    },
+    {
+      "path": "src/Domain/Commerce/Orders/OrderService.php",
+      "line": 121,
+      "needle": "Direct custom/override price"
+    },
+    {
+      "path": "src/Domain/Commerce/Invoices/InvoiceService.php",
+      "line": 144,
+      "needle": "$unitAmount ="
+    },
+    {
+      "path": "src/Foundation/Bootstrap/CoreServiceProvider.php",
+      "line": 223,
+      "needle": "str_repeat('c', 32)"
+    },
+    {
+      "path": "config/app.php",
+      "line": 5,
+      "needle": "return ["
+    },
+    {
+      "path": "src/Domain/Installer/EmailSetupService.php",
+      "line": 36,
+      "needle": "mail.password"
+    },
+    {
+      "path": "src/Domain/Servers/Services/ServerService.php",
+      "line": 366,
+      "needle": "$authSecret ="
+    },
+    {
+      "path": "src/Domain/Identity/TwoFactor/TwoFactorService.php",
+      "line": 97,
+      "needle": "'secret' => $secret"
+    },
+    {
+      "path": "src/Domain/Backup/Storage/S3BackupStorageAdapter.php",
+      "line": 25,
+      "needle": "private bool $simulated"
+    },
+    {
+      "path": "src/Domain/Backup/Storage/SftpBackupStorageAdapter.php",
+      "line": 44,
+      "needle": "Production SFTP"
+    },
+    {
+      "path": "src/Domain/Backup/EnterpriseBackupService.php",
+      "line": 126,
+      "needle": "$destination->store"
+    },
+    {
+      "path": "src/Domain/Backup/EnterpriseBackupService.php",
+      "line": 153,
+      "needle": "if ($driver === 'sqlite')"
+    },
+    {
+      "path": "src/Domain/Backup/PreUpdateBackupService.php",
+      "line": 207,
+      "needle": "if ($driver === 'sqlite')"
+    },
+    {
+      "path": "src/Domain/Backup/EnterpriseBackupService.php",
+      "line": 81,
+      "needle": "basename($path)"
+    },
+    {
+      "path": "src/Domain/Backup/EnterpriseBackupService.php",
+      "line": 169,
+      "needle": "addslashes"
+    },
+    {
+      "path": "src/Domain/Backup/RestoreWizardService.php",
+      "line": 265,
+      "needle": "private function splitSqlStatements"
+    },
+    {
+      "path": "src/Domain/Updater/StagedUpdateService.php",
+      "line": 240,
+      "needle": "$migrationsRun++"
+    },
+    {
+      "path": "src/Domain/Updater/StagedUpdateService.php",
+      "line": 183,
+      "needle": "bool $requireBackup"
+    },
+    {
+      "path": "src/Domain/Release/ReleasePackagingService.php",
+      "line": 115,
+      "needle": "'payload/'"
+    },
+    {
+      "path": "src/Domain/Automation/Approval/ApprovalManager.php",
+      "line": 14,
+      "needle": "private array $requests"
+    },
+    {
+      "path": "src/Domain/Automation/Delay/DelayManager.php",
+      "line": 14,
+      "needle": "private array $delayed"
+    },
+    {
+      "path": "src/Domain/Automation/Safety/EmergencyPauseManager.php",
+      "line": 16,
+      "needle": "EmergencyPauseState::active"
+    },
+    {
+      "path": "src/Domain/Automation/Versioning/RuleVersionManager.php",
+      "line": 14,
+      "needle": "private array $history"
+    },
+    {
+      "path": "src/Domain/Commerce/Services/Lifecycle/OverdueLifecycleWorkflow.php",
+      "line": 66,
+      "needle": "public function handleInvoicePaid"
+    },
+    {
+      "path": "src/Domain/Commerce/Services/Lifecycle/OverdueLifecycleWorkflow.php",
+      "line": 113,
+      "needle": "$this->serviceService->renewService"
+    },
+    {
+      "path": "src/Foundation/Queue/DatabaseQueue.php",
+      "line": 76,
+      "needle": "public function pop"
+    },
+    {
+      "path": "src/Domain/Commerce/Credit/CreditService.php",
+      "line": 166,
+      "needle": "public function deductCredit"
+    },
+    {
+      "path": "src/Domain/Servers/Capacity/Services/CapacityReservationService.php",
+      "line": 115,
+      "needle": "// Increment server allocation"
+    },
+    {
+      "path": "src/Domain/Commerce/Invoices/InvoiceService.php",
+      "line": 351,
+      "needle": "$newPaidAmount ="
+    },
+    {
+      "path": "src/Domain/Analytics/Financial/FinancialMetricsService.php",
+      "line": 40,
+      "needle": "SELECT id, total_amount"
+    },
+    {
+      "path": "tests/Integration/Performance/PerformanceAndReferenceBudgetRegressionTest.php",
+      "line": 190,
+      "needle": "total_amount DECIMAL"
+    },
+    {
+      "path": "src/Domain/Analytics/Subscription/SubscriptionSnapshotService.php",
+      "line": 75,
+      "needle": "hosting_services"
+    },
+    {
+      "path": "src/Domain/Privacy/Export/DefaultPrivacyDataCollector.php",
+      "line": 99,
+      "needle": "private function collectInvoices"
+    },
+    {
+      "path": "src/Domain/Privacy/Export/DefaultPrivacyDataCollector.php",
+      "line": 111,
+      "needle": "private function collectServices"
+    },
+    {
+      "path": "src/Domain/Privacy/Erasure/PrivacyErasureService.php",
+      "line": 267,
+      "needle": "UPDATE users SET name"
+    },
+    {
+      "path": "src/Domain/Identity/Auth/AuthService.php",
+      "line": 130,
+      "needle": "(int) $user['is_active'"
+    },
+    {
+      "path": "src/Domain/Privacy/Erasure/PrivacyErasureService.php",
+      "line": 174,
+      "needle": "// 5. Ephemeral Sessions"
+    },
+    {
+      "path": "src/Domain/Backup/RestoreWizardService.php",
+      "line": 229,
+      "needle": "if ($this->reconciliationService !== null)"
+    },
+    {
+      "path": "src/Domain/Privacy/Tombstone/BackupRestoreReconciliationService.php",
+      "line": 7,
+      "needle": "use Coleza\\Domain\\Audit"
+    },
+    {
+      "path": "src/Domain/Privacy/Tombstone/FileTombstoneStore.php",
+      "line": 27,
+      "needle": "$all = $this->loadAll()"
+    },
+    {
+      "path": "src/Domain/Privacy/Tombstone/PrivacyTombstoneService.php",
+      "line": 19,
+      "needle": "coleza_tombstone_key"
+    },
+    {
+      "path": "src/Domain/Support/Context/TicketContextService.php",
+      "line": 184,
+      "needle": "private function handleBuiltinAction"
+    },
+    {
+      "path": "src/Domain/Support/Context/TicketContextService.php",
+      "line": 100,
+      "needle": "if ($actorStaffUserId <= 0)"
+    },
+    {
+      "path": "src/Domain/Automation/Adapters/Service/ServiceSuspendActionHandler.php",
+      "line": 48,
+      "needle": "$this->serviceService->suspendService"
+    },
+    {
+      "path": "src/Foundation/Bootstrap/CoreServiceProvider.php",
+      "line": 152,
+      "needle": "Coleza\\Domain\\Identity"
+    },
+    {
+      "path": "tests/Architecture/ArchitectureTest.php",
+      "line": 40,
+      "needle": "public function testDomainDoesNotDepend"
+    },
+    {
+      "path": "src/Application/Commerce/Invoices/InvoiceApplicationService.php",
+      "line": 20,
+      "needle": "?int $authUserId = null"
+    },
+    {
+      "path": "src/Api/Auth/ApiKeyService.php",
+      "line": 83,
+      "needle": "public function authenticate"
+    },
+    {
+      "path": "src/Domain/Identity/TwoFactor/TwoFactorService.php",
+      "line": 289,
+      "needle": "public function enforceAdmin2FaPolicy"
+    },
+    {
+      "path": "src/Domain/OperationalMode/OperationalModeManager.php",
+      "line": 135,
+      "needle": "public function assertActionPermitted"
+    },
+    {
+      "path": "src/Ui/Admin/AdminShell.php",
+      "line": 43,
+      "needle": "/assets/admin.css"
+    },
+    {
+      "path": "src/Ui/Client/ClientShell.php",
+      "line": 41,
+      "needle": "/assets/client.css"
+    },
+    {
+      "path": "src/Ui/Accessibility/AccessibilityValidator.php",
+      "line": 14,
+      "needle": "public static function validate"
+    },
+    {
+      "path": "tests/Integration/LocalizationAndAccessibility/LocalizationCompletenessAndAccessibilitySuiteTest.php",
+      "line": 118,
+      "needle": "testDesignTokenColorContrastRatioAudit"
+    },
+    {
+      "path": "src/Domain/Documents/Rendering/PurePhpPdfRenderer.php",
+      "line": 39,
+      "needle": "/Count 1"
+    },
+    {
+      "path": "src/Domain/Documents/Rendering/PurePhpPdfRenderer.php",
+      "line": 140,
+      "needle": "if ($y < 60)"
+    },
+    {
+      "path": "src/Domain/Documents/Rendering/PurePhpPdfRenderer.php",
+      "line": 169,
+      "needle": "'ISO-8859-1'"
+    },
+    {
+      "path": "src/Domain/Health/SystemDoctorService.php",
+      "line": 172,
+      "needle": "CREATE TABLE IF NOT EXISTS background_jobs"
+    },
+    {
+      "path": "src/Domain/Installer/DatabaseSetupService.php",
+      "line": 194,
+      "needle": "run_at TIMESTAMP"
+    },
+    {
+      "path": "src/Domain/Health/SystemDoctorService.php",
+      "line": 141,
+      "needle": "lastRun['ran_at'"
+    },
+    {
+      "path": "src/Domain/Installer/EmailSetupService.php",
+      "line": 67,
+      "needle": "new MemoryMailTransport"
+    },
+    {
+      "path": "src/Domain/Notifications/NotificationEngine.php",
+      "line": 24,
+      "needle": "new MemoryMailTransport"
+    },
+    {
+      "path": "src/Domain/Commerce/Payments/Gateways/Iyzico/IyzicoPaymentGateway.php",
+      "line": 268,
+      "needle": "$hashString ="
+    },
+    {
+      "path": "src/Domain/Domains/Registrar/Adapters/NameSilo/NameSiloRegistrarAdapter.php",
+      "line": 135,
+      "needle": "$expiry = date"
+    },
+    {
+      "path": "evidence/v1/P12/P12.4-execution-record.md",
+      "line": 14,
+      "needle": "Selected **NameSilo**"
+    },
+    {
+      "path": "tools/check_gate.py",
+      "line": 47,
+      "needle": "GATE POLICY STRUCTURE"
+    },
+    {
+      "path": "tools/verify_constitutions.py",
+      "line": 37,
+      "needle": "len(text) < 100"
+    },
+    {
+      "path": "tools/audit_full_v1_completeness.py",
+      "line": 46,
+      "needle": "if 'PASS' in content"
+    },
+    {
+      "path": "tests/Integration/ReleaseCandidate/ReleaseCandidateSoakAndGateApprovalTest.php",
+      "line": 44,
+      "needle": "assertStringContainsString('PASS'"
+    },
+    {
+      "path": "evidence/v1/P18/gate-decision.md",
+      "line": 78,
+      "needle": "officially APPROVED"
+    },
+    {
+      "path": ".github/workflows/verify-integrity.yml",
+      "line": 1,
+      "needle": "name:"
+    },
+    {
+      "path": "tools/scan_security_and_secrets.py",
+      "line": 25,
+      "needle": "FORBIDDEN_FUNCTIONS"
+    },
+    {
+      "path": "tools/scan_forbidden_actions.py",
+      "line": 13,
+      "needle": "FORBIDDEN_PATTERNS"
+    },
+    {
+      "path": "phpunit.xml",
+      "line": 20,
+      "needle": "<source>"
+    },
+    {
+      "path": "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "line": 378,
+      "needle": "// Process webhook / payment callback"
+    },
+    {
+      "path": "tests/Integration/SharedHost/SharedHostCompatibilityMatrixTest.php",
+      "line": 59,
+      "needle": "new PDO('sqlite::memory:')"
+    },
+    {
+      "path": "src/Domain/Commerce/Invoices/InvoiceService.php",
+      "line": 322,
+      "needle": "array_map([$this, 'hydrateInvoice'"
+    },
+    {
+      "path": "evidence/v1/P18/gate-decision.md",
+      "line": 19,
+      "needle": "G01 Fresh Order"
+    },
+    {
+      "path": "src/Domain/Module/ModuleLifecycleService.php",
+      "line": 90,
+      "needle": "public function install"
+    },
+    {
+      "path": "src/Domain/Module/ModuleManifest.php",
+      "line": 9,
+      "needle": "final class"
+    },
+    {
+      "path": "src/Domain/Migration/Cutover/CutoverChecklistService.php",
+      "line": 72,
+      "needle": "$financialPassed = true"
+    },
+    {
+      "path": "src/Domain/Migration/Cutover/CutoverChecklistService.php",
+      "line": 179,
+      "needle": "['status' => 'reconciled'"
+    },
+    {
+      "path": "src/Domain/Migration/Hold/MigrationHoldService.php",
+      "line": 11,
+      "needle": "final class"
+    },
+    {
+      "path": "RELEASE_NOTES.md",
+      "line": 11,
+      "needle": "unparalleled stability"
+    },
+    {
+      "path": "06-phases/v1/P18-v1-release-candidate-stable-gate.md",
+      "line": 4,
+      "needle": "**Status:** PLANNED"
+    },
+    {
+      "path": "src/Domain/Release/ReleasePackagingService.php",
+      "line": 38,
+      "needle": "public function buildPackage"
+    }
+  ]
+}

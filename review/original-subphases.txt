@@ -1,0 +1,193 @@
+P00-project-control-bootstrap.md
+**HARD phase dependencies:** None
+### P00.1 — Repository conventions & protected control paths
+### P00.2 — Lock Product/Architecture/Security/Data/Extension/UI/Release constitutions
+### P00.3 — Lock V1/V1.1/V2 scope and machine-readable dependency graph
+### P00.4 — Bootstrap CI/evidence structure and gate statuses
+### P00.5 — Validate AI roles, change-control and forbidden actions
+P01-core-foundation.md
+**HARD phase dependencies:** P00
+### P01.1 — Runtime/environment bootstrap
+### P01.2 — Config/container/service registration
+### P01.3 — HTTP request/response/router/middleware
+### P01.4 — DB connection/transactions/migrations
+### P01.5 — Validation + centralized exception/error-code model
+### P01.6 — Event bus + Application Command/Query contracts
+### P01.7 — Architecture dependency tests and public contract conventions
+P02-platform-primitives.md
+**HARD phase dependencies:** P01
+### P02.1 — Structured logging + correlation/request/operation IDs
+### P02.2 — Private storage abstraction
+### P02.3 — Cache contract + DB/file baseline
+### P02.4 — Lock/idempotency primitives
+### P02.5 — Database queue + priority/retry/DLQ
+### P02.6 — Scheduler + overlap/missed-run/heartbeat
+### P02.7 — Health contracts + installer/backup skeletons
+### P02.8 — Runtime/memory budget and graceful worker stop
+P03-identity-platform-security.md
+**HARD phase dependencies:** P02
+### P03.1 — Sessions/password/login/reset/email verification
+### P03.2 — TOTP 2FA/recovery/trusted devices/admin 2FA policy
+### P03.3 — Organizations/memberships/invitations/switching
+### P03.4 — Admin + organization RBAC and permission matrix
+### P03.5 — Admin impersonation restrictions/audit
+### P03.6 — TR/EN localization + CI key parity
+### P03.7 — Single-active Brand foundation
+### P03.8 — Vault/encryption/secret audit
+### P03.9 — Privacy data-classification/consent foundation
+### P03.10 — Module manifest/discovery/lifecycle/capability foundation
+P04-ui-api-foundation.md
+**HARD phase dependencies:** P03
+### P04.1 — Design tokens + core component library
+### P04.2 — Admin shell/sidebar/density/theme/Action Center skeleton
+### P04.3 — Client shell/navigation
+### P04.4 — DataTable/drawers/modals/workspace patterns
+### P04.5 — Keyboard/Ctrl+K/global search foundation
+### P04.6 — Accessibility test harness
+### P04.7 — REST /api/v1 auth/scopes/errors/pagination/rate-limit/idempotency
+### P04.8 — OpenAPI generation + API logs
+P05-catalog-currency-pricing-tax.md
+**HARD phase dependencies:** P04
+### P05.1 — Product groups/products/localized content
+### P05.2 — Configurable options/addons/availability basics
+### P05.3 — Currency model + FX snapshots/provider abstraction
+### P05.4 — One-time/recurring/setup and cycle pricing
+### P05.5 — Customer/service price overrides
+### P05.6 — Prorata + upgrade/downgrade quote calculations
+### P05.7 — Tax classes/zones/rates/exemption/inclusive/exclusive
+### P05.8 — Pricing/tax property & mutation golden tests
+P06-manual-commerce-vertical.md
+**HARD phase dependencies:** P05
+### P06.1 — Order state machine and admin/client order creation
+### P06.2 — Invoice finalization/numbering/line-tax-currency snapshots
+### P06.3 — Payment entity + allocations + manual/bank payment
+### P06.4 — Partial/split payments and basic refunds
+### P06.5 — Credit ledger and adjustments
+### P06.6 — Recurring/renewal invoice primitives
+### P06.7 — Manual service creation/state model
+### P06.8 — Golden Manual Commerce E2E
+P07-finance-document-platform.md
+**HARD phase dependencies:** P06
+### P07.1 — Financial accounts/bank/cash/gateway ledger views
+### P07.2 — Income/expense/categories/vendors/recurring expense basics
+### P07.3 — Gateway settlement model and basic profitability
+### P07.4 — Common template/view-model/PDF renderer
+### P07.5 — Central document numbering/version/snapshot/hash/private storage
+### P07.6 — Quote revisions/expiry/accept-reject/order conversion
+### P07.7 — Proforma separate entity
+### P07.8 — Basic contract/service/commitment/internal acceptance
+P08-integration-foundation.md
+**HARD phase dependencies:** P07
+### P08.1 — Notification Engine + SMTP + TR/EN templates
+### P08.2 — Notification preferences/delivery history/panel Notification Center
+### P08.3 — Transactional vs marketing separation + announcements basic
+### P08.4 — Webhooks HMAC/retry/delivery/manual redelivery
+### P08.5 — iyzico provider contract implementation
+### P08.6 — Payment webhook/idempotency/refund failure scenarios
+### P08.7 — Expose commerce domain API endpoints through Application layer
+### P08.8 — Integration health hooks
+P09-service-provider-core.md
+**HARD phase dependencies:** P08
+### P09.1 — Service lifecycle/billing/placement relations
+### P09.2 — Provider capability contracts and operation DTOs
+### P09.3 — Server/Server Pool/location/capacity models
+### P09.4 — Placement Engine basic health/capacity/priority
+### P09.5 — Capacity reserve→commit/release workflow
+### P09.6 — Provisioning operation/error classification contracts
+### P09.7 — Provider module settings/Vault mappings
+### P09.8 — Service concurrency and optimistic-edit tests
+P10-automated-hosting-cpanel.md
+**HARD phase dependencies:** P09
+### P10.1 — cPanel authentication/package mapping/health
+### P10.2 — Create/suspend/unsuspend/terminate capabilities
+### P10.3 — Upgrade/downgrade where supported
+### P10.4 — Provision workflow validate→place→reserve→remote→verify→activate
+### P10.5 — Retry/backoff/idempotency/uncertain-response reconciliation
+### P10.6 — No-duplicate remote account failure tests
+### P10.7 — Automated Hosting Golden E2E with iyzico + email
+P11-renewal-automation-hardening.md
+**HARD phase dependencies:** P10
+### P11.1 — Automation engine trigger/conditions/IF-ELSE/actions
+### P11.2 — Approval/delay/observe/dry-run/version/run history
+### P11.3 — Domain command adapters for automation (no direct repository)
+### P11.4 — Service renewal scheduler and invoice generation
+### P11.5 — Overdue/grace policy and suspend/unsuspend workflow
+### P11.6 — Emergency Pause All/Destructive actions
+### P11.7 — Renewal Golden E2E and missed-scheduler catchup
+P12-domains-registrar.md
+**HARD phase dependencies:** P11
+### P12.1 — TLD catalog/policies/pricing/multi-year basics
+### P12.2 — Domain/contact profile/lifecycle/timeline
+### P12.3 — Registrar capability contract + Vault settings
+### P12.4 — Production registrar adapter selection + implementation
+### P12.5 — Availability/register/renew/transfer/nameservers/lock/EPP
+### P12.6 — Operation idempotency/uncertain timeout/reconciliation
+### P12.7 — Expiry/grace/redemption metadata + reminders
+### P12.8 — Domain Golden E2E
+P13-support-announcements.md
+**HARD phase dependencies:** P12
+### P13.1 — Departments/agents/status/priority
+### P13.2 — Ticket/conversation/replies/internal notes
+### P13.3 — Private attachments and file security
+### P13.4 — Manual + round-robin assignment
+### P13.5 — Basic first-response/resolution SLA scheduler
+### P13.6 — Relations to service/domain/invoice/order and contextual commands
+### P13.7 — Organization own/all ticket permissions
+### P13.8 — Canned responses/basic announcement UI
+### P13.9 — Support Golden E2E
+P14-fraud-abuse-privacy-enforcement.md
+**HARD phase dependencies:** P13
+### P14.1 — Rule-based order/payment/identity risk scoring
+### P14.2 — Velocity/related-account indicators + allow/watch/deny lists
+### P14.3 — Manual Risk Review + immutable decision snapshot + override reason
+### P14.4 — Basic Abuse Case severity/category/resource/deadline/response
+### P14.5 — Privacy requests + step-up export
+### P14.6 — Erasure dry-run/delete-anonymize-retain/restrict
+### P14.7 — Retention + basic Legal Hold
+### P14.8 — Privacy Tombstone and old-backup restore test
+### P14.9 — Module/domain privacy handlers and redaction audits
+P15-analytics-business-intelligence-baseline.md
+**HARD phase dependencies:** P14
+### P15.1 — Metric Registry + Semantic Layer definitions
+### P15.2 — MRR/ARR/new/churned MRR and subscription snapshots
+### P15.3 — Invoice vs cash vs outstanding/refund/contribution metrics
+### P15.4 — Daily/monthly read models/aggregations + rebuild
+### P15.5 — Owner/Finance/Sales/Operations/Support dashboards
+### P15.6 — Currency/timezone/data freshness semantics
+### P15.7 — Golden Financial Dataset + ledger reconciliation
+### P15.8 — Analytics permission/data-scope tests
+P16-import-whmcs-migration.md
+**HARD phase dependencies:** P15
+### P16.1 — Generic source/staging/canonical DTO/mapping/validation engine
+### P16.2 — CSV import + locale-aware parsing
+### P16.3 — Adopt existing service/domain/provider identity workflows
+### P16.4 — WHMCS source scan/version/capability/read-only connector
+### P16.5 — Migrate clients/orgs/products/services/domains
+### P16.6 — Migrate invoices/payments/credits with financial reconciliation
+### P16.7 — Tickets/attachments/custom fields and unsupported-data accounting
+### P16.8 — Dry-run/conflict/quarantine/checkpoint/resume/idempotency
+### P16.9 — Migration Hold/automation+notification suppression
+### P16.10 — Cutover checklist/final reconciliation/seal + Golden Migration E2E
+P17-installer-update-backup-recovery-health-hardening.md
+**HARD phase dependencies:** P16
+### P17.1 — Web installer requirements/DB/admin/locale/brand/email/cron
+### P17.2 — Fresh-install migration mode
+### P17.3 — Signed/checksummed staged update + module compatibility
+### P17.4 — Mandatory verified pre-update backup
+### P17.5 — Backup full/DB/files; Local/SFTP/S3; encryption/manifest/retention
+### P17.6 — Restore wizard + disaster recovery on fresh hosting
+### P17.7 — Normal/Safe/Recovery/read-only/full-maintenance modes
+### P17.8 — System Health/Doctor for cron/queue/storage/DB/providers/modules/backup
+### P17.9 — Rollback paths and privacy tombstone application after restore
+P18-v1-release-candidate-stable-gate.md
+**HARD phase dependencies:** P17
+### P18.1 — Freeze V1 feature scope and run full dependency/gate audit
+### P18.2 — Run G01–G08 Golden E2E
+### P18.3 — Full static/architecture/security/secret/dependency scans
+### P18.4 — Concurrency/failure/chaos/provider uncertainty suite
+### P18.5 — Performance/N+1/reference-budget regression
+### P18.6 — Minimum shared-host compatibility matrix
+### P18.7 — Fresh install + upgrade + backup/restore + WHMCS cutover rehearsal
+### P18.8 — TR/EN completeness + accessibility/visual regression
+### P18.9 — Release package vendor/assets/checksum/signature/release notes
+### P18.10 — RC soak/issue closure → independent Stable approval

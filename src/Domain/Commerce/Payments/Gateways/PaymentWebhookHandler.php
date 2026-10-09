@@ -66,14 +66,11 @@ final class PaymentWebhookHandler
         $verificationResponse = $gateway->verifyPayment($verificationRequest);
 
         // 3. Resolve associated payment
-        $payment = null;
-        $paymentNumber = $verificationResponse->getPaymentNumber() ?? ($postData['conversationId'] ?? null);
-        if ($paymentNumber !== null && $paymentNumber !== '') {
-            $payment = $this->paymentService->findPaymentByNumber((string) $paymentNumber);
-        }
-
-        if ($payment === null) {
-            $payment = $this->paymentService->findPaymentByToken($token);
+        $payment = $this->paymentService->findPaymentByToken($token);
+        $verifiedNumber = $verificationResponse->getPaymentNumber();
+        if ($payment !== null && ($payment->getPaymentMethod() !== $gatewayName
+            || ($verifiedNumber !== null && $verifiedNumber !== '' && $verifiedNumber !== $payment->getPaymentNumber()))) {
+            $payment = null;
         }
 
         // 4. Handle Verification Failure
@@ -127,6 +124,15 @@ final class PaymentWebhookHandler
             );
         }
 
+        if ($verificationResponse->getPaidAmountMinor() !== $payment->getAmountMinor()
+            || $verificationResponse->getCurrency() !== $payment->getCurrencyCode()
+            || $verifiedNumber !== $payment->getPaymentNumber()) {
+            $error = 'Verified payment number, amount or currency does not match the pending payment.';
+            $this->recordEvent($gatewayName, $eventId, 'callback.mismatch', $payloadHash,
+                PaymentWebhookEvent::STATUS_FAILED, $payment->getId(), $error, $postData);
+            return PaymentWebhookResult::failed($error, $payment->getId(), $payment->getPaymentNumber(), $eventId);
+        }
+
         // 6. Handle Out-Of-Order / Already Completed State
         if ($payment->isCompleted()) {
             $this->recordEvent(
@@ -147,6 +153,10 @@ final class PaymentWebhookHandler
                 eventId: $eventId,
                 metadata: $verificationResponse->getRawPayload()
             );
+        }
+
+        if (!$payment->isPending()) {
+            return PaymentWebhookResult::failed('Only pending payments can be settled.', $payment->getId(), $payment->getPaymentNumber(), $eventId);
         }
 
         // 7. Settle Payment & Allocate Funds
@@ -199,63 +209,12 @@ final class PaymentWebhookHandler
         array $payload,
         ?string $rawPayload = null
     ): PaymentWebhookResult {
-        $gatewayName = $gateway->getIdentifier();
-        $payloadHash = hash('sha256', $rawPayload ?? (string) json_encode($payload));
-
-        // Idempotency check
-        $existingEvent = $this->findEvent($gatewayName, $eventId);
-        if ($existingEvent !== null && $existingEvent['status'] === PaymentWebhookEvent::STATUS_PROCESSED) {
-            $paymentId = $existingEvent['payment_id'] !== null ? (int) $existingEvent['payment_id'] : null;
-            $payment = $paymentId !== null ? $this->paymentService->findPaymentById($paymentId) : null;
-
-            return PaymentWebhookResult::duplicate(
-                paymentId: $paymentId ?? 0,
-                paymentNumber: $payment ? $payment->getPaymentNumber() : '',
-                message: 'Webhook event already processed (idempotent duplicate).',
-                eventId: $eventId
-            );
+        // Event names and financial fields supplied by the caller are not proof of payment.
+        // Only adapters with a provider verification path may change financial state.
+        if (!$gateway instanceof IyzicoPaymentGateway) {
+            return PaymentWebhookResult::failed('No verified callback adapter for this gateway.', eventId: $eventId);
         }
-
-        // Process depending on event type
-        if ($eventType === 'payment.success') {
-            $paymentNumber = (string) ($payload['payment_number'] ?? '');
-            $payment = $this->paymentService->findPaymentByNumber($paymentNumber);
-
-            if ($payment === null) {
-                $err = "Payment {$paymentNumber} not found.";
-                $this->recordEvent($gatewayName, $eventId, $eventType, $payloadHash, PaymentWebhookEvent::STATUS_FAILED, null, $err, $payload);
-                return PaymentWebhookResult::failed($err, null, $paymentNumber, $eventId);
-            }
-
-            if ($payment->isCompleted()) {
-                $this->recordEvent($gatewayName, $eventId, $eventType, $payloadHash, PaymentWebhookEvent::STATUS_PROCESSED, $payment->getId(), null, $payload);
-                return PaymentWebhookResult::alreadyCompleted((int) $payment->getId(), $payment->getPaymentNumber(), 'Payment already completed.', $eventId);
-            }
-
-            $txRef = (string) ($payload['transaction_reference'] ?? $eventId);
-            $feeMinor = (int) ($payload['fee_minor'] ?? 0);
-
-            $completed = $this->paymentService->completePaymentFromGateway((int) $payment->getId(), $txRef, $feeMinor);
-            $this->recordEvent($gatewayName, $eventId, $eventType, $payloadHash, PaymentWebhookEvent::STATUS_PROCESSED, $completed->getId(), null, $payload);
-
-            return PaymentWebhookResult::processed((int) $completed->getId(), $completed->getPaymentNumber(), 'Webhook payment processed.', $eventId);
-        }
-
-        if ($eventType === 'payment.failed') {
-            $paymentNumber = (string) ($payload['payment_number'] ?? '');
-            $payment = $this->paymentService->findPaymentByNumber($paymentNumber);
-            $reason = (string) ($payload['reason'] ?? 'Payment failed by gateway webhook.');
-
-            if ($payment !== null && $payment->isPending()) {
-                $this->paymentService->failPaymentFromGateway((int) $payment->getId(), $reason);
-            }
-
-            $this->recordEvent($gatewayName, $eventId, $eventType, $payloadHash, PaymentWebhookEvent::STATUS_FAILED, $payment?->getId(), $reason, $payload);
-            return PaymentWebhookResult::failed($reason, $payment?->getId(), $paymentNumber, $eventId);
-        }
-
-        $this->recordEvent($gatewayName, $eventId, $eventType, $payloadHash, PaymentWebhookEvent::STATUS_PROCESSED, null, 'Ignored unsupported event type', $payload);
-        return PaymentWebhookResult::failed("Unsupported event type {$eventType}", null, null, $eventId);
+        return $this->handleIyzicoCallback($gateway, $payload, $rawPayload);
     }
 
     /**

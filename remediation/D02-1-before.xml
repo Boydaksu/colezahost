@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml" tests="4" assertions="9" errors="3" failures="1" skipped="0" time="0.812962">
+    <testsuite name="MariaDB" tests="4" assertions="9" errors="3" failures="1" skipped="0" time="0.812962">
+      <testsuite name="Coleza\Tests\MariaDb\DatabaseFoundationTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\DatabaseFoundationTest.php" tests="4" assertions="9" errors="3" failures="1" skipped="0" time="0.812962">
+        <testcase name="testInvoiceNumbersUseMariaDbAndAdvance" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\DatabaseFoundationTest.php" line="46" class="Coleza\Tests\MariaDb\DatabaseFoundationTest" classname="Coleza.Tests.MariaDb.DatabaseFoundationTest" assertions="2" time="0.143108">
+          <error type="PDOException">Coleza\Tests\MariaDb\DatabaseFoundationTest::testInvoiceNumbersUseMariaDbAndAdvance&#13;
+PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'CONFLICT(year_prefix) DO UPDATE SET last_number = last_number + 1' at line 2
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:246
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:115
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Commerce\Invoices\InvoiceService.php:392
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\DatabaseFoundationTest.php:50</error>
+        </testcase>
+        <testcase name="testFreshInstallerAdminHasRbacPermissions" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\DatabaseFoundationTest.php" line="54" class="Coleza\Tests\MariaDb\DatabaseFoundationTest" classname="Coleza.Tests.MariaDb.DatabaseFoundationTest" assertions="2" time="0.476156">
+          <error type="PDOException">Coleza\Tests\MariaDb\DatabaseFoundationTest::testFreshInstallerAdminHasRbacPermissions&#13;
+PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'ur.organization_id' in 'WHERE'
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:246
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Identity\Rbac\RbacService.php:199
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\DatabaseFoundationTest.php:60</error>
+        </testcase>
+        <testcase name="testRbacCanAssignGlobalAndOrganizationRoles" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\DatabaseFoundationTest.php" line="64" class="Coleza\Tests\MariaDb\DatabaseFoundationTest" classname="Coleza.Tests.MariaDb.DatabaseFoundationTest" assertions="2" time="0.132800">
+          <error type="PDOException">Coleza\Tests\MariaDb\DatabaseFoundationTest::testRbacCanAssignGlobalAndOrganizationRoles&#13;
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'organization_id' cannot be null
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:246
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:68
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Identity\Rbac\RbacService.php:167
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\DatabaseFoundationTest.php:69</error>
+        </testcase>
+        <testcase name="testProductionIdentityMigrationAppliesOnce" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\DatabaseFoundationTest.php" line="81" class="Coleza\Tests\MariaDb\DatabaseFoundationTest" classname="Coleza.Tests.MariaDb.DatabaseFoundationTest" assertions="3" time="0.060897">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\MariaDb\DatabaseFoundationTest::testProductionIdentityMigrationAppliesOnce&#13;
+Failed asserting that an array is not empty.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\DatabaseFoundationTest.php:85</failure>
+        </testcase>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

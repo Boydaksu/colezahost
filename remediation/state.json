@@ -1,0 +1,17 @@
+{
+  "reference_commit": "6dc47ea83bb51c09c993e6cef3af3577e5955f51",
+  "reference_report": "review/INCELEME.md",
+  "plan": "remediation/PLAN.md",
+  "phase": "D02",
+  "step": "D02.1",
+  "status": "IN_PROGRESS",
+  "step_status": "IMPLEMENTATION_COMPLETE",
+  "independent_acceptance": "PENDING",
+  "production_ready": false,
+  "next_step": "D02.2",
+  "next_phase": "D03",
+  "tests": {"main_total": 922, "main_assertions": 7986, "mariadb_total": 16, "mariadb_assertions": 101, "total": 938, "assertions": 8087, "failures": 0, "errors": 0},
+  "findings": {"F02": "PARTIAL_ATOMIC_SEQUENCES_IMPLEMENTED", "F03": "PARTIAL_IDENTITY_SCHEMA_AND_MIGRATION_IMPLEMENTED", "F05": "IMPLEMENTED_PENDING_REVIEW", "F06": "PARTIAL_TOKEN_INDEX_AND_CONCURRENCY_OPEN", "F16": "PARTIAL_SEQUENCE_CONCURRENCY_ONLY", "F23": "PARTIAL_PAYMENT_ENTRY_POINTS_ONLY"},
+  "remaining_steps": ["D02.2", "D02.3"],
+  "remaining_phases": ["D03", "D04", "D05", "D06", "D07", "D08", "D09"]
+}

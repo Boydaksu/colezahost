@@ -389,21 +389,7 @@ final class InvoiceService
     {
         $year = date('Y');
 
-        $this->db->statement(
-            sprintf(
-                'INSERT INTO %s (year_prefix, last_number) VALUES (?, 1)
-                 ON CONFLICT(year_prefix) DO UPDATE SET last_number = last_number + 1',
-                $this->numberSequenceTable
-            ),
-            [$year]
-        );
-
-        $row = $this->db->selectOne(
-            sprintf('SELECT last_number FROM %s WHERE year_prefix = ?', $this->numberSequenceTable),
-            [$year]
-        );
-
-        $num = $row ? (int)$row['last_number'] : 1;
+        $num = $this->db->nextSequence($this->numberSequenceTable, 'year_prefix', $year);
         $formattedNum = str_pad((string)$num, 6, '0', STR_PAD_LEFT);
 
         return "INV-{$year}-{$formattedNum}";

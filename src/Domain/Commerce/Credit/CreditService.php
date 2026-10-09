@@ -437,21 +437,7 @@ final class CreditService
     {
         $date = date('Ymd');
 
-        $this->db->statement(
-            sprintf(
-                'INSERT INTO %s (date_prefix, last_number) VALUES (?, 1)
-                 ON CONFLICT(date_prefix) DO UPDATE SET last_number = last_number + 1',
-                $this->sequencesTable
-            ),
-            [$date]
-        );
-
-        $row = $this->db->selectOne(
-            sprintf('SELECT last_number FROM %s WHERE date_prefix = ?', $this->sequencesTable),
-            [$date]
-        );
-
-        $num = $row ? (int)$row['last_number'] : 1;
+        $num = $this->db->nextSequence($this->sequencesTable, 'date_prefix', $date);
         $formattedNum = str_pad((string)$num, 6, '0', STR_PAD_LEFT);
 
         return "CR-{$date}-{$formattedNum}";

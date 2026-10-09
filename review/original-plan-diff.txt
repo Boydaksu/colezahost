@@ -1,0 +1,351 @@
+--- original/06-phases/v1/P00-project-control-bootstrap.md
+
++++ current/06-phases/v1/P00-project-control-bootstrap.md
+
+@@ -1,7 +1,7 @@
+
+ # P00 — Project Control Bootstrap
+ 
+ **Release family:** V1
+-**Status:** PLANNED
++**Status:** PASS
+ **HARD phase dependencies:** None
+ 
+ ## Objective
+
+--- original/06-phases/v1/P01-core-foundation.md
+
++++ current/06-phases/v1/P01-core-foundation.md
+
+@@ -1,7 +1,7 @@
+
+ # P01 — Core Foundation
+ 
+ **Release family:** V1
+-**Status:** PLANNED
++**Status:** PASS
+ **HARD phase dependencies:** P00
+ 
+ ## Objective
+
+--- original/06-phases/v1/P02-platform-primitives.md
+
++++ current/06-phases/v1/P02-platform-primitives.md
+
+@@ -1,7 +1,7 @@
+
+ # P02 — Platform Primitives
+ 
+ **Release family:** V1
+-**Status:** PLANNED
++**Status:** PASS
+ **HARD phase dependencies:** P01
+ 
+ ## Objective
+
+--- original/06-phases/v1/P03-identity-platform-security.md
+
++++ current/06-phases/v1/P03-identity-platform-security.md
+
+@@ -1,7 +1,7 @@
+
+ # P03 — Identity & Platform Security
+ 
+ **Release family:** V1
+-**Status:** PLANNED
++**Status:** PASS
+ **HARD phase dependencies:** P02
+ 
+ ## Objective
+
+--- original/06-phases/v1/P04-ui-api-foundation.md
+
++++ current/06-phases/v1/P04-ui-api-foundation.md
+
+@@ -1,7 +1,7 @@
+
+ # P04 — UI & API Foundation
+ 
+ **Release family:** V1
+-**Status:** PLANNED
++**Status:** PASS
+ **HARD phase dependencies:** P03
+ 
+ ## Objective
+
+--- original/06-phases/v1/P05-catalog-currency-pricing-tax.md
+
++++ current/06-phases/v1/P05-catalog-currency-pricing-tax.md
+
+@@ -1,7 +1,7 @@
+
+ # P05 — Catalog, Currency, Pricing & Tax
+ 
+ **Release family:** V1
+-**Status:** PLANNED
++**Status:** PASS
+ **HARD phase dependencies:** P04
+ 
+ ## Objective
+
+--- original/06-phases/v1/P06-manual-commerce-vertical.md
+
++++ current/06-phases/v1/P06-manual-commerce-vertical.md
+
+@@ -1,7 +1,7 @@
+
+ # P06 — Manual Commerce Vertical
+ 
+ **Release family:** V1
+-**Status:** PLANNED
++**Status:** PASS
+ **HARD phase dependencies:** P05
+ 
+ ## Objective
+
+--- original/06-phases/v1/P07-finance-document-platform.md
+
++++ current/06-phases/v1/P07-finance-document-platform.md
+
+@@ -1,7 +1,7 @@
+
+ # P07 — Finance & Document Platform
+ 
+ **Release family:** V1
+-**Status:** PLANNED
++**Status:** PASS
+ **HARD phase dependencies:** P06
+ 
+ ## Objective
+
+--- original/06-phases/v1/P08-integration-foundation.md
+
++++ current/06-phases/v1/P08-integration-foundation.md
+
+@@ -1,7 +1,7 @@
+
+ # P08 — Integration Foundation
+ 
+ **Release family:** V1
+-**Status:** PLANNED
++**Status:** PASS
+ **HARD phase dependencies:** P07
+ 
+ ## Objective
+
+--- original/06-phases/v1/P09-service-provider-core.md
+
++++ current/06-phases/v1/P09-service-provider-core.md
+
+@@ -1,7 +1,7 @@
+
+ # P09 — Service & Provider Core
+ 
+ **Release family:** V1
+-**Status:** PLANNED
++**Status:** PASS
+ **HARD phase dependencies:** P08
+ 
+ ## Objective
+
+--- original/06-phases/v1/P10-automated-hosting-cpanel.md
+
++++ current/06-phases/v1/P10-automated-hosting-cpanel.md
+
+@@ -1,7 +1,7 @@
+
+ # P10 — Automated Hosting & cPanel
+ 
+ **Release family:** V1
+-**Status:** PLANNED
++**Status:** PASS
+ **HARD phase dependencies:** P09
+ 
+ ## Objective
+
+--- original/06-phases/v1/P11-renewal-automation-hardening.md
+
++++ current/06-phases/v1/P11-renewal-automation-hardening.md
+
+@@ -1,7 +1,7 @@
+
+ # P11 — Renewal & Automation Hardening
+ 
+ **Release family:** V1
+-**Status:** PLANNED
++**Status:** PASS
+ **HARD phase dependencies:** P10
+ 
+ ## Objective
+
+--- original/06-phases/v1/P12-domains-registrar.md
+
++++ current/06-phases/v1/P12-domains-registrar.md
+
+@@ -1,7 +1,7 @@
+
+ # P12 — Domains & Registrar
+ 
+ **Release family:** V1
+-**Status:** PLANNED
++**Status:** PASS
+ **HARD phase dependencies:** P11
+ 
+ ## Objective
+
+--- original/06-phases/v1/P13-support-announcements.md
+
++++ current/06-phases/v1/P13-support-announcements.md
+
+@@ -1,7 +1,7 @@
+
+ # P13 — Support & Announcements
+ 
+ **Release family:** V1
+-**Status:** PLANNED
++**Status:** PASS
+ **HARD phase dependencies:** P12
+ 
+ ## Objective
+
+--- original/06-phases/v1/P14-fraud-abuse-privacy-enforcement.md
+
++++ current/06-phases/v1/P14-fraud-abuse-privacy-enforcement.md
+
+@@ -1,7 +1,7 @@
+
+ # P14 — Fraud, Abuse & Privacy Enforcement
+ 
+ **Release family:** V1
+-**Status:** PLANNED
++**Status:** PASS
+ **HARD phase dependencies:** P13
+ 
+ ## Objective
+
+--- original/06-phases/v1/P15-analytics-business-intelligence-baseline.md
+
++++ current/06-phases/v1/P15-analytics-business-intelligence-baseline.md
+
+@@ -1,7 +1,7 @@
+
+ # P15 — Analytics & Business Intelligence Baseline
+ 
+ **Release family:** V1
+-**Status:** PLANNED
++**Status:** PASS
+ **HARD phase dependencies:** P14
+ 
+ ## Objective
+
+--- original/06-phases/v1/P16-import-whmcs-migration.md
+
++++ current/06-phases/v1/P16-import-whmcs-migration.md
+
+@@ -1,7 +1,7 @@
+
+ # P16 — Import & WHMCS Migration
+ 
+ **Release family:** V1
+-**Status:** PLANNED
++**Status:** PASS
+ **HARD phase dependencies:** P15
+ 
+ ## Objective
+
+--- original/06-phases/v1/P17-installer-update-backup-recovery-health-hardening.md
+
++++ current/06-phases/v1/P17-installer-update-backup-recovery-health-hardening.md
+
+@@ -1,7 +1,7 @@
+
+ # P17 — Installer, Update, Backup, Recovery & Health Hardening
+ 
+ **Release family:** V1
+-**Status:** PLANNED
++**Status:** PASS
+ **HARD phase dependencies:** P16
+ 
+ ## Objective
+
+--- original/09-machine-readable/current-state.json
+
++++ current/09-machine-readable/current-state.json
+
+@@ -1,8 +1,8 @@
+
+ {
+   "schema_version": 1,
+   "release_family": "V1",
+-  "active_phase": "P00",
+-  "active_subphase": "P00.1",
+-  "status": "READY",
++  "active_phase": "P18",
++  "active_subphase": "P18.10",
++  "status": "PASS",
+   "rule": "Only one subphase may be READY/IN_PROGRESS unless an approved parallel-track record explicitly lists non-conflicting scopes."
+ }
+
+--- original/MANIFEST.sha256
+
++++ current/MANIFEST.sha256
+
+@@ -41,24 +41,24 @@
+
+ c84c7522181f782a78bccd5ce889d970f32eb20e78abdefe77b9564d4d7ce974  ./06-phases/v1.1/P116-privacy-risk-expansion.md
+ dfb4f69c22bb76329c80475513617bfec0cfc3f76a5ea5f13055b5054b89b7fd  ./06-phases/v1.1/P117-migration-expansion.md
+ d0ccb0c92e47c17346e5fcee37188111ef537372f0579e81ef8aba991811459b  ./06-phases/v1.1/P118-enhanced-operations-performance.md
+-e666dbb820096050e660d2a77e53b63f3d75b1c56dc4da6e0fadd13813803c5f  ./06-phases/v1/P00-project-control-bootstrap.md
+-c98c3159783d044a991979638c9500c8f8d04ac9041419273f903a5f29c0a9bc  ./06-phases/v1/P01-core-foundation.md
+-7a5d088ac9b7a8766b4e891cd163efe6332419b3a011a3e111a4c26bdab4af84  ./06-phases/v1/P02-platform-primitives.md
+-767453a54e87813a5435263f82f65a69f086e368c23693e1efc38bd533fb6e2f  ./06-phases/v1/P03-identity-platform-security.md
+-c33f1fe505a36cf9632574d55514d56d8a7f2fd80491cc2d9487683c9da1e8bc  ./06-phases/v1/P04-ui-api-foundation.md
+-8506128b888f79f8e6a3de2117c1765af49f6d8831597a45ac563c43b04e26c8  ./06-phases/v1/P05-catalog-currency-pricing-tax.md
+-c1624a0fb69e521a3936af8e61ffdaf161edce41464af361ef1cb34059825a17  ./06-phases/v1/P06-manual-commerce-vertical.md
+-31e7499f5fb2905f53926e4474fcf8b6d88c4b0ff828dd9ccb5867bc7263b28c  ./06-phases/v1/P07-finance-document-platform.md
+-ffb878a13418c1d52f29b026d187f761ce16171ce164110166fc9ea181363288  ./06-phases/v1/P08-integration-foundation.md
+-8eb7c36939f57f914dc329eeac8cc5a9f1e28b14dbf09657c4db5710e831d35f  ./06-phases/v1/P09-service-provider-core.md
+-b6df910f3871f9b46abce6ad08b258b7ea3ba40e332fe2df8b7957020dcc15fb  ./06-phases/v1/P10-automated-hosting-cpanel.md
+-08cd5e371f44b9f4e4186dc0d7237ebbcd3963f4d2e5a92f9da92ee2563bda85  ./06-phases/v1/P11-renewal-automation-hardening.md
+-242de4e160695fd2657e0e88fe8ce38f09dd0b0fb7b94ce20cd5e97b0d428a7c  ./06-phases/v1/P12-domains-registrar.md
+-040a957c400e1ae42dc1d19a95f6b76f4317f6e26c5e322506a0a6bc5eb6e21a  ./06-phases/v1/P13-support-announcements.md
+-ec4c9c522699c643c3e2eb6f4698d39cac69a9ea47686c5f57e95e973cfd0dc1  ./06-phases/v1/P14-fraud-abuse-privacy-enforcement.md
+-e7e557bef53eb66277abf768dc3e556f4df5c6a144318fbc3a454f3dee965d70  ./06-phases/v1/P15-analytics-business-intelligence-baseline.md
+-abed6d6c4c4a96bbe2f8a1122af2259b65818119da9e91a5e62c7c2e93ef63cf  ./06-phases/v1/P16-import-whmcs-migration.md
+-c448fb544e9d9ddd4c2dc857ed3cb91971cc54ad2fd260aa109495200c3187cc  ./06-phases/v1/P17-installer-update-backup-recovery-health-hardening.md
++0d6e7fd3dfe9312804c2ff286e999eea0a20540ad3daf18155e914061df0711d  ./06-phases/v1/P00-project-control-bootstrap.md
++de8234756d42c7dab54bbd219deb30674d3be2e639bfb5731698786da554d529  ./06-phases/v1/P01-core-foundation.md
++9eca2623e847576bc1d34cc6ad25a180e2b0d0b1e426b40e2e0fd9ffa5eae035  ./06-phases/v1/P02-platform-primitives.md
++5f8fa7ad41f31114e5a15d1c4920111f2a7b6a0616bfddeadd159ebef5d4b742  ./06-phases/v1/P03-identity-platform-security.md
++46d477df30ffa98c2e5ee159ca3f9454257b5faacdc3f39678e346fa647068b1  ./06-phases/v1/P04-ui-api-foundation.md
++c8e4b91f8b0646fd78367f60e78877cae289ce680f736d7301c5df829a6f7d9a  ./06-phases/v1/P05-catalog-currency-pricing-tax.md
++8965eaa96a29423e815db210149c127299585b03ed392d1e6d885b6a5b057d3e  ./06-phases/v1/P06-manual-commerce-vertical.md
++a4774763ed1f0cb24dae28ec2bfc3524ec0d0617d68b58c26c12f244b010c2c2  ./06-phases/v1/P07-finance-document-platform.md
++0d68d6d1472b3b7faa585ce6a100b6c526dbbd2395203a6c236fd4cae160cc1f  ./06-phases/v1/P08-integration-foundation.md
++e0c23ba0df7f66c161bc2c91928accb2bbd4d233d4e1b89284276a77689e5910  ./06-phases/v1/P09-service-provider-core.md
++41e1625cbdfc5045c99f325d4a7082c8c1e6412980d74b4cdb2c6073f567f9a5  ./06-phases/v1/P10-automated-hosting-cpanel.md
++4304776c9d71f1687f804a04207a5e28d5d0e1c73a8b1a444ef4103eee43d2de  ./06-phases/v1/P11-renewal-automation-hardening.md
++eec16ad783b7d39e155c0e74447039fa721eda66467c7ffb2fbc8fa36f8fa666  ./06-phases/v1/P12-domains-registrar.md
++b5bb7c48cbb1c62dc706131c99f8f68db35ad5cdc7377665070eccd94bdea004  ./06-phases/v1/P13-support-announcements.md
++6a7416b1ef37788ad0024370c022fe0f8019268f8159ba4c971121f0f2a1af27  ./06-phases/v1/P14-fraud-abuse-privacy-enforcement.md
++9e80331cd1cd70c08aac79e50ee4cf7dcec858710c2b38b32f666e6f48ca1139  ./06-phases/v1/P15-analytics-business-intelligence-baseline.md
++2745a3422890bcf73a510c5e0448c1ea5d624b30cdbc3ebe8966553143c455da  ./06-phases/v1/P16-import-whmcs-migration.md
++a4688f9859aecd3a9fb9dbdf0ec0e2d8a9e1e62c5def42cac7eeef4d58539a67  ./06-phases/v1/P17-installer-update-backup-recovery-health-hardening.md
+ f57585e6230f817132d28cbeac8878899246076dcbaaee724f6f636c851c0c8b  ./06-phases/v1/P18-v1-release-candidate-stable-gate.md
+ e90329f57436fbd46e7dcfd92498031205248c401db5936676ce6bf32afd65c3  ./06-phases/v2+/P200-reseller-platform.md
+ 918f276b88580610635c24e4173638510ac2f0a96698b832d8de0ae98870846f  ./06-phases/v2+/P201-affiliate-acquisition.md
+
+--- original/README.md
+
++++ current/README.md
+
+@@ -1,6 +1,6 @@
+
+-# Hosting Commerce & Operations Platform — Master Plan Pack
++# Coleza Host — Hosting Commerce & Operations Platform
+ 
+-Bu paket, sıfırdan geliştirilecek WiseCP/WHMCS alternatifi platform için kilitlenmiş ürün kapsamını, mimari sınırları, V1/V1.1/V2+ fazlarını, test/release kapılarını ve AI geliştirme yönetişimini içerir.
++Bu paket, **Coleza Host** (sıfırdan geliştirilecek WiseCP/WHMCS alternatifi platform) için kilitlenmiş ürün kapsamını, mimari sınırları, V1/V1.1/V2+ fazlarını, test/release kapılarını ve AI geliştirme yönetişimini içerir.
+ 
+ ## Temel hedef
+ V1; shared hosting/cPanel/Plesk ortamlarında Composer/Node/Redis/daemon zorunluluğu olmadan çalışabilen, müşteri → ürün → sipariş → fatura → ödeme → provisioning → hizmet → renewal → support akışını ve domain satış/yenileme akışını üretim kalitesinde yürüten ilk sürümdür.

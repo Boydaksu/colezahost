@@ -123,6 +123,32 @@ final class Connection
         return $this->executeStatement($query, $bindings)->rowCount();
     }
 
+    /** Allocate a number atomically on the same connection, including concurrent callers. */
+    public function nextSequence(string $table, string $keyColumn, string $key): int
+    {
+        foreach ([$table, $keyColumn] as $identifier) {
+            if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/D', $identifier)) {
+                throw new \InvalidArgumentException('Invalid sequence identifier.');
+            }
+        }
+        if ($this->getDriverName() === 'mysql') {
+            $this->statement(sprintf(
+                'INSERT INTO %s (%s, last_number) VALUES (?, LAST_INSERT_ID(1))
+                 ON DUPLICATE KEY UPDATE last_number = LAST_INSERT_ID(last_number + 1)', $table, $keyColumn), [$key]);
+            return (int) $this->pdo->query('SELECT LAST_INSERT_ID()')->fetchColumn();
+        }
+        if ($this->getDriverName() !== 'sqlite') {
+            throw new \RuntimeException('Unsupported sequence database driver.');
+        }
+        return $this->transaction(function (self $db) use ($table, $keyColumn, $key): int {
+            $db->statement(sprintf(
+                'INSERT INTO %s (%s, last_number) VALUES (?, 1)
+                 ON CONFLICT(%s) DO UPDATE SET last_number = last_number + 1', $table, $keyColumn, $keyColumn), [$key]);
+            $row = $db->selectOne(sprintf('SELECT last_number FROM %s WHERE %s = ?', $table, $keyColumn), [$key]);
+            return (int) $row['last_number'];
+        });
+    }
+
     public function beginTransaction(): void
     {
         if ($this->transactionDepth === 0) {

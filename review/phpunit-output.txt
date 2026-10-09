@@ -1,0 +1,15 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+Time: 00:08.194, Memory: 50.00 MB
+
+There were 2 PHPUnit test runner deprecations:
+
+1) Using "depends" for the executionOrder attribute is deprecated and will be removed in PHPUnit 14. Use the resolveDependencies="true" XML configuration attribute instead.
+
+2) Your XML configuration validates against a deprecated schema. Migrate your XML configuration using "--migrate-configuration"!
+
+[30;43mOK, but there were issues![0m
+[30;43mTests: 900[0m[30;43m, Assertions: 7916[0m[30;43m, PHPUnit Deprecations: 2[0m[30;43m.[0m

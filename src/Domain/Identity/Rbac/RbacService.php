@@ -42,67 +42,19 @@ final class RbacService
         ],
     ];
 
-    public function __construct(private Connection $db)
+    public function __construct(private Connection $db, string $prefix = '')
     {
+        new RbacSchema($db, $prefix); // Validate the prefix before interpolating identifiers.
+        $this->rolesTable = $prefix . 'roles';
+        $this->permissionsTable = $prefix . 'permissions';
+        $this->rolePermissionsTable = $prefix . 'role_permissions';
+        $this->userRolesTable = $prefix . 'user_roles';
     }
 
     public function ensureTables(): void
     {
-        $driver = $this->db->getDriverName();
-        $autoInc = match ($driver) {
-            'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
-            default => 'INT AUTO_INCREMENT PRIMARY KEY',
-        };
-
-        // Roles table
-        $sqlRoles = sprintf(
-            'CREATE TABLE IF NOT EXISTS %s (
-                id %s,
-                name VARCHAR(50) NOT NULL UNIQUE,
-                scope VARCHAR(20) NOT NULL DEFAULT "system",
-                description VARCHAR(255) NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )',
-            $this->rolesTable,
-            $autoInc
-        );
-        $this->db->statement($sqlRoles);
-
-        // Permissions table
-        $sqlPermissions = sprintf(
-            'CREATE TABLE IF NOT EXISTS %s (
-                id %s,
-                name VARCHAR(100) NOT NULL UNIQUE,
-                description VARCHAR(255) NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )',
-            $this->permissionsTable,
-            $autoInc
-        );
-        $this->db->statement($sqlPermissions);
-
-        // Role-Permissions mapping
-        $sqlRolePerms = sprintf(
-            'CREATE TABLE IF NOT EXISTS %s (
-                role_id INT NOT NULL,
-                permission_name VARCHAR(100) NOT NULL,
-                PRIMARY KEY (role_id, permission_name)
-            )',
-            $this->rolePermissionsTable
-        );
-        $this->db->statement($sqlRolePerms);
-
-        // User-Roles mapping (with optional organization_id for scoped org roles)
-        $sqlUserRoles = sprintf(
-            'CREATE TABLE IF NOT EXISTS %s (
-                user_id INT NOT NULL,
-                role_id INT NOT NULL,
-                organization_id INT NULL,
-                PRIMARY KEY (user_id, role_id, organization_id)
-            )',
-            $this->userRolesTable
-        );
-        $this->db->statement($sqlUserRoles);
+        $prefix = substr($this->rolesTable, 0, -strlen('roles'));
+        (new RbacSchema($this->db, $prefix))->ensure();
     }
 
     /**
@@ -124,6 +76,7 @@ final class RbacService
             'name' => $name,
             'scope' => $scope,
             'description' => $description,
+            'display_name' => $description ?? $name,
         ]);
     }
 
@@ -151,6 +104,9 @@ final class RbacService
      */
     public function assignRole(int $userId, string $roleName, ?int $orgId = null): void
     {
+        if ($orgId !== null && $orgId <= 0) {
+            throw new ValidationException(['organization_id' => 'Organization ID must be positive.'], 'Invalid organization scope');
+        }
         $this->ensureTables();
         $roleId = $this->findOrCreateRole($roleName, $orgId !== null ? 'organization' : 'system');
 
@@ -158,7 +114,7 @@ final class RbacService
             sprintf(
                 'SELECT user_id FROM %s WHERE user_id = :uid AND role_id = :rid AND %s',
                 $this->userRolesTable,
-                $orgId === null ? 'organization_id IS NULL' : 'organization_id = :oid'
+                $orgId === null ? 'organization_id = 0' : 'organization_id = :oid'
             ),
             $orgId === null ? ['uid' => $userId, 'rid' => $roleId] : ['uid' => $userId, 'rid' => $roleId, 'oid' => $orgId]
         );
@@ -167,7 +123,7 @@ final class RbacService
             $this->db->insert($this->userRolesTable, [
                 'user_id' => $userId,
                 'role_id' => $roleId,
-                'organization_id' => $orgId,
+                'organization_id' => $orgId ?? 0,
             ]);
         }
     }
@@ -188,7 +144,7 @@ final class RbacService
                AND (%s)',
             $this->userRolesTable,
             $this->rolePermissionsTable,
-            $orgId === null ? 'ur.organization_id IS NULL' : '(ur.organization_id = :oid OR ur.organization_id IS NULL)'
+            $orgId === null ? 'ur.organization_id = 0' : '(ur.organization_id = :oid OR ur.organization_id = 0)'
         );
 
         $params = ['uid' => $userId];

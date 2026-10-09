@@ -441,21 +441,7 @@ final class PaymentService
     {
         $date = date('Ymd');
 
-        $this->db->statement(
-            sprintf(
-                'INSERT INTO %s (date_prefix, last_number) VALUES (?, 1)
-                 ON CONFLICT(date_prefix) DO UPDATE SET last_number = last_number + 1',
-                $this->paymentSequencesTable
-            ),
-            [$date]
-        );
-
-        $row = $this->db->selectOne(
-            sprintf('SELECT last_number FROM %s WHERE date_prefix = ?', $this->paymentSequencesTable),
-            [$date]
-        );
-
-        $num = $row ? (int)$row['last_number'] : 1;
+        $num = $this->db->nextSequence($this->paymentSequencesTable, 'date_prefix', $date);
         $formattedNum = str_pad((string)$num, 6, '0', STR_PAD_LEFT);
 
         return "PAY-{$date}-{$formattedNum}";
@@ -670,21 +656,7 @@ final class PaymentService
     {
         $date = date('Ymd');
 
-        $this->db->statement(
-            sprintf(
-                'INSERT INTO %s (date_prefix, last_number) VALUES (?, 1)
-                 ON CONFLICT(date_prefix) DO UPDATE SET last_number = last_number + 1',
-                $this->refundSequencesTable
-            ),
-            [$date]
-        );
-
-        $row = $this->db->selectOne(
-            sprintf('SELECT last_number FROM %s WHERE date_prefix = ?', $this->refundSequencesTable),
-            [$date]
-        );
-
-        $num = $row ? (int)$row['last_number'] : 1;
+        $num = $this->db->nextSequence($this->refundSequencesTable, 'date_prefix', $date);
         $formattedNum = str_pad((string)$num, 6, '0', STR_PAD_LEFT);
 
         return "REF-{$date}-{$formattedNum}";
@@ -995,7 +967,8 @@ final class PaymentService
     }
 
     /**
-     * Find payment by token or reference stored in metadata or transaction_reference.
+     * Find the unique checkout token, never a substring or an unrelated reference.
+     * A dedicated indexed token column is part of the database remediation phase.
      */
     public function findPaymentByToken(string $token): ?Payment
     {
@@ -1004,11 +977,28 @@ final class PaymentService
             return null;
         }
 
-        $row = $this->db->selectOne(
-            sprintf('SELECT * FROM %s WHERE transaction_reference = ? OR metadata_json LIKE ? ORDER BY id DESC', $this->paymentsTable),
-            [$token, '%' . $token . '%']
-        );
+        $match = null;
+        foreach ($this->db->select(sprintf('SELECT * FROM %s WHERE metadata_json IS NOT NULL', $this->paymentsTable)) as $row) {
+            $metadata = json_decode((string) $row['metadata_json'], true);
+            if (is_array($metadata) && ($metadata['checkout_token'] ?? null) === $token) {
+                if ($match !== null) {
+                    return null; // Ambiguous tokens must never select an arbitrary payment.
+                }
+                $match = $row;
+            }
+        }
+        return $match !== null ? $this->hydratePayment($match) : null;
+    }
 
-        return $row ? $this->hydratePayment($row) : null;
+    public function attachCheckoutToken(int $paymentId, string $token): void
+    {
+        $payment = $this->findPaymentById($paymentId);
+        if ($payment === null || !$payment->isPending() || trim($token) === '') {
+            throw new ValidationException(['checkout_token' => 'A pending payment and nonempty token are required.'], 'Invalid checkout token');
+        }
+        $metadata = $payment->getMetadata();
+        $metadata['checkout_token'] = $token;
+        $this->db->statement(sprintf('UPDATE %s SET metadata_json = ? WHERE id = ?', $this->paymentsTable),
+            [json_encode($metadata, JSON_THROW_ON_ERROR), $paymentId]);
     }
 }

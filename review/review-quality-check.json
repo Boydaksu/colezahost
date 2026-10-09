@@ -1,0 +1,12 @@
+{
+  "tracked_file_records": 1152,
+  "original_v1_subphases": 155,
+  "report_findings": 33,
+  "source_line_references_verified": 104,
+  "targeted_behavior_observations_verified": 23,
+  "tracked_product_changes": 0,
+  "phpunit_tests": 900,
+  "phpunit_assertions": 7916,
+  "phpunit_deprecations": 2,
+  "scope_limit": "File-level automated static coverage for every tracked file; focused source review and isolated reproduction for critical flows; no live provider/MariaDB/browser test."
+}

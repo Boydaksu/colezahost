@@ -46,3 +46,13 @@ coverage/
 .php-cs-fixer.cache
 
 .phpunit.cache/
+
+# Isolated local database test data
+remediation/runtime/
+
+# Local audit inputs, exported archives and synthetic probe workspaces
+/colezahost.zip
+/review-original-plan/
+/review-test-results.xml
+/review/**/*.zip
+/review/probe-data/

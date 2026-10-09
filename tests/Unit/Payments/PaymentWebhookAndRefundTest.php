@@ -193,6 +193,7 @@ final class PaymentWebhookAndRefundTest extends TestCase
             'currency_code' => 'TRY',
             'payment_method' => 'iyzico',
             'status' => Payment::STATUS_PENDING,
+            'metadata' => ['checkout_token' => 'token_idempotent_test_999'],
         ]);
 
         $mockHttpClient = function () use ($payment): array {
@@ -262,6 +263,7 @@ final class PaymentWebhookAndRefundTest extends TestCase
             'currency_code' => 'TRY',
             'payment_method' => 'iyzico',
             'status' => Payment::STATUS_PENDING,
+            'metadata' => ['checkout_token' => 'token_fail_3d'],
         ]);
 
         // Mock gateway returning verification failure
@@ -308,6 +310,7 @@ final class PaymentWebhookAndRefundTest extends TestCase
             'payment_method' => 'iyzico',
             'status' => Payment::STATUS_COMPLETED,
             'transaction_reference' => 'pre_existing_tx_123',
+            'metadata' => ['checkout_token' => 'token_late_webhook'],
         ]);
 
         $mockHttpClient = function () use ($payment): array {

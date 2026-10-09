@@ -1,0 +1,78 @@
+[
+  {
+    "path": "src/Foundation/Database/Connection.php",
+    "sha256": "ea4d6d3d2df6a32122b1e5851a708d62a7ab9a52dc8433ded1c0fb556daac470"
+  },
+  {
+    "path": "src/Foundation/Database/Migrator.php",
+    "sha256": "34fee742aa786392ea681a159d63d6bf80d7b5ece9a329a80ea8f4ffb252ac7a"
+  },
+  {
+    "path": "src/Domain/Identity/Rbac/RbacSchema.php",
+    "sha256": "039c74d8963b0463fd7db620f5120490ca2ade99e8549dc38ea5160ab661c951"
+  },
+  {
+    "path": "src/Domain/Identity/Rbac/RbacService.php",
+    "sha256": "b8d120dc3ebc5292f62e9a8308af7a0ae12cc2e33c8e671a38ea5a461099a36c"
+  },
+  {
+    "path": "src/Domain/Installer/DatabaseSetupService.php",
+    "sha256": "6b9ee8956f51cc50e6d86c7d9745c374fdf69e0bb4c64ceb5ae55fdb1747dc3e"
+  },
+  {
+    "path": "src/Domain/Installer/AdminBootstrapService.php",
+    "sha256": "323565921f98cba48c16ddf9cd7aafe343432b1baac8493fbf951632d41c9ef5"
+  },
+  {
+    "path": "database/migrations/2026_10_09_000001_normalize_identity_rbac.php",
+    "sha256": "8f5f8f038cc85774caab105132adaddaa77a7fa6f9d9fc7d4290159feb55219c"
+  },
+  {
+    "path": "src/Domain/Commerce/Invoices/InvoiceService.php",
+    "sha256": "bdb2461570e2327b9ceed3b02c1fe7820c8b5ffff6e65c7a32bc4f5d99ee92f7"
+  },
+  {
+    "path": "src/Domain/Commerce/Payments/PaymentService.php",
+    "sha256": "28635fd66857136710b7180fd0de4624c122c20902a108783023c9e78c242d1e"
+  },
+  {
+    "path": "src/Domain/Commerce/Services/ServiceService.php",
+    "sha256": "27085aa1e56cab2a9ebe57bffd713bec903b7f405273be09ae36054ce746e05e"
+  },
+  {
+    "path": "src/Domain/Commerce/Credit/CreditService.php",
+    "sha256": "aed26818dfb1f7f47f04f3435c1b2411006c0114408765df5f1e8297b813105e"
+  },
+  {
+    "path": "src/Domain/Finance/Accounts/FinancialAccountService.php",
+    "sha256": "fc425a063ce76ebf6c33b11ef897ea8fd05d1de45ac712b077670069d3fed4f0"
+  },
+  {
+    "path": "src/Domain/Finance/Expenses/ExpenseService.php",
+    "sha256": "4c38aed6f6705572f8ea652affe145f2bed26be8a849b1e9d2c7f8b086fe8d72"
+  },
+  {
+    "path": "src/Domain/Finance/Profitability/ProfitabilityService.php",
+    "sha256": "b07f292cfafd82ca0aa56cecd9f18e6827f47a820921762266ae4af30fcbd09e"
+  },
+  {
+    "path": "tests/MariaDb/DatabaseFoundationTest.php",
+    "sha256": "c8401b5e1aa6a58aa3107b7c5375b5ae2e8764f0f8c65efed7535799932edd24"
+  },
+  {
+    "path": "tests/MariaDb/fixtures/sequence-worker.php",
+    "sha256": "bbc49b26957c9c40d757b26e6b13b86ce42a7f06940abf8116248ef72747e74a"
+  },
+  {
+    "path": "tests/MariaDb/fixtures/fail-once/001_partial_ddl.php",
+    "sha256": "a9865b2202707bef5a934ccd7efea3d7b3e9a79471b38990ccea3c5823d9a372"
+  },
+  {
+    "path": "tests/Unit/Foundation/Database/IdentitySchemaMigrationRegressionTest.php",
+    "sha256": "01acba21dbf37d60d16ad89044f29ab558a8c11fd4c33af0c004bb43f58e968d"
+  },
+  {
+    "path": "phpunit-mariadb.xml",
+    "sha256": "622195292a723d07e4fc618c8b9cf93eb6919de9c08bd090a4c1206764f433c1"
+  }
+]

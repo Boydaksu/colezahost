@@ -1,0 +1,23 @@
+{"id":"R01-installer-rbac","exception":"PDOException","message":"SQLSTATE[HY000]: General error: 1 no such column: ur.organization_id"}
+{"id":"R02-smtp-false-positive","result":{"reported_success":true,"actual_transport":"memory","config_host":"invalid.example"}}
+{"id":"R03-smtp-plaintext","result":{"setting_value":"synthetic-only","is_encrypted":1}}
+{"id":"R04-client-self-settlement","result":{"payment_status":"completed","invoice_status":"paid"}}
+{"id":"R05-callback-amount-currency","result":{"verified_amount_minor":1,"verified_currency":"USD","expected_amount_minor":10000,"expected_currency":"TRY","invoice_status":"paid","paid_minor":10000}}
+{"id":"R06-emergency-pause-restart","result":{"first_request_paused":true,"next_request_paused":false}}
+{"id":"R07-remote-backup-loss","result":{"reported_destination":"s3","remote_exists":false,"local_archive_exists":false,"local_manifest_exists":false}}
+{"id":"R08-invoice-negative-values","result":{"total_minor":-10000,"status":"unpaid"}}
+{"id":"R09-invoice-overpayment","result":{"total_minor":10000,"paid_minor":20000,"valid_allocations":0}}
+{"id":"R10-fixed-vault-key","result":{"decrypted_with_public_fallback":"synthetic-secret"}}
+{"id":"R11-backup-apostrophe-restore","result":{"backup_id":"backup_db_20261009_155025_6488c26a","success":false,"statements_executed":0,"files_restored":0,"tables_restored":[],"metadata":[],"reconciliation_report":null,"error_message":"SQLSTATE[HY000]: General error: 1 near \"Reilly\": syntax error"}}
+{"id":"R12-analytics-commerce-schema","result":{"real_invoices":1,"real_invoiced_minor":10000,"reported_invoice_count":0,"reported_gross_invoiced":0}}
+{"id":"R13-update-counts-without-running","result":{"update_result":{"success":true,"target_version":"1.0.1","files_applied":0,"migrations_run":1,"backup_id":null},"migration_table_exists":false}}
+{"id":"R14-invoice-list-nplusone","result":{"rows":100,"queries":101}}
+{"id":"R15-pdf-truncates-long-document","result":{"input_lines":100,"contains_last_line":false,"single_page":true}}
+{"id":"R16-erasure-keeps-login-password","result":{"erasure_status":"erased","is_active":1,"old_password_still_authenticates":true}}
+{"id":"R17-export-misses-real-invoice","result":{"real_invoices":1,"exported_invoices":0}}
+{"id":"R18-health-ignores-real-failed-queue","result":{"real_failed_jobs":20,"reported_health":{"component":"queue","status":"healthy","message":"Background queue is clear.","metrics":{"pending":0,"failed":0},"latency_ms":0.1}}}
+{"id":"R19-paid-invoice-renews-twice","result":{"after_first":"2026-12-01","after_replay_same_invoice":"2027-01-01"}}
+{"id":"R20-cpanel-native-transport-error","exception":"Error","message":"Undefined constant \"Coleza\\Domain\\Providers\\Cpanel\\startTime\""}
+{"id":"R21-server-secret-plaintext","result":{"auth_secret_encrypted":"synthetic-secret"}}
+{"id":"R22-client-price-override","result":{"catalog_price_minor":10000,"client_supplied_price_minor":1,"accepted_order_total_minor":1}}
+{"id":"R23-support-noop-success","result":{"result":{"action":"service.reboot","success":true,"message":"Service #12345 graceful restart command dispatched.","data":{"service_id":12345},"executedAt":{"date":"2026-10-09 15:50:25.715186","timezone_type":3,"timezone":"UTC"}},"real_provider_called":false,"registered_handlers":0}}

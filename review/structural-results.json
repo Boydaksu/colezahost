@@ -1,0 +1,3934 @@
+{
+  "git_commit": "6dc47ea83bb51c09c993e6cef3af3577e5955f51",
+  "files": 1152,
+  "source": 670,
+  "test_files": 168,
+  "unresolved_imports": [
+    {
+      "path": "src/Domain/Analytics/ReadModels/ReadModelAggregationService.php",
+      "line": 7,
+      "class": "Coleza\\Domain\\Audit\\AuditLogger"
+    },
+    {
+      "path": "src/Domain/Analytics/Subscription/SubscriptionSnapshotService.php",
+      "line": 7,
+      "class": "Coleza\\Domain\\Audit\\AuditLogger"
+    },
+    {
+      "path": "src/Domain/Privacy/Redaction/RedactionAuditService.php",
+      "line": 7,
+      "class": "Coleza\\Domain\\Audit\\AuditLogger"
+    },
+    {
+      "path": "src/Domain/Privacy/Tombstone/BackupRestoreReconciliationService.php",
+      "line": 7,
+      "class": "Coleza\\Domain\\Audit\\AuditLogger"
+    },
+    {
+      "path": "src/Domain/Privacy/Tombstone/PrivacyTombstoneService.php",
+      "line": 7,
+      "class": "Coleza\\Domain\\Audit\\AuditLogger"
+    }
+  ],
+  "portable_sql_violations": [
+    {
+      "path": "src/Domain/Commerce/Credit/CreditService.php",
+      "line": 443,
+      "content": "ON CONFLICT(date_prefix) DO UPDATE SET last_number = last_number + 1',"
+    },
+    {
+      "path": "src/Domain/Commerce/Invoices/InvoiceService.php",
+      "line": 395,
+      "content": "ON CONFLICT(year_prefix) DO UPDATE SET last_number = last_number + 1',"
+    },
+    {
+      "path": "src/Domain/Commerce/Payments/PaymentService.php",
+      "line": 447,
+      "content": "ON CONFLICT(date_prefix) DO UPDATE SET last_number = last_number + 1',"
+    },
+    {
+      "path": "src/Domain/Commerce/Payments/PaymentService.php",
+      "line": 676,
+      "content": "ON CONFLICT(date_prefix) DO UPDATE SET last_number = last_number + 1',"
+    },
+    {
+      "path": "src/Domain/Commerce/Recurring/Scheduler/MissedSchedulerCatchupService.php",
+      "line": 59,
+      "content": "ON CONFLICT(scheduler_name) DO UPDATE SET"
+    },
+    {
+      "path": "src/Domain/Commerce/Services/ServiceService.php",
+      "line": 1059,
+      "content": "ON CONFLICT(date_prefix) DO UPDATE SET last_number = last_number + 1',"
+    },
+    {
+      "path": "src/Domain/Domains/Catalog/DomainCatalogService.php",
+      "line": 256,
+      "content": "ON CONFLICT(tld_id, operation, years, currency_code) DO UPDATE SET"
+    },
+    {
+      "path": "src/Domain/Domains/DomainService.php",
+      "line": 626,
+      "content": "ON CONFLICT(domain_id, contact_type) DO UPDATE SET"
+    },
+    {
+      "path": "src/Domain/Domains/Registrar/Vault/VaultRegistrarSettingsManager.php",
+      "line": 78,
+      "content": "ON CONFLICT(registrar_id) DO UPDATE SET"
+    },
+    {
+      "path": "src/Domain/Finance/Accounts/FinancialAccountService.php",
+      "line": 438,
+      "content": "ON CONFLICT(date_prefix) DO UPDATE SET last_number = last_number + 1',"
+    },
+    {
+      "path": "src/Domain/Finance/Expenses/ExpenseService.php",
+      "line": 601,
+      "content": "ON CONFLICT(date_prefix) DO UPDATE SET last_number = last_number + 1',"
+    },
+    {
+      "path": "src/Domain/Finance/Profitability/ProfitabilityService.php",
+      "line": 261,
+      "content": "ON CONFLICT(date_prefix) DO UPDATE SET last_number = last_number + 1',"
+    },
+    {
+      "path": "src/Domain/Migration/Whmcs/Core/WhmcsCoreEntityMigrator.php",
+      "line": 621,
+      "content": "'INSERT OR IGNORE INTO organization_members (organization_id, user_id, role) VALUES (?, ?, \"member\")',"
+    },
+    {
+      "path": "src/Domain/Notifications/Center/NotificationCenterService.php",
+      "line": 127,
+      "content": "ON CONFLICT(user_id, category) DO UPDATE SET"
+    }
+  ],
+  "domain_edges": [
+    {
+      "path": "src/Domain/Analytics/ReadModels/ReadModelAggregationService.php",
+      "line": 7,
+      "source": "Analytics",
+      "target": "Audit",
+      "class": "Coleza\\Domain\\Audit\\AuditLogger"
+    },
+    {
+      "path": "src/Domain/Analytics/Reconciliation/LedgerReconciliationService.php",
+      "line": 8,
+      "source": "Analytics",
+      "target": "Finance",
+      "class": "Coleza\\Domain\\Finance\\Accounts\\AccountTransaction"
+    },
+    {
+      "path": "src/Domain/Analytics/Subscription/SubscriptionSnapshotService.php",
+      "line": 7,
+      "source": "Analytics",
+      "target": "Audit",
+      "class": "Coleza\\Domain\\Audit\\AuditLogger"
+    },
+    {
+      "path": "src/Domain/Analytics/Testing/GoldenFinancialDataset.php",
+      "line": 7,
+      "source": "Analytics",
+      "target": "Finance",
+      "class": "Coleza\\Domain\\Finance\\Accounts\\AccountTransaction"
+    },
+    {
+      "path": "src/Domain/Automation/Adapters/AutomationDomainAdapterRegistry.php",
+      "line": 17,
+      "source": "Automation",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Invoices\\InvoiceService"
+    },
+    {
+      "path": "src/Domain/Automation/Adapters/AutomationDomainAdapterRegistry.php",
+      "line": 18,
+      "source": "Automation",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Recurring\\RenewalInvoiceService"
+    },
+    {
+      "path": "src/Domain/Automation/Adapters/AutomationDomainAdapterRegistry.php",
+      "line": 19,
+      "source": "Automation",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Services\\ServiceService"
+    },
+    {
+      "path": "src/Domain/Automation/Adapters/AutomationDomainAdapterRegistry.php",
+      "line": 20,
+      "source": "Automation",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\Center\\NotificationCenterService"
+    },
+    {
+      "path": "src/Domain/Automation/Adapters/AutomationDomainAdapterRegistry.php",
+      "line": 21,
+      "source": "Automation",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\NotificationEngine"
+    },
+    {
+      "path": "src/Domain/Automation/Adapters/Billing/InvoiceStatusActionHandler.php",
+      "line": 11,
+      "source": "Automation",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Invoices\\InvoiceService"
+    },
+    {
+      "path": "src/Domain/Automation/Adapters/Billing/RenewalInvoiceActionHandler.php",
+      "line": 11,
+      "source": "Automation",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Recurring\\RenewalInvoiceService"
+    },
+    {
+      "path": "src/Domain/Automation/Adapters/Billing/RenewalInvoiceActionHandler.php",
+      "line": 12,
+      "source": "Automation",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Services\\ServiceService"
+    },
+    {
+      "path": "src/Domain/Automation/Adapters/Notification/InAppNotificationActionHandler.php",
+      "line": 11,
+      "source": "Automation",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\Center\\NotificationCenterService"
+    },
+    {
+      "path": "src/Domain/Automation/Adapters/Notification/NotificationActionHandler.php",
+      "line": 11,
+      "source": "Automation",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\Channel\\NotificationChannel"
+    },
+    {
+      "path": "src/Domain/Automation/Adapters/Notification/NotificationActionHandler.php",
+      "line": 12,
+      "source": "Automation",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\Channel\\NotificationPriority"
+    },
+    {
+      "path": "src/Domain/Automation/Adapters/Notification/NotificationActionHandler.php",
+      "line": 13,
+      "source": "Automation",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\NotificationEngine"
+    },
+    {
+      "path": "src/Domain/Automation/Adapters/Service/ServiceCancelActionHandler.php",
+      "line": 11,
+      "source": "Automation",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Services\\ServiceService"
+    },
+    {
+      "path": "src/Domain/Automation/Adapters/Service/ServiceRenewActionHandler.php",
+      "line": 11,
+      "source": "Automation",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Services\\ServiceService"
+    },
+    {
+      "path": "src/Domain/Automation/Adapters/Service/ServiceSuspendActionHandler.php",
+      "line": 11,
+      "source": "Automation",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Services\\ServiceService"
+    },
+    {
+      "path": "src/Domain/Automation/Adapters/Service/ServiceTerminateActionHandler.php",
+      "line": 11,
+      "source": "Automation",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Services\\ServiceService"
+    },
+    {
+      "path": "src/Domain/Automation/Adapters/Service/ServiceUnsuspendActionHandler.php",
+      "line": 11,
+      "source": "Automation",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Services\\ServiceService"
+    },
+    {
+      "path": "src/Domain/Commerce/Invoices/InvoiceService.php",
+      "line": 8,
+      "source": "Commerce",
+      "target": "Finance",
+      "class": "Coleza\\Domain\\Finance\\Currency\\CurrencyService"
+    },
+    {
+      "path": "src/Domain/Commerce/Invoices/InvoiceService.php",
+      "line": 9,
+      "source": "Commerce",
+      "target": "Tax",
+      "class": "Coleza\\Domain\\Tax\\Services\\TaxService"
+    },
+    {
+      "path": "src/Domain/Commerce/Orders/OrderService.php",
+      "line": 7,
+      "source": "Commerce",
+      "target": "Catalog",
+      "class": "Coleza\\Domain\\Catalog\\Services\\CatalogService"
+    },
+    {
+      "path": "src/Domain/Commerce/Orders/OrderService.php",
+      "line": 8,
+      "source": "Commerce",
+      "target": "Pricing",
+      "class": "Coleza\\Domain\\Pricing\\Services\\PricingService"
+    },
+    {
+      "path": "src/Domain/Commerce/Orders/OrderService.php",
+      "line": 9,
+      "source": "Commerce",
+      "target": "Tax",
+      "class": "Coleza\\Domain\\Tax\\Services\\TaxService"
+    },
+    {
+      "path": "src/Domain/Commerce/Recurring/BillingPeriod.php",
+      "line": 7,
+      "source": "Commerce",
+      "target": "Pricing",
+      "class": "Coleza\\Domain\\Pricing\\Entities\\PriceCycle"
+    },
+    {
+      "path": "src/Domain/Commerce/Recurring/RenewalInvoiceService.php",
+      "line": 9,
+      "source": "Commerce",
+      "target": "Tax",
+      "class": "Coleza\\Domain\\Tax\\Services\\TaxService"
+    },
+    {
+      "path": "src/Domain/Commerce/Recurring/Scheduler/ServiceRenewalScheduler.php",
+      "line": 11,
+      "source": "Commerce",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\NotificationEngine"
+    },
+    {
+      "path": "src/Domain/Commerce/Services/Lifecycle/OverdueLifecycleWorkflow.php",
+      "line": 7,
+      "source": "Commerce",
+      "target": "Automation",
+      "class": "Coleza\\Domain\\Automation\\Safety\\EmergencyPauseManagerInterface"
+    },
+    {
+      "path": "src/Domain/Commerce/Services/Lifecycle/OverdueLifecycleWorkflow.php",
+      "line": 14,
+      "source": "Commerce",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\NotificationEngine"
+    },
+    {
+      "path": "src/Domain/Commerce/Services/ServiceService.php",
+      "line": 9,
+      "source": "Commerce",
+      "target": "Pricing",
+      "class": "Coleza\\Domain\\Pricing\\Entities\\PriceCycle"
+    },
+    {
+      "path": "src/Domain/Documents/Proforma/ProformaService.php",
+      "line": 7,
+      "source": "Documents",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Invoices\\Invoice"
+    },
+    {
+      "path": "src/Domain/Documents/Proforma/ProformaService.php",
+      "line": 8,
+      "source": "Documents",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Invoices\\InvoiceService"
+    },
+    {
+      "path": "src/Domain/Documents/Quotes/QuoteService.php",
+      "line": 7,
+      "source": "Documents",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Orders\\Order"
+    },
+    {
+      "path": "src/Domain/Documents/Quotes/QuoteService.php",
+      "line": 8,
+      "source": "Documents",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Orders\\OrderService"
+    },
+    {
+      "path": "src/Domain/Documents/Rendering/DocumentRenderService.php",
+      "line": 7,
+      "source": "Documents",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Invoices\\Invoice"
+    },
+    {
+      "path": "src/Domain/Domains/Registrar/Vault/VaultRegistrarSettingsManager.php",
+      "line": 7,
+      "source": "Domains",
+      "target": "Vault",
+      "class": "Coleza\\Domain\\Vault\\VaultService"
+    },
+    {
+      "path": "src/Domain/Finance/Expenses/ExpenseService.php",
+      "line": 9,
+      "source": "Finance",
+      "target": "Pricing",
+      "class": "Coleza\\Domain\\Pricing\\Entities\\PriceCycle"
+    },
+    {
+      "path": "src/Domain/Finance/Expenses/RecurringExpense.php",
+      "line": 7,
+      "source": "Finance",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Recurring\\BillingPeriod"
+    },
+    {
+      "path": "src/Domain/Finance/Expenses/RecurringExpense.php",
+      "line": 8,
+      "source": "Finance",
+      "target": "Pricing",
+      "class": "Coleza\\Domain\\Pricing\\Entities\\PriceCycle"
+    },
+    {
+      "path": "src/Domain/Health/SystemDoctorService.php",
+      "line": 7,
+      "source": "Health",
+      "target": "Backup",
+      "class": "Coleza\\Domain\\Backup\\Storage\\BackupStorageAdapterInterface"
+    },
+    {
+      "path": "src/Domain/Installer/EmailSetupService.php",
+      "line": 7,
+      "source": "Installer",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\Channel\\NotificationChannel"
+    },
+    {
+      "path": "src/Domain/Installer/EmailSetupService.php",
+      "line": 8,
+      "source": "Installer",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\Channel\\NotificationPriority"
+    },
+    {
+      "path": "src/Domain/Installer/EmailSetupService.php",
+      "line": 9,
+      "source": "Installer",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\Delivery\\DeliveryResult"
+    },
+    {
+      "path": "src/Domain/Installer/EmailSetupService.php",
+      "line": 10,
+      "source": "Installer",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\Messages\\NotificationMessage"
+    },
+    {
+      "path": "src/Domain/Installer/EmailSetupService.php",
+      "line": 11,
+      "source": "Installer",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\Transport\\MailerInterface"
+    },
+    {
+      "path": "src/Domain/Installer/EmailSetupService.php",
+      "line": 12,
+      "source": "Installer",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\Transport\\MemoryMailTransport"
+    },
+    {
+      "path": "src/Domain/Installer/FreshInstallMigrationModeService.php",
+      "line": 7,
+      "source": "Installer",
+      "target": "Migration",
+      "class": "Coleza\\Domain\\Migration\\Execution\\MigrationExecutionOrchestrator"
+    },
+    {
+      "path": "src/Domain/Installer/FreshInstallMigrationModeService.php",
+      "line": 8,
+      "source": "Installer",
+      "target": "Migration",
+      "class": "Coleza\\Domain\\Migration\\Whmcs\\WhmcsReadOnlyConnector"
+    },
+    {
+      "path": "src/Domain/Installer/WebInstallerService.php",
+      "line": 9,
+      "source": "Installer",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\Transport\\MailerInterface"
+    },
+    {
+      "path": "src/Domain/Integrations/Health/IntegrationHealthRegistry.php",
+      "line": 7,
+      "source": "Integrations",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Payments\\Gateways\\Iyzico\\IyzicoConfiguration"
+    },
+    {
+      "path": "src/Domain/Integrations/Health/IntegrationHealthRegistry.php",
+      "line": 8,
+      "source": "Integrations",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Payments\\Gateways\\PaymentGatewayInterface"
+    },
+    {
+      "path": "src/Domain/Integrations/Health/IntegrationHealthRegistry.php",
+      "line": 9,
+      "source": "Integrations",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\Transport\\MailerInterface"
+    },
+    {
+      "path": "src/Domain/Integrations/Health/IntegrationHealthRegistry.php",
+      "line": 10,
+      "source": "Integrations",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\Transport\\SmtpConfiguration"
+    },
+    {
+      "path": "src/Domain/Integrations/Health/IntegrationHealthRegistry.php",
+      "line": 11,
+      "source": "Integrations",
+      "target": "Webhooks",
+      "class": "Coleza\\Domain\\Webhooks\\WebhookService"
+    },
+    {
+      "path": "src/Domain/Integrations/Health/PaymentGatewayHealthCheck.php",
+      "line": 7,
+      "source": "Integrations",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Payments\\Gateways\\Iyzico\\IyzicoConfiguration"
+    },
+    {
+      "path": "src/Domain/Integrations/Health/PaymentGatewayHealthCheck.php",
+      "line": 8,
+      "source": "Integrations",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Payments\\Gateways\\PaymentGatewayInterface"
+    },
+    {
+      "path": "src/Domain/Integrations/Health/SmtpHealthCheck.php",
+      "line": 7,
+      "source": "Integrations",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\Transport\\MailerInterface"
+    },
+    {
+      "path": "src/Domain/Integrations/Health/SmtpHealthCheck.php",
+      "line": 8,
+      "source": "Integrations",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\Transport\\MemoryMailTransport"
+    },
+    {
+      "path": "src/Domain/Integrations/Health/SmtpHealthCheck.php",
+      "line": 9,
+      "source": "Integrations",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\Transport\\SmtpConfiguration"
+    },
+    {
+      "path": "src/Domain/Integrations/Health/SmtpHealthCheck.php",
+      "line": 10,
+      "source": "Integrations",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\Transport\\SmtpTransport"
+    },
+    {
+      "path": "src/Domain/Integrations/Health/WebhookQueueHealthCheck.php",
+      "line": 7,
+      "source": "Integrations",
+      "target": "Webhooks",
+      "class": "Coleza\\Domain\\Webhooks\\WebhookService"
+    },
+    {
+      "path": "src/Domain/Migration/Hold/NotificationSuppressionManager.php",
+      "line": 7,
+      "source": "Migration",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\Channel\\NotificationChannel"
+    },
+    {
+      "path": "src/Domain/Migration/Hold/NotificationSuppressionManager.php",
+      "line": 8,
+      "source": "Migration",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\Channel\\NotificationPriority"
+    },
+    {
+      "path": "src/Domain/Migration/Hold/NotificationSuppressionManager.php",
+      "line": 9,
+      "source": "Migration",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\Delivery\\DeliveryResult"
+    },
+    {
+      "path": "src/Domain/Migration/Hold/NotificationSuppressionManager.php",
+      "line": 10,
+      "source": "Migration",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\NotificationEngine"
+    },
+    {
+      "path": "src/Domain/Migration/Whmcs/Core/WhmcsCoreEntityMigrator.php",
+      "line": 7,
+      "source": "Migration",
+      "target": "Catalog",
+      "class": "Coleza\\Domain\\Catalog\\Services\\CatalogService"
+    },
+    {
+      "path": "src/Domain/Migration/Whmcs/Core/WhmcsCoreEntityMigrator.php",
+      "line": 8,
+      "source": "Migration",
+      "target": "Identity",
+      "class": "Coleza\\Domain\\Identity\\Organization\\OrganizationService"
+    },
+    {
+      "path": "src/Domain/Module/ModuleLifecycleService.php",
+      "line": 7,
+      "source": "Module",
+      "target": "Identity",
+      "class": "Coleza\\Domain\\Identity\\Audit\\AuditLogger"
+    },
+    {
+      "path": "src/Domain/Pricing/Services/PricingService.php",
+      "line": 7,
+      "source": "Pricing",
+      "target": "Catalog",
+      "class": "Coleza\\Domain\\Catalog\\Services\\CatalogService"
+    },
+    {
+      "path": "src/Domain/Pricing/Services/PricingService.php",
+      "line": 8,
+      "source": "Pricing",
+      "target": "Finance",
+      "class": "Coleza\\Domain\\Finance\\Currency\\CurrencyService"
+    },
+    {
+      "path": "src/Domain/Privacy/PrivacyConsentService.php",
+      "line": 7,
+      "source": "Privacy",
+      "target": "Identity",
+      "class": "Coleza\\Domain\\Identity\\Audit\\AuditLogger"
+    },
+    {
+      "path": "src/Domain/Privacy/Redaction/RedactionAuditService.php",
+      "line": 7,
+      "source": "Privacy",
+      "target": "Audit",
+      "class": "Coleza\\Domain\\Audit\\AuditLogger"
+    },
+    {
+      "path": "src/Domain/Privacy/Tombstone/BackupRestoreReconciliationService.php",
+      "line": 7,
+      "source": "Privacy",
+      "target": "Audit",
+      "class": "Coleza\\Domain\\Audit\\AuditLogger"
+    },
+    {
+      "path": "src/Domain/Privacy/Tombstone/PrivacyTombstoneService.php",
+      "line": 7,
+      "source": "Privacy",
+      "target": "Audit",
+      "class": "Coleza\\Domain\\Audit\\AuditLogger"
+    },
+    {
+      "path": "src/Domain/Providers/Cpanel/CpanelApiClient.php",
+      "line": 8,
+      "source": "Providers",
+      "target": "Provisioning",
+      "class": "Coleza\\Domain\\Provisioning\\Classification\\ProvisioningErrorClassifier"
+    },
+    {
+      "path": "src/Domain/Providers/Cpanel/CpanelProvider.php",
+      "line": 17,
+      "source": "Providers",
+      "target": "Provisioning",
+      "class": "Coleza\\Domain\\Provisioning\\Classification\\ProvisioningErrorClassifier"
+    },
+    {
+      "path": "src/Domain/Providers/Cpanel/CpanelProvider.php",
+      "line": 18,
+      "source": "Providers",
+      "target": "Servers",
+      "class": "Coleza\\Domain\\Servers\\Entities\\Server"
+    },
+    {
+      "path": "src/Domain/Providers/Cpanel/CpanelProvider.php",
+      "line": 19,
+      "source": "Providers",
+      "target": "Servers",
+      "class": "Coleza\\Domain\\Servers\\Placement\\ServerHealthResult"
+    },
+    {
+      "path": "src/Domain/Providers/Cpanel/CpanelServerHealthChecker.php",
+      "line": 7,
+      "source": "Providers",
+      "target": "Servers",
+      "class": "Coleza\\Domain\\Servers\\Entities\\Server"
+    },
+    {
+      "path": "src/Domain/Providers/Cpanel/CpanelServerHealthChecker.php",
+      "line": 8,
+      "source": "Providers",
+      "target": "Servers",
+      "class": "Coleza\\Domain\\Servers\\Placement\\ServerHealthCheckerInterface"
+    },
+    {
+      "path": "src/Domain/Providers/Cpanel/CpanelServerHealthChecker.php",
+      "line": 9,
+      "source": "Providers",
+      "target": "Servers",
+      "class": "Coleza\\Domain\\Servers\\Placement\\ServerHealthResult"
+    },
+    {
+      "path": "src/Domain/Providers/Settings/ProviderSettingService.php",
+      "line": 7,
+      "source": "Providers",
+      "target": "Vault",
+      "class": "Coleza\\Domain\\Vault\\VaultService"
+    },
+    {
+      "path": "src/Domain/Provisioning/Classification/ProvisioningErrorClassifier.php",
+      "line": 7,
+      "source": "Provisioning",
+      "target": "Providers",
+      "class": "Coleza\\Domain\\Providers\\DTO\\ProviderOperationResult"
+    },
+    {
+      "path": "src/Domain/Provisioning/Coordinators/AutomatedHostingOrderCoordinator.php",
+      "line": 7,
+      "source": "Provisioning",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Orders\\Order"
+    },
+    {
+      "path": "src/Domain/Provisioning/Coordinators/AutomatedHostingOrderCoordinator.php",
+      "line": 8,
+      "source": "Provisioning",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Orders\\OrderService"
+    },
+    {
+      "path": "src/Domain/Provisioning/Coordinators/AutomatedHostingOrderCoordinator.php",
+      "line": 9,
+      "source": "Provisioning",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Services\\Service"
+    },
+    {
+      "path": "src/Domain/Provisioning/Coordinators/AutomatedHostingOrderCoordinator.php",
+      "line": 10,
+      "source": "Provisioning",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Services\\ServiceService"
+    },
+    {
+      "path": "src/Domain/Provisioning/Coordinators/AutomatedHostingOrderCoordinator.php",
+      "line": 11,
+      "source": "Provisioning",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\Channel\\NotificationChannel"
+    },
+    {
+      "path": "src/Domain/Provisioning/Coordinators/AutomatedHostingOrderCoordinator.php",
+      "line": 12,
+      "source": "Provisioning",
+      "target": "Notifications",
+      "class": "Coleza\\Domain\\Notifications\\NotificationEngine"
+    },
+    {
+      "path": "src/Domain/Provisioning/Reconciliation/UncertainResponseReconciliationService.php",
+      "line": 7,
+      "source": "Provisioning",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Services\\ServicePlacement"
+    },
+    {
+      "path": "src/Domain/Provisioning/Reconciliation/UncertainResponseReconciliationService.php",
+      "line": 8,
+      "source": "Provisioning",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Services\\ServiceService"
+    },
+    {
+      "path": "src/Domain/Provisioning/Reconciliation/UncertainResponseReconciliationService.php",
+      "line": 9,
+      "source": "Provisioning",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Services\\ServiceStateMachine"
+    },
+    {
+      "path": "src/Domain/Provisioning/Reconciliation/UncertainResponseReconciliationService.php",
+      "line": 10,
+      "source": "Provisioning",
+      "target": "Providers",
+      "class": "Coleza\\Domain\\Providers\\Contracts\\ProviderCapability"
+    },
+    {
+      "path": "src/Domain/Provisioning/Reconciliation/UncertainResponseReconciliationService.php",
+      "line": 11,
+      "source": "Provisioning",
+      "target": "Providers",
+      "class": "Coleza\\Domain\\Providers\\Cpanel\\CpanelProvider"
+    },
+    {
+      "path": "src/Domain/Provisioning/Reconciliation/UncertainResponseReconciliationService.php",
+      "line": 12,
+      "source": "Provisioning",
+      "target": "Providers",
+      "class": "Coleza\\Domain\\Providers\\DTO\\ProviderOperationResult"
+    },
+    {
+      "path": "src/Domain/Provisioning/Reconciliation/UncertainResponseReconciliationService.php",
+      "line": 13,
+      "source": "Provisioning",
+      "target": "Providers",
+      "class": "Coleza\\Domain\\Providers\\Registry\\ProviderRegistry"
+    },
+    {
+      "path": "src/Domain/Provisioning/Reconciliation/UncertainResponseReconciliationService.php",
+      "line": 16,
+      "source": "Provisioning",
+      "target": "Servers",
+      "class": "Coleza\\Domain\\Servers\\Services\\ServerService"
+    },
+    {
+      "path": "src/Domain/Provisioning/Services/ProvisioningOperationService.php",
+      "line": 7,
+      "source": "Provisioning",
+      "target": "Providers",
+      "class": "Coleza\\Domain\\Providers\\DTO\\ProviderOperationResult"
+    },
+    {
+      "path": "src/Domain/Provisioning/Services/ProvisioningRetryRunner.php",
+      "line": 7,
+      "source": "Provisioning",
+      "target": "Providers",
+      "class": "Coleza\\Domain\\Providers\\Contracts\\ProviderCapability"
+    },
+    {
+      "path": "src/Domain/Provisioning/Services/ProvisioningRetryRunner.php",
+      "line": 8,
+      "source": "Provisioning",
+      "target": "Providers",
+      "class": "Coleza\\Domain\\Providers\\DTO\\ProviderOperationResult"
+    },
+    {
+      "path": "src/Domain/Provisioning/Workflows/HostingProvisioningWorkflow.php",
+      "line": 7,
+      "source": "Provisioning",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Services\\Exceptions\\ServiceConcurrencyException"
+    },
+    {
+      "path": "src/Domain/Provisioning/Workflows/HostingProvisioningWorkflow.php",
+      "line": 8,
+      "source": "Provisioning",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Services\\ServicePlacement"
+    },
+    {
+      "path": "src/Domain/Provisioning/Workflows/HostingProvisioningWorkflow.php",
+      "line": 9,
+      "source": "Provisioning",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Services\\ServiceService"
+    },
+    {
+      "path": "src/Domain/Provisioning/Workflows/HostingProvisioningWorkflow.php",
+      "line": 10,
+      "source": "Provisioning",
+      "target": "Commerce",
+      "class": "Coleza\\Domain\\Commerce\\Services\\ServiceStateMachine"
+    },
+    {
+      "path": "src/Domain/Provisioning/Workflows/HostingProvisioningWorkflow.php",
+      "line": 11,
+      "source": "Provisioning",
+      "target": "Providers",
+      "class": "Coleza\\Domain\\Providers\\Contracts\\ProviderCapability"
+    },
+    {
+      "path": "src/Domain/Provisioning/Workflows/HostingProvisioningWorkflow.php",
+      "line": 12,
+      "source": "Provisioning",
+      "target": "Providers",
+      "class": "Coleza\\Domain\\Providers\\Cpanel\\CpanelProvider"
+    },
+    {
+      "path": "src/Domain/Provisioning/Workflows/HostingProvisioningWorkflow.php",
+      "line": 13,
+      "source": "Provisioning",
+      "target": "Providers",
+      "class": "Coleza\\Domain\\Providers\\DTO\\ProviderOperationResult"
+    },
+    {
+      "path": "src/Domain/Provisioning/Workflows/HostingProvisioningWorkflow.php",
+      "line": 14,
+      "source": "Provisioning",
+      "target": "Providers",
+      "class": "Coleza\\Domain\\Providers\\Operations\\CreateAccountOperation"
+    },
+    {
+      "path": "src/Domain/Provisioning/Workflows/HostingProvisioningWorkflow.php",
+      "line": 15,
+      "source": "Provisioning",
+      "target": "Providers",
+      "class": "Coleza\\Domain\\Providers\\Registry\\ProviderRegistry"
+    },
+    {
+      "path": "src/Domain/Provisioning/Workflows/HostingProvisioningWorkflow.php",
+      "line": 18,
+      "source": "Provisioning",
+      "target": "Servers",
+      "class": "Coleza\\Domain\\Servers\\Capacity\\Services\\CapacityReservationService"
+    },
+    {
+      "path": "src/Domain/Provisioning/Workflows/HostingProvisioningWorkflow.php",
+      "line": 19,
+      "source": "Provisioning",
+      "target": "Servers",
+      "class": "Coleza\\Domain\\Servers\\Entities\\Server"
+    },
+    {
+      "path": "src/Domain/Provisioning/Workflows/HostingProvisioningWorkflow.php",
+      "line": 20,
+      "source": "Provisioning",
+      "target": "Servers",
+      "class": "Coleza\\Domain\\Servers\\Placement\\PlacementDecision"
+    },
+    {
+      "path": "src/Domain/Provisioning/Workflows/HostingProvisioningWorkflow.php",
+      "line": 21,
+      "source": "Provisioning",
+      "target": "Servers",
+      "class": "Coleza\\Domain\\Servers\\Placement\\PlacementEngine"
+    },
+    {
+      "path": "src/Domain/Provisioning/Workflows/HostingProvisioningWorkflow.php",
+      "line": 22,
+      "source": "Provisioning",
+      "target": "Servers",
+      "class": "Coleza\\Domain\\Servers\\Placement\\PlacementRequest"
+    },
+    {
+      "path": "src/Domain/Provisioning/Workflows/HostingProvisioningWorkflow.php",
+      "line": 23,
+      "source": "Provisioning",
+      "target": "Servers",
+      "class": "Coleza\\Domain\\Servers\\Services\\ServerService"
+    },
+    {
+      "path": "src/Domain/Release/ReleasePackagingService.php",
+      "line": 7,
+      "source": "Release",
+      "target": "Updater",
+      "class": "Coleza\\Domain\\Updater\\PackageSignatureVerifier"
+    },
+    {
+      "path": "src/Domain/Servers/Entities/Server.php",
+      "line": 7,
+      "source": "Servers",
+      "target": "Providers",
+      "class": "Coleza\\Domain\\Providers\\DTO\\ServerConnectionDto"
+    },
+    {
+      "path": "src/Domain/Updater/ModuleCompatibilityChecker.php",
+      "line": 7,
+      "source": "Updater",
+      "target": "Module",
+      "class": "Coleza\\Domain\\Module\\ModuleLifecycleService"
+    },
+    {
+      "path": "src/Domain/Updater/ModuleCompatibilityChecker.php",
+      "line": 8,
+      "source": "Updater",
+      "target": "Module",
+      "class": "Coleza\\Domain\\Module\\ModuleManifest"
+    },
+    {
+      "path": "src/Domain/Updater/RollbackManager.php",
+      "line": 7,
+      "source": "Updater",
+      "target": "Backup",
+      "class": "Coleza\\Domain\\Backup\\RestoreResult"
+    },
+    {
+      "path": "src/Domain/Updater/RollbackManager.php",
+      "line": 8,
+      "source": "Updater",
+      "target": "Backup",
+      "class": "Coleza\\Domain\\Backup\\RestoreWizardService"
+    },
+    {
+      "path": "src/Domain/Updater/RollbackManager.php",
+      "line": 9,
+      "source": "Updater",
+      "target": "Backup",
+      "class": "Coleza\\Domain\\Backup\\Storage\\BackupStorageAdapterInterface"
+    },
+    {
+      "path": "src/Domain/Vault/VaultService.php",
+      "line": 7,
+      "source": "Vault",
+      "target": "Identity",
+      "class": "Coleza\\Domain\\Identity\\Audit\\AuditLogger"
+    }
+  ],
+  "suppression_calls": [
+    {
+      "path": "src/Domain/Backup/EnterpriseBackupService.php",
+      "line": 130,
+      "content": "@unlink($tempArchive);"
+    },
+    {
+      "path": "src/Domain/Backup/EnterpriseBackupService.php",
+      "line": 131,
+      "content": "@unlink($tempManifest);"
+    },
+    {
+      "path": "src/Domain/Domains/Registrar/Adapters/NameSilo/NameSiloRegistrarAdapter.php",
+      "line": 540,
+      "content": "$rawBody = @file_get_contents($url, false, $ctx);"
+    },
+    {
+      "path": "src/Domain/Domains/Registrar/Adapters/NameSilo/NameSiloRegistrarAdapter.php",
+      "line": 564,
+      "content": "$xml = @simplexml_load_string($trimmed, 'SimpleXMLElement', LIBXML_NOCDATA);"
+    },
+    {
+      "path": "src/Domain/Integrations/Health/PaymentGatewayHealthCheck.php",
+      "line": 62,
+      "content": "$fp = @fsockopen(($port === 443 ? 'ssl://' : '') . $host, $port, $errno, $errstr, 2.0);"
+    },
+    {
+      "path": "src/Domain/Integrations/Health/SmtpHealthCheck.php",
+      "line": 70,
+      "content": "$fp = @fsockopen($host, $port, $errno, $errstr, 2.0);"
+    },
+    {
+      "path": "src/Domain/Module/ModuleLifecycleService.php",
+      "line": 69,
+      "content": "$content = @file_get_contents($manifestFile);"
+    },
+    {
+      "path": "src/Domain/OperationalMode/OperationalModeManager.php",
+      "line": 119,
+      "content": "@unlink($this->lockFilePath);"
+    },
+    {
+      "path": "src/Domain/Release/ReleasePackagingService.php",
+      "line": 104,
+      "content": "@unlink($zipPath);"
+    },
+    {
+      "path": "src/Domain/Release/ReleasePackagingService.php",
+      "line": 272,
+      "content": "is_dir($path) ? $this->deleteDirectory($path) : @unlink($path);"
+    },
+    {
+      "path": "src/Foundation/Cache/DatabaseCache.php",
+      "line": 59,
+      "content": "$val = @unserialize((string) $row['cache_value']);"
+    },
+    {
+      "path": "src/Foundation/Cache/FileCache.php",
+      "line": 29,
+      "content": "$raw = @file_get_contents($path);"
+    },
+    {
+      "path": "src/Foundation/Cache/FileCache.php",
+      "line": 34,
+      "content": "$data = @unserialize($raw);"
+    },
+    {
+      "path": "src/Foundation/Cache/FileCache.php",
+      "line": 65,
+      "content": "return @unlink($path);"
+    },
+    {
+      "path": "src/Foundation/Cache/FileCache.php",
+      "line": 79,
+      "content": "@unlink($file);"
+    },
+    {
+      "path": "src/Foundation/Queue/DatabaseQueue.php",
+      "line": 116,
+      "content": "$jobInstance = @unserialize((string) $row['payload']);"
+    },
+    {
+      "path": "src/Foundation/Storage/LocalStorage.php",
+      "line": 55,
+      "content": "return @unlink($fullPath);"
+    }
+  ],
+  "nullable_auth": [
+    {
+      "path": "src/Application/Commerce/Invoices/InvoiceApplicationService.php",
+      "line": 20
+    },
+    {
+      "path": "src/Application/Commerce/Invoices/InvoiceApplicationService.php",
+      "line": 44
+    },
+    {
+      "path": "src/Application/Commerce/Invoices/InvoiceApplicationService.php",
+      "line": 62
+    },
+    {
+      "path": "src/Application/Commerce/Orders/OrderApplicationService.php",
+      "line": 21
+    },
+    {
+      "path": "src/Application/Commerce/Orders/OrderApplicationService.php",
+      "line": 42
+    },
+    {
+      "path": "src/Application/Commerce/Orders/OrderApplicationService.php",
+      "line": 60
+    },
+    {
+      "path": "src/Application/Commerce/Orders/OrderApplicationService.php",
+      "line": 69
+    },
+    {
+      "path": "src/Application/Commerce/Payments/PaymentApplicationService.php",
+      "line": 29
+    },
+    {
+      "path": "src/Application/Commerce/Payments/PaymentApplicationService.php",
+      "line": 94
+    },
+    {
+      "path": "src/Application/Commerce/Payments/PaymentApplicationService.php",
+      "line": 119
+    },
+    {
+      "path": "src/Application/Commerce/Payments/PaymentApplicationService.php",
+      "line": 136
+    },
+    {
+      "path": "src/Application/Commerce/Quotes/QuoteApplicationService.php",
+      "line": 24
+    },
+    {
+      "path": "src/Application/Commerce/Quotes/QuoteApplicationService.php",
+      "line": 38
+    }
+  ],
+  "evidence": {
+    "P00": {
+      "files": 8,
+      "manifest": true,
+      "raw_test_output": true,
+      "changed_files": false,
+      "review_files": [],
+      "images": [],
+      "gate": true
+    },
+    "P01": {
+      "files": 10,
+      "manifest": true,
+      "raw_test_output": true,
+      "changed_files": false,
+      "review_files": [],
+      "images": [],
+      "gate": true
+    },
+    "P02": {
+      "files": 11,
+      "manifest": true,
+      "raw_test_output": true,
+      "changed_files": false,
+      "review_files": [],
+      "images": [],
+      "gate": true
+    },
+    "P03": {
+      "files": 13,
+      "manifest": true,
+      "raw_test_output": true,
+      "changed_files": false,
+      "review_files": [],
+      "images": [],
+      "gate": true
+    },
+    "P04": {
+      "files": 11,
+      "manifest": true,
+      "raw_test_output": true,
+      "changed_files": false,
+      "review_files": [],
+      "images": [],
+      "gate": true
+    },
+    "P05": {
+      "files": 11,
+      "manifest": true,
+      "raw_test_output": true,
+      "changed_files": false,
+      "review_files": [],
+      "images": [],
+      "gate": true
+    },
+    "P06": {
+      "files": 11,
+      "manifest": true,
+      "raw_test_output": true,
+      "changed_files": false,
+      "review_files": [],
+      "images": [],
+      "gate": true
+    },
+    "P07": {
+      "files": 9,
+      "manifest": false,
+      "raw_test_output": false,
+      "changed_files": false,
+      "review_files": [],
+      "images": [],
+      "gate": true
+    },
+    "P08": {
+      "files": 9,
+      "manifest": false,
+      "raw_test_output": false,
+      "changed_files": false,
+      "review_files": [],
+      "images": [],
+      "gate": true
+    },
+    "P09": {
+      "files": 9,
+      "manifest": false,
+      "raw_test_output": false,
+      "changed_files": false,
+      "review_files": [],
+      "images": [],
+      "gate": true
+    },
+    "P10": {
+      "files": 8,
+      "manifest": false,
+      "raw_test_output": false,
+      "changed_files": false,
+      "review_files": [],
+      "images": [],
+      "gate": true
+    },
+    "P11": {
+      "files": 8,
+      "manifest": false,
+      "raw_test_output": false,
+      "changed_files": false,
+      "review_files": [],
+      "images": [],
+      "gate": true
+    },
+    "P12": {
+      "files": 9,
+      "manifest": false,
+      "raw_test_output": false,
+      "changed_files": false,
+      "review_files": [],
+      "images": [],
+      "gate": true
+    },
+    "P13": {
+      "files": 10,
+      "manifest": false,
+      "raw_test_output": false,
+      "changed_files": false,
+      "review_files": [],
+      "images": [],
+      "gate": true
+    },
+    "P14": {
+      "files": 10,
+      "manifest": false,
+      "raw_test_output": false,
+      "changed_files": false,
+      "review_files": [],
+      "images": [],
+      "gate": true
+    },
+    "P15": {
+      "files": 9,
+      "manifest": false,
+      "raw_test_output": false,
+      "changed_files": false,
+      "review_files": [],
+      "images": [],
+      "gate": true
+    },
+    "P16": {
+      "files": 11,
+      "manifest": false,
+      "raw_test_output": false,
+      "changed_files": false,
+      "review_files": [],
+      "images": [],
+      "gate": true
+    },
+    "P17": {
+      "files": 10,
+      "manifest": false,
+      "raw_test_output": false,
+      "changed_files": false,
+      "review_files": [],
+      "images": [],
+      "gate": true
+    },
+    "P18": {
+      "files": 11,
+      "manifest": false,
+      "raw_test_output": false,
+      "changed_files": false,
+      "review_files": [],
+      "images": [],
+      "gate": true
+    }
+  },
+  "test_direct_imports": {
+    "src/Domain/Commerce/Credit/CreditEntry.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Commerce/GoldenManualCommerceE2ETest.php",
+      "tests/Unit/Commerce/CreditLedgerTest.php"
+    ],
+    "src/Domain/Commerce/Credit/CreditService.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Commerce/GoldenManualCommerceE2ETest.php",
+      "tests/Unit/Commerce/CreditLedgerTest.php"
+    ],
+    "src/Domain/Commerce/Invoices/Invoice.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Commerce/GoldenManualCommerceE2ETest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php",
+      "tests/Unit/Commerce/CreditLedgerTest.php",
+      "tests/Unit/Commerce/InvoiceServiceTest.php",
+      "tests/Unit/Commerce/OverdueLifecycleWorkflowTest.php",
+      "tests/Unit/Commerce/PartialPaymentAndRefundTest.php",
+      "tests/Unit/Commerce/PaymentServiceTest.php",
+      "tests/Unit/Commerce/RecurringRenewalTest.php",
+      "tests/Unit/Commerce/ServiceRenewalSchedulerTest.php",
+      "tests/Unit/Documents/DocumentRenderServiceTest.php",
+      "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php"
+    ],
+    "src/Domain/Commerce/Invoices/InvoiceService.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Commerce/GoldenManualCommerceE2ETest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Integration/Performance/PerformanceAndReferenceBudgetRegressionTest.php",
+      "tests/Unit/Api/CommerceApiAndApplicationLayerTest.php",
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php",
+      "tests/Unit/Automation/EmergencySafetyTest.php",
+      "tests/Unit/Commerce/CreditLedgerTest.php",
+      "tests/Unit/Commerce/InvoiceServiceTest.php",
+      "tests/Unit/Commerce/MissedSchedulerCatchupServiceTest.php",
+      "tests/Unit/Commerce/OverdueLifecycleWorkflowTest.php",
+      "tests/Unit/Commerce/PartialPaymentAndRefundTest.php",
+      "tests/Unit/Commerce/PaymentServiceTest.php",
+      "tests/Unit/Commerce/RecurringRenewalTest.php",
+      "tests/Unit/Commerce/RenewalGoldenE2ETest.php",
+      "tests/Unit/Commerce/ServiceRenewalSchedulerTest.php",
+      "tests/Unit/Documents/ProformaServiceTest.php",
+      "tests/Unit/Payments/PaymentWebhookAndRefundTest.php",
+      "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php"
+    ],
+    "src/Domain/Commerce/Orders/OrderService.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Commerce/GoldenManualCommerceE2ETest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Integration/Performance/PerformanceAndReferenceBudgetRegressionTest.php",
+      "tests/Unit/Api/CommerceApiAndApplicationLayerTest.php",
+      "tests/Unit/Commerce/CreditLedgerTest.php",
+      "tests/Unit/Commerce/InvoiceServiceTest.php",
+      "tests/Unit/Commerce/OrderServiceTest.php",
+      "tests/Unit/Commerce/PartialPaymentAndRefundTest.php",
+      "tests/Unit/Commerce/PaymentServiceTest.php",
+      "tests/Unit/Commerce/ServiceLifecycleTest.php",
+      "tests/Unit/Documents/QuoteServiceTest.php",
+      "tests/Unit/Payments/PaymentWebhookAndRefundTest.php",
+      "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php"
+    ],
+    "src/Domain/Commerce/Orders/OrderStateMachine.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Commerce/GoldenManualCommerceE2ETest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Api/CommerceApiAndApplicationLayerTest.php",
+      "tests/Unit/Commerce/CreditLedgerTest.php",
+      "tests/Unit/Commerce/OrderServiceTest.php",
+      "tests/Unit/Commerce/PartialPaymentAndRefundTest.php",
+      "tests/Unit/Commerce/PaymentServiceTest.php",
+      "tests/Unit/Payments/PaymentWebhookAndRefundTest.php"
+    ],
+    "src/Domain/Commerce/Payments/Gateways/Iyzico/IyzicoConfiguration.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Unit/Api/CommerceApiAndApplicationLayerTest.php",
+      "tests/Unit/Foundation/Health/IntegrationHealthHooksTest.php",
+      "tests/Unit/Payments/IyzicoPaymentGatewayTest.php",
+      "tests/Unit/Payments/PaymentWebhookAndRefundTest.php",
+      "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php"
+    ],
+    "src/Domain/Commerce/Payments/Gateways/Iyzico/IyzicoPaymentGateway.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Unit/Api/CommerceApiAndApplicationLayerTest.php",
+      "tests/Unit/Payments/IyzicoPaymentGatewayTest.php",
+      "tests/Unit/Payments/PaymentWebhookAndRefundTest.php",
+      "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php"
+    ],
+    "src/Domain/Commerce/Payments/Gateways/PaymentWebhookEvent.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php"
+    ],
+    "src/Domain/Commerce/Payments/Gateways/PaymentWebhookHandler.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Unit/Payments/PaymentWebhookAndRefundTest.php"
+    ],
+    "src/Domain/Commerce/Payments/Gateways/PaymentWebhookResult.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php"
+    ],
+    "src/Domain/Commerce/Payments/Payment.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Commerce/GoldenManualCommerceE2ETest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Commerce/CreditLedgerTest.php",
+      "tests/Unit/Commerce/PartialPaymentAndRefundTest.php",
+      "tests/Unit/Commerce/PaymentServiceTest.php",
+      "tests/Unit/Payments/PaymentWebhookAndRefundTest.php",
+      "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php"
+    ],
+    "src/Domain/Commerce/Payments/PaymentService.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Commerce/GoldenManualCommerceE2ETest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Api/CommerceApiAndApplicationLayerTest.php",
+      "tests/Unit/Commerce/CreditLedgerTest.php",
+      "tests/Unit/Commerce/PartialPaymentAndRefundTest.php",
+      "tests/Unit/Commerce/PaymentServiceTest.php",
+      "tests/Unit/Finance/ProfitabilityServiceTest.php",
+      "tests/Unit/Payments/PaymentWebhookAndRefundTest.php",
+      "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php"
+    ],
+    "src/Domain/Commerce/Recurring/RenewalInvoiceService.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Commerce/GoldenManualCommerceE2ETest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php",
+      "tests/Unit/Commerce/MissedSchedulerCatchupServiceTest.php",
+      "tests/Unit/Commerce/RecurringRenewalTest.php",
+      "tests/Unit/Commerce/RenewalGoldenE2ETest.php",
+      "tests/Unit/Commerce/ServiceRenewalSchedulerTest.php"
+    ],
+    "src/Domain/Commerce/Recurring/Scheduler/MissedSchedulerCatchupService.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Unit/Commerce/MissedSchedulerCatchupServiceTest.php",
+      "tests/Unit/Commerce/RenewalGoldenE2ETest.php"
+    ],
+    "src/Domain/Commerce/Recurring/Scheduler/RenewalPolicy.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Commerce/MissedSchedulerCatchupServiceTest.php",
+      "tests/Unit/Commerce/RenewalGoldenE2ETest.php",
+      "tests/Unit/Commerce/ServiceRenewalSchedulerTest.php"
+    ],
+    "src/Domain/Commerce/Recurring/Scheduler/ServiceRenewalScheduler.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Commerce/MissedSchedulerCatchupServiceTest.php",
+      "tests/Unit/Commerce/RenewalGoldenE2ETest.php",
+      "tests/Unit/Commerce/ServiceRenewalSchedulerTest.php"
+    ],
+    "src/Domain/Commerce/Services/Exceptions/ServiceConcurrencyException.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Unit/Provisioning/NoDuplicateRemoteAccountFailureTest.php",
+      "tests/Unit/Services/ServiceConcurrencyTest.php"
+    ],
+    "src/Domain/Commerce/Services/Lifecycle/OverdueGracePolicy.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Automation/EmergencySafetyTest.php",
+      "tests/Unit/Commerce/MissedSchedulerCatchupServiceTest.php",
+      "tests/Unit/Commerce/OverdueLifecycleWorkflowTest.php",
+      "tests/Unit/Commerce/RenewalGoldenE2ETest.php"
+    ],
+    "src/Domain/Commerce/Services/Lifecycle/OverdueLifecycleWorkflow.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Automation/EmergencySafetyTest.php",
+      "tests/Unit/Commerce/MissedSchedulerCatchupServiceTest.php",
+      "tests/Unit/Commerce/OverdueLifecycleWorkflowTest.php",
+      "tests/Unit/Commerce/RenewalGoldenE2ETest.php"
+    ],
+    "src/Domain/Commerce/Services/Service.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Commerce/GoldenManualCommerceE2ETest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php",
+      "tests/Unit/Commerce/OverdueLifecycleWorkflowTest.php",
+      "tests/Unit/Commerce/ServiceLifecycleTest.php",
+      "tests/Unit/Commerce/ServiceRenewalSchedulerTest.php",
+      "tests/Unit/Services/ServiceConcurrencyTest.php",
+      "tests/Unit/Services/ServiceLifecycleAndPlacementTest.php"
+    ],
+    "src/Domain/Commerce/Services/ServicePlacement.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Unit/Commerce/RenewalGoldenE2ETest.php",
+      "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php",
+      "tests/Unit/Provisioning/HostingProvisioningWorkflowTest.php",
+      "tests/Unit/Provisioning/NoDuplicateRemoteAccountFailureTest.php",
+      "tests/Unit/Provisioning/ProvisioningRetryAndReconciliationTest.php",
+      "tests/Unit/Services/ServiceLifecycleAndPlacementTest.php"
+    ],
+    "src/Domain/Commerce/Services/ServiceService.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Commerce/GoldenManualCommerceE2ETest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Integration/Performance/PerformanceAndReferenceBudgetRegressionTest.php",
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php",
+      "tests/Unit/Automation/EmergencySafetyTest.php",
+      "tests/Unit/Commerce/MissedSchedulerCatchupServiceTest.php",
+      "tests/Unit/Commerce/OverdueLifecycleWorkflowTest.php",
+      "tests/Unit/Commerce/RenewalGoldenE2ETest.php",
+      "tests/Unit/Commerce/ServiceLifecycleTest.php",
+      "tests/Unit/Commerce/ServiceRenewalSchedulerTest.php",
+      "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php",
+      "tests/Unit/Provisioning/HostingProvisioningWorkflowTest.php",
+      "tests/Unit/Provisioning/NoDuplicateRemoteAccountFailureTest.php",
+      "tests/Unit/Provisioning/ProvisioningRetryAndReconciliationTest.php",
+      "tests/Unit/Services/ServiceConcurrencyTest.php",
+      "tests/Unit/Services/ServiceLifecycleAndPlacementTest.php"
+    ],
+    "src/Domain/Commerce/Services/ServiceStateMachine.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Commerce/GoldenManualCommerceE2ETest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Integration/Performance/PerformanceAndReferenceBudgetRegressionTest.php",
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php",
+      "tests/Unit/Automation/EmergencySafetyTest.php",
+      "tests/Unit/Commerce/OverdueLifecycleWorkflowTest.php",
+      "tests/Unit/Commerce/RenewalGoldenE2ETest.php",
+      "tests/Unit/Commerce/ServiceLifecycleTest.php",
+      "tests/Unit/Commerce/ServiceRenewalSchedulerTest.php",
+      "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php",
+      "tests/Unit/Provisioning/HostingProvisioningWorkflowTest.php",
+      "tests/Unit/Provisioning/NoDuplicateRemoteAccountFailureTest.php",
+      "tests/Unit/Provisioning/ProvisioningRetryAndReconciliationTest.php",
+      "tests/Unit/Services/ServiceConcurrencyTest.php",
+      "tests/Unit/Services/ServiceLifecycleAndPlacementTest.php"
+    ],
+    "src/Domain/Domains/Catalog/DomainCatalogService.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Domains/DomainCatalogTest.php",
+      "tests/Unit/Domains/DomainExpiryAndReminderTest.php",
+      "tests/Unit/Domains/DomainGoldenE2ETest.php",
+      "tests/Unit/Domains/DomainLifecycleAndContactTest.php",
+      "tests/Unit/Domains/DomainOperationIdempotencyAndReconciliationTest.php",
+      "tests/Unit/Domains/DomainRegistrarFlowTest.php"
+    ],
+    "src/Domain/Domains/DomainContact.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Domains/DomainExpiryAndReminderTest.php",
+      "tests/Unit/Domains/DomainGoldenE2ETest.php",
+      "tests/Unit/Domains/DomainLifecycleAndContactTest.php",
+      "tests/Unit/Domains/DomainOperationIdempotencyAndReconciliationTest.php",
+      "tests/Unit/Domains/DomainRegistrarFlowTest.php",
+      "tests/Unit/Domains/RegistrarAdapterTest.php",
+      "tests/Unit/Domains/RegistrarCapabilityAndVaultTest.php"
+    ],
+    "src/Domain/Domains/DomainService.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Domains/DomainExpiryAndReminderTest.php",
+      "tests/Unit/Domains/DomainGoldenE2ETest.php",
+      "tests/Unit/Domains/DomainLifecycleAndContactTest.php",
+      "tests/Unit/Domains/DomainOperationIdempotencyAndReconciliationTest.php",
+      "tests/Unit/Domains/DomainRegistrarFlowTest.php"
+    ],
+    "src/Domain/Domains/DomainStateMachine.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Domains/DomainExpiryAndReminderTest.php",
+      "tests/Unit/Domains/DomainGoldenE2ETest.php",
+      "tests/Unit/Domains/DomainLifecycleAndContactTest.php",
+      "tests/Unit/Domains/DomainOperationIdempotencyAndReconciliationTest.php",
+      "tests/Unit/Domains/DomainRegistrarFlowTest.php"
+    ],
+    "src/Domain/Domains/Registrar/DomainAvailabilityResult.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Unit/Domains/DomainGoldenE2ETest.php",
+      "tests/Unit/Domains/DomainOperationIdempotencyAndReconciliationTest.php",
+      "tests/Unit/Domains/DomainRegistrarFlowTest.php",
+      "tests/Unit/Domains/RegistrarCapabilityAndVaultTest.php"
+    ],
+    "src/Domain/Domains/Registrar/DomainRegistrationCommand.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Unit/Domains/DomainGoldenE2ETest.php",
+      "tests/Unit/Domains/DomainOperationIdempotencyAndReconciliationTest.php",
+      "tests/Unit/Domains/DomainRegistrarFlowTest.php",
+      "tests/Unit/Domains/RegistrarAdapterTest.php",
+      "tests/Unit/Domains/RegistrarCapabilityAndVaultTest.php"
+    ],
+    "src/Domain/Domains/Registrar/DomainRegistrarService.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Domains/DomainGoldenE2ETest.php",
+      "tests/Unit/Domains/DomainOperationIdempotencyAndReconciliationTest.php",
+      "tests/Unit/Domains/DomainRegistrarFlowTest.php"
+    ],
+    "src/Domain/Domains/Registrar/Reconciliation/DomainOperation.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Domains/DomainGoldenE2ETest.php",
+      "tests/Unit/Domains/DomainOperationIdempotencyAndReconciliationTest.php"
+    ],
+    "src/Domain/Domains/Registrar/Reconciliation/DomainOperationReconciliationService.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Unit/Domains/DomainGoldenE2ETest.php",
+      "tests/Unit/Domains/DomainOperationIdempotencyAndReconciliationTest.php"
+    ],
+    "src/Domain/Domains/Registrar/Reconciliation/DomainOperationRepository.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Domains/DomainGoldenE2ETest.php",
+      "tests/Unit/Domains/DomainOperationIdempotencyAndReconciliationTest.php"
+    ],
+    "src/Domain/Domains/Registrar/Reconciliation/IdempotentDomainOperationService.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Domains/DomainGoldenE2ETest.php",
+      "tests/Unit/Domains/DomainOperationIdempotencyAndReconciliationTest.php"
+    ],
+    "src/Domain/Domains/Registrar/RegistrarCapability.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Unit/Domains/DomainGoldenE2ETest.php",
+      "tests/Unit/Domains/DomainOperationIdempotencyAndReconciliationTest.php",
+      "tests/Unit/Domains/DomainRegistrarFlowTest.php",
+      "tests/Unit/Domains/RegistrarAdapterTest.php",
+      "tests/Unit/Domains/RegistrarCapabilityAndVaultTest.php"
+    ],
+    "src/Domain/Domains/Registrar/RegistrarOperationResult.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Unit/Domains/DomainGoldenE2ETest.php",
+      "tests/Unit/Domains/DomainOperationIdempotencyAndReconciliationTest.php",
+      "tests/Unit/Domains/DomainRegistrarFlowTest.php",
+      "tests/Unit/Domains/RegistrarCapabilityAndVaultTest.php"
+    ],
+    "src/Domain/Domains/Registrar/RegistrarProviderInterface.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Unit/Domains/DomainGoldenE2ETest.php",
+      "tests/Unit/Domains/DomainOperationIdempotencyAndReconciliationTest.php",
+      "tests/Unit/Domains/DomainRegistrarFlowTest.php",
+      "tests/Unit/Domains/RegistrarCapabilityAndVaultTest.php"
+    ],
+    "src/Domain/Domains/Registrar/RegistrarRegistry.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Domains/DomainGoldenE2ETest.php",
+      "tests/Unit/Domains/DomainOperationIdempotencyAndReconciliationTest.php",
+      "tests/Unit/Domains/DomainRegistrarFlowTest.php",
+      "tests/Unit/Domains/RegistrarCapabilityAndVaultTest.php"
+    ],
+    "src/Domain/Pricing/Entities/PriceCycle.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Commerce/GoldenManualCommerceE2ETest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Integration/Performance/PerformanceAndReferenceBudgetRegressionTest.php",
+      "tests/Unit/Commerce/InvoiceServiceTest.php",
+      "tests/Unit/Commerce/OrderServiceTest.php",
+      "tests/Unit/Commerce/RecurringRenewalTest.php",
+      "tests/Unit/Commerce/ServiceLifecycleTest.php",
+      "tests/Unit/Finance/ExpenseServiceTest.php",
+      "tests/Unit/Pricing/PricingAndTaxGoldenPropertyTest.php",
+      "tests/Unit/Pricing/PricingServiceTest.php",
+      "tests/Unit/Services/ServiceConcurrencyTest.php",
+      "tests/Unit/Services/ServiceLifecycleAndPlacementTest.php"
+    ],
+    "src/Domain/Providers/Cpanel/CpanelMemoryTransport.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Providers/Cpanel/CpanelAccountLifecycleTest.php",
+      "tests/Unit/Providers/Cpanel/CpanelCoreAndHealthTest.php",
+      "tests/Unit/Providers/Cpanel/CpanelPackageChangeTest.php",
+      "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php",
+      "tests/Unit/Provisioning/HostingProvisioningWorkflowTest.php",
+      "tests/Unit/Provisioning/NoDuplicateRemoteAccountFailureTest.php",
+      "tests/Unit/Provisioning/ProvisioningRetryAndReconciliationTest.php"
+    ],
+    "src/Domain/Providers/Cpanel/CpanelProvider.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Providers/Cpanel/CpanelAccountLifecycleTest.php",
+      "tests/Unit/Providers/Cpanel/CpanelCoreAndHealthTest.php",
+      "tests/Unit/Providers/Cpanel/CpanelPackageChangeTest.php",
+      "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php",
+      "tests/Unit/Provisioning/HostingProvisioningWorkflowTest.php",
+      "tests/Unit/Provisioning/NoDuplicateRemoteAccountFailureTest.php",
+      "tests/Unit/Provisioning/ProvisioningRetryAndReconciliationTest.php"
+    ],
+    "src/Domain/Providers/Registry/ProviderRegistry.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Providers/Cpanel/CpanelCoreAndHealthTest.php",
+      "tests/Unit/Providers/ProviderCapabilityAndOperationsTest.php",
+      "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php",
+      "tests/Unit/Provisioning/HostingProvisioningWorkflowTest.php",
+      "tests/Unit/Provisioning/NoDuplicateRemoteAccountFailureTest.php",
+      "tests/Unit/Provisioning/ProvisioningRetryAndReconciliationTest.php"
+    ],
+    "src/Domain/Provisioning/Classification/ProvisioningErrorCategory.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Provisioning/NoDuplicateRemoteAccountFailureTest.php",
+      "tests/Unit/Provisioning/ProvisioningErrorClassificationAndOperationsTest.php",
+      "tests/Unit/Provisioning/ProvisioningRetryAndReconciliationTest.php"
+    ],
+    "src/Domain/Provisioning/Classification/ProvisioningErrorClassification.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Unit/Provisioning/ProvisioningErrorClassificationAndOperationsTest.php",
+      "tests/Unit/Provisioning/ProvisioningRetryAndReconciliationTest.php"
+    ],
+    "src/Domain/Provisioning/Classification/ProvisioningErrorClassifier.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Provisioning/NoDuplicateRemoteAccountFailureTest.php",
+      "tests/Unit/Provisioning/ProvisioningErrorClassificationAndOperationsTest.php"
+    ],
+    "src/Domain/Provisioning/Entities/ProvisioningOperation.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Provisioning/NoDuplicateRemoteAccountFailureTest.php",
+      "tests/Unit/Provisioning/ProvisioningErrorClassificationAndOperationsTest.php",
+      "tests/Unit/Provisioning/ProvisioningRetryAndReconciliationTest.php"
+    ],
+    "src/Domain/Provisioning/Reconciliation/ReconciliationStatus.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Unit/Provisioning/ProvisioningRetryAndReconciliationTest.php"
+    ],
+    "src/Domain/Provisioning/Reconciliation/UncertainResponseReconciliationService.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Provisioning/NoDuplicateRemoteAccountFailureTest.php",
+      "tests/Unit/Provisioning/ProvisioningRetryAndReconciliationTest.php"
+    ],
+    "src/Domain/Provisioning/Retry/ProvisioningRetryPolicy.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Provisioning/NoDuplicateRemoteAccountFailureTest.php",
+      "tests/Unit/Provisioning/ProvisioningRetryAndReconciliationTest.php"
+    ],
+    "src/Domain/Provisioning/Services/ProvisioningOperationService.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php",
+      "tests/Unit/Provisioning/HostingProvisioningWorkflowTest.php",
+      "tests/Unit/Provisioning/NoDuplicateRemoteAccountFailureTest.php",
+      "tests/Unit/Provisioning/ProvisioningErrorClassificationAndOperationsTest.php",
+      "tests/Unit/Provisioning/ProvisioningRetryAndReconciliationTest.php"
+    ],
+    "src/Domain/Provisioning/Services/ProvisioningRetryRunner.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Provisioning/NoDuplicateRemoteAccountFailureTest.php",
+      "tests/Unit/Provisioning/ProvisioningRetryAndReconciliationTest.php"
+    ],
+    "src/Domain/Provisioning/Workflows/HostingProvisioningRequest.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Unit/Provisioning/HostingProvisioningWorkflowTest.php",
+      "tests/Unit/Provisioning/NoDuplicateRemoteAccountFailureTest.php"
+    ],
+    "src/Domain/Provisioning/Workflows/HostingProvisioningResult.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php"
+    ],
+    "src/Domain/Provisioning/Workflows/HostingProvisioningWorkflow.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php",
+      "tests/Unit/Provisioning/HostingProvisioningWorkflowTest.php",
+      "tests/Unit/Provisioning/NoDuplicateRemoteAccountFailureTest.php",
+      "tests/Unit/Provisioning/ProvisioningRetryAndReconciliationTest.php"
+    ],
+    "src/Domain/Servers/Capacity/Entities/CapacityReservation.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Unit/Provisioning/HostingProvisioningWorkflowTest.php",
+      "tests/Unit/Servers/CapacityReservationWorkflowTest.php"
+    ],
+    "src/Domain/Servers/Capacity/Exceptions/CapacityExceededException.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Unit/Servers/CapacityReservationWorkflowTest.php"
+    ],
+    "src/Domain/Servers/Capacity/Exceptions/ReservationException.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Unit/Servers/CapacityReservationWorkflowTest.php"
+    ],
+    "src/Domain/Servers/Capacity/Services/CapacityReservationService.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php",
+      "tests/Unit/Provisioning/HostingProvisioningWorkflowTest.php",
+      "tests/Unit/Provisioning/NoDuplicateRemoteAccountFailureTest.php",
+      "tests/Unit/Provisioning/ProvisioningRetryAndReconciliationTest.php",
+      "tests/Unit/Servers/CapacityReservationWorkflowTest.php"
+    ],
+    "src/Domain/Servers/Entities/Server.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Providers/Cpanel/CpanelCoreAndHealthTest.php",
+      "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php",
+      "tests/Unit/Provisioning/NoDuplicateRemoteAccountFailureTest.php",
+      "tests/Unit/Servers/CapacityReservationWorkflowTest.php",
+      "tests/Unit/Servers/PlacementEngineTest.php",
+      "tests/Unit/Servers/ServerAndCapacityTest.php"
+    ],
+    "src/Domain/Servers/Placement/PlacementDecision.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Unit/Servers/PlacementEngineTest.php"
+    ],
+    "src/Domain/Servers/Placement/PlacementEngine.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php",
+      "tests/Unit/Provisioning/HostingProvisioningWorkflowTest.php",
+      "tests/Unit/Provisioning/NoDuplicateRemoteAccountFailureTest.php",
+      "tests/Unit/Provisioning/ProvisioningRetryAndReconciliationTest.php",
+      "tests/Unit/Servers/PlacementEngineTest.php"
+    ],
+    "src/Domain/Servers/Placement/PlacementRequest.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Unit/Servers/PlacementEngineTest.php"
+    ],
+    "src/Domain/Servers/Services/ServerService.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php",
+      "tests/Unit/Provisioning/HostingProvisioningWorkflowTest.php",
+      "tests/Unit/Provisioning/NoDuplicateRemoteAccountFailureTest.php",
+      "tests/Unit/Provisioning/ProvisioningRetryAndReconciliationTest.php",
+      "tests/Unit/Servers/CapacityReservationWorkflowTest.php",
+      "tests/Unit/Servers/PlacementEngineTest.php",
+      "tests/Unit/Servers/ServerAndCapacityTest.php"
+    ],
+    "src/Foundation/Database/Connection.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/Commerce/GoldenManualCommerceE2ETest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Integration/Performance/PerformanceAndReferenceBudgetRegressionTest.php",
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Integration/SharedHost/SharedHostCompatibilityMatrixTest.php",
+      "tests/Unit/Abuse/AbuseCaseTest.php",
+      "tests/Unit/Analytics/CurrencyTimezoneFreshnessTest.php",
+      "tests/Unit/Analytics/DailyMonthlyReadModelAggregationTest.php",
+      "tests/Unit/Analytics/GoldenFinancialLedgerReconciliationTest.php",
+      "tests/Unit/Analytics/InvoiceVsCashFinancialMetricsTest.php",
+      "tests/Unit/Analytics/RoleBasedDashboardsTest.php",
+      "tests/Unit/Analytics/SubscriptionSnapshotAndMrrTest.php",
+      "tests/Unit/Api/ApiFoundationTest.php",
+      "tests/Unit/Api/CommerceApiAndApplicationLayerTest.php",
+      "tests/Unit/Api/OpenApiAndApiLogsTest.php",
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php",
+      "tests/Unit/Automation/EmergencySafetyTest.php",
+      "tests/Unit/Backup/EnterpriseBackupLifecycleTest.php",
+      "tests/Unit/Backup/PreUpdateBackupTest.php",
+      "tests/Unit/Backup/RestoreWizardAndDisasterRecoveryTest.php",
+      "tests/Unit/Backup/RollbackAndPrivacyTombstoneRestoreTest.php",
+      "tests/Unit/Catalog/CatalogServiceTest.php",
+      "tests/Unit/Commerce/CreditLedgerTest.php",
+      "tests/Unit/Commerce/InvoiceServiceTest.php",
+      "tests/Unit/Commerce/MissedSchedulerCatchupServiceTest.php",
+      "tests/Unit/Commerce/OrderServiceTest.php",
+      "tests/Unit/Commerce/OverdueLifecycleWorkflowTest.php",
+      "tests/Unit/Commerce/PartialPaymentAndRefundTest.php",
+      "tests/Unit/Commerce/PaymentServiceTest.php",
+      "tests/Unit/Commerce/RecurringRenewalTest.php",
+      "tests/Unit/Commerce/RenewalGoldenE2ETest.php",
+      "tests/Unit/Commerce/ServiceLifecycleTest.php",
+      "tests/Unit/Commerce/ServiceRenewalSchedulerTest.php",
+      "tests/Unit/Documents/ProformaServiceTest.php",
+      "tests/Unit/Documents/QuoteServiceTest.php",
+      "tests/Unit/Domain/Brand/BrandServiceTest.php",
+      "tests/Unit/Domain/Identity/AuthServiceTest.php",
+      "tests/Unit/Domain/Identity/ImpersonationAndAuditTest.php",
+      "tests/Unit/Domain/Identity/OrganizationServiceTest.php",
+      "tests/Unit/Domain/Identity/RbacServiceTest.php",
+      "tests/Unit/Domain/Identity/TwoFactorServiceTest.php",
+      "tests/Unit/Domain/Module/ModuleLifecycleServiceTest.php",
+      "tests/Unit/Domain/Privacy/PrivacyConsentServiceTest.php",
+      "tests/Unit/Domain/Vault/VaultServiceTest.php",
+      "tests/Unit/Domains/DomainCatalogTest.php",
+      "tests/Unit/Domains/DomainExpiryAndReminderTest.php",
+      "tests/Unit/Domains/DomainGoldenE2ETest.php",
+      "tests/Unit/Domains/DomainLifecycleAndContactTest.php",
+      "tests/Unit/Domains/DomainOperationIdempotencyAndReconciliationTest.php",
+      "tests/Unit/Domains/DomainRegistrarFlowTest.php",
+      "tests/Unit/Domains/RegistrarCapabilityAndVaultTest.php",
+      "tests/Unit/Finance/CurrencyAndFxTest.php",
+      "tests/Unit/Finance/ExpenseServiceTest.php",
+      "tests/Unit/Finance/FinancialAccountServiceTest.php",
+      "tests/Unit/Finance/ProfitabilityServiceTest.php",
+      "tests/Unit/Foundation/Cache/DatabaseCacheTest.php",
+      "tests/Unit/Foundation/Database/ConnectionTest.php",
+      "tests/Unit/Foundation/Database/MigratorTest.php",
+      "tests/Unit/Foundation/Database/MigratorTest.php",
+      "tests/Unit/Foundation/Health/HealthAndSkeletonsTest.php",
+      "tests/Unit/Foundation/Idempotency/IdempotencyManagerTest.php",
+      "tests/Unit/Foundation/Lock/DatabaseLockTest.php",
+      "tests/Unit/Foundation/Queue/DatabaseQueueTest.php",
+      "tests/Unit/Foundation/Scheduler/SchedulerTest.php",
+      "tests/Unit/Foundation/Worker/WorkerSupervisorTest.php",
+      "tests/Unit/Fraud/ManualRiskReviewTest.php",
+      "tests/Unit/Fraud/RuleBasedRiskScoringTest.php",
+      "tests/Unit/Fraud/VelocityAndListsTest.php",
+      "tests/Unit/Health/SystemDoctorHealthTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Installer/WebInstallerTest.php",
+      "tests/Unit/Migration/AdoptExistingServiceDomainIdentityTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/DryRunConflictCheckpointResumeTest.php",
+      "tests/Unit/Migration/GenericStagingMappingValidationTest.php",
+      "tests/Unit/Migration/LocaleAwareCsvImportTest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php",
+      "tests/Unit/Migration/WhmcsCoreEntitiesMigrationTest.php",
+      "tests/Unit/Migration/WhmcsFinancialReconciliationMigrationTest.php",
+      "tests/Unit/Migration/WhmcsSourceScanAndConnectorTest.php",
+      "tests/Unit/Migration/WhmcsSupportAndUnsupportedDataTest.php",
+      "tests/Unit/OperationalMode/OperationalModeTest.php",
+      "tests/Unit/Payments/PaymentWebhookAndRefundTest.php",
+      "tests/Unit/Pricing/PricingAndTaxGoldenPropertyTest.php",
+      "tests/Unit/Pricing/PricingServiceTest.php",
+      "tests/Unit/Privacy/DomainPrivacyHandlersAndRedactionAuditTest.php",
+      "tests/Unit/Privacy/PrivacyErasureAndRestrictionTest.php",
+      "tests/Unit/Privacy/PrivacyRequestsAndExportTest.php",
+      "tests/Unit/Privacy/PrivacyTombstoneAndRestoreTest.php",
+      "tests/Unit/Privacy/RetentionAndLegalHoldTest.php",
+      "tests/Unit/Providers/ProviderSettingsAndVaultTest.php",
+      "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php",
+      "tests/Unit/Provisioning/HostingProvisioningWorkflowTest.php",
+      "tests/Unit/Provisioning/NoDuplicateRemoteAccountFailureTest.php",
+      "tests/Unit/Provisioning/ProvisioningErrorClassificationAndOperationsTest.php",
+      "tests/Unit/Provisioning/ProvisioningRetryAndReconciliationTest.php",
+      "tests/Unit/Servers/CapacityReservationWorkflowTest.php",
+      "tests/Unit/Servers/PlacementEngineTest.php",
+      "tests/Unit/Servers/ServerAndCapacityTest.php",
+      "tests/Unit/Services/ServiceConcurrencyTest.php",
+      "tests/Unit/Services/ServiceLifecycleAndPlacementTest.php",
+      "tests/Unit/Support/AttachmentSecurityAndStorageTest.php",
+      "tests/Unit/Support/CannedResponsesAndAnnouncementsTest.php",
+      "tests/Unit/Support/DepartmentAndStatusPriorityTest.php",
+      "tests/Unit/Support/OrganizationTicketPermissionsTest.php",
+      "tests/Unit/Support/SlaSchedulerTest.php",
+      "tests/Unit/Support/SupportGoldenE2ETest.php",
+      "tests/Unit/Support/TicketAssignmentTest.php",
+      "tests/Unit/Support/TicketContextAndRelationsTest.php",
+      "tests/Unit/Support/TicketConversationTest.php",
+      "tests/Unit/Tax/TaxServiceTest.php",
+      "tests/Unit/Updater/StagedUpdateAndCompatibilityTest.php"
+    ],
+    "src/Foundation/Exceptions/ConflictException.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Unit/Foundation/Exceptions/AppExceptionTest.php",
+      "tests/Unit/Foundation/Lock/DatabaseLockTest.php"
+    ],
+    "src/Foundation/Exceptions/ValidationException.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Unit/Abuse/AbuseCaseTest.php",
+      "tests/Unit/Analytics/CurrencyTimezoneFreshnessTest.php",
+      "tests/Unit/Analytics/DailyMonthlyReadModelAggregationTest.php",
+      "tests/Unit/Analytics/GoldenFinancialLedgerReconciliationTest.php",
+      "tests/Unit/Analytics/InvoiceVsCashFinancialMetricsTest.php",
+      "tests/Unit/Analytics/MetricRegistryAndSemanticLayerTest.php",
+      "tests/Unit/Analytics/SubscriptionSnapshotAndMrrTest.php",
+      "tests/Unit/Api/ApiFoundationTest.php",
+      "tests/Unit/Catalog/CatalogServiceTest.php",
+      "tests/Unit/Commerce/CreditLedgerTest.php",
+      "tests/Unit/Commerce/OrderServiceTest.php",
+      "tests/Unit/Commerce/PartialPaymentAndRefundTest.php",
+      "tests/Unit/Commerce/PaymentServiceTest.php",
+      "tests/Unit/Commerce/ServiceLifecycleTest.php",
+      "tests/Unit/Domain/Brand/BrandServiceTest.php",
+      "tests/Unit/Domain/Identity/AuthServiceTest.php",
+      "tests/Unit/Domain/Identity/ImpersonationAndAuditTest.php",
+      "tests/Unit/Domain/Identity/OrganizationServiceTest.php",
+      "tests/Unit/Domain/Identity/RbacServiceTest.php",
+      "tests/Unit/Domain/Identity/TwoFactorServiceTest.php",
+      "tests/Unit/Domain/Module/ModuleLifecycleServiceTest.php",
+      "tests/Unit/Domains/DomainCatalogTest.php",
+      "tests/Unit/Domains/DomainLifecycleAndContactTest.php",
+      "tests/Unit/Domains/DomainOperationIdempotencyAndReconciliationTest.php",
+      "tests/Unit/Domains/DomainRegistrarFlowTest.php",
+      "tests/Unit/Domains/RegistrarAdapterTest.php",
+      "tests/Unit/Domains/RegistrarCapabilityAndVaultTest.php",
+      "tests/Unit/Finance/CurrencyAndFxTest.php",
+      "tests/Unit/Finance/ExpenseServiceTest.php",
+      "tests/Unit/Finance/FinancialAccountServiceTest.php",
+      "tests/Unit/Finance/ProfitabilityServiceTest.php",
+      "tests/Unit/Foundation/Exceptions/AppExceptionTest.php",
+      "tests/Unit/Foundation/Validation/ValidatorTest.php",
+      "tests/Unit/Fraud/ManualRiskReviewTest.php",
+      "tests/Unit/Migration/WhmcsSourceScanAndConnectorTest.php",
+      "tests/Unit/Payments/PaymentWebhookAndRefundTest.php",
+      "tests/Unit/Pricing/PricingServiceTest.php",
+      "tests/Unit/Privacy/PrivacyErasureAndRestrictionTest.php",
+      "tests/Unit/Privacy/PrivacyRequestsAndExportTest.php",
+      "tests/Unit/Privacy/PrivacyTombstoneAndRestoreTest.php",
+      "tests/Unit/Privacy/RetentionAndLegalHoldTest.php",
+      "tests/Unit/Providers/ProviderSettingsAndVaultTest.php",
+      "tests/Unit/Servers/ServerAndCapacityTest.php",
+      "tests/Unit/Services/ServiceLifecycleAndPlacementTest.php",
+      "tests/Unit/Support/AttachmentSecurityAndStorageTest.php",
+      "tests/Unit/Support/CannedResponsesAndAnnouncementsTest.php",
+      "tests/Unit/Support/DepartmentAndStatusPriorityTest.php",
+      "tests/Unit/Support/OrganizationTicketPermissionsTest.php",
+      "tests/Unit/Support/SupportGoldenE2ETest.php",
+      "tests/Unit/Support/TicketAssignmentTest.php",
+      "tests/Unit/Support/TicketContextAndRelationsTest.php",
+      "tests/Unit/Support/TicketConversationTest.php",
+      "tests/Unit/Tax/TaxServiceTest.php",
+      "tests/Unit/Webhooks/WebhookServiceTest.php"
+    ],
+    "src/Foundation/Idempotency/IdempotencyManager.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Unit/Foundation/Idempotency/IdempotencyManagerTest.php"
+    ],
+    "src/Foundation/Lock/DatabaseLock.php": [
+      "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php",
+      "tests/Integration/SharedHost/SharedHostCompatibilityMatrixTest.php",
+      "tests/Unit/Foundation/Lock/DatabaseLockTest.php",
+      "tests/Unit/Foundation/Scheduler/SchedulerTest.php"
+    ],
+    "src/Domain/Commerce/Orders/Order.php": [
+      "tests/Integration/Commerce/GoldenManualCommerceE2ETest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Commerce/InvoiceServiceTest.php",
+      "tests/Unit/Commerce/OrderServiceTest.php",
+      "tests/Unit/Commerce/PaymentServiceTest.php",
+      "tests/Unit/Commerce/ServiceLifecycleTest.php",
+      "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php"
+    ],
+    "src/Domain/Commerce/Recurring/BillingPeriod.php": [
+      "tests/Integration/Commerce/GoldenManualCommerceE2ETest.php",
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php",
+      "tests/Unit/Commerce/RecurringRenewalTest.php"
+    ],
+    "src/Domain/Finance/Currency/Currency.php": [
+      "tests/Integration/Commerce/GoldenManualCommerceE2ETest.php",
+      "tests/Unit/Commerce/InvoiceServiceTest.php",
+      "tests/Unit/Finance/CurrencyAndFxTest.php",
+      "tests/Unit/Pricing/PricingAndTaxGoldenPropertyTest.php"
+    ],
+    "src/Domain/Finance/Currency/CurrencyService.php": [
+      "tests/Integration/Commerce/GoldenManualCommerceE2ETest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Commerce/InvoiceServiceTest.php",
+      "tests/Unit/Commerce/PaymentServiceTest.php",
+      "tests/Unit/Finance/CurrencyAndFxTest.php",
+      "tests/Unit/Pricing/PricingAndTaxGoldenPropertyTest.php"
+    ],
+    "src/Domain/Finance/Fx/StaticFxRateProvider.php": [
+      "tests/Integration/Commerce/GoldenManualCommerceE2ETest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Commerce/InvoiceServiceTest.php",
+      "tests/Unit/Commerce/PaymentServiceTest.php",
+      "tests/Unit/Finance/CurrencyAndFxTest.php",
+      "tests/Unit/Pricing/PricingAndTaxGoldenPropertyTest.php"
+    ],
+    "src/Domain/Pricing/Entities/PricePoint.php": [
+      "tests/Integration/Commerce/GoldenManualCommerceE2ETest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Commerce/InvoiceServiceTest.php",
+      "tests/Unit/Commerce/OrderServiceTest.php",
+      "tests/Unit/Pricing/PricingAndTaxGoldenPropertyTest.php",
+      "tests/Unit/Pricing/PricingServiceTest.php"
+    ],
+    "src/Domain/Pricing/Services/PricingService.php": [
+      "tests/Integration/Commerce/GoldenManualCommerceE2ETest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Commerce/CreditLedgerTest.php",
+      "tests/Unit/Commerce/InvoiceServiceTest.php",
+      "tests/Unit/Commerce/OrderServiceTest.php",
+      "tests/Unit/Commerce/PartialPaymentAndRefundTest.php",
+      "tests/Unit/Commerce/PaymentServiceTest.php",
+      "tests/Unit/Commerce/ServiceLifecycleTest.php",
+      "tests/Unit/Pricing/PricingAndTaxGoldenPropertyTest.php",
+      "tests/Unit/Pricing/PricingServiceTest.php"
+    ],
+    "src/Domain/Tax/Services/TaxService.php": [
+      "tests/Integration/Commerce/GoldenManualCommerceE2ETest.php",
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Commerce/CreditLedgerTest.php",
+      "tests/Unit/Commerce/InvoiceServiceTest.php",
+      "tests/Unit/Commerce/OrderServiceTest.php",
+      "tests/Unit/Commerce/PartialPaymentAndRefundTest.php",
+      "tests/Unit/Commerce/PaymentServiceTest.php",
+      "tests/Unit/Commerce/RecurringRenewalTest.php",
+      "tests/Unit/Commerce/ServiceLifecycleTest.php",
+      "tests/Unit/Pricing/PricingAndTaxGoldenPropertyTest.php",
+      "tests/Unit/Tax/TaxServiceTest.php"
+    ],
+    "src/Domain/Backup/BackupManifest.php": [
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Backup/EnterpriseBackupLifecycleTest.php",
+      "tests/Unit/Backup/PreUpdateBackupTest.php"
+    ],
+    "src/Domain/Backup/BackupScope.php": [
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Backup/EnterpriseBackupLifecycleTest.php",
+      "tests/Unit/Backup/RestoreWizardAndDisasterRecoveryTest.php",
+      "tests/Unit/Backup/RollbackAndPrivacyTombstoneRestoreTest.php"
+    ],
+    "src/Domain/Backup/EnterpriseBackupService.php": [
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Backup/EnterpriseBackupLifecycleTest.php",
+      "tests/Unit/Backup/RestoreWizardAndDisasterRecoveryTest.php",
+      "tests/Unit/Backup/RollbackAndPrivacyTombstoneRestoreTest.php"
+    ],
+    "src/Domain/Backup/RestoreResult.php": [
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Backup/RestoreWizardAndDisasterRecoveryTest.php"
+    ],
+    "src/Domain/Backup/RestoreWizardService.php": [
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Backup/RestoreWizardAndDisasterRecoveryTest.php",
+      "tests/Unit/Backup/RollbackAndPrivacyTombstoneRestoreTest.php"
+    ],
+    "src/Domain/Backup/Storage/LocalBackupStorageAdapter.php": [
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Integration/SharedHost/SharedHostCompatibilityMatrixTest.php",
+      "tests/Unit/Backup/EnterpriseBackupLifecycleTest.php",
+      "tests/Unit/Backup/RestoreWizardAndDisasterRecoveryTest.php",
+      "tests/Unit/Backup/RollbackAndPrivacyTombstoneRestoreTest.php",
+      "tests/Unit/Health/SystemDoctorHealthTest.php"
+    ],
+    "src/Domain/Domains/Catalog/TldPricing.php": [
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Domains/DomainCatalogTest.php",
+      "tests/Unit/Domains/DomainExpiryAndReminderTest.php",
+      "tests/Unit/Domains/DomainGoldenE2ETest.php",
+      "tests/Unit/Domains/DomainRegistrarFlowTest.php"
+    ],
+    "src/Domain/Domains/Registrar/Adapters/NameSilo/NameSiloRegistrarAdapter.php": [
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Domains/DomainGoldenE2ETest.php",
+      "tests/Unit/Domains/DomainRegistrarFlowTest.php",
+      "tests/Unit/Domains/RegistrarAdapterTest.php"
+    ],
+    "src/Domain/Domains/Registrar/Vault/RegistrarConfiguration.php": [
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Domains/DomainGoldenE2ETest.php",
+      "tests/Unit/Domains/DomainRegistrarFlowTest.php",
+      "tests/Unit/Domains/RegistrarAdapterTest.php",
+      "tests/Unit/Domains/RegistrarCapabilityAndVaultTest.php"
+    ],
+    "src/Domain/Health/HealthStatus.php": [
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Health/SystemDoctorHealthTest.php"
+    ],
+    "src/Domain/Health/SystemDoctorService.php": [
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Integration/SharedHost/SharedHostCompatibilityMatrixTest.php",
+      "tests/Unit/Health/SystemDoctorHealthTest.php"
+    ],
+    "src/Domain/Notifications/NotificationEngine.php": [
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php",
+      "tests/Unit/Commerce/OverdueLifecycleWorkflowTest.php",
+      "tests/Unit/Commerce/RenewalGoldenE2ETest.php",
+      "tests/Unit/Commerce/ServiceRenewalSchedulerTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php",
+      "tests/Unit/Notifications/AnnouncementServiceTest.php",
+      "tests/Unit/Notifications/NotificationEngineTest.php",
+      "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php"
+    ],
+    "src/Domain/Notifications/Templates/NotificationTemplateEngine.php": [
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php",
+      "tests/Unit/Commerce/OverdueLifecycleWorkflowTest.php",
+      "tests/Unit/Commerce/RenewalGoldenE2ETest.php",
+      "tests/Unit/Commerce/ServiceRenewalSchedulerTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php",
+      "tests/Unit/Notifications/NotificationEngineTest.php"
+    ],
+    "src/Domain/Notifications/Transport/MemoryMailTransport.php": [
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php",
+      "tests/Unit/Commerce/OverdueLifecycleWorkflowTest.php",
+      "tests/Unit/Commerce/RenewalGoldenE2ETest.php",
+      "tests/Unit/Commerce/ServiceRenewalSchedulerTest.php",
+      "tests/Unit/Foundation/Health/IntegrationHealthHooksTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Installer/WebInstallerTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php",
+      "tests/Unit/Notifications/AnnouncementServiceTest.php",
+      "tests/Unit/Notifications/NotificationEngineTest.php",
+      "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php"
+    ],
+    "src/Domain/OperationalMode/OperationalMode.php": [
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/OperationalMode/OperationalModeTest.php"
+    ],
+    "src/Domain/OperationalMode/OperationalModeManager.php": [
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/OperationalMode/OperationalModeTest.php"
+    ],
+    "src/Domain/Privacy/Tombstone/BackupRestoreReconciliationService.php": [
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Backup/RollbackAndPrivacyTombstoneRestoreTest.php",
+      "tests/Unit/Privacy/PrivacyTombstoneAndRestoreTest.php"
+    ],
+    "src/Domain/Privacy/Tombstone/FileTombstoneStore.php": [
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Backup/RollbackAndPrivacyTombstoneRestoreTest.php",
+      "tests/Unit/Privacy/PrivacyTombstoneAndRestoreTest.php"
+    ],
+    "src/Domain/Privacy/Tombstone/PrivacyTombstoneService.php": [
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Backup/RollbackAndPrivacyTombstoneRestoreTest.php",
+      "tests/Unit/Privacy/PrivacyTombstoneAndRestoreTest.php"
+    ],
+    "src/Domain/Provisioning/Coordinators/AutomatedHostingOrderCoordinator.php": [
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php"
+    ],
+    "src/Domain/Updater/RollbackManager.php": [
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+      "tests/Unit/Backup/RollbackAndPrivacyTombstoneRestoreTest.php"
+    ],
+    "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php": [
+      "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php"
+    ],
+    "src/Domain/Documents/Rendering/DocumentLocalization.php": [
+      "tests/Integration/LocalizationAndAccessibility/LocalizationCompletenessAndAccessibilitySuiteTest.php",
+      "tests/Unit/Documents/DocumentRenderServiceTest.php"
+    ],
+    "src/Foundation/Localization/Translator.php": [
+      "tests/Integration/LocalizationAndAccessibility/LocalizationCompletenessAndAccessibilitySuiteTest.php",
+      "tests/Unit/Foundation/Localization/TranslatorTest.php"
+    ],
+    "src/Ui/Accessibility/AccessibilityValidator.php": [
+      "tests/Integration/LocalizationAndAccessibility/LocalizationCompletenessAndAccessibilitySuiteTest.php",
+      "tests/Unit/Ui/AccessibilityValidatorTest.php"
+    ],
+    "src/Ui/Admin/AdminShell.php": [
+      "tests/Integration/LocalizationAndAccessibility/LocalizationCompletenessAndAccessibilitySuiteTest.php",
+      "tests/Unit/Ui/AccessibilityValidatorTest.php",
+      "tests/Unit/Ui/AdminShellTest.php"
+    ],
+    "src/Ui/Client/ClientShell.php": [
+      "tests/Integration/LocalizationAndAccessibility/LocalizationCompletenessAndAccessibilitySuiteTest.php",
+      "tests/Unit/Ui/AccessibilityValidatorTest.php",
+      "tests/Unit/Ui/ClientShellTest.php"
+    ],
+    "src/Ui/Components/ComponentRenderer.php": [
+      "tests/Integration/LocalizationAndAccessibility/LocalizationCompletenessAndAccessibilitySuiteTest.php",
+      "tests/Unit/Ui/AccessibilityValidatorTest.php",
+      "tests/Unit/Ui/ComponentRendererTest.php"
+    ],
+    "src/Ui/Patterns/DataTable.php": [
+      "tests/Integration/LocalizationAndAccessibility/LocalizationCompletenessAndAccessibilitySuiteTest.php",
+      "tests/Unit/Ui/WorkspacePatternsTest.php"
+    ],
+    "src/Ui/Patterns/Drawer.php": [
+      "tests/Integration/LocalizationAndAccessibility/LocalizationCompletenessAndAccessibilitySuiteTest.php",
+      "tests/Unit/Ui/WorkspacePatternsTest.php"
+    ],
+    "src/Ui/Patterns/Modal.php": [
+      "tests/Integration/LocalizationAndAccessibility/LocalizationCompletenessAndAccessibilitySuiteTest.php",
+      "tests/Unit/Ui/AccessibilityValidatorTest.php",
+      "tests/Unit/Ui/WorkspacePatternsTest.php"
+    ],
+    "src/Domain/Analytics/Dashboards/DashboardService.php": [
+      "tests/Integration/Performance/PerformanceAndReferenceBudgetRegressionTest.php",
+      "tests/Unit/Analytics/RoleBasedDashboardsTest.php"
+    ],
+    "src/Domain/Analytics/Financial/FinancialMetricsService.php": [
+      "tests/Integration/Performance/PerformanceAndReferenceBudgetRegressionTest.php",
+      "tests/Unit/Analytics/GoldenFinancialLedgerReconciliationTest.php",
+      "tests/Unit/Analytics/InvoiceVsCashFinancialMetricsTest.php",
+      "tests/Unit/Analytics/RoleBasedDashboardsTest.php"
+    ],
+    "src/Domain/Analytics/ReadModels/ReadModelAggregationService.php": [
+      "tests/Integration/Performance/PerformanceAndReferenceBudgetRegressionTest.php",
+      "tests/Unit/Analytics/DailyMonthlyReadModelAggregationTest.php",
+      "tests/Unit/Analytics/RoleBasedDashboardsTest.php"
+    ],
+    "src/Domain/Analytics/Subscription/SubscriptionSnapshotService.php": [
+      "tests/Integration/Performance/PerformanceAndReferenceBudgetRegressionTest.php",
+      "tests/Unit/Analytics/RoleBasedDashboardsTest.php",
+      "tests/Unit/Analytics/SubscriptionSnapshotAndMrrTest.php"
+    ],
+    "src/Domain/Catalog/Entities/Product.php": [
+      "tests/Integration/Performance/PerformanceAndReferenceBudgetRegressionTest.php",
+      "tests/Unit/Catalog/CatalogServiceTest.php"
+    ],
+    "src/Domain/Catalog/Services/CatalogService.php": [
+      "tests/Integration/Performance/PerformanceAndReferenceBudgetRegressionTest.php",
+      "tests/Unit/Catalog/CatalogServiceTest.php"
+    ],
+    "src/Foundation/Queue/DatabaseQueue.php": [
+      "tests/Integration/Performance/PerformanceAndReferenceBudgetRegressionTest.php",
+      "tests/Integration/SharedHost/SharedHostCompatibilityMatrixTest.php",
+      "tests/Unit/Foundation/Queue/DatabaseQueueTest.php",
+      "tests/Unit/Foundation/Worker/WorkerSupervisorTest.php"
+    ],
+    "src/Foundation/Queue/JobInterface.php": [
+      "tests/Integration/Performance/PerformanceAndReferenceBudgetRegressionTest.php",
+      "tests/Integration/SharedHost/SharedHostCompatibilityMatrixTest.php",
+      "tests/Unit/Foundation/Queue/DatabaseQueueTest.php",
+      "tests/Unit/Foundation/Worker/WorkerSupervisorTest.php"
+    ],
+    "src/Foundation/Worker/WorkerSupervisor.php": [
+      "tests/Integration/Performance/PerformanceAndReferenceBudgetRegressionTest.php",
+      "tests/Integration/SharedHost/SharedHostCompatibilityMatrixTest.php",
+      "tests/Unit/Foundation/Worker/WorkerSupervisorTest.php"
+    ],
+    "src/Domain/Release/V1ScopeFreezeAuditService.php": [
+      "tests/Integration/ReleaseCandidate/ReleaseCandidateSoakAndGateApprovalTest.php",
+      "tests/Unit/Release/V1ScopeFreezeAuditTest.php"
+    ],
+    "src/Domain/Release/ReleasePackagingService.php": [
+      "tests/Integration/ReleasePackage/ReleasePackagingAndSignatureSuiteTest.php"
+    ],
+    "src/Domain/Updater/PackageSignatureVerifier.php": [
+      "tests/Integration/ReleasePackage/ReleasePackagingAndSignatureSuiteTest.php",
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Backup/PreUpdateBackupTest.php",
+      "tests/Unit/Updater/StagedUpdateAndCompatibilityTest.php"
+    ],
+    "src/Domain/Backup/BackupDestinationType.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Backup/EnterpriseBackupLifecycleTest.php",
+      "tests/Unit/Backup/RestoreWizardAndDisasterRecoveryTest.php"
+    ],
+    "src/Domain/Installer/AdminBootstrapService.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Installer/WebInstallerTest.php"
+    ],
+    "src/Domain/Installer/AdminSetupDto.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Installer/WebInstallerTest.php"
+    ],
+    "src/Domain/Installer/BrandSetupDto.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Installer/WebInstallerTest.php"
+    ],
+    "src/Domain/Installer/BrandSetupService.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Installer/WebInstallerTest.php"
+    ],
+    "src/Domain/Installer/CronSetupService.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Installer/WebInstallerTest.php"
+    ],
+    "src/Domain/Installer/DatabaseConfig.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Installer/WebInstallerTest.php"
+    ],
+    "src/Domain/Installer/DatabaseSetupService.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Installer/WebInstallerTest.php"
+    ],
+    "src/Domain/Installer/EmailSetupService.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Installer/WebInstallerTest.php"
+    ],
+    "src/Domain/Installer/EmailTransportConfig.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Installer/WebInstallerTest.php"
+    ],
+    "src/Domain/Installer/EnvironmentRequirementChecker.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Installer/WebInstallerTest.php"
+    ],
+    "src/Domain/Installer/Exceptions/InstallationLockedException.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/WebInstallerTest.php"
+    ],
+    "src/Domain/Installer/InstallerLock.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Installer/WebInstallerTest.php"
+    ],
+    "src/Domain/Installer/LocaleSetupDto.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Installer/WebInstallerTest.php"
+    ],
+    "src/Domain/Installer/LocaleSetupService.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Installer/WebInstallerTest.php"
+    ],
+    "src/Domain/Installer/WebInstallerService.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Installer/WebInstallerTest.php"
+    ],
+    "src/Domain/Migration/Adoption/AdoptedIdentityRepository.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/AdoptExistingServiceDomainIdentityTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/DryRunConflictCheckpointResumeTest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php",
+      "tests/Unit/Migration/WhmcsCoreEntitiesMigrationTest.php"
+    ],
+    "src/Domain/Migration/Adoption/DomainAdoptionService.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/AdoptExistingServiceDomainIdentityTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/DryRunConflictCheckpointResumeTest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php",
+      "tests/Unit/Migration/WhmcsCoreEntitiesMigrationTest.php"
+    ],
+    "src/Domain/Migration/Adoption/ProviderIdentityResolver.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/AdoptExistingServiceDomainIdentityTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/DryRunConflictCheckpointResumeTest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php",
+      "tests/Unit/Migration/WhmcsCoreEntitiesMigrationTest.php",
+      "tests/Unit/Migration/WhmcsFinancialReconciliationMigrationTest.php",
+      "tests/Unit/Migration/WhmcsSupportAndUnsupportedDataTest.php"
+    ],
+    "src/Domain/Migration/Adoption/ServiceAdoptionService.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/AdoptExistingServiceDomainIdentityTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/DryRunConflictCheckpointResumeTest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php",
+      "tests/Unit/Migration/WhmcsCoreEntitiesMigrationTest.php"
+    ],
+    "src/Domain/Migration/Cutover/CutoverAuditSeal.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php"
+    ],
+    "src/Domain/Migration/Cutover/CutoverChecklistReport.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php"
+    ],
+    "src/Domain/Migration/Cutover/CutoverChecklistService.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php"
+    ],
+    "src/Domain/Migration/Execution/ConflictDetector.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/DryRunConflictCheckpointResumeTest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php"
+    ],
+    "src/Domain/Migration/Execution/MigrationCheckpointRepository.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/DryRunConflictCheckpointResumeTest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php"
+    ],
+    "src/Domain/Migration/Execution/MigrationExecutionOrchestrator.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/DryRunConflictCheckpointResumeTest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php"
+    ],
+    "src/Domain/Migration/Execution/QuarantineManager.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/DryRunConflictCheckpointResumeTest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php"
+    ],
+    "src/Domain/Migration/Hold/MigrationHoldRepository.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php"
+    ],
+    "src/Domain/Migration/Hold/MigrationHoldService.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php"
+    ],
+    "src/Domain/Migration/Hold/NotificationSuppressionManager.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php"
+    ],
+    "src/Domain/Migration/Hold/SuppressedNotificationRepository.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php"
+    ],
+    "src/Domain/Migration/Mapping/GenericMappingEngine.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/DryRunConflictCheckpointResumeTest.php",
+      "tests/Unit/Migration/GenericStagingMappingValidationTest.php",
+      "tests/Unit/Migration/LocaleAwareCsvImportTest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php",
+      "tests/Unit/Migration/WhmcsCoreEntitiesMigrationTest.php",
+      "tests/Unit/Migration/WhmcsFinancialReconciliationMigrationTest.php",
+      "tests/Unit/Migration/WhmcsSupportAndUnsupportedDataTest.php"
+    ],
+    "src/Domain/Migration/Staging/DatabaseStagingRepository.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/DryRunConflictCheckpointResumeTest.php",
+      "tests/Unit/Migration/GenericStagingMappingValidationTest.php",
+      "tests/Unit/Migration/LocaleAwareCsvImportTest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php",
+      "tests/Unit/Migration/WhmcsCoreEntitiesMigrationTest.php",
+      "tests/Unit/Migration/WhmcsFinancialReconciliationMigrationTest.php",
+      "tests/Unit/Migration/WhmcsSupportAndUnsupportedDataTest.php"
+    ],
+    "src/Domain/Migration/Staging/StagingPipelineService.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/DryRunConflictCheckpointResumeTest.php",
+      "tests/Unit/Migration/GenericStagingMappingValidationTest.php",
+      "tests/Unit/Migration/LocaleAwareCsvImportTest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php",
+      "tests/Unit/Migration/WhmcsCoreEntitiesMigrationTest.php",
+      "tests/Unit/Migration/WhmcsFinancialReconciliationMigrationTest.php",
+      "tests/Unit/Migration/WhmcsSupportAndUnsupportedDataTest.php"
+    ],
+    "src/Domain/Migration/Validation/CanonicalValidationEngine.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/DryRunConflictCheckpointResumeTest.php",
+      "tests/Unit/Migration/GenericStagingMappingValidationTest.php",
+      "tests/Unit/Migration/LocaleAwareCsvImportTest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php",
+      "tests/Unit/Migration/WhmcsCoreEntitiesMigrationTest.php",
+      "tests/Unit/Migration/WhmcsFinancialReconciliationMigrationTest.php",
+      "tests/Unit/Migration/WhmcsSupportAndUnsupportedDataTest.php"
+    ],
+    "src/Domain/Migration/Whmcs/Core/WhmcsCoreEntityExtractor.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/DryRunConflictCheckpointResumeTest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php",
+      "tests/Unit/Migration/WhmcsCoreEntitiesMigrationTest.php"
+    ],
+    "src/Domain/Migration/Whmcs/Core/WhmcsCoreEntityMigrator.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/DryRunConflictCheckpointResumeTest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php",
+      "tests/Unit/Migration/WhmcsCoreEntitiesMigrationTest.php"
+    ],
+    "src/Domain/Migration/Whmcs/Financial/WhmcsFinancialExtractor.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/DryRunConflictCheckpointResumeTest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php",
+      "tests/Unit/Migration/WhmcsFinancialReconciliationMigrationTest.php"
+    ],
+    "src/Domain/Migration/Whmcs/Financial/WhmcsFinancialMigrator.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/DryRunConflictCheckpointResumeTest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php",
+      "tests/Unit/Migration/WhmcsFinancialReconciliationMigrationTest.php"
+    ],
+    "src/Domain/Migration/Whmcs/Financial/WhmcsFinancialReconciliationReport.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php"
+    ],
+    "src/Domain/Migration/Whmcs/Support/UnsupportedDataAccountant.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/DryRunConflictCheckpointResumeTest.php",
+      "tests/Unit/Migration/WhmcsSupportAndUnsupportedDataTest.php"
+    ],
+    "src/Domain/Migration/Whmcs/Support/WhmcsSupportExtractor.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/DryRunConflictCheckpointResumeTest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php",
+      "tests/Unit/Migration/WhmcsSupportAndUnsupportedDataTest.php"
+    ],
+    "src/Domain/Migration/Whmcs/Support/WhmcsSupportMigrator.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/DryRunConflictCheckpointResumeTest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php",
+      "tests/Unit/Migration/WhmcsSupportAndUnsupportedDataTest.php"
+    ],
+    "src/Domain/Migration/Whmcs/WhmcsReadOnlyConnector.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php",
+      "tests/Unit/Migration/DryRunConflictCheckpointResumeTest.php",
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php",
+      "tests/Unit/Migration/WhmcsCoreEntitiesMigrationTest.php",
+      "tests/Unit/Migration/WhmcsFinancialReconciliationMigrationTest.php",
+      "tests/Unit/Migration/WhmcsSourceScanAndConnectorTest.php",
+      "tests/Unit/Migration/WhmcsSupportAndUnsupportedDataTest.php"
+    ],
+    "src/Domain/Updater/ModuleCompatibilityChecker.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Backup/PreUpdateBackupTest.php",
+      "tests/Unit/Updater/StagedUpdateAndCompatibilityTest.php"
+    ],
+    "src/Domain/Updater/StagedUpdateService.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Backup/PreUpdateBackupTest.php",
+      "tests/Unit/Updater/StagedUpdateAndCompatibilityTest.php"
+    ],
+    "src/Domain/Updater/UpdatePackageManifest.php": [
+      "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php",
+      "tests/Unit/Backup/PreUpdateBackupTest.php",
+      "tests/Unit/Updater/StagedUpdateAndCompatibilityTest.php"
+    ],
+    "src/Foundation/Cache/DatabaseCache.php": [
+      "tests/Integration/SharedHost/SharedHostCompatibilityMatrixTest.php",
+      "tests/Unit/Foundation/Cache/DatabaseCacheTest.php"
+    ],
+    "src/Foundation/Cache/FileCache.php": [
+      "tests/Integration/SharedHost/SharedHostCompatibilityMatrixTest.php",
+      "tests/Unit/Foundation/Cache/FileCacheTest.php"
+    ],
+    "src/Foundation/Runtime/SystemRequirements.php": [
+      "tests/Integration/SharedHost/SharedHostCompatibilityMatrixTest.php",
+      "tests/Unit/Foundation/Runtime/SystemRequirementsTest.php"
+    ],
+    "src/Foundation/Storage/LocalStorage.php": [
+      "tests/Integration/SharedHost/SharedHostCompatibilityMatrixTest.php",
+      "tests/Unit/Foundation/Health/HealthAndSkeletonsTest.php",
+      "tests/Unit/Foundation/Storage/LocalStorageTest.php"
+    ],
+    "src/Domain/Abuse/AbuseCase.php": [
+      "tests/Unit/Abuse/AbuseCaseTest.php"
+    ],
+    "src/Domain/Abuse/AbuseCaseService.php": [
+      "tests/Unit/Abuse/AbuseCaseTest.php"
+    ],
+    "src/Domain/Abuse/AbuseCaseStatus.php": [
+      "tests/Unit/Abuse/AbuseCaseTest.php"
+    ],
+    "src/Domain/Abuse/AbuseCategory.php": [
+      "tests/Unit/Abuse/AbuseCaseTest.php"
+    ],
+    "src/Domain/Abuse/AbuseSeverity.php": [
+      "tests/Unit/Abuse/AbuseCaseTest.php"
+    ],
+    "src/Domain/Analytics/Dashboards/DashboardType.php": [
+      "tests/Unit/Analytics/AnalyticsPermissionsAndScopeTest.php",
+      "tests/Unit/Analytics/RoleBasedDashboardsTest.php"
+    ],
+    "src/Domain/Analytics/Metrics/AggregationType.php": [
+      "tests/Unit/Analytics/AnalyticsPermissionsAndScopeTest.php",
+      "tests/Unit/Analytics/MetricRegistryAndSemanticLayerTest.php"
+    ],
+    "src/Domain/Analytics/Metrics/MetricCategory.php": [
+      "tests/Unit/Analytics/AnalyticsPermissionsAndScopeTest.php",
+      "tests/Unit/Analytics/MetricRegistryAndSemanticLayerTest.php"
+    ],
+    "src/Domain/Analytics/Metrics/MetricDataType.php": [
+      "tests/Unit/Analytics/AnalyticsPermissionsAndScopeTest.php",
+      "tests/Unit/Analytics/MetricRegistryAndSemanticLayerTest.php"
+    ],
+    "src/Domain/Analytics/Metrics/MetricDefinition.php": [
+      "tests/Unit/Analytics/AnalyticsPermissionsAndScopeTest.php",
+      "tests/Unit/Analytics/MetricRegistryAndSemanticLayerTest.php"
+    ],
+    "src/Domain/Analytics/Metrics/MetricRegistry.php": [
+      "tests/Unit/Analytics/AnalyticsPermissionsAndScopeTest.php",
+      "tests/Unit/Analytics/MetricRegistryAndSemanticLayerTest.php"
+    ],
+    "src/Domain/Analytics/Metrics/TimeGrain.php": [
+      "tests/Unit/Analytics/AnalyticsPermissionsAndScopeTest.php",
+      "tests/Unit/Analytics/MetricRegistryAndSemanticLayerTest.php"
+    ],
+    "src/Domain/Analytics/Security/AnalyticsDataScopeService.php": [
+      "tests/Unit/Analytics/AnalyticsPermissionsAndScopeTest.php"
+    ],
+    "src/Domain/Analytics/Security/AnalyticsPermissionService.php": [
+      "tests/Unit/Analytics/AnalyticsPermissionsAndScopeTest.php"
+    ],
+    "src/Domain/Analytics/Security/AnalyticsUserContext.php": [
+      "tests/Unit/Analytics/AnalyticsPermissionsAndScopeTest.php"
+    ],
+    "src/Foundation/Exceptions/AuthorizationException.php": [
+      "tests/Unit/Analytics/AnalyticsPermissionsAndScopeTest.php",
+      "tests/Unit/Api/CommerceApiAndApplicationLayerTest.php",
+      "tests/Unit/Foundation/Exceptions/AppExceptionTest.php"
+    ],
+    "src/Domain/Analytics/Context/AnalyticsFreshnessService.php": [
+      "tests/Unit/Analytics/CurrencyTimezoneFreshnessTest.php"
+    ],
+    "src/Domain/Analytics/Context/CurrencyAnalyticsContext.php": [
+      "tests/Unit/Analytics/CurrencyTimezoneFreshnessTest.php"
+    ],
+    "src/Domain/Analytics/Context/DataFreshnessStatus.php": [
+      "tests/Unit/Analytics/CurrencyTimezoneFreshnessTest.php"
+    ],
+    "src/Domain/Analytics/Context/TimezoneAnalyticsContext.php": [
+      "tests/Unit/Analytics/CurrencyTimezoneFreshnessTest.php"
+    ],
+    "src/Domain/Analytics/Reconciliation/LedgerReconciliationReport.php": [
+      "tests/Unit/Analytics/GoldenFinancialLedgerReconciliationTest.php"
+    ],
+    "src/Domain/Analytics/Reconciliation/LedgerReconciliationService.php": [
+      "tests/Unit/Analytics/GoldenFinancialLedgerReconciliationTest.php"
+    ],
+    "src/Domain/Analytics/Reconciliation/ReconciliationStatus.php": [
+      "tests/Unit/Analytics/GoldenFinancialLedgerReconciliationTest.php"
+    ],
+    "src/Domain/Analytics/Testing/GoldenFinancialDataset.php": [
+      "tests/Unit/Analytics/GoldenFinancialLedgerReconciliationTest.php"
+    ],
+    "src/Domain/Analytics/Semantic/SemanticLayerService.php": [
+      "tests/Unit/Analytics/MetricRegistryAndSemanticLayerTest.php"
+    ],
+    "src/Domain/Analytics/Subscription/MrrCalculator.php": [
+      "tests/Unit/Analytics/SubscriptionSnapshotAndMrrTest.php"
+    ],
+    "src/Api/Auth/ApiKeyService.php": [
+      "tests/Unit/Api/ApiFoundationTest.php"
+    ],
+    "src/Api/RateLimit/RateLimiter.php": [
+      "tests/Unit/Api/ApiFoundationTest.php"
+    ],
+    "src/Api/Response/ApiResponse.php": [
+      "tests/Unit/Api/ApiFoundationTest.php"
+    ],
+    "src/Api/Controllers/Commerce/InvoiceApiController.php": [
+      "tests/Unit/Api/CommerceApiAndApplicationLayerTest.php"
+    ],
+    "src/Api/Controllers/Commerce/OrderApiController.php": [
+      "tests/Unit/Api/CommerceApiAndApplicationLayerTest.php"
+    ],
+    "src/Api/Controllers/Commerce/PaymentApiController.php": [
+      "tests/Unit/Api/CommerceApiAndApplicationLayerTest.php"
+    ],
+    "src/Api/Controllers/Commerce/QuoteApiController.php": [
+      "tests/Unit/Api/CommerceApiAndApplicationLayerTest.php"
+    ],
+    "src/Application/Commerce/Invoices/InvoiceApplicationService.php": [
+      "tests/Unit/Api/CommerceApiAndApplicationLayerTest.php"
+    ],
+    "src/Application/Commerce/Orders/OrderApplicationService.php": [
+      "tests/Unit/Api/CommerceApiAndApplicationLayerTest.php"
+    ],
+    "src/Application/Commerce/Payments/PaymentApplicationService.php": [
+      "tests/Unit/Api/CommerceApiAndApplicationLayerTest.php"
+    ],
+    "src/Application/Commerce/Quotes/QuoteApplicationService.php": [
+      "tests/Unit/Api/CommerceApiAndApplicationLayerTest.php"
+    ],
+    "src/Domain/Documents/Quotes/QuoteService.php": [
+      "tests/Unit/Api/CommerceApiAndApplicationLayerTest.php",
+      "tests/Unit/Documents/QuoteServiceTest.php"
+    ],
+    "src/Foundation/Exceptions/ResourceNotFoundException.php": [
+      "tests/Unit/Api/CommerceApiAndApplicationLayerTest.php",
+      "tests/Unit/Foundation/Exceptions/AppExceptionTest.php"
+    ],
+    "src/Api/Docs/OpenApiGenerator.php": [
+      "tests/Unit/Api/OpenApiAndApiLogsTest.php"
+    ],
+    "src/Api/Logging/ApiRequestLogger.php": [
+      "tests/Unit/Api/OpenApiAndApiLogsTest.php"
+    ],
+    "src/Domain/Automation/Actions/ActionDefinition.php": [
+      "tests/Unit/Automation/ActionTest.php",
+      "tests/Unit/Automation/ApprovalAndLifecycleTest.php",
+      "tests/Unit/Automation/AutomationEngineTest.php",
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php",
+      "tests/Unit/Automation/EmergencySafetyTest.php",
+      "tests/Unit/Automation/IfElseBranchTest.php"
+    ],
+    "src/Domain/Automation/Actions/ActionInterface.php": [
+      "tests/Unit/Automation/ActionTest.php"
+    ],
+    "src/Domain/Automation/Actions/ActionRegistry.php": [
+      "tests/Unit/Automation/ActionTest.php",
+      "tests/Unit/Automation/ApprovalAndLifecycleTest.php",
+      "tests/Unit/Automation/AutomationEngineTest.php",
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php",
+      "tests/Unit/Automation/EmergencySafetyTest.php"
+    ],
+    "src/Domain/Automation/Actions/ActionResult.php": [
+      "tests/Unit/Automation/ActionTest.php",
+      "tests/Unit/Automation/AutomationEngineTest.php"
+    ],
+    "src/Domain/Automation/Actions/ActionStatus.php": [
+      "tests/Unit/Automation/ActionTest.php"
+    ],
+    "src/Domain/Automation/Actions/Handlers/CallbackActionHandler.php": [
+      "tests/Unit/Automation/ActionTest.php",
+      "tests/Unit/Automation/ApprovalAndLifecycleTest.php",
+      "tests/Unit/Automation/AutomationEngineTest.php",
+      "tests/Unit/Automation/EmergencySafetyTest.php"
+    ],
+    "src/Domain/Automation/Actions/Handlers/LogActionHandler.php": [
+      "tests/Unit/Automation/ActionTest.php",
+      "tests/Unit/Automation/ApprovalAndLifecycleTest.php",
+      "tests/Unit/Automation/AutomationEngineTest.php"
+    ],
+    "src/Domain/Automation/Actions/Handlers/SetContextActionHandler.php": [
+      "tests/Unit/Automation/ActionTest.php",
+      "tests/Unit/Automation/AutomationEngineTest.php"
+    ],
+    "src/Domain/Automation/Triggers/TriggerContext.php": [
+      "tests/Unit/Automation/ActionTest.php",
+      "tests/Unit/Automation/ApprovalAndLifecycleTest.php",
+      "tests/Unit/Automation/AutomationEngineTest.php",
+      "tests/Unit/Automation/ConditionTest.php",
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php",
+      "tests/Unit/Automation/EmergencySafetyTest.php",
+      "tests/Unit/Automation/IfElseBranchTest.php",
+      "tests/Unit/Automation/TriggerTest.php"
+    ],
+    "src/Domain/Automation/Approval/ApprovalManager.php": [
+      "tests/Unit/Automation/ApprovalAndLifecycleTest.php"
+    ],
+    "src/Domain/Automation/Approval/ApprovalRequirement.php": [
+      "tests/Unit/Automation/ApprovalAndLifecycleTest.php"
+    ],
+    "src/Domain/Automation/Approval/ApprovalStatus.php": [
+      "tests/Unit/Automation/ApprovalAndLifecycleTest.php"
+    ],
+    "src/Domain/Automation/Branching/IfElseBranch.php": [
+      "tests/Unit/Automation/ApprovalAndLifecycleTest.php",
+      "tests/Unit/Automation/AutomationEngineTest.php",
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php",
+      "tests/Unit/Automation/EmergencySafetyTest.php",
+      "tests/Unit/Automation/IfElseBranchTest.php"
+    ],
+    "src/Domain/Automation/Conditions/ConditionOperator.php": [
+      "tests/Unit/Automation/ApprovalAndLifecycleTest.php",
+      "tests/Unit/Automation/AutomationEngineTest.php",
+      "tests/Unit/Automation/ConditionTest.php",
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php",
+      "tests/Unit/Automation/EmergencySafetyTest.php",
+      "tests/Unit/Automation/IfElseBranchTest.php"
+    ],
+    "src/Domain/Automation/Conditions/FieldCondition.php": [
+      "tests/Unit/Automation/ApprovalAndLifecycleTest.php",
+      "tests/Unit/Automation/AutomationEngineTest.php",
+      "tests/Unit/Automation/ConditionTest.php",
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php",
+      "tests/Unit/Automation/EmergencySafetyTest.php",
+      "tests/Unit/Automation/IfElseBranchTest.php"
+    ],
+    "src/Domain/Automation/Delay/DelayManager.php": [
+      "tests/Unit/Automation/ApprovalAndLifecycleTest.php"
+    ],
+    "src/Domain/Automation/Delay/DelayStatus.php": [
+      "tests/Unit/Automation/ApprovalAndLifecycleTest.php"
+    ],
+    "src/Domain/Automation/Engine/AutomationEngine.php": [
+      "tests/Unit/Automation/ApprovalAndLifecycleTest.php",
+      "tests/Unit/Automation/AutomationEngineTest.php",
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php",
+      "tests/Unit/Automation/EmergencySafetyTest.php"
+    ],
+    "src/Domain/Automation/Engine/AutomationRule.php": [
+      "tests/Unit/Automation/ApprovalAndLifecycleTest.php",
+      "tests/Unit/Automation/AutomationEngineTest.php",
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php",
+      "tests/Unit/Automation/EmergencySafetyTest.php"
+    ],
+    "src/Domain/Automation/Execution/ExecutionMode.php": [
+      "tests/Unit/Automation/ApprovalAndLifecycleTest.php"
+    ],
+    "src/Domain/Automation/Execution/InMemoryRunHistoryRepository.php": [
+      "tests/Unit/Automation/ApprovalAndLifecycleTest.php",
+      "tests/Unit/Automation/EmergencySafetyTest.php"
+    ],
+    "src/Domain/Automation/Execution/RunStatus.php": [
+      "tests/Unit/Automation/ApprovalAndLifecycleTest.php",
+      "tests/Unit/Automation/EmergencySafetyTest.php"
+    ],
+    "src/Domain/Automation/Triggers/EventTrigger.php": [
+      "tests/Unit/Automation/ApprovalAndLifecycleTest.php",
+      "tests/Unit/Automation/AutomationEngineTest.php",
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php",
+      "tests/Unit/Automation/EmergencySafetyTest.php",
+      "tests/Unit/Automation/TriggerTest.php"
+    ],
+    "src/Domain/Automation/Versioning/RuleVersionManager.php": [
+      "tests/Unit/Automation/ApprovalAndLifecycleTest.php"
+    ],
+    "src/Domain/Automation/Conditions/ConditionGroup.php": [
+      "tests/Unit/Automation/ConditionTest.php"
+    ],
+    "src/Domain/Automation/Conditions/LogicalOperator.php": [
+      "tests/Unit/Automation/ConditionTest.php"
+    ],
+    "src/Domain/Automation/Adapters/AutomationDomainAdapterRegistry.php": [
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php"
+    ],
+    "src/Domain/Automation/Adapters/Billing/InvoiceStatusActionHandler.php": [
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php"
+    ],
+    "src/Domain/Automation/Adapters/Billing/RenewalInvoiceActionHandler.php": [
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php"
+    ],
+    "src/Domain/Automation/Adapters/Notification/InAppNotificationActionHandler.php": [
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php"
+    ],
+    "src/Domain/Automation/Adapters/Notification/NotificationActionHandler.php": [
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php"
+    ],
+    "src/Domain/Automation/Adapters/Service/ServiceCancelActionHandler.php": [
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php"
+    ],
+    "src/Domain/Automation/Adapters/Service/ServiceRenewActionHandler.php": [
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php"
+    ],
+    "src/Domain/Automation/Adapters/Service/ServiceSuspendActionHandler.php": [
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php"
+    ],
+    "src/Domain/Automation/Adapters/Service/ServiceTerminateActionHandler.php": [
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php"
+    ],
+    "src/Domain/Automation/Adapters/Service/ServiceUnsuspendActionHandler.php": [
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php"
+    ],
+    "src/Domain/Notifications/Center/NotificationCenterService.php": [
+      "tests/Unit/Automation/DomainCommandAdaptersTest.php",
+      "tests/Unit/Notifications/AnnouncementServiceTest.php",
+      "tests/Unit/Notifications/NotificationCenterServiceTest.php"
+    ],
+    "src/Domain/Automation/Safety/BlastRadiusLimiter.php": [
+      "tests/Unit/Automation/EmergencySafetyTest.php"
+    ],
+    "src/Domain/Automation/Safety/DestructiveActionRegistry.php": [
+      "tests/Unit/Automation/EmergencySafetyTest.php"
+    ],
+    "src/Domain/Automation/Safety/EmergencyPauseManager.php": [
+      "tests/Unit/Automation/EmergencySafetyTest.php"
+    ],
+    "src/Domain/Automation/Safety/EmergencyPauseState.php": [
+      "tests/Unit/Automation/EmergencySafetyTest.php"
+    ],
+    "src/Domain/Automation/Triggers/ManualTrigger.php": [
+      "tests/Unit/Automation/TriggerTest.php"
+    ],
+    "src/Domain/Automation/Triggers/ScheduleTrigger.php": [
+      "tests/Unit/Automation/TriggerTest.php"
+    ],
+    "src/Domain/Backup/BackupEncryptionService.php": [
+      "tests/Unit/Backup/EnterpriseBackupLifecycleTest.php",
+      "tests/Unit/Backup/RestoreWizardAndDisasterRecoveryTest.php"
+    ],
+    "src/Domain/Backup/BackupRetentionPolicy.php": [
+      "tests/Unit/Backup/EnterpriseBackupLifecycleTest.php"
+    ],
+    "src/Domain/Backup/Storage/S3BackupStorageAdapter.php": [
+      "tests/Unit/Backup/EnterpriseBackupLifecycleTest.php",
+      "tests/Unit/Backup/RestoreWizardAndDisasterRecoveryTest.php"
+    ],
+    "src/Domain/Backup/Storage/SftpBackupStorageAdapter.php": [
+      "tests/Unit/Backup/EnterpriseBackupLifecycleTest.php"
+    ],
+    "src/Domain/Backup/BackupVerificationReport.php": [
+      "tests/Unit/Backup/PreUpdateBackupTest.php"
+    ],
+    "src/Domain/Backup/PreUpdateBackupService.php": [
+      "tests/Unit/Backup/PreUpdateBackupTest.php"
+    ],
+    "src/Domain/Privacy/Tombstone/PrivacyTombstone.php": [
+      "tests/Unit/Backup/RollbackAndPrivacyTombstoneRestoreTest.php",
+      "tests/Unit/Privacy/PrivacyTombstoneAndRestoreTest.php"
+    ],
+    "src/Domain/Catalog/Entities/ProductGroup.php": [
+      "tests/Unit/Catalog/CatalogServiceTest.php"
+    ],
+    "src/Domain/Commerce/Recurring/Scheduler/CatchupBatchReport.php": [
+      "tests/Unit/Commerce/MissedSchedulerCatchupServiceTest.php"
+    ],
+    "src/Domain/Tax/Entities/TaxClass.php": [
+      "tests/Unit/Commerce/OrderServiceTest.php",
+      "tests/Unit/Pricing/PricingAndTaxGoldenPropertyTest.php",
+      "tests/Unit/Tax/TaxServiceTest.php"
+    ],
+    "src/Domain/Tax/Entities/TaxRate.php": [
+      "tests/Unit/Commerce/OrderServiceTest.php",
+      "tests/Unit/Pricing/PricingAndTaxGoldenPropertyTest.php",
+      "tests/Unit/Tax/TaxServiceTest.php"
+    ],
+    "src/Domain/Tax/Entities/TaxZone.php": [
+      "tests/Unit/Commerce/OrderServiceTest.php",
+      "tests/Unit/Pricing/PricingAndTaxGoldenPropertyTest.php",
+      "tests/Unit/Tax/TaxServiceTest.php"
+    ],
+    "src/Domain/Commerce/Payments/Refund.php": [
+      "tests/Unit/Commerce/PartialPaymentAndRefundTest.php",
+      "tests/Unit/Payments/PaymentWebhookAndRefundTest.php"
+    ],
+    "src/Domain/Documents/Contracts/ContractService.php": [
+      "tests/Unit/Documents/ContractServiceTest.php"
+    ],
+    "src/Domain/Documents/Contracts/ContractStatus.php": [
+      "tests/Unit/Documents/ContractServiceTest.php"
+    ],
+    "src/Domain/Commerce/Invoices/InvoiceItem.php": [
+      "tests/Unit/Documents/DocumentRenderServiceTest.php"
+    ],
+    "src/Domain/Documents/DocumentType.php": [
+      "tests/Unit/Documents/DocumentRenderServiceTest.php",
+      "tests/Unit/Documents/DocumentSnapshotServiceTest.php"
+    ],
+    "src/Domain/Documents/Rendering/DocumentItemLine.php": [
+      "tests/Unit/Documents/DocumentRenderServiceTest.php"
+    ],
+    "src/Domain/Documents/Rendering/DocumentParty.php": [
+      "tests/Unit/Documents/DocumentRenderServiceTest.php"
+    ],
+    "src/Domain/Documents/Rendering/DocumentRenderService.php": [
+      "tests/Unit/Documents/DocumentRenderServiceTest.php"
+    ],
+    "src/Domain/Documents/Rendering/DocumentTaxBreakdown.php": [
+      "tests/Unit/Documents/DocumentRenderServiceTest.php"
+    ],
+    "src/Domain/Documents/Rendering/DocumentTemplateEngine.php": [
+      "tests/Unit/Documents/DocumentRenderServiceTest.php"
+    ],
+    "src/Domain/Documents/Rendering/DocumentTotals.php": [
+      "tests/Unit/Documents/DocumentRenderServiceTest.php"
+    ],
+    "src/Domain/Documents/Rendering/DocumentViewModel.php": [
+      "tests/Unit/Documents/DocumentRenderServiceTest.php"
+    ],
+    "src/Domain/Documents/Rendering/PurePhpPdfRenderer.php": [
+      "tests/Unit/Documents/DocumentRenderServiceTest.php"
+    ],
+    "src/Domain/Documents/Numbering/DocumentNumberGenerator.php": [
+      "tests/Unit/Documents/DocumentSnapshotServiceTest.php"
+    ],
+    "src/Domain/Documents/Snapshots/DocumentSnapshotService.php": [
+      "tests/Unit/Documents/DocumentSnapshotServiceTest.php"
+    ],
+    "src/Domain/Documents/Storage/PrivateDocumentStorage.php": [
+      "tests/Unit/Documents/DocumentSnapshotServiceTest.php"
+    ],
+    "src/Domain/Documents/Proforma/ProformaService.php": [
+      "tests/Unit/Documents/ProformaServiceTest.php"
+    ],
+    "src/Domain/Documents/Proforma/ProformaStatus.php": [
+      "tests/Unit/Documents/ProformaServiceTest.php"
+    ],
+    "src/Domain/Documents/Quotes/IllegalStateTransitionException.php": [
+      "tests/Unit/Documents/QuoteServiceTest.php"
+    ],
+    "src/Domain/Documents/Quotes/QuoteStatus.php": [
+      "tests/Unit/Documents/QuoteServiceTest.php"
+    ],
+    "src/Domain/Brand/BrandService.php": [
+      "tests/Unit/Domain/Brand/BrandServiceTest.php"
+    ],
+    "src/Domain/Identity/Auth/AuthService.php": [
+      "tests/Unit/Domain/Identity/AuthServiceTest.php"
+    ],
+    "src/Domain/Identity/Security/PasswordHasher.php": [
+      "tests/Unit/Domain/Identity/AuthServiceTest.php",
+      "tests/Unit/Domain/Identity/TwoFactorServiceTest.php"
+    ],
+    "src/Domain/Identity/Session/DatabaseSessionHandler.php": [
+      "tests/Unit/Domain/Identity/AuthServiceTest.php",
+      "tests/Unit/Domain/Identity/ImpersonationAndAuditTest.php",
+      "tests/Unit/Domain/Identity/OrganizationServiceTest.php"
+    ],
+    "src/Domain/Identity/Audit/AuditLogger.php": [
+      "tests/Unit/Domain/Identity/ImpersonationAndAuditTest.php",
+      "tests/Unit/Domain/Module/ModuleLifecycleServiceTest.php",
+      "tests/Unit/Domain/Privacy/PrivacyConsentServiceTest.php",
+      "tests/Unit/Domain/Vault/VaultServiceTest.php"
+    ],
+    "src/Domain/Identity/Impersonation/ImpersonationService.php": [
+      "tests/Unit/Domain/Identity/ImpersonationAndAuditTest.php"
+    ],
+    "src/Domain/Identity/Rbac/RbacService.php": [
+      "tests/Unit/Domain/Identity/ImpersonationAndAuditTest.php",
+      "tests/Unit/Domain/Identity/RbacServiceTest.php"
+    ],
+    "src/Domain/Identity/Organization/OrganizationService.php": [
+      "tests/Unit/Domain/Identity/OrganizationServiceTest.php"
+    ],
+    "src/Domain/Identity/TwoFactor/TotpEngine.php": [
+      "tests/Unit/Domain/Identity/TwoFactorServiceTest.php"
+    ],
+    "src/Domain/Identity/TwoFactor/TwoFactorService.php": [
+      "tests/Unit/Domain/Identity/TwoFactorServiceTest.php"
+    ],
+    "src/Domain/Module/ModuleLifecycleService.php": [
+      "tests/Unit/Domain/Module/ModuleLifecycleServiceTest.php"
+    ],
+    "src/Domain/Module/ModuleManifest.php": [
+      "tests/Unit/Domain/Module/ModuleLifecycleServiceTest.php"
+    ],
+    "src/Domain/Privacy/DataClassification.php": [
+      "tests/Unit/Domain/Privacy/PrivacyConsentServiceTest.php"
+    ],
+    "src/Domain/Privacy/PrivacyConsentService.php": [
+      "tests/Unit/Domain/Privacy/PrivacyConsentServiceTest.php"
+    ],
+    "src/Domain/Vault/Encryptor.php": [
+      "tests/Unit/Domain/Vault/VaultServiceTest.php",
+      "tests/Unit/Domains/DomainGoldenE2ETest.php",
+      "tests/Unit/Domains/RegistrarCapabilityAndVaultTest.php",
+      "tests/Unit/Providers/ProviderSettingsAndVaultTest.php"
+    ],
+    "src/Domain/Vault/VaultService.php": [
+      "tests/Unit/Domain/Vault/VaultServiceTest.php",
+      "tests/Unit/Domains/DomainGoldenE2ETest.php",
+      "tests/Unit/Domains/RegistrarCapabilityAndVaultTest.php",
+      "tests/Unit/Providers/ProviderSettingsAndVaultTest.php"
+    ],
+    "src/Domain/Domains/Catalog/Tld.php": [
+      "tests/Unit/Domains/DomainCatalogTest.php",
+      "tests/Unit/Domains/DomainRegistrarFlowTest.php"
+    ],
+    "src/Domain/Domains/Lifecycle/DomainExpiryService.php": [
+      "tests/Unit/Domains/DomainExpiryAndReminderTest.php",
+      "tests/Unit/Domains/DomainGoldenE2ETest.php"
+    ],
+    "src/Domain/Domains/Lifecycle/DomainLifecyclePolicy.php": [
+      "tests/Unit/Domains/DomainExpiryAndReminderTest.php",
+      "tests/Unit/Domains/DomainGoldenE2ETest.php"
+    ],
+    "src/Domain/Domains/Lifecycle/DomainRenewalReminder.php": [
+      "tests/Unit/Domains/DomainExpiryAndReminderTest.php",
+      "tests/Unit/Domains/DomainGoldenE2ETest.php"
+    ],
+    "src/Domain/Domains/Registrar/DomainRenewalCommand.php": [
+      "tests/Unit/Domains/DomainGoldenE2ETest.php",
+      "tests/Unit/Domains/DomainOperationIdempotencyAndReconciliationTest.php",
+      "tests/Unit/Domains/DomainRegistrarFlowTest.php",
+      "tests/Unit/Domains/RegistrarAdapterTest.php",
+      "tests/Unit/Domains/RegistrarCapabilityAndVaultTest.php"
+    ],
+    "src/Domain/Domains/Registrar/DomainTransferCommand.php": [
+      "tests/Unit/Domains/DomainGoldenE2ETest.php",
+      "tests/Unit/Domains/DomainOperationIdempotencyAndReconciliationTest.php",
+      "tests/Unit/Domains/DomainRegistrarFlowTest.php",
+      "tests/Unit/Domains/RegistrarAdapterTest.php",
+      "tests/Unit/Domains/RegistrarCapabilityAndVaultTest.php"
+    ],
+    "src/Domain/Domains/Registrar/Vault/VaultRegistrarSettingsManager.php": [
+      "tests/Unit/Domains/DomainGoldenE2ETest.php",
+      "tests/Unit/Domains/RegistrarCapabilityAndVaultTest.php"
+    ],
+    "src/Domain/Domains/Catalog/TldPolicy.php": [
+      "tests/Unit/Domains/DomainRegistrarFlowTest.php"
+    ],
+    "src/Domain/Domains/Domain.php": [
+      "tests/Unit/Domains/DomainRegistrarFlowTest.php"
+    ],
+    "src/Domain/Domains/Registrar/RegistrarAdapterFactory.php": [
+      "tests/Unit/Domains/RegistrarAdapterTest.php"
+    ],
+    "src/Domain/Finance/Fx/FxSnapshot.php": [
+      "tests/Unit/Finance/CurrencyAndFxTest.php",
+      "tests/Unit/Pricing/PricingAndTaxGoldenPropertyTest.php"
+    ],
+    "src/Domain/Finance/Accounts/AccountTransaction.php": [
+      "tests/Unit/Finance/ExpenseServiceTest.php",
+      "tests/Unit/Finance/FinancialAccountServiceTest.php",
+      "tests/Unit/Finance/ProfitabilityServiceTest.php"
+    ],
+    "src/Domain/Finance/Accounts/FinancialAccount.php": [
+      "tests/Unit/Finance/ExpenseServiceTest.php",
+      "tests/Unit/Finance/FinancialAccountServiceTest.php",
+      "tests/Unit/Finance/ProfitabilityServiceTest.php"
+    ],
+    "src/Domain/Finance/Accounts/FinancialAccountService.php": [
+      "tests/Unit/Finance/ExpenseServiceTest.php",
+      "tests/Unit/Finance/FinancialAccountServiceTest.php",
+      "tests/Unit/Finance/ProfitabilityServiceTest.php"
+    ],
+    "src/Domain/Finance/Expenses/Expense.php": [
+      "tests/Unit/Finance/ExpenseServiceTest.php"
+    ],
+    "src/Domain/Finance/Expenses/ExpenseService.php": [
+      "tests/Unit/Finance/ExpenseServiceTest.php",
+      "tests/Unit/Finance/ProfitabilityServiceTest.php"
+    ],
+    "src/Domain/Finance/Expenses/FinanceCategory.php": [
+      "tests/Unit/Finance/ExpenseServiceTest.php",
+      "tests/Unit/Finance/ProfitabilityServiceTest.php"
+    ],
+    "src/Domain/Finance/Expenses/RecurringExpense.php": [
+      "tests/Unit/Finance/ExpenseServiceTest.php"
+    ],
+    "src/Domain/Finance/Expenses/Vendor.php": [
+      "tests/Unit/Finance/ExpenseServiceTest.php"
+    ],
+    "src/Domain/Finance/Profitability/GatewaySettlement.php": [
+      "tests/Unit/Finance/ProfitabilityServiceTest.php"
+    ],
+    "src/Domain/Finance/Profitability/ProfitabilityReport.php": [
+      "tests/Unit/Finance/ProfitabilityServiceTest.php"
+    ],
+    "src/Domain/Finance/Profitability/ProfitabilityService.php": [
+      "tests/Unit/Finance/ProfitabilityServiceTest.php"
+    ],
+    "src/Foundation/Bootstrap/Bootstrap.php": [
+      "tests/Unit/Foundation/Bootstrap/BootstrapTest.php"
+    ],
+    "src/Foundation/Runtime/Environment.php": [
+      "tests/Unit/Foundation/Bootstrap/BootstrapTest.php",
+      "tests/Unit/Foundation/Runtime/EnvironmentTest.php"
+    ],
+    "src/Foundation/Bus/CommandBus.php": [
+      "tests/Unit/Foundation/Bus/CommandBusTest.php"
+    ],
+    "src/Foundation/Bus/CommandHandlerInterface.php": [
+      "tests/Unit/Foundation/Bus/CommandBusTest.php"
+    ],
+    "src/Foundation/Bus/CommandInterface.php": [
+      "tests/Unit/Foundation/Bus/CommandBusTest.php"
+    ],
+    "src/Foundation/Container/Container.php": [
+      "tests/Unit/Foundation/Bus/CommandBusTest.php",
+      "tests/Unit/Foundation/Bus/QueryBusTest.php",
+      "tests/Unit/Foundation/Container/ContainerTest.php",
+      "tests/Unit/Foundation/Events/EventBusTest.php",
+      "tests/Unit/Foundation/Http/RouterTest.php"
+    ],
+    "src/Foundation/Bus/QueryBus.php": [
+      "tests/Unit/Foundation/Bus/QueryBusTest.php"
+    ],
+    "src/Foundation/Bus/QueryHandlerInterface.php": [
+      "tests/Unit/Foundation/Bus/QueryBusTest.php"
+    ],
+    "src/Foundation/Bus/QueryInterface.php": [
+      "tests/Unit/Foundation/Bus/QueryBusTest.php"
+    ],
+    "src/Foundation/Cache/ArrayCache.php": [
+      "tests/Unit/Foundation/Cache/ArrayCacheTest.php"
+    ],
+    "src/Foundation/Database/ConnectionFactory.php": [
+      "tests/Unit/Foundation/Cache/DatabaseCacheTest.php",
+      "tests/Unit/Foundation/Database/ConnectionTest.php",
+      "tests/Unit/Foundation/Database/MigratorTest.php",
+      "tests/Unit/Foundation/Idempotency/IdempotencyManagerTest.php",
+      "tests/Unit/Foundation/Lock/DatabaseLockTest.php"
+    ],
+    "src/Foundation/Config/ConfigRepository.php": [
+      "tests/Unit/Foundation/Config/ConfigRepositoryTest.php"
+    ],
+    "src/Foundation/Container/ContainerException.php": [
+      "tests/Unit/Foundation/Container/ContainerTest.php"
+    ],
+    "src/Foundation/Container/NotFoundException.php": [
+      "tests/Unit/Foundation/Container/ContainerTest.php"
+    ],
+    "src/Foundation/Container/ServiceProviderInterface.php": [
+      "tests/Unit/Foundation/Container/ContainerTest.php"
+    ],
+    "src/Foundation/Database/Migrator.php": [
+      "tests/Unit/Foundation/Database/MigratorTest.php"
+    ],
+    "src/Foundation/Database/MigrationInterface.php": [
+      "tests/Unit/Foundation/Database/MigratorTest.php"
+    ],
+    "src/Foundation/Events/EventBus.php": [
+      "tests/Unit/Foundation/Events/EventBusTest.php"
+    ],
+    "src/Foundation/Events/EventInterface.php": [
+      "tests/Unit/Foundation/Events/EventBusTest.php"
+    ],
+    "src/Foundation/Events/ListenerInterface.php": [
+      "tests/Unit/Foundation/Events/EventBusTest.php"
+    ],
+    "src/Foundation/Exceptions/AppException.php": [
+      "tests/Unit/Foundation/Exceptions/AppExceptionTest.php"
+    ],
+    "src/Foundation/Exceptions/AuthenticationException.php": [
+      "tests/Unit/Foundation/Exceptions/AppExceptionTest.php"
+    ],
+    "src/Foundation/Backup/BackupSkeleton.php": [
+      "tests/Unit/Foundation/Health/HealthAndSkeletonsTest.php"
+    ],
+    "src/Foundation/Health/DatabaseHealthCheck.php": [
+      "tests/Unit/Foundation/Health/HealthAndSkeletonsTest.php"
+    ],
+    "src/Foundation/Health/HealthCheckResult.php": [
+      "tests/Unit/Foundation/Health/HealthAndSkeletonsTest.php"
+    ],
+    "src/Foundation/Health/HealthManager.php": [
+      "tests/Unit/Foundation/Health/HealthAndSkeletonsTest.php",
+      "tests/Unit/Foundation/Health/IntegrationHealthHooksTest.php"
+    ],
+    "src/Foundation/Health/StorageHealthCheck.php": [
+      "tests/Unit/Foundation/Health/HealthAndSkeletonsTest.php"
+    ],
+    "src/Foundation/Installer/InstallerSkeleton.php": [
+      "tests/Unit/Foundation/Health/HealthAndSkeletonsTest.php"
+    ],
+    "src/Domain/Notifications/Transport/SmtpConfiguration.php": [
+      "tests/Unit/Foundation/Health/IntegrationHealthHooksTest.php",
+      "tests/Unit/Notifications/NotificationEngineTest.php"
+    ],
+    "src/Domain/Webhooks/WebhookService.php": [
+      "tests/Unit/Foundation/Health/IntegrationHealthHooksTest.php",
+      "tests/Unit/Webhooks/WebhookServiceTest.php"
+    ],
+    "src/Domain/Integrations/Health/IntegrationHealthRegistry.php": [
+      "tests/Unit/Foundation/Health/IntegrationHealthHooksTest.php"
+    ],
+    "src/Domain/Integrations/Health/PaymentGatewayHealthCheck.php": [
+      "tests/Unit/Foundation/Health/IntegrationHealthHooksTest.php"
+    ],
+    "src/Domain/Integrations/Health/SmtpHealthCheck.php": [
+      "tests/Unit/Foundation/Health/IntegrationHealthHooksTest.php"
+    ],
+    "src/Domain/Integrations/Health/WebhookQueueHealthCheck.php": [
+      "tests/Unit/Foundation/Health/IntegrationHealthHooksTest.php"
+    ],
+    "src/Foundation/Http/MiddlewareInterface.php": [
+      "tests/Unit/Foundation/Http/PipelineTest.php"
+    ],
+    "src/Foundation/Http/Pipeline.php": [
+      "tests/Unit/Foundation/Http/PipelineTest.php"
+    ],
+    "src/Foundation/Http/Request.php": [
+      "tests/Unit/Foundation/Http/PipelineTest.php",
+      "tests/Unit/Foundation/Http/RequestTest.php",
+      "tests/Unit/Foundation/Http/RouterTest.php",
+      "tests/Unit/Foundation/Telemetry/CorrelationContextTest.php"
+    ],
+    "src/Foundation/Http/Response.php": [
+      "tests/Unit/Foundation/Http/PipelineTest.php",
+      "tests/Unit/Foundation/Http/ResponseTest.php",
+      "tests/Unit/Foundation/Http/RouterTest.php"
+    ],
+    "src/Foundation/Http/Middleware/SecurityHeadersMiddleware.php": [
+      "tests/Unit/Foundation/Http/RouterTest.php"
+    ],
+    "src/Foundation/Http/Router.php": [
+      "tests/Unit/Foundation/Http/RouterTest.php"
+    ],
+    "src/Foundation/Logging/LogSanitizer.php": [
+      "tests/Unit/Foundation/Logging/LogSanitizerTest.php"
+    ],
+    "src/Foundation/Logging/Logger.php": [
+      "tests/Unit/Foundation/Logging/LoggerTest.php"
+    ],
+    "src/Foundation/Logging/LogManager.php": [
+      "tests/Unit/Foundation/Logging/LoggerTest.php"
+    ],
+    "src/Foundation/Telemetry/CorrelationContext.php": [
+      "tests/Unit/Foundation/Logging/LoggerTest.php",
+      "tests/Unit/Foundation/Telemetry/CorrelationContextTest.php"
+    ],
+    "src/Foundation/Queue/QueueWorker.php": [
+      "tests/Unit/Foundation/Queue/DatabaseQueueTest.php"
+    ],
+    "src/Foundation/Scheduler/Scheduler.php": [
+      "tests/Unit/Foundation/Scheduler/SchedulerTest.php"
+    ],
+    "src/Foundation/Storage/StorageManager.php": [
+      "tests/Unit/Foundation/Storage/LocalStorageTest.php"
+    ],
+    "src/Foundation/Validation/Validator.php": [
+      "tests/Unit/Foundation/Validation/ValidatorTest.php"
+    ],
+    "src/Domain/Fraud/Review/RiskReviewCase.php": [
+      "tests/Unit/Fraud/ManualRiskReviewTest.php"
+    ],
+    "src/Domain/Fraud/Review/RiskReviewDecisionSnapshot.php": [
+      "tests/Unit/Fraud/ManualRiskReviewTest.php"
+    ],
+    "src/Domain/Fraud/Review/RiskReviewService.php": [
+      "tests/Unit/Fraud/ManualRiskReviewTest.php"
+    ],
+    "src/Domain/Fraud/Review/RiskReviewStatus.php": [
+      "tests/Unit/Fraud/ManualRiskReviewTest.php"
+    ],
+    "src/Domain/Fraud/Risk/RiskContext.php": [
+      "tests/Unit/Fraud/ManualRiskReviewTest.php",
+      "tests/Unit/Fraud/RuleBasedRiskScoringTest.php",
+      "tests/Unit/Fraud/VelocityAndListsTest.php"
+    ],
+    "src/Domain/Fraud/Risk/RiskDecision.php": [
+      "tests/Unit/Fraud/ManualRiskReviewTest.php",
+      "tests/Unit/Fraud/RuleBasedRiskScoringTest.php",
+      "tests/Unit/Fraud/VelocityAndListsTest.php"
+    ],
+    "src/Domain/Fraud/Risk/RiskEvaluationResult.php": [
+      "tests/Unit/Fraud/ManualRiskReviewTest.php"
+    ],
+    "src/Domain/Fraud/Risk/RiskScoreService.php": [
+      "tests/Unit/Fraud/ManualRiskReviewTest.php",
+      "tests/Unit/Fraud/RuleBasedRiskScoringTest.php",
+      "tests/Unit/Fraud/VelocityAndListsTest.php"
+    ],
+    "src/Domain/Fraud/Risk/RiskSignal.php": [
+      "tests/Unit/Fraud/RuleBasedRiskScoringTest.php"
+    ],
+    "src/Domain/Fraud/Risk/Rules/AnonymousProxyRule.php": [
+      "tests/Unit/Fraud/RuleBasedRiskScoringTest.php"
+    ],
+    "src/Domain/Fraud/Risk/Rules/DisposableEmailRule.php": [
+      "tests/Unit/Fraud/RuleBasedRiskScoringTest.php"
+    ],
+    "src/Domain/Fraud/Risk/Rules/GeoIpMismatchRule.php": [
+      "tests/Unit/Fraud/RuleBasedRiskScoringTest.php"
+    ],
+    "src/Domain/Fraud/Risk/Rules/HighOrderValueRule.php": [
+      "tests/Unit/Fraud/RuleBasedRiskScoringTest.php"
+    ],
+    "src/Domain/Fraud/Risk/Rules/NewCustomerHighValueRule.php": [
+      "tests/Unit/Fraud/RuleBasedRiskScoringTest.php"
+    ],
+    "src/Domain/Fraud/Risk/Rules/PaymentCountryMismatchRule.php": [
+      "tests/Unit/Fraud/RuleBasedRiskScoringTest.php"
+    ],
+    "src/Domain/Fraud/Risk/Rules/RiskRuleInterface.php": [
+      "tests/Unit/Fraud/RuleBasedRiskScoringTest.php"
+    ],
+    "src/Domain/Fraud/Linkage/AccountLinkageService.php": [
+      "tests/Unit/Fraud/VelocityAndListsTest.php"
+    ],
+    "src/Domain/Fraud/Lists/FraudListEntryType.php": [
+      "tests/Unit/Fraud/VelocityAndListsTest.php"
+    ],
+    "src/Domain/Fraud/Lists/FraudListService.php": [
+      "tests/Unit/Fraud/VelocityAndListsTest.php"
+    ],
+    "src/Domain/Fraud/Lists/FraudListType.php": [
+      "tests/Unit/Fraud/VelocityAndListsTest.php"
+    ],
+    "src/Domain/Fraud/Risk/Rules/ListMatchingRule.php": [
+      "tests/Unit/Fraud/VelocityAndListsTest.php"
+    ],
+    "src/Domain/Fraud/Risk/Rules/RelatedAccountsRiskRule.php": [
+      "tests/Unit/Fraud/VelocityAndListsTest.php"
+    ],
+    "src/Domain/Fraud/Risk/Rules/VelocityRiskRule.php": [
+      "tests/Unit/Fraud/VelocityAndListsTest.php"
+    ],
+    "src/Domain/Fraud/Velocity/VelocityTrackerService.php": [
+      "tests/Unit/Fraud/VelocityAndListsTest.php"
+    ],
+    "src/Domain/Health/ComponentHealthResult.php": [
+      "tests/Unit/Health/SystemDoctorHealthTest.php"
+    ],
+    "src/Domain/Health/SystemHealthReport.php": [
+      "tests/Unit/Health/SystemDoctorHealthTest.php"
+    ],
+    "src/Domain/Installer/FreshInstallMigrationConfig.php": [
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php"
+    ],
+    "src/Domain/Installer/FreshInstallMigrationModeService.php": [
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php"
+    ],
+    "src/Domain/Installer/FreshInstallMigrationResult.php": [
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php"
+    ],
+    "src/Domain/Installer/InstallationMode.php": [
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php"
+    ],
+    "src/Domain/Installer/InstallationStep.php": [
+      "tests/Unit/Installer/FreshInstallMigrationModeTest.php",
+      "tests/Unit/Installer/WebInstallerTest.php"
+    ],
+    "src/Domain/Installer/Exceptions/PrerequisiteNotMetException.php": [
+      "tests/Unit/Installer/WebInstallerTest.php"
+    ],
+    "src/Domain/Migration/Adoption/AdoptedIdentityType.php": [
+      "tests/Unit/Migration/AdoptExistingServiceDomainIdentityTest.php",
+      "tests/Unit/Migration/WhmcsCoreEntitiesMigrationTest.php"
+    ],
+    "src/Domain/Migration/Adoption/RemoteIdentityVerifierInterface.php": [
+      "tests/Unit/Migration/AdoptExistingServiceDomainIdentityTest.php"
+    ],
+    "src/Domain/Migration/Canonical/CanonicalDomainDto.php": [
+      "tests/Unit/Migration/AdoptExistingServiceDomainIdentityTest.php",
+      "tests/Unit/Migration/GenericStagingMappingValidationTest.php"
+    ],
+    "src/Domain/Migration/Canonical/CanonicalServiceDto.php": [
+      "tests/Unit/Migration/AdoptExistingServiceDomainIdentityTest.php",
+      "tests/Unit/Migration/GenericStagingMappingValidationTest.php"
+    ],
+    "src/Domain/Migration/Execution/MigrationCheckpoint.php": [
+      "tests/Unit/Migration/DryRunConflictCheckpointResumeTest.php"
+    ],
+    "src/Domain/Migration/Staging/StagingRecordStatus.php": [
+      "tests/Unit/Migration/DryRunConflictCheckpointResumeTest.php",
+      "tests/Unit/Migration/GenericStagingMappingValidationTest.php",
+      "tests/Unit/Migration/LocaleAwareCsvImportTest.php",
+      "tests/Unit/Migration/WhmcsCoreEntitiesMigrationTest.php",
+      "tests/Unit/Migration/WhmcsFinancialReconciliationMigrationTest.php",
+      "tests/Unit/Migration/WhmcsSupportAndUnsupportedDataTest.php"
+    ],
+    "src/Domain/Migration/Canonical/CanonicalClientDto.php": [
+      "tests/Unit/Migration/GenericStagingMappingValidationTest.php"
+    ],
+    "src/Domain/Migration/Canonical/CanonicalInvoiceDto.php": [
+      "tests/Unit/Migration/GenericStagingMappingValidationTest.php"
+    ],
+    "src/Domain/Migration/Canonical/CanonicalPaymentDto.php": [
+      "tests/Unit/Migration/GenericStagingMappingValidationTest.php"
+    ],
+    "src/Domain/Migration/Canonical/CanonicalProductDto.php": [
+      "tests/Unit/Migration/GenericStagingMappingValidationTest.php"
+    ],
+    "src/Domain/Migration/Canonical/CanonicalTicketDto.php": [
+      "tests/Unit/Migration/GenericStagingMappingValidationTest.php"
+    ],
+    "src/Domain/Migration/Staging/StagingAccountingReport.php": [
+      "tests/Unit/Migration/GenericStagingMappingValidationTest.php"
+    ],
+    "src/Domain/Migration/Staging/StagingRecord.php": [
+      "tests/Unit/Migration/GenericStagingMappingValidationTest.php"
+    ],
+    "src/Domain/Migration/Csv/CsvImportService.php": [
+      "tests/Unit/Migration/LocaleAwareCsvImportTest.php"
+    ],
+    "src/Domain/Migration/Csv/CsvLocaleConfig.php": [
+      "tests/Unit/Migration/LocaleAwareCsvImportTest.php"
+    ],
+    "src/Domain/Migration/Csv/CsvMappingProfile.php": [
+      "tests/Unit/Migration/LocaleAwareCsvImportTest.php"
+    ],
+    "src/Domain/Migration/Csv/LocaleAwareCsvParser.php": [
+      "tests/Unit/Migration/LocaleAwareCsvImportTest.php"
+    ],
+    "src/Domain/Migration/Csv/LocaleDateFormat.php": [
+      "tests/Unit/Migration/LocaleAwareCsvImportTest.php"
+    ],
+    "src/Domain/Migration/Hold/MigrationHoldRecord.php": [
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php"
+    ],
+    "src/Domain/Migration/Hold/MigrationHoldStatus.php": [
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php"
+    ],
+    "src/Domain/Migration/Hold/SuppressedNotification.php": [
+      "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php"
+    ],
+    "src/Domain/Migration/Whmcs/WhmcsPreflightService.php": [
+      "tests/Unit/Migration/WhmcsSourceScanAndConnectorTest.php"
+    ],
+    "src/Domain/Migration/Whmcs/WhmcsSourceScanner.php": [
+      "tests/Unit/Migration/WhmcsSourceScanAndConnectorTest.php"
+    ],
+    "src/Domain/Migration/Whmcs/WhmcsVersionInfo.php": [
+      "tests/Unit/Migration/WhmcsSourceScanAndConnectorTest.php"
+    ],
+    "src/Domain/Notifications/Announcements/AnnouncementService.php": [
+      "tests/Unit/Notifications/AnnouncementServiceTest.php"
+    ],
+    "src/Domain/Notifications/Unsubscribe/UnsubscribeService.php": [
+      "tests/Unit/Notifications/AnnouncementServiceTest.php"
+    ],
+    "src/Domain/Notifications/Channel/NotificationChannel.php": [
+      "tests/Unit/Notifications/NotificationCenterServiceTest.php",
+      "tests/Unit/Notifications/NotificationEngineTest.php"
+    ],
+    "src/Domain/Notifications/Preferences/NotificationPreference.php": [
+      "tests/Unit/Notifications/NotificationCenterServiceTest.php"
+    ],
+    "src/Domain/Notifications/Channel/NotificationPriority.php": [
+      "tests/Unit/Notifications/NotificationEngineTest.php"
+    ],
+    "src/Domain/Notifications/Messages/NotificationMessage.php": [
+      "tests/Unit/Notifications/NotificationEngineTest.php"
+    ],
+    "src/Domain/Notifications/Transport/SmtpTransport.php": [
+      "tests/Unit/Notifications/NotificationEngineTest.php"
+    ],
+    "src/Domain/OperationalMode/OperationModeRestrictionException.php": [
+      "tests/Unit/OperationalMode/OperationalModeTest.php"
+    ],
+    "src/Domain/Commerce/Payments/Gateways/PaymentCheckoutRequest.php": [
+      "tests/Unit/Payments/IyzicoPaymentGatewayTest.php"
+    ],
+    "src/Domain/Commerce/Payments/Gateways/PaymentRefundRequest.php": [
+      "tests/Unit/Payments/IyzicoPaymentGatewayTest.php"
+    ],
+    "src/Domain/Commerce/Payments/Gateways/PaymentVerificationRequest.php": [
+      "tests/Unit/Payments/IyzicoPaymentGatewayTest.php"
+    ],
+    "src/Domain/Commerce/Payments/Exceptions/PaymentRefundFailedException.php": [
+      "tests/Unit/Payments/PaymentWebhookAndRefundTest.php"
+    ],
+    "src/Domain/Pricing/Entities/PriceOverride.php": [
+      "tests/Unit/Pricing/PricingAndTaxGoldenPropertyTest.php"
+    ],
+    "src/Domain/Privacy/Erasure/PrivacyErasureService.php": [
+      "tests/Unit/Privacy/DomainPrivacyHandlersAndRedactionAuditTest.php",
+      "tests/Unit/Privacy/PrivacyErasureAndRestrictionTest.php",
+      "tests/Unit/Privacy/PrivacyTombstoneAndRestoreTest.php",
+      "tests/Unit/Privacy/RetentionAndLegalHoldTest.php"
+    ],
+    "src/Domain/Privacy/Handlers/BillingPrivacyHandler.php": [
+      "tests/Unit/Privacy/DomainPrivacyHandlersAndRedactionAuditTest.php"
+    ],
+    "src/Domain/Privacy/Handlers/DomainPrivacyActionResult.php": [
+      "tests/Unit/Privacy/DomainPrivacyHandlersAndRedactionAuditTest.php"
+    ],
+    "src/Domain/Privacy/Handlers/HostingPrivacyHandler.php": [
+      "tests/Unit/Privacy/DomainPrivacyHandlersAndRedactionAuditTest.php"
+    ],
+    "src/Domain/Privacy/Handlers/PrivacyHandlerRegistry.php": [
+      "tests/Unit/Privacy/DomainPrivacyHandlersAndRedactionAuditTest.php"
+    ],
+    "src/Domain/Privacy/Handlers/SupportPrivacyHandler.php": [
+      "tests/Unit/Privacy/DomainPrivacyHandlersAndRedactionAuditTest.php"
+    ],
+    "src/Domain/Privacy/Redaction/RedactionAuditRecord.php": [
+      "tests/Unit/Privacy/DomainPrivacyHandlersAndRedactionAuditTest.php"
+    ],
+    "src/Domain/Privacy/Redaction/RedactionAuditService.php": [
+      "tests/Unit/Privacy/DomainPrivacyHandlersAndRedactionAuditTest.php"
+    ],
+    "src/Domain/Privacy/Erasure/ErasureAction.php": [
+      "tests/Unit/Privacy/PrivacyErasureAndRestrictionTest.php"
+    ],
+    "src/Domain/Privacy/Export/DefaultPrivacyDataCollector.php": [
+      "tests/Unit/Privacy/PrivacyRequestsAndExportTest.php"
+    ],
+    "src/Domain/Privacy/Export/PrivacyDataCollectorInterface.php": [
+      "tests/Unit/Privacy/PrivacyRequestsAndExportTest.php"
+    ],
+    "src/Domain/Privacy/Export/PrivacyExportPackage.php": [
+      "tests/Unit/Privacy/PrivacyRequestsAndExportTest.php"
+    ],
+    "src/Domain/Privacy/Requests/PrivacyRequest.php": [
+      "tests/Unit/Privacy/PrivacyRequestsAndExportTest.php"
+    ],
+    "src/Domain/Privacy/Requests/PrivacyRequestService.php": [
+      "tests/Unit/Privacy/PrivacyRequestsAndExportTest.php"
+    ],
+    "src/Domain/Privacy/Requests/PrivacyRequestStatus.php": [
+      "tests/Unit/Privacy/PrivacyRequestsAndExportTest.php"
+    ],
+    "src/Domain/Privacy/Requests/PrivacyRequestType.php": [
+      "tests/Unit/Privacy/PrivacyRequestsAndExportTest.php"
+    ],
+    "src/Domain/Privacy/Retention/LegalHoldScopeType.php": [
+      "tests/Unit/Privacy/RetentionAndLegalHoldTest.php"
+    ],
+    "src/Domain/Privacy/Retention/RetentionAndLegalHoldService.php": [
+      "tests/Unit/Privacy/RetentionAndLegalHoldTest.php"
+    ],
+    "src/Domain/Privacy/Retention/RetentionPolicy.php": [
+      "tests/Unit/Privacy/RetentionAndLegalHoldTest.php"
+    ],
+    "src/Domain/Providers/Contracts/ProviderCapability.php": [
+      "tests/Unit/Providers/Cpanel/CpanelAccountLifecycleTest.php",
+      "tests/Unit/Providers/Cpanel/CpanelCoreAndHealthTest.php",
+      "tests/Unit/Providers/Cpanel/CpanelPackageChangeTest.php",
+      "tests/Unit/Providers/ProviderCapabilityAndOperationsTest.php",
+      "tests/Unit/Provisioning/ProvisioningErrorClassificationAndOperationsTest.php"
+    ],
+    "src/Domain/Providers/Cpanel/CpanelApiClient.php": [
+      "tests/Unit/Providers/Cpanel/CpanelAccountLifecycleTest.php",
+      "tests/Unit/Providers/Cpanel/CpanelCoreAndHealthTest.php",
+      "tests/Unit/Providers/Cpanel/CpanelPackageChangeTest.php"
+    ],
+    "src/Domain/Providers/Cpanel/CpanelConfiguration.php": [
+      "tests/Unit/Providers/Cpanel/CpanelAccountLifecycleTest.php",
+      "tests/Unit/Providers/Cpanel/CpanelCoreAndHealthTest.php",
+      "tests/Unit/Providers/Cpanel/CpanelPackageChangeTest.php"
+    ],
+    "src/Domain/Providers/Cpanel/CpanelPackageService.php": [
+      "tests/Unit/Providers/Cpanel/CpanelAccountLifecycleTest.php",
+      "tests/Unit/Providers/Cpanel/CpanelCoreAndHealthTest.php"
+    ],
+    "src/Domain/Providers/DTO/ServerConnectionDto.php": [
+      "tests/Unit/Providers/Cpanel/CpanelAccountLifecycleTest.php",
+      "tests/Unit/Providers/Cpanel/CpanelCoreAndHealthTest.php",
+      "tests/Unit/Providers/Cpanel/CpanelPackageChangeTest.php",
+      "tests/Unit/Providers/ProviderCapabilityAndOperationsTest.php"
+    ],
+    "src/Domain/Providers/Operations/CreateAccountOperation.php": [
+      "tests/Unit/Providers/Cpanel/CpanelAccountLifecycleTest.php",
+      "tests/Unit/Providers/ProviderCapabilityAndOperationsTest.php"
+    ],
+    "src/Domain/Providers/Operations/SuspendAccountOperation.php": [
+      "tests/Unit/Providers/Cpanel/CpanelAccountLifecycleTest.php",
+      "tests/Unit/Providers/ProviderCapabilityAndOperationsTest.php"
+    ],
+    "src/Domain/Providers/Operations/TerminateAccountOperation.php": [
+      "tests/Unit/Providers/Cpanel/CpanelAccountLifecycleTest.php",
+      "tests/Unit/Providers/ProviderCapabilityAndOperationsTest.php"
+    ],
+    "src/Domain/Providers/Operations/UnsuspendAccountOperation.php": [
+      "tests/Unit/Providers/Cpanel/CpanelAccountLifecycleTest.php",
+      "tests/Unit/Providers/ProviderCapabilityAndOperationsTest.php"
+    ],
+    "src/Domain/Providers/Cpanel/CpanelPackageDto.php": [
+      "tests/Unit/Providers/Cpanel/CpanelCoreAndHealthTest.php"
+    ],
+    "src/Domain/Providers/Cpanel/CpanelServerHealthChecker.php": [
+      "tests/Unit/Providers/Cpanel/CpanelCoreAndHealthTest.php"
+    ],
+    "src/Domain/Providers/Exceptions/ProviderException.php": [
+      "tests/Unit/Providers/Cpanel/CpanelCoreAndHealthTest.php",
+      "tests/Unit/Providers/ProviderCapabilityAndOperationsTest.php"
+    ],
+    "src/Domain/Providers/Operations/ChangePackageOperation.php": [
+      "tests/Unit/Providers/Cpanel/CpanelPackageChangeTest.php",
+      "tests/Unit/Providers/ProviderCapabilityAndOperationsTest.php"
+    ],
+    "src/Domain/Providers/Contracts/ProviderCapabilitySet.php": [
+      "tests/Unit/Providers/ProviderCapabilityAndOperationsTest.php"
+    ],
+    "src/Domain/Providers/DTO/ProviderOperationResult.php": [
+      "tests/Unit/Providers/ProviderCapabilityAndOperationsTest.php",
+      "tests/Unit/Provisioning/ProvisioningErrorClassificationAndOperationsTest.php"
+    ],
+    "src/Domain/Providers/Exceptions/UnsupportedCapabilityException.php": [
+      "tests/Unit/Providers/ProviderCapabilityAndOperationsTest.php"
+    ],
+    "src/Domain/Providers/Operations/ChangePasswordOperation.php": [
+      "tests/Unit/Providers/ProviderCapabilityAndOperationsTest.php"
+    ],
+    "src/Domain/Providers/Operations/CustomActionOperation.php": [
+      "tests/Unit/Providers/ProviderCapabilityAndOperationsTest.php"
+    ],
+    "src/Domain/Providers/Operations/SingleSignOnOperation.php": [
+      "tests/Unit/Providers/ProviderCapabilityAndOperationsTest.php"
+    ],
+    "src/Domain/Providers/Operations/UsageMetricsOperation.php": [
+      "tests/Unit/Providers/ProviderCapabilityAndOperationsTest.php"
+    ],
+    "src/Domain/Providers/Testing/MockHostingProvider.php": [
+      "tests/Unit/Providers/ProviderCapabilityAndOperationsTest.php"
+    ],
+    "src/Domain/Providers/Settings/ProviderSettingDefinition.php": [
+      "tests/Unit/Providers/ProviderSettingsAndVaultTest.php"
+    ],
+    "src/Domain/Providers/Settings/ProviderSettingSchema.php": [
+      "tests/Unit/Providers/ProviderSettingsAndVaultTest.php"
+    ],
+    "src/Domain/Providers/Settings/ProviderSettingService.php": [
+      "tests/Unit/Providers/ProviderSettingsAndVaultTest.php"
+    ],
+    "src/Domain/Provisioning/Workflows/HostingProvisioningStep.php": [
+      "tests/Unit/Provisioning/HostingProvisioningWorkflowTest.php",
+      "tests/Unit/Provisioning/NoDuplicateRemoteAccountFailureTest.php"
+    ],
+    "src/Domain/Servers/Entities/Location.php": [
+      "tests/Unit/Servers/PlacementEngineTest.php",
+      "tests/Unit/Servers/ServerAndCapacityTest.php"
+    ],
+    "src/Domain/Servers/Entities/ServerCapacity.php": [
+      "tests/Unit/Servers/PlacementEngineTest.php",
+      "tests/Unit/Servers/ServerAndCapacityTest.php"
+    ],
+    "src/Domain/Servers/Entities/ServerPool.php": [
+      "tests/Unit/Servers/PlacementEngineTest.php",
+      "tests/Unit/Servers/ServerAndCapacityTest.php"
+    ],
+    "src/Domain/Servers/Placement/DefaultServerHealthChecker.php": [
+      "tests/Unit/Servers/PlacementEngineTest.php"
+    ],
+    "src/Domain/Servers/Placement/Strategies/RoundRobinStrategy.php": [
+      "tests/Unit/Servers/PlacementEngineTest.php"
+    ],
+    "src/Foundation/Exceptions/ConcurrencyException.php": [
+      "tests/Unit/Services/ServiceConcurrencyTest.php"
+    ],
+    "src/Domain/Commerce/Services/ServiceBillingRelation.php": [
+      "tests/Unit/Services/ServiceLifecycleAndPlacementTest.php"
+    ],
+    "src/Domain/Commerce/Services/ServiceCancellationRequest.php": [
+      "tests/Unit/Services/ServiceLifecycleAndPlacementTest.php"
+    ],
+    "src/Domain/Support/Attachments/AttachmentSecurityPolicy.php": [
+      "tests/Unit/Support/AttachmentSecurityAndStorageTest.php",
+      "tests/Unit/Support/SupportGoldenE2ETest.php"
+    ],
+    "src/Domain/Support/Attachments/AttachmentService.php": [
+      "tests/Unit/Support/AttachmentSecurityAndStorageTest.php",
+      "tests/Unit/Support/SupportGoldenE2ETest.php"
+    ],
+    "src/Domain/Support/Attachments/InMemoryAttachmentStorage.php": [
+      "tests/Unit/Support/AttachmentSecurityAndStorageTest.php",
+      "tests/Unit/Support/SupportGoldenE2ETest.php"
+    ],
+    "src/Domain/Support/Attachments/PrivateAttachmentStorage.php": [
+      "tests/Unit/Support/AttachmentSecurityAndStorageTest.php"
+    ],
+    "src/Domain/Support/Attachments/TicketAttachment.php": [
+      "tests/Unit/Support/AttachmentSecurityAndStorageTest.php"
+    ],
+    "src/Domain/Support/Announcements/Announcement.php": [
+      "tests/Unit/Support/CannedResponsesAndAnnouncementsTest.php",
+      "tests/Unit/Support/SupportGoldenE2ETest.php"
+    ],
+    "src/Domain/Support/Announcements/AnnouncementService.php": [
+      "tests/Unit/Support/CannedResponsesAndAnnouncementsTest.php",
+      "tests/Unit/Support/SupportGoldenE2ETest.php"
+    ],
+    "src/Domain/Support/CannedResponses/CannedResponse.php": [
+      "tests/Unit/Support/CannedResponsesAndAnnouncementsTest.php"
+    ],
+    "src/Domain/Support/CannedResponses/CannedResponseService.php": [
+      "tests/Unit/Support/CannedResponsesAndAnnouncementsTest.php",
+      "tests/Unit/Support/SupportGoldenE2ETest.php"
+    ],
+    "src/Domain/Support/Departments/Department.php": [
+      "tests/Unit/Support/CannedResponsesAndAnnouncementsTest.php",
+      "tests/Unit/Support/DepartmentAndStatusPriorityTest.php",
+      "tests/Unit/Support/OrganizationTicketPermissionsTest.php",
+      "tests/Unit/Support/SlaSchedulerTest.php",
+      "tests/Unit/Support/TicketAssignmentTest.php",
+      "tests/Unit/Support/TicketContextAndRelationsTest.php",
+      "tests/Unit/Support/TicketConversationTest.php"
+    ],
+    "src/Domain/Support/Departments/DepartmentService.php": [
+      "tests/Unit/Support/CannedResponsesAndAnnouncementsTest.php",
+      "tests/Unit/Support/DepartmentAndStatusPriorityTest.php",
+      "tests/Unit/Support/OrganizationTicketPermissionsTest.php",
+      "tests/Unit/Support/SlaSchedulerTest.php",
+      "tests/Unit/Support/SupportGoldenE2ETest.php",
+      "tests/Unit/Support/TicketAssignmentTest.php",
+      "tests/Unit/Support/TicketContextAndRelationsTest.php",
+      "tests/Unit/Support/TicketConversationTest.php"
+    ],
+    "src/Domain/Support/Departments/DepartmentAgent.php": [
+      "tests/Unit/Support/DepartmentAndStatusPriorityTest.php"
+    ],
+    "src/Domain/Support/Tickets/TicketPriority.php": [
+      "tests/Unit/Support/DepartmentAndStatusPriorityTest.php",
+      "tests/Unit/Support/SlaSchedulerTest.php",
+      "tests/Unit/Support/SupportGoldenE2ETest.php",
+      "tests/Unit/Support/TicketAssignmentTest.php",
+      "tests/Unit/Support/TicketConversationTest.php"
+    ],
+    "src/Domain/Support/Tickets/TicketStatus.php": [
+      "tests/Unit/Support/DepartmentAndStatusPriorityTest.php",
+      "tests/Unit/Support/OrganizationTicketPermissionsTest.php",
+      "tests/Unit/Support/SlaSchedulerTest.php",
+      "tests/Unit/Support/SupportGoldenE2ETest.php",
+      "tests/Unit/Support/TicketAssignmentTest.php",
+      "tests/Unit/Support/TicketConversationTest.php"
+    ],
+    "src/Domain/Support/Permissions/SupportUserContext.php": [
+      "tests/Unit/Support/OrganizationTicketPermissionsTest.php",
+      "tests/Unit/Support/SupportGoldenE2ETest.php"
+    ],
+    "src/Domain/Support/Permissions/TicketPermissionService.php": [
+      "tests/Unit/Support/OrganizationTicketPermissionsTest.php",
+      "tests/Unit/Support/SupportGoldenE2ETest.php"
+    ],
+    "src/Domain/Support/Tickets/Ticket.php": [
+      "tests/Unit/Support/OrganizationTicketPermissionsTest.php",
+      "tests/Unit/Support/TicketContextAndRelationsTest.php"
+    ],
+    "src/Domain/Support/Tickets/TicketService.php": [
+      "tests/Unit/Support/OrganizationTicketPermissionsTest.php",
+      "tests/Unit/Support/SlaSchedulerTest.php",
+      "tests/Unit/Support/SupportGoldenE2ETest.php",
+      "tests/Unit/Support/TicketAssignmentTest.php",
+      "tests/Unit/Support/TicketContextAndRelationsTest.php",
+      "tests/Unit/Support/TicketConversationTest.php"
+    ],
+    "src/Domain/Support/Sla/SlaPolicy.php": [
+      "tests/Unit/Support/SlaSchedulerTest.php"
+    ],
+    "src/Domain/Support/Sla/SlaService.php": [
+      "tests/Unit/Support/SlaSchedulerTest.php",
+      "tests/Unit/Support/SupportGoldenE2ETest.php"
+    ],
+    "src/Domain/Support/Sla/TicketSla.php": [
+      "tests/Unit/Support/SlaSchedulerTest.php",
+      "tests/Unit/Support/SupportGoldenE2ETest.php"
+    ],
+    "src/Domain/Support/Assignments/TicketAssignmentService.php": [
+      "tests/Unit/Support/SupportGoldenE2ETest.php",
+      "tests/Unit/Support/TicketAssignmentTest.php"
+    ],
+    "src/Domain/Support/Context/InMemoryTicketContextProvider.php": [
+      "tests/Unit/Support/SupportGoldenE2ETest.php",
+      "tests/Unit/Support/TicketContextAndRelationsTest.php"
+    ],
+    "src/Domain/Support/Context/TicketContextService.php": [
+      "tests/Unit/Support/SupportGoldenE2ETest.php",
+      "tests/Unit/Support/TicketContextAndRelationsTest.php"
+    ],
+    "src/Domain/Support/Context/CommandExecutionResult.php": [
+      "tests/Unit/Support/TicketContextAndRelationsTest.php"
+    ],
+    "src/Domain/Support/Context/TicketContextCommandHandlerInterface.php": [
+      "tests/Unit/Support/TicketContextAndRelationsTest.php"
+    ],
+    "src/Ui/Search/GlobalSearchIndex.php": [
+      "tests/Unit/Ui/GlobalSearchIndexTest.php"
+    ],
+    "src/Domain/Updater/StagedUpdateReport.php": [
+      "tests/Unit/Updater/StagedUpdateAndCompatibilityTest.php"
+    ],
+    "src/Domain/Webhooks/WebhookSigner.php": [
+      "tests/Unit/Webhooks/WebhookServiceTest.php"
+    ]
+  },
+  "php_files": 669,
+  "js_files": [],
+  "migration_implementations": [
+    "tests/Unit/Foundation/Database/MigratorTest.php"
+  ],
+  "local_zip": {
+    "entries": 5227,
+    "vendor_files": 2401,
+    "manifest": [
+      "evidence/v1/P00/manifest.json",
+      "evidence/v1/P01/manifest.json",
+      "evidence/v1/P02/manifest.json",
+      "evidence/v1/P03/manifest.json",
+      "evidence/v1/P04/manifest.json",
+      "evidence/v1/P05/manifest.json",
+      "evidence/v1/P06/manifest.json"
+    ],
+    "web_entrypoints": [],
+    "sha256": "5615dbf016f686985cfc89cc11eedfc61799523f9315fc6271828e12b117c7f1"
+  }
+}

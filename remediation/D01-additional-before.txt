@@ -1,0 +1,18 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+............[41;37mF[0m                                                     13 / 13 (100%)
+
+Time: 00:00.023, Memory: 20.00 MB
+
+There was 1 failure:
+
+1) Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest::testUnverifiedGenericPayloadCannotSettlePayment
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php:148
+
+[37;41mFAILURES![0m
+[37;41mTests: 13[0m[37;41m, Assertions: 42[0m[37;41m, Failures: 1[0m[37;41m.[0m

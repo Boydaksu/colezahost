@@ -26,7 +26,7 @@ final class Migrator
         $sql = sprintf(
             'CREATE TABLE IF NOT EXISTS %s (
                 id %s,
-                migration VARCHAR(255) NOT NULL,
+                migration VARCHAR(255) NOT NULL UNIQUE,
                 batch INT NOT NULL,
                 applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )',
@@ -58,6 +58,12 @@ final class Migrator
      */
     public function migrate(string $migrationsPath): array
     {
+        return $this->withMigrationLock(fn (): array => $this->migrateUnlocked($migrationsPath));
+    }
+
+    /** @return array<string> */
+    private function migrateUnlocked(string $migrationsPath): array
+    {
         $this->ensureMigrationsTable();
 
         $files = glob(rtrim($migrationsPath, '/\\') . '/*.php');
@@ -81,7 +87,7 @@ final class Migrator
                 throw new RuntimeException(sprintf('Migration in file "%s" must implement MigrationInterface.', $file));
             }
 
-            $this->db->transaction(function (Connection $db) use ($migration, $name, $batch): void {
+            $this->applyMigration(function (Connection $db) use ($migration, $name, $batch): void {
                 $migration->up($db);
                 $db->insert($this->table, [
                     'migration' => $name,
@@ -101,6 +107,12 @@ final class Migrator
      * @return array<string> List of rolled-back migration names
      */
     public function rollback(string $migrationsPath): array
+    {
+        return $this->withMigrationLock(fn (): array => $this->rollbackUnlocked($migrationsPath));
+    }
+
+    /** @return array<string> */
+    private function rollbackUnlocked(string $migrationsPath): array
     {
         $this->ensureMigrationsTable();
 
@@ -130,7 +142,7 @@ final class Migrator
                 throw new RuntimeException(sprintf('Migration in file "%s" must implement MigrationInterface.', $filePath));
             }
 
-            $this->db->transaction(function (Connection $db) use ($migration, $name): void {
+            $this->applyMigration(function (Connection $db) use ($migration, $name): void {
                 $migration->down($db);
                 $db->delete($this->table, 'migration = :migration', ['migration' => $name]);
             });
@@ -139,5 +151,37 @@ final class Migrator
         }
 
         return $rolledBack;
+    }
+
+    private function applyMigration(callable $operation): void
+    {
+        if ($this->db->getDriverName() === 'sqlite') {
+            $this->db->transaction($operation);
+        } else {
+            // MariaDB DDL commits implicitly. Record success only after up/down completes.
+            // Migration implementations must support safe re-entry after partial DDL failure.
+            $operation($this->db);
+        }
+    }
+
+    private function withMigrationLock(callable $operation): array
+    {
+        if ($this->db->inTransaction()) {
+            throw new RuntimeException('Schema migrations cannot run inside an application transaction.');
+        }
+        if ($this->db->getDriverName() !== 'mysql') {
+            return $operation();
+        }
+        $database = (string) $this->db->getPdo()->query('SELECT DATABASE()')->fetchColumn();
+        $lock = 'colezahost:migrations:' . substr(hash('sha256', $database), 0, 32);
+        $row = $this->db->selectOne('SELECT GET_LOCK(?, 30) AS acquired', [$lock]);
+        if ((int) ($row['acquired'] ?? 0) !== 1) {
+            throw new RuntimeException('Could not acquire database migration lock.');
+        }
+        try {
+            return $operation();
+        } finally {
+            $this->db->selectOne('SELECT RELEASE_LOCK(?) AS released', [$lock]);
+        }
     }
 }

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php" tests="11" assertions="11" errors="0" failures="11" skipped="0" time="0.019362">
+    <testcase name="testClientManualSubmissionNeverSettlesInvoice" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php" line="40" class="Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest" classname="Coleza.Tests.Unit.Payments.PaymentSecurityRegressionTest" assertions="1" time="0.007172">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest::testClientManualSubmissionNeverSettlesInvoice&#13;
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'pending'
++'completed'
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php:46</failure>
+    </testcase>
+    <testcase name="testMissingAuthenticationCannotSubmitPayment" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php" line="51" class="Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest" classname="Coleza.Tests.Unit.Payments.PaymentSecurityRegressionTest" assertions="1" time="0.000860">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest::testMissingAuthenticationCannotSubmitPayment&#13;
+Failed asserting that exception of type "Coleza\Foundation\Exceptions\AuthorizationException" is thrown.</failure>
+    </testcase>
+    <testcase name="testSubmissionCannotAssignInvoiceToDifferentUser" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php" line="59" class="Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest" classname="Coleza.Tests.Unit.Payments.PaymentSecurityRegressionTest" assertions="1" time="0.000746">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest::testSubmissionCannotAssignInvoiceToDifferentUser&#13;
+Failed asserting that exception of type "Coleza\Foundation\Exceptions\AuthorizationException" is thrown.</failure>
+    </testcase>
+    <testsuite name="Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest::testInvalidVerificationCannotCreditInvoice" tests="7" assertions="7" errors="0" failures="7" skipped="0" time="0.009738">
+      <testcase name="testInvalidVerificationCannotCreditInvoice with data set &quot;underpayment&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php" line="81" class="Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest" classname="Coleza.Tests.Unit.Payments.PaymentSecurityRegressionTest" assertions="1" time="0.003182">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest::testInvalidVerificationCannotCreditInvoice with data set "underpayment"&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php:97</failure>
+      </testcase>
+      <testcase name="testInvalidVerificationCannotCreditInvoice with data set &quot;overpayment&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php" line="81" class="Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest" classname="Coleza.Tests.Unit.Payments.PaymentSecurityRegressionTest" assertions="1" time="0.001170">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest::testInvalidVerificationCannotCreditInvoice with data set "overpayment"&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php:97</failure>
+      </testcase>
+      <testcase name="testInvalidVerificationCannotCreditInvoice with data set &quot;currency&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php" line="81" class="Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest" classname="Coleza.Tests.Unit.Payments.PaymentSecurityRegressionTest" assertions="1" time="0.001082">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest::testInvalidVerificationCannotCreditInvoice with data set "currency"&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php:97</failure>
+      </testcase>
+      <testcase name="testInvalidVerificationCannotCreditInvoice with data set &quot;partial token&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php" line="81" class="Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest" classname="Coleza.Tests.Unit.Payments.PaymentSecurityRegressionTest" assertions="1" time="0.001060">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest::testInvalidVerificationCannotCreditInvoice with data set "partial token"&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php:97</failure>
+      </testcase>
+      <testcase name="testInvalidVerificationCannotCreditInvoice with data set &quot;SQL wildcard token&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php" line="81" class="Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest" classname="Coleza.Tests.Unit.Payments.PaymentSecurityRegressionTest" assertions="1" time="0.001044">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest::testInvalidVerificationCannotCreditInvoice with data set "SQL wildcard token"&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php:97</failure>
+      </testcase>
+      <testcase name="testInvalidVerificationCannotCreditInvoice with data set &quot;wrong gateway&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php" line="81" class="Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest" classname="Coleza.Tests.Unit.Payments.PaymentSecurityRegressionTest" assertions="1" time="0.001030">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest::testInvalidVerificationCannotCreditInvoice with data set "wrong gateway"&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php:97</failure>
+      </testcase>
+      <testcase name="testInvalidVerificationCannotCreditInvoice with data set &quot;wrong verified number&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php" line="81" class="Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest" classname="Coleza.Tests.Unit.Payments.PaymentSecurityRegressionTest" assertions="1" time="0.001170">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest::testInvalidVerificationCannotCreditInvoice with data set "wrong verified number"&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php:97</failure>
+      </testcase>
+    </testsuite>
+    <testcase name="testTokenCannotBeMatchedInsideUnrelatedMetadata" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php" line="103" class="Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest" classname="Coleza.Tests.Unit.Payments.PaymentSecurityRegressionTest" assertions="1" time="0.000847">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest::testTokenCannotBeMatchedInsideUnrelatedMetadata&#13;
+Failed asserting that an instance of class Coleza\Domain\Commerce\Payments\Payment is null.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php:108</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

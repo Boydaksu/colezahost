@@ -1,0 +1,26 @@
+[
+  {
+    "path": "src/Application/Commerce/Payments/PaymentApplicationService.php",
+    "sha256": "a1a5c41a3a55687aed81218b79208d5aaa5921dff18f4495efb91b0b08a77f3f"
+  },
+  {
+    "path": "src/Domain/Commerce/Payments/PaymentService.php",
+    "sha256": "c0d01eff31023e37e5794e0ff4da433957f89b74561cfd3bfcf13b94308cac1d"
+  },
+  {
+    "path": "src/Domain/Commerce/Payments/Gateways/PaymentWebhookHandler.php",
+    "sha256": "f108b014deccd46943bd6446595c6a9ea23cca7374219a33a1fa602e12aec8b7"
+  },
+  {
+    "path": "tests/Unit/Payments/PaymentSecurityRegressionTest.php",
+    "sha256": "9bfe9a33cc085cf2ec7b0a6597d872578a0bc9372ac002b53cd645fcef1d53b6"
+  },
+  {
+    "path": "tests/Unit/Payments/PaymentWebhookAndRefundTest.php",
+    "sha256": "3280803884a3230577c541add5ff16348fb1f6d3538b536172d5bd5fabd61a01"
+  },
+  {
+    "path": "phpunit.xml",
+    "sha256": "7b3a0adcb2ded91fa9e358a6fd06779dec2a3237b7fcd646fe8f53504593946e"
+  }
+]

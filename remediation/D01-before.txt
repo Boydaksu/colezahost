@@ -1,0 +1,69 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m                                                       11 / 11 (100%)
+
+Time: 00:00.022, Memory: 20.00 MB
+
+There were 11 failures:
+
+1) Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest::testClientManualSubmissionNeverSettlesInvoice
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'pending'
++'completed'
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php:46
+
+2) Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest::testMissingAuthenticationCannotSubmitPayment
+Failed asserting that exception of type "Coleza\Foundation\Exceptions\AuthorizationException" is thrown.
+
+3) Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest::testSubmissionCannotAssignInvoiceToDifferentUser
+Failed asserting that exception of type "Coleza\Foundation\Exceptions\AuthorizationException" is thrown.
+
+4) Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest::testInvalidVerificationCannotCreditInvoice@underpayment with data ('0.01', 'TRY', 'correct-token', 'iyzico', false)
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php:97
+
+5) Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest::testInvalidVerificationCannotCreditInvoice@overpayment with data ('101.00', 'TRY', 'correct-token', 'iyzico', false)
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php:97
+
+6) Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest::testInvalidVerificationCannotCreditInvoice@currency with data ('100.00', 'USD', 'correct-token', 'iyzico', false)
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php:97
+
+7) Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest::testInvalidVerificationCannotCreditInvoice@partial token with data ('100.00', 'TRY', 'token', 'iyzico', false)
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php:97
+
+8) Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest::testInvalidVerificationCannotCreditInvoice@SQL wildcard token with data ('100.00', 'TRY', '%', 'iyzico', false)
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php:97
+
+9) Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest::testInvalidVerificationCannotCreditInvoice@wrong gateway with data ('100.00', 'TRY', 'correct-token', 'bank_transfer', false)
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php:97
+
+10) Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest::testInvalidVerificationCannotCreditInvoice@wrong verified number with data ('100.00', 'TRY', 'correct-token', 'iyzico', true)
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php:97
+
+11) Coleza\Tests\Unit\Payments\PaymentSecurityRegressionTest::testTokenCannotBeMatchedInsideUnrelatedMetadata
+Failed asserting that an instance of class Coleza\Domain\Commerce\Payments\Payment is null.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Payments\PaymentSecurityRegressionTest.php:108
+
+[37;41mFAILURES![0m
+[37;41mTests: 11[0m[37;41m, Assertions: 11[0m[37;41m, Failures: 11[0m[37;41m, PHPUnit Deprecations: 2[0m[37;41m.[0m
