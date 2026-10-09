@@ -51,6 +51,11 @@ final class UnsupportedDataReport implements JsonSerializable
         return $this->totalDroppedFields;
     }
 
+    public function getTotalAccountedFields(): int
+    {
+        return $this->totalMappedFields + $this->totalPreservedUnsupportedFields;
+    }
+
     /**
      * @return array<string, array{entities_count: int, mapped_fields: int, preserved_unsupported_fields: int, dropped_fields: int, sample_preserved_keys: list<string>}>
      */
@@ -65,6 +70,11 @@ final class UnsupportedDataReport implements JsonSerializable
     public function isZeroLossAchieved(): bool
     {
         return $this->totalDroppedFields === 0;
+    }
+
+    public function isZeroSilentLossAchieved(): bool
+    {
+        return $this->isZeroLossAchieved();
     }
 
     /**

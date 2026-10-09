@@ -59,6 +59,17 @@ final class DatabaseStagingRepository implements StagingRepositoryInterface
         $errorsJson = json_encode($record->getValidationErrors(), JSON_THROW_ON_ERROR);
 
         if ($record->getId() === null) {
+            $existing = $this->findBySourceEntity(
+                $record->getBatchId(),
+                $record->getSourceEntityType(),
+                $record->getSourceEntityId()
+            );
+            if ($existing !== null) {
+                $record->setId($existing->getId());
+            }
+        }
+
+        if ($record->getId() === null) {
             $sql = sprintf(
                 'INSERT INTO %s
                 (batch_id, source_system, source_entity_type, source_entity_id, raw_payload_json, status,

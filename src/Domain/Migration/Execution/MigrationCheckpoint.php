@@ -57,6 +57,11 @@ final class MigrationCheckpoint implements JsonSerializable
         return $this->status;
     }
 
+    public function isCompleted(): bool
+    {
+        return $this->status === 'completed';
+    }
+
     /**
      * @return array<string, mixed>
      */

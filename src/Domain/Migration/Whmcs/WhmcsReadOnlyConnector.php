@@ -29,6 +29,11 @@ final class WhmcsReadOnlyConnector
         return $this->connection;
     }
 
+    public function isReadOnly(): bool
+    {
+        return true;
+    }
+
     /**
      * Executes a SELECT query after enforcing strict read-only query inspection.
      *

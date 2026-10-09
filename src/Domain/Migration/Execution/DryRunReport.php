@@ -113,6 +113,11 @@ final class DryRunReport implements JsonSerializable
         return !$this->hasConflicts() && $this->totalProjectedMigrated > 0;
     }
 
+    public function isReadyForLiveMigration(): bool
+    {
+        return $this->canProceedSafely();
+    }
+
     /**
      * @return array<string, mixed>
      */

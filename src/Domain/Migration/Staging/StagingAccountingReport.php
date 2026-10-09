@@ -37,6 +37,16 @@ final class StagingAccountingReport implements JsonSerializable
         return $this->totalStagedRecords;
     }
 
+    public function getTotalStaged(): int
+    {
+        return $this->totalStagedRecords;
+    }
+
+    public function getTerminalCount(): int
+    {
+        return $this->migratedCount + $this->quarantinedCount + $this->skippedCount + $this->failedCount;
+    }
+
     public function getMigratedCount(): int
     {
         return $this->migratedCount;

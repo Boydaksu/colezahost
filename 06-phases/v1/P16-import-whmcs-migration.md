@@ -1,7 +1,7 @@
 # P16 — Import & WHMCS Migration
 
 **Release family:** V1
-**Status:** PLANNED
+**Status:** PASS
 **HARD phase dependencies:** P15
 
 ## Objective

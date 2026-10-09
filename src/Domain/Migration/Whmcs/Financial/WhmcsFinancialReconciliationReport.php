@@ -71,6 +71,11 @@ final class WhmcsFinancialReconciliationReport implements JsonSerializable
             && $this->creditReconciliation['is_reconciled'];
     }
 
+    public function isFullyReconciled(): bool
+    {
+        return $this->isFinancialReconciled();
+    }
+
     public function isZeroSilentLossAchieved(): bool
     {
         return $this->stagingReport->isZeroSilentLossAchieved();
