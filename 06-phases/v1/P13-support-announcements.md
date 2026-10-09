@@ -1,7 +1,7 @@
 # P13 — Support & Announcements
 
 **Release family:** V1
-**Status:** PLANNED
+**Status:** PASS
 **HARD phase dependencies:** P12
 
 ## Objective
