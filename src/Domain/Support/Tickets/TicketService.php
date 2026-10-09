@@ -41,6 +41,8 @@ final class TicketService
                 subject VARCHAR(255) NOT NULL,
                 service_id INT NULL,
                 domain_id INT NULL,
+                invoice_id INT NULL,
+                order_id INT NULL,
                 last_reply_at TIMESTAMP NULL,
                 last_reply_user_id INT NULL,
                 last_reply_by_staff TINYINT(1) NOT NULL DEFAULT 0,
@@ -53,6 +55,16 @@ final class TicketService
             $autoInc
         );
         $this->db->statement($sqlTickets);
+
+        try {
+            $this->db->statement(sprintf('ALTER TABLE %s ADD COLUMN invoice_id INT NULL', $this->ticketsTable));
+        } catch (\Throwable) {
+        }
+
+        try {
+            $this->db->statement(sprintf('ALTER TABLE %s ADD COLUMN order_id INT NULL', $this->ticketsTable));
+        } catch (\Throwable) {
+        }
 
         $sqlMessages = sprintf(
             'CREATE TABLE IF NOT EXISTS %s (
@@ -133,6 +145,14 @@ final class TicketService
             ? (int) $data['domain_id']
             : null;
 
+        $invoiceId = isset($data['invoice_id']) && $data['invoice_id'] !== null
+            ? (int) $data['invoice_id']
+            : null;
+
+        $orderId = isset($data['order_id']) && $data['order_id'] !== null
+            ? (int) $data['order_id']
+            : null;
+
         $assignedTo = isset($data['assigned_to']) && $data['assigned_to'] !== null
             ? (int) $data['assigned_to']
             : null;
@@ -161,6 +181,8 @@ final class TicketService
             $subject,
             $serviceId,
             $domainId,
+            $invoiceId,
+            $orderId,
             $message,
             $metadata,
             $now,
@@ -179,6 +201,8 @@ final class TicketService
                     'subject' => $subject,
                     'service_id' => $serviceId,
                     'domain_id' => $domainId,
+                    'invoice_id' => $invoiceId,
+                    'order_id' => $orderId,
                     'last_reply_at' => $nowStr,
                     'last_reply_user_id' => $userId,
                     'last_reply_by_staff' => 0,
@@ -216,6 +240,8 @@ final class TicketService
                 assignedTo: $assignedTo,
                 serviceId: $serviceId,
                 domainId: $domainId,
+                invoiceId: $invoiceId,
+                orderId: $orderId,
                 lastReplyAt: $now,
                 lastReplyUserId: $userId,
                 lastReplyByStaff: false,
@@ -666,12 +692,87 @@ final class TicketService
             $bindings['domain_id'] = (int) $filters['domain_id'];
         }
 
+        if (!empty($filters['invoice_id'])) {
+            $conditions[] = 'invoice_id = :invoice_id';
+            $bindings['invoice_id'] = (int) $filters['invoice_id'];
+        }
+
+        if (!empty($filters['order_id'])) {
+            $conditions[] = 'order_id = :order_id';
+            $bindings['order_id'] = (int) $filters['order_id'];
+        }
+
         $whereClause = count($conditions) > 0 ? 'WHERE ' . implode(' AND ', $conditions) : '';
         $sql = sprintf('SELECT * FROM %s %s ORDER BY id DESC', $this->ticketsTable, $whereClause);
 
         $rows = $this->db->select($sql, $bindings);
 
         return array_map(fn (array $r) => Ticket::fromArray($r), $rows);
+    }
+
+    public function linkResource(int $ticketId, string $resourceType, int $resourceId): Ticket
+    {
+        $this->requireTicket($ticketId);
+
+        $column = match ($resourceType) {
+            'service' => 'service_id',
+            'domain' => 'domain_id',
+            'invoice' => 'invoice_id',
+            'order' => 'order_id',
+            default => throw new ValidationException(
+                ['resource_type' => "Unsupported resource type: '{$resourceType}'."],
+                'Invalid resource type'
+            ),
+        };
+
+        if ($resourceId <= 0) {
+            throw new ValidationException(
+                ['resource_id' => 'Valid resource ID is required.'],
+                'Invalid resource ID'
+            );
+        }
+
+        $nowStr = (new DateTimeImmutable())->format('Y-m-d H:i:s');
+        $this->db->update(
+            $this->ticketsTable,
+            [
+                $column => $resourceId,
+                'updated_at' => $nowStr,
+            ],
+            'id = :where_id',
+            ['where_id' => $ticketId]
+        );
+
+        return $this->requireTicket($ticketId);
+    }
+
+    public function unlinkResource(int $ticketId, string $resourceType): Ticket
+    {
+        $this->requireTicket($ticketId);
+
+        $column = match ($resourceType) {
+            'service' => 'service_id',
+            'domain' => 'domain_id',
+            'invoice' => 'invoice_id',
+            'order' => 'order_id',
+            default => throw new ValidationException(
+                ['resource_type' => "Unsupported resource type: '{$resourceType}'."],
+                'Invalid resource type'
+            ),
+        };
+
+        $nowStr = (new DateTimeImmutable())->format('Y-m-d H:i:s');
+        $this->db->update(
+            $this->ticketsTable,
+            [
+                $column => null,
+                'updated_at' => $nowStr,
+            ],
+            'id = :where_id',
+            ['where_id' => $ticketId]
+        );
+
+        return $this->requireTicket($ticketId);
     }
 
     private function generateUniqueTicketNumber(): string

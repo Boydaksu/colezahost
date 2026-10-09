@@ -23,6 +23,8 @@ final class Ticket
         private readonly ?int $assignedTo = null,
         private readonly ?int $serviceId = null,
         private readonly ?int $domainId = null,
+        private readonly ?int $invoiceId = null,
+        private readonly ?int $orderId = null,
         private readonly ?DateTimeImmutable $lastReplyAt = null,
         private readonly ?int $lastReplyUserId = null,
         private readonly bool $lastReplyByStaff = false,
@@ -86,6 +88,16 @@ final class Ticket
     public function getDomainId(): ?int
     {
         return $this->domainId;
+    }
+
+    public function getInvoiceId(): ?int
+    {
+        return $this->invoiceId;
+    }
+
+    public function getOrderId(): ?int
+    {
+        return $this->orderId;
     }
 
     public function getLastReplyAt(): ?DateTimeImmutable
@@ -158,6 +170,8 @@ final class Ticket
             'assigned_to' => $this->assignedTo,
             'service_id' => $this->serviceId,
             'domain_id' => $this->domainId,
+            'invoice_id' => $this->invoiceId,
+            'order_id' => $this->orderId,
             'last_reply_at' => $this->lastReplyAt?->format(DateTimeImmutable::ATOM),
             'last_reply_user_id' => $this->lastReplyUserId,
             'last_reply_by_staff' => $this->lastReplyByStaff,
@@ -211,6 +225,8 @@ final class Ticket
             assignedTo: isset($data['assigned_to']) && $data['assigned_to'] !== null ? (int) $data['assigned_to'] : null,
             serviceId: isset($data['service_id']) && $data['service_id'] !== null ? (int) $data['service_id'] : null,
             domainId: isset($data['domain_id']) && $data['domain_id'] !== null ? (int) $data['domain_id'] : null,
+            invoiceId: isset($data['invoice_id']) && $data['invoice_id'] !== null ? (int) $data['invoice_id'] : null,
+            orderId: isset($data['order_id']) && $data['order_id'] !== null ? (int) $data['order_id'] : null,
             lastReplyAt: $lastReplyAt,
             lastReplyUserId: isset($data['last_reply_user_id']) && $data['last_reply_user_id'] !== null ? (int) $data['last_reply_user_id'] : null,
             lastReplyByStaff: (bool) ($data['last_reply_by_staff'] ?? false),
