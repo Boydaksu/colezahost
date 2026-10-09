@@ -1,7 +1,7 @@
 # P14 — Fraud, Abuse & Privacy Enforcement
 
 **Release family:** V1
-**Status:** PLANNED
+**Status:** PASS
 **HARD phase dependencies:** P13
 
 ## Objective
