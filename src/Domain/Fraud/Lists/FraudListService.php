@@ -64,7 +64,7 @@ final class FraudListService
 
         $trimmedValue = trim($value);
         if ($trimmedValue === '') {
-            throw new ValidationException('Fraud list value cannot be empty.');
+            throw new ValidationException(['value' => ['Fraud list value cannot be empty.']], 'Fraud list value cannot be empty.');
         }
 
         $now = new DateTimeImmutable();
