@@ -1,7 +1,7 @@
 # P17 — Installer, Update, Backup, Recovery & Health Hardening
 
 **Release family:** V1
-**Status:** PLANNED
+**Status:** PASS
 **HARD phase dependencies:** P16
 
 ## Objective
