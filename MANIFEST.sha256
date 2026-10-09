@@ -56,7 +56,7 @@ e0c23ba0df7f66c161bc2c91928accb2bbd4d233d4e1b89284276a77689e5910  ./06-phases/v1
 eec16ad783b7d39e155c0e74447039fa721eda66467c7ffb2fbc8fa36f8fa666  ./06-phases/v1/P12-domains-registrar.md
 b5bb7c48cbb1c62dc706131c99f8f68db35ad5cdc7377665070eccd94bdea004  ./06-phases/v1/P13-support-announcements.md
 6a7416b1ef37788ad0024370c022fe0f8019268f8159ba4c971121f0f2a1af27  ./06-phases/v1/P14-fraud-abuse-privacy-enforcement.md
-e7e557bef53eb66277abf768dc3e556f4df5c6a144318fbc3a454f3dee965d70  ./06-phases/v1/P15-analytics-business-intelligence-baseline.md
+9e80331cd1cd70c08aac79e50ee4cf7dcec858710c2b38b32f666e6f48ca1139  ./06-phases/v1/P15-analytics-business-intelligence-baseline.md
 abed6d6c4c4a96bbe2f8a1122af2259b65818119da9e91a5e62c7c2e93ef63cf  ./06-phases/v1/P16-import-whmcs-migration.md
 c448fb544e9d9ddd4c2dc857ed3cb91971cc54ad2fd260aa109495200c3187cc  ./06-phases/v1/P17-installer-update-backup-recovery-health-hardening.md
 f57585e6230f817132d28cbeac8878899246076dcbaaee724f6f636c851c0c8b  ./06-phases/v1/P18-v1-release-candidate-stable-gate.md

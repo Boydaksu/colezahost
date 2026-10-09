@@ -1,7 +1,7 @@
 # P15 — Analytics & Business Intelligence Baseline
 
 **Release family:** V1
-**Status:** PLANNED
+**Status:** PASS
 **HARD phase dependencies:** P14
 
 ## Objective
