@@ -68,7 +68,7 @@ final class FinancialMetricsService
                 "SELECT id, amount, status, created_at
                  FROM payments
                  WHERE date(created_at) >= :s AND date(created_at) <= :e
-                   AND status = 'captured'",
+                   AND status IN ('captured', 'completed')",
                 ['s' => $startDate, 'e' => $endDate]
             );
 
