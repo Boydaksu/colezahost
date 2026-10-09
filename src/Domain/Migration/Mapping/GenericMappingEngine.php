@@ -52,14 +52,14 @@ final class GenericMappingEngine implements MappingEngineInterface
         $firstName = trim((string) ($raw['firstname'] ?? $raw['first_name'] ?? ''));
         $lastName = trim((string) ($raw['lastname'] ?? $raw['last_name'] ?? ''));
         $email = strtolower(trim((string) ($raw['email'] ?? '')));
-        $company = isset($raw['companyname']) ? (string)$raw['companyname'] : (isset($raw['company']) ? (string)$raw['company'] : null);
-        $phone = isset($raw['phonenumber']) ? (string)$raw['phonenumber'] : (isset($raw['phone']) ? (string)$raw['phone'] : null);
+        $company = isset($raw['companyname']) ? (string)$raw['companyname'] : (isset($raw['company']) ? (string)$raw['company'] : (isset($raw['company_name']) ? (string)$raw['company_name'] : null));
+        $phone = isset($raw['phonenumber']) ? (string)$raw['phonenumber'] : (isset($raw['phone']) ? (string)$raw['phone'] : (isset($raw['phone_number']) ? (string)$raw['phone_number'] : null));
         $address1 = isset($raw['address1']) ? (string)$raw['address1'] : (isset($raw['address_line1']) ? (string)$raw['address_line1'] : null);
         $address2 = isset($raw['address2']) ? (string)$raw['address2'] : (isset($raw['address_line2']) ? (string)$raw['address_line2'] : null);
         $city = isset($raw['city']) ? (string)$raw['city'] : null;
         $state = isset($raw['state']) ? (string)$raw['state'] : null;
         $postcode = isset($raw['postcode']) ? (string)$raw['postcode'] : (isset($raw['zip']) ? (string)$raw['zip'] : null);
-        $country = isset($raw['country']) ? strtoupper(trim((string)$raw['country'])) : null;
+        $country = isset($raw['country']) ? strtoupper(trim((string)$raw['country'])) : (isset($raw['country_code']) ? strtoupper(trim((string)$raw['country_code'])) : null);
         $currency = isset($raw['currency']) ? strtoupper(trim((string)$raw['currency'])) : 'USD';
 
         $rawStatus = strtolower(trim((string) ($raw['status'] ?? 'active')));
@@ -78,8 +78,10 @@ final class GenericMappingEngine implements MappingEngineInterface
         // Retain unmapped keys into metadata for zero silent loss
         $mappedKeys = [
             'id', 'client_id', 'userid', 'firstname', 'first_name', 'lastname', 'last_name', 'email',
-            'companyname', 'company', 'phonenumber', 'phone', 'address1', 'address_line1', 'address2', 'address_line2',
-            'city', 'state', 'postcode', 'zip', 'country', 'currency', 'status', 'taxexempt', 'datecreated', 'created_at', 'customfields', 'custom_fields',
+            'companyname', 'company', 'company_name', 'phonenumber', 'phone', 'phone_number',
+            'address1', 'address_line1', 'address2', 'address_line2',
+            'city', 'state', 'postcode', 'zip', 'country', 'country_code', 'currency', 'status',
+            'taxexempt', 'datecreated', 'created_at', 'customfields', 'custom_fields', 'unmapped_source_columns',
         ];
         $unsupported = array_diff_key($raw, array_flip($mappedKeys));
 
@@ -275,11 +277,16 @@ final class GenericMappingEngine implements MappingEngineInterface
         };
 
         $date = isset($raw['date']) ? (string)$raw['date'] : null;
-        $dueDate = isset($raw['duedate']) ? (string)$raw['duedate'] : null;
-        $datePaid = isset($raw['datepaid']) ? (string)$raw['datepaid'] : null;
+        $dueDate = isset($raw['duedate']) ? (string)$raw['duedate'] : (isset($raw['due_date']) ? (string)$raw['due_date'] : null);
+        $datePaid = isset($raw['datepaid']) ? (string)$raw['datepaid'] : (isset($raw['date_paid']) ? (string)$raw['date_paid'] : null);
         $lineItems = (array) ($raw['items'] ?? $raw['line_items'] ?? []);
 
-        $mappedKeys = ['id', 'invoice_id', 'userid', 'client_id', 'invoicenum', 'subtotal', 'tax', 'tax2', 'total', 'currency', 'status', 'date', 'duedate', 'datepaid', 'items', 'line_items'];
+        $mappedKeys = [
+            'id', 'invoice_id', 'userid', 'client_id', 'invoicenum', 'invoice_number',
+            'subtotal', 'tax', 'tax2', 'total', 'currency', 'status',
+            'date', 'duedate', 'due_date', 'datepaid', 'date_paid', 'items', 'line_items',
+            'unmapped_source_columns',
+        ];
         $unsupported = array_diff_key($raw, array_flip($mappedKeys));
 
         return new CanonicalInvoiceDto(

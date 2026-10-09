@@ -41,6 +41,34 @@ final class StagingPipelineService
     }
 
     /**
+     * Directly stages a record that already failed parser syntax or extraction, immediately placing it in QUARANTINED state.
+     *
+     * @param array<string, mixed> $rawPayload
+     * @param list<string> $errors
+     */
+    public function stageQuarantinedRecord(
+        string $batchId,
+        string $sourceSystem,
+        string $sourceEntityType,
+        string $sourceEntityId,
+        array $rawPayload,
+        string $reason,
+        array $errors = []
+    ): StagingRecord {
+        $record = StagingRecord::createNew(
+            batchId: $batchId,
+            sourceSystem: $sourceSystem,
+            sourceEntityType: $sourceEntityType,
+            sourceEntityId: $sourceEntityId,
+            rawPayload: $rawPayload
+        );
+        $record->markQuarantined($reason, $errors);
+
+        $this->repository->save($record);
+        return $record;
+    }
+
+    /**
      * Ingests a collection of raw source records into the staging store.
      *
      * @param list<array{id?: string|int, client_id?: string|int, [key: string]: mixed}> $records
