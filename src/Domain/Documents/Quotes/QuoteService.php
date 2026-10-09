@@ -10,6 +10,7 @@ use Coleza\Domain\Documents\DocumentType;
 use Coleza\Domain\Documents\Numbering\DocumentNumberGenerator;
 use Coleza\Domain\Documents\Snapshots\DocumentSnapshotService;
 use Coleza\Foundation\Exceptions\ValidationException;
+use Coleza\Foundation\Database\PdoSchema;
 use PDO;
 use RuntimeException;
 
@@ -29,6 +30,7 @@ final class QuoteService
         ?QuoteStateMachine $stateMachine = null,
         private ?DocumentSnapshotService $snapshotService = null
     ) {
+        if ($this->pdo !== null) { PdoSchema::autoIncrement($this->pdo); }
         $this->numberGenerator = $numberGenerator ?? new DocumentNumberGenerator($this->pdo);
         $this->stateMachine = $stateMachine ?? new QuoteStateMachine();
 
@@ -791,15 +793,16 @@ final class QuoteService
             return;
         }
 
+        $id = PdoSchema::autoIncrement($this->pdo);
         $this->pdo->exec(
-            'CREATE TABLE IF NOT EXISTS quotes (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+            "CREATE TABLE IF NOT EXISTS quotes (
+                id {$id},
                 quote_number VARCHAR(64) NOT NULL UNIQUE,
                 original_quote_number VARCHAR(64) NOT NULL,
                 version INTEGER NOT NULL DEFAULT 1,
                 user_id INTEGER NOT NULL,
                 organization_id INTEGER,
-                status VARCHAR(32) NOT NULL DEFAULT "draft",
+                status VARCHAR(32) NOT NULL DEFAULT 'draft',
                 currency_code VARCHAR(3) NOT NULL,
                 subtotal_minor INTEGER NOT NULL,
                 tax_total_minor INTEGER NOT NULL,
@@ -815,9 +818,11 @@ final class QuoteService
                 notes TEXT,
                 created_at VARCHAR(64) NOT NULL,
                 updated_at VARCHAR(64) NOT NULL
-            );
-            CREATE TABLE IF NOT EXISTS quote_items (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+            )"
+        );
+        $this->pdo->exec(
+            "CREATE TABLE IF NOT EXISTS quote_items (
+                id {$id},
                 quote_id INTEGER NOT NULL,
                 description VARCHAR(255) NOT NULL,
                 quantity INTEGER NOT NULL DEFAULT 1,
@@ -827,9 +832,9 @@ final class QuoteService
                 tax_amount_minor INTEGER NOT NULL DEFAULT 0,
                 total_minor INTEGER NOT NULL,
                 product_id INTEGER,
-                billing_cycle VARCHAR(32) DEFAULT "monthly",
+                billing_cycle VARCHAR(32) DEFAULT 'monthly',
                 metadata_json TEXT
-            );'
+            )"
         );
     }
 }

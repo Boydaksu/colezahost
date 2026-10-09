@@ -1,0 +1,88 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m                                                            8 / 8 (100%)
+
+Time: 00:00.261, Memory: 20.00 MB
+
+There were 8 errors:
+
+1) Coleza\Tests\MariaDb\DocumentPersistenceTest::testQuotePersistsItemsAndTurkishContentAcrossConnections
+PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '
+                tenant_id VARCHAR(64) NOT NULL,
+                document_typ...' at line 2
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Documents\Numbering\DocumentNumberGenerator.php:133
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Documents\Numbering\DocumentNumberGenerator.php:28
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Documents\Quotes\QuoteService.php:32
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\DocumentPersistenceTest.php:19
+
+2) Coleza\Tests\MariaDb\DocumentPersistenceTest::testProformaPersistsItemsAndAmounts
+PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '
+                tenant_id VARCHAR(64) NOT NULL,
+                document_typ...' at line 2
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Documents\Numbering\DocumentNumberGenerator.php:133
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Documents\Numbering\DocumentNumberGenerator.php:28
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Documents\Proforma\ProformaService.php:28
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\DocumentPersistenceTest.php:29
+
+3) Coleza\Tests\MariaDb\DocumentPersistenceTest::testAnnouncementPersistsAndPublishes
+PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '
+                title VARCHAR(255) NOT NULL,
+                slug VARCHAR(25...' at line 2
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Notifications\Announcements\AnnouncementService.php:405
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Notifications\Announcements\AnnouncementService.php:34
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\DocumentPersistenceTest.php:39
+
+4) Coleza\Tests\MariaDb\DocumentPersistenceTest::testParallelDocumentNumbersAreUniqueAndPreserveLegacyCounter
+PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '
+                tenant_id VARCHAR(64) NOT NULL,
+                document_typ...' at line 2
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Documents\Numbering\DocumentNumberGenerator.php:133
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Documents\Numbering\DocumentNumberGenerator.php:28
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\DocumentPersistenceTest.php:49
+
+5) Coleza\Tests\MariaDb\DocumentPersistenceTest::testConstructorCannotCommitAnExistingTransaction#0 with data ('Coleza\Domain\Documents\Numbe...erator')
+PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '
+                tenant_id VARCHAR(64) NOT NULL,
+                document_typ...' at line 2
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Documents\Numbering\DocumentNumberGenerator.php:133
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Documents\Numbering\DocumentNumberGenerator.php:28
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\DocumentPersistenceTest.php:72
+
+6) Coleza\Tests\MariaDb\DocumentPersistenceTest::testConstructorCannotCommitAnExistingTransaction#1 with data ('Coleza\Domain\Documents\Quote...ervice')
+PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '
+                tenant_id VARCHAR(64) NOT NULL,
+                document_typ...' at line 2
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Documents\Numbering\DocumentNumberGenerator.php:133
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Documents\Numbering\DocumentNumberGenerator.php:28
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Documents\Quotes\QuoteService.php:32
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\DocumentPersistenceTest.php:72
+
+7) Coleza\Tests\MariaDb\DocumentPersistenceTest::testConstructorCannotCommitAnExistingTransaction#2 with data ('Coleza\Domain\Documents\Profo...ervice')
+PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '
+                tenant_id VARCHAR(64) NOT NULL,
+                document_typ...' at line 2
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Documents\Numbering\DocumentNumberGenerator.php:133
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Documents\Numbering\DocumentNumberGenerator.php:28
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Documents\Proforma\ProformaService.php:28
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\DocumentPersistenceTest.php:72
+
+8) Coleza\Tests\MariaDb\DocumentPersistenceTest::testConstructorCannotCommitAnExistingTransaction#3 with data ('Coleza\Domain\Notifications\A...ervice')
+RuntimeException: Initialize notifications before starting a transaction.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Notifications\Center\NotificationCenterService.php:489
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Notifications\Center\NotificationCenterService.php:34
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Notifications\Announcements\AnnouncementService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\DocumentPersistenceTest.php:72
+
+[37;41mERRORS![0m
+[37;41mTests: 8[0m[37;41m, Assertions: 16[0m[37;41m, Errors: 8[0m[37;41m.[0m

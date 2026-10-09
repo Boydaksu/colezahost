@@ -613,15 +613,20 @@ final class WhmcsCoreEntityMigrator
                     [$email, $pwd, $fullName ?: 'Subaccount Contact', date('Y-m-d H:i:s')]
                 );
                 $subUserId = (int) $this->targetDb->getPdo()->lastInsertId();
+            } else {
+                $subUserId = (int) $existing['id'];
+            }
 
-                // If parent user has an organization, add subaccount as member
-                $org = $this->targetDb->selectOne('SELECT id FROM organizations WHERE owner_user_id = ?', [$targetUserId]);
-                if ($org !== null) {
-                    $this->targetDb->statement(
-                        'INSERT OR IGNORE INTO organization_members (organization_id, user_id, role) VALUES (?, ?, "member")',
-                        [(int) $org['id'], $subUserId]
-                    );
-                }
+            // Membership may be missing after a partial import even if the user already exists.
+            $org = $this->targetDb->selectOne('SELECT id FROM organizations WHERE owner_user_id = ?', [$targetUserId]);
+            if ($org !== null) {
+                $conflict = $this->targetDb->getDriverName() === 'sqlite'
+                    ? ' ON CONFLICT(organization_id, user_id) DO NOTHING'
+                    : ' ON DUPLICATE KEY UPDATE role = role';
+                $this->targetDb->statement(
+                    'INSERT INTO organization_members (organization_id, user_id, role) VALUES (?, ?, ?)' . $conflict,
+                    [(int) $org['id'], $subUserId, 'member']
+                );
             }
         }
     }

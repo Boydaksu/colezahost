@@ -9,6 +9,7 @@ use Coleza\Domain\Notifications\Channel\NotificationChannel;
 use Coleza\Domain\Notifications\NotificationEngine;
 use Coleza\Domain\Notifications\Unsubscribe\UnsubscribeService;
 use Coleza\Foundation\Exceptions\ValidationException;
+use Coleza\Foundation\Database\PdoSchema;
 use PDO;
 use RuntimeException;
 
@@ -27,6 +28,7 @@ final class AnnouncementService
         ?NotificationCenterService $centerService = null,
         ?UnsubscribeService $unsubscribeService = null
     ) {
+        if ($this->pdo !== null) { PdoSchema::autoIncrement($this->pdo); }
         $this->centerService = $centerService ?? new NotificationCenterService($this->pdo);
         $this->unsubscribeService = $unsubscribeService ?? new UnsubscribeService();
 
@@ -402,13 +404,14 @@ final class AnnouncementService
             return;
         }
 
+        $id = PdoSchema::autoIncrement($this->pdo);
         $this->pdo->exec(
-            'CREATE TABLE IF NOT EXISTS announcements (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+            "CREATE TABLE IF NOT EXISTS announcements (
+                id {$id},
                 title VARCHAR(255) NOT NULL,
                 slug VARCHAR(255) NOT NULL,
                 content TEXT NOT NULL,
-                category VARCHAR(64) NOT NULL DEFAULT "general",
+                category VARCHAR(64) NOT NULL DEFAULT 'general',
                 is_published INTEGER NOT NULL DEFAULT 0,
                 published_at VARCHAR(64),
                 expires_at VARCHAR(64),
@@ -416,7 +419,7 @@ final class AnnouncementService
                 author_admin_id INTEGER,
                 created_at VARCHAR(64) NOT NULL,
                 updated_at VARCHAR(64) NOT NULL
-            );'
+            )"
         );
     }
 }

@@ -1,0 +1,22 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[31;1mE[0m                                                                   1 / 1 (100%)
+
+Time: 00:00.734, Memory: 20.00 MB
+
+There was 1 error:
+
+1) Coleza\Tests\MariaDb\WhmcsContactPersistenceTest::testContactMembershipIsPortableRepeatableAndPreservesExistingRoles
+PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'OR IGNORE INTO organization_members (organization_id, user_id, role) VALUES (...' at line 1
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:298
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:115
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Migration\Whmcs\Core\WhmcsCoreEntityMigrator.php:620
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Migration\Whmcs\Core\WhmcsCoreEntityMigrator.php:270
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\WhmcsContactPersistenceTest.php:40
+
+[37;41mERRORS![0m
+[37;41mTests: 1[0m[37;41m, Assertions: 2[0m[37;41m, Errors: 1[0m[37;41m.[0m

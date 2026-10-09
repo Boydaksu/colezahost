@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Coleza\Domain\Documents\Numbering;
 
 use Coleza\Domain\Documents\DocumentType;
+use Coleza\Foundation\Database\PdoSchema;
 use PDO;
 
 final class DocumentNumberGenerator
@@ -86,42 +87,36 @@ final class DocumentNumberGenerator
             return $this->memorySequences[$key];
         }
 
-        $stmt = $this->pdo->prepare(
-            'SELECT last_number FROM document_sequences WHERE tenant_id = :tenant_id AND document_type = :doc_type AND year = :year'
-        );
-        $stmt->execute([
-            ':tenant_id' => $tenantId,
-            ':doc_type' => $type,
-            ':year' => $year,
-        ]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($row === false) {
-            $next = 1;
-            $ins = $this->pdo->prepare(
-                'INSERT INTO document_sequences (tenant_id, document_type, year, last_number) VALUES (:tenant_id, :doc_type, :year, :last_number)'
+        if ($this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'mysql') {
+            $stmt = $this->pdo->prepare(
+                'INSERT INTO document_sequences (tenant_id, document_type, year, last_number)
+                 VALUES (?, ?, ?, LAST_INSERT_ID(1))
+                 ON DUPLICATE KEY UPDATE last_number = LAST_INSERT_ID(last_number + 1)'
             );
-            $ins->execute([
-                ':tenant_id' => $tenantId,
-                ':doc_type' => $type,
-                ':year' => $year,
-                ':last_number' => $next,
-            ]);
-            return $next;
+            $stmt->execute([$tenantId, $type, $year]);
+            // A newly inserted row sets LAST_INSERT_ID to its surrogate id, not its counter.
+            // Updated rows report two affected rows and retain the explicit counter result.
+            return $stmt->rowCount() === 1 ? 1 : (int) $this->pdo->query('SELECT LAST_INSERT_ID()')->fetchColumn();
         }
 
-        $next = ((int) $row['last_number']) + 1;
-        $upd = $this->pdo->prepare(
-            'UPDATE document_sequences SET last_number = :last_number WHERE tenant_id = :tenant_id AND document_type = :doc_type AND year = :year'
-        );
-        $upd->execute([
-            ':last_number' => $next,
-            ':tenant_id' => $tenantId,
-            ':doc_type' => $type,
-            ':year' => $year,
-        ]);
-
-        return $next;
+        $ownsTransaction = !$this->pdo->inTransaction();
+        if ($ownsTransaction) { $this->pdo->beginTransaction(); }
+        try {
+            // The write locks SQLite until the counter has been read (including outer transactions).
+            $stmt = $this->pdo->prepare(
+                'INSERT INTO document_sequences (tenant_id, document_type, year, last_number) VALUES (?, ?, ?, 1)
+                 ON CONFLICT(tenant_id, document_type, year) DO UPDATE SET last_number = last_number + 1'
+            );
+            $stmt->execute([$tenantId, $type, $year]);
+            $stmt = $this->pdo->prepare('SELECT last_number FROM document_sequences WHERE tenant_id = ? AND document_type = ? AND year = ?');
+            $stmt->execute([$tenantId, $type, $year]);
+            $next = (int) $stmt->fetchColumn();
+            if ($ownsTransaction) { $this->pdo->commit(); }
+            return $next;
+        } catch (\Throwable $error) {
+            if ($ownsTransaction && $this->pdo->inTransaction()) { $this->pdo->rollBack(); }
+            throw $error;
+        }
     }
 
     private function ensureSchema(): void
@@ -130,15 +125,16 @@ final class DocumentNumberGenerator
             return;
         }
 
+        $id = PdoSchema::autoIncrement($this->pdo);
         $this->pdo->exec(
-            'CREATE TABLE IF NOT EXISTS document_sequences (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+            "CREATE TABLE IF NOT EXISTS document_sequences (
+                id {$id},
                 tenant_id VARCHAR(64) NOT NULL,
                 document_type VARCHAR(32) NOT NULL,
                 year INTEGER NOT NULL,
                 last_number INTEGER NOT NULL DEFAULT 0,
                 UNIQUE(tenant_id, document_type, year)
-            )'
+            )"
         );
     }
 }

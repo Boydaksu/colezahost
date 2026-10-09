@@ -1,4 +1,4 @@
-param([ValidatePattern('^D02-[0-9]+[a-z]?$')][string]$EvidencePrefix = 'D02-3a')
+param([ValidatePattern('^D02-[0-9]+[a-z]?$')][string]$EvidencePrefix = 'D02-3b')
 $ErrorActionPreference = 'Stop'
 Set-Location -LiteralPath (Split-Path -Parent $PSScriptRoot)
 $env:COLEZA_TEST_MARIADB_DSN = 'mysql:host=127.0.0.1;port=33079;charset=utf8mb4'

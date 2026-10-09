@@ -38,6 +38,13 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'documentNumbers':
+            $generator = new Coleza\Domain\Documents\Numbering\DocumentNumberGenerator($pdo);
+            $result['numbers'] = [];
+            for ($i = 0; $i < 64; $i++) {
+                $result['numbers'][] = $generator->generateNextNumber(Coleza\Domain\Documents\DocumentType::QUOTE, $id, 2026);
+            }
+            break;
         case 'settle': $payments->completePaymentFromGateway($id, 'provider-payment'); break;
         case 'invoice': $invoices->applyPayment($id, 6000); break;
         case 'credit': $credit->deductCredit(7, 6000, 'TRY', 'Concurrent debit'); break;

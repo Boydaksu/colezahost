@@ -1,0 +1,94 @@
+[
+  {
+    "path": "remediation/PLAN.md",
+    "sha256": "e92d4ed8fd3435842dd0b7971ee8301a4039f7db73622e6234f462e37b9362a2"
+  },
+  {
+    "path": "remediation/run-d02-tests.ps1",
+    "sha256": "7f218b812d225763d07529320a3a7a258f5ab89d1cac6fe5e06072820c06e267"
+  },
+  {
+    "path": "remediation/state.json",
+    "sha256": "dc440f36a3351651ea7187d0d62524656ba77b04b92a8d169636bc59e41f2e5a"
+  },
+  {
+    "path": "src/Domain/Documents/Numbering/DocumentNumberGenerator.php",
+    "sha256": "a9856ad8e6f0b1a358204bdebd2f57900218358d24f9b0011d2aef7c84c0224a"
+  },
+  {
+    "path": "src/Domain/Documents/Proforma/ProformaService.php",
+    "sha256": "ad969551218cdf715e6457b44f01b16125c0e8514d1e3a091e97d5a5e900f6db"
+  },
+  {
+    "path": "src/Domain/Documents/Quotes/QuoteService.php",
+    "sha256": "37b5ee5e7696d4bd4a11e32fe6952c588cb78570e1b2415f041cf6349ae41718"
+  },
+  {
+    "path": "src/Domain/Migration/Whmcs/Core/WhmcsCoreEntityMigrator.php",
+    "sha256": "c979d0a8e2ea5644733111fc5024f4fec22ca2518d26ef4a0cef9254e9f96a64"
+  },
+  {
+    "path": "src/Domain/Notifications/Announcements/AnnouncementService.php",
+    "sha256": "a63709536942d81fe69c09edda78ab8d25c0572a95f9d2a8f7b52e442e1eb65a"
+  },
+  {
+    "path": "tests/MariaDb/DatabaseFoundationTest.php",
+    "sha256": "2c06ab3f0fcf7a64a8056d577c0d2d9991dcc4eb460e26475676d7790d4b12ac"
+  },
+  {
+    "path": "tests/MariaDb/fixtures/financial-worker.php",
+    "sha256": "e5c6a4ec95e41c553cfbf933ec8f27773ce5c23248b14aeb528b1d361cd9ea26"
+  },
+  {
+    "path": "tests/Unit/Foundation/Database/IdentitySchemaMigrationRegressionTest.php",
+    "sha256": "ed498b7fb55b32126c88836a44a039b1ff6bb503bf734097db2a6c77ed19bdc3"
+  },
+  {
+    "path": "database/migrations/2026_10_09_000004_documents_announcements.php",
+    "sha256": "7d847e3ed8220a5c3f234369edf3cf63b928b5ad71e0c19eabbec1d503c0d69e"
+  },
+  {
+    "path": "remediation/D02-3b-SONUC.md",
+    "sha256": "619dca0e0e11fe1cd8df6638b3d468809980054ca6f135b72d3eadc3205cf96f"
+  },
+  {
+    "path": "remediation/D02-3b-before.txt",
+    "sha256": "93ba1998a659e53afb154a460c7010b17bbc816e8db5e6ead3d6b37452902758"
+  },
+  {
+    "path": "remediation/D02-3b-mariadb.txt",
+    "sha256": "2c1be8f1fed42167b77375cf6cf8c2be154f74aebf682244c9861bde6689e9ae"
+  },
+  {
+    "path": "remediation/D02-3b-mariadb.xml",
+    "sha256": "3dc83ed13a1546dc0ee29b5083cdaecd2995fe0e72bc506522681e075acde9a5"
+  },
+  {
+    "path": "remediation/D02-3b-suite.txt",
+    "sha256": "181caa302e004647c28bed767e47aa610177442fc76525fe55c8a689cb6d814a"
+  },
+  {
+    "path": "remediation/D02-3b-suite.xml",
+    "sha256": "3d0e7994c800aa31ac79c207907c4a18f235be65c289930a4724d443a2afb4a7"
+  },
+  {
+    "path": "remediation/D02-3b-whmcs-before.txt",
+    "sha256": "b59d60017f1656c38144af150543096b82e62a069b91a0316bb5b1edf19804ed"
+  },
+  {
+    "path": "src/Foundation/Database/PdoSchema.php",
+    "sha256": "648d21e26f5f2fe89d4d66a1ffe93b739ef1c725faad13e5c63a62632d9b9d9b"
+  },
+  {
+    "path": "tests/MariaDb/DocumentPersistenceTest.php",
+    "sha256": "a80934b00509d8e094464b4673642460b8abe1b3c019f976aed10f0ac14dbb61"
+  },
+  {
+    "path": "tests/MariaDb/WhmcsContactPersistenceTest.php",
+    "sha256": "26e6024c3bfabbd4d6fc84f2aa209ed09d0dedd7137991f4ea6a58c00d13b2cc"
+  },
+  {
+    "path": "tests/Unit/Documents/DocumentNumberPersistenceRegressionTest.php",
+    "sha256": "ce2524f09adade1956059927ca7ac949038e1ecf32a1ecee378c166434d167e7"
+  }
+]

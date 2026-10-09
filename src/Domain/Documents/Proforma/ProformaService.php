@@ -9,6 +9,7 @@ use Coleza\Domain\Commerce\Invoices\InvoiceService;
 use Coleza\Domain\Documents\DocumentType;
 use Coleza\Domain\Documents\Numbering\DocumentNumberGenerator;
 use Coleza\Foundation\Exceptions\ValidationException;
+use Coleza\Foundation\Database\PdoSchema;
 use PDO;
 use RuntimeException;
 
@@ -25,6 +26,7 @@ final class ProformaService
         private ?PDO $pdo = null,
         ?DocumentNumberGenerator $numberGenerator = null
     ) {
+        if ($this->pdo !== null) { PdoSchema::autoIncrement($this->pdo); }
         $this->numberGenerator = $numberGenerator ?? new DocumentNumberGenerator($this->pdo);
 
         if ($this->pdo !== null) {
@@ -612,14 +614,15 @@ final class ProformaService
             return;
         }
 
+        $id = PdoSchema::autoIncrement($this->pdo);
         $this->pdo->exec(
-            'CREATE TABLE IF NOT EXISTS proforma_invoices (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+            "CREATE TABLE IF NOT EXISTS proforma_invoices (
+                id {$id},
                 proforma_number VARCHAR(64) NOT NULL UNIQUE,
                 user_id INTEGER NOT NULL,
                 organization_id INTEGER,
                 order_id INTEGER,
-                status VARCHAR(32) NOT NULL DEFAULT "draft",
+                status VARCHAR(32) NOT NULL DEFAULT 'draft',
                 currency_code VARCHAR(3) NOT NULL,
                 subtotal_minor INTEGER NOT NULL,
                 tax_total_minor INTEGER NOT NULL,
@@ -633,9 +636,11 @@ final class ProformaService
                 notes TEXT,
                 created_at VARCHAR(64) NOT NULL,
                 updated_at VARCHAR(64) NOT NULL
-            );
-            CREATE TABLE IF NOT EXISTS proforma_items (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+            )"
+        );
+        $this->pdo->exec(
+            "CREATE TABLE IF NOT EXISTS proforma_items (
+                id {$id},
                 proforma_id INTEGER NOT NULL,
                 description VARCHAR(255) NOT NULL,
                 quantity INTEGER NOT NULL DEFAULT 1,
@@ -645,7 +650,7 @@ final class ProformaService
                 tax_amount_minor INTEGER NOT NULL DEFAULT 0,
                 total_minor INTEGER NOT NULL,
                 metadata_json TEXT
-            );'
+            )"
         );
     }
 }
