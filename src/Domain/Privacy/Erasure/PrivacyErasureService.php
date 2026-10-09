@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Coleza\Domain\Privacy\Erasure;
 
+use Coleza\Domain\Privacy\Retention\RetentionAndLegalHoldService;
 use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Exceptions\ValidationException;
 use DateTimeImmutable;
@@ -14,7 +15,8 @@ final class PrivacyErasureService
     private string $restrictionsTable = 'privacy_processing_restrictions';
 
     public function __construct(
-        private readonly Connection $db
+        private readonly Connection $db,
+        private readonly ?RetentionAndLegalHoldService $legalHoldService = null
     ) {
     }
 
@@ -77,6 +79,13 @@ final class PrivacyErasureService
 
         $blockers = [];
         $items = [];
+
+        // 0. Check for Active Legal Hold
+        if ($this->legalHoldService !== null && $this->legalHoldService->isSubjectUnderLegalHold($userId)) {
+            $holds = $this->legalHoldService->getActiveHoldsForUser($userId);
+            $ref = !empty($holds) ? $holds[0]->getHoldReference() : 'ACTIVE_HOLD';
+            $blockers[] = sprintf('Subject user #%d is placed under active Legal Hold (%s). Data destruction and erasure strictly prohibited by legal preservation order.', $userId, $ref);
+        }
 
         // 1. Check for Active Hosting Services
         try {
@@ -191,7 +200,7 @@ final class PrivacyErasureService
         if (!$plan->isEligible()) {
             throw new ValidationException(
                 ['erasure' => $plan->getBlockers()],
-                'Account cannot be erased while active services, domains, or unsettled balances exist.'
+                'Account cannot be erased while active services, domains, or legal holds exist: ' . implode('; ', $plan->getBlockers())
             );
         }
 
