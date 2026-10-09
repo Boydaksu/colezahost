@@ -1021,7 +1021,7 @@ final class ServiceService
 
         $sql .= ' ORDER BY id DESC';
         $rows = $this->db->select($sql, $params);
-        return array_map([$this, 'hydrateService'], $rows);
+        return $this->hydrateServices($rows);
     }
 
     /**
@@ -1030,7 +1030,7 @@ final class ServiceService
     public function listServicesByStatus(string $status): array
     {
         $rows = $this->db->select(sprintf('SELECT * FROM %s WHERE status = ? ORDER BY id DESC', $this->servicesTable), [$status]);
-        return array_map([$this, 'hydrateService'], $rows);
+        return $this->hydrateServices($rows);
     }
 
     /**
@@ -1046,7 +1046,7 @@ final class ServiceService
             $this->servicesTable
         );
         $rows = $this->db->select($sql, [ServiceStateMachine::STATUS_ACTIVE, $cutoffDate]);
-        return array_map([$this, 'hydrateService'], $rows);
+        return $this->hydrateServices($rows);
     }
 
     public function nextServiceNumber(): string
@@ -1116,10 +1116,93 @@ final class ServiceService
     }
 
     /**
+     * @param array<int> $serviceIds
+     * @return array<int, ServicePlacement>
+     */
+    public function batchLoadPlacements(array $serviceIds): array
+    {
+        if (empty($serviceIds)) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($serviceIds), '?'));
+        $sql = sprintf(
+            'SELECT * FROM %s WHERE service_id IN (%s) ORDER BY id ASC',
+            $this->placementsTable,
+            $placeholders
+        );
+
+        $rows = $this->db->select($sql, array_values($serviceIds));
+        $map = [];
+        foreach ($rows as $row) {
+            $sid = (int)$row['service_id'];
+            $map[$sid] = $this->hydratePlacement($row);
+        }
+
+        return $map;
+    }
+
+    /**
+     * @param array<int> $serviceIds
+     * @return array<int, ServiceCancellationRequest>
+     */
+    public function batchLoadCancellations(array $serviceIds): array
+    {
+        if (empty($serviceIds)) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($serviceIds), '?'));
+        $sql = sprintf(
+            'SELECT * FROM %s WHERE service_id IN (%s) ORDER BY id ASC',
+            $this->cancellationsTable,
+            $placeholders
+        );
+
+        $rows = $this->db->select($sql, array_values($serviceIds));
+        $map = [];
+        foreach ($rows as $row) {
+            $sid = (int)$row['service_id'];
+            $map[$sid] = $this->hydrateCancellation($row);
+        }
+
+        return $map;
+    }
+
+    /**
+     * @param array<array<string, mixed>> $rows
+     * @return array<Service>
+     */
+    private function hydrateServices(array $rows): array
+    {
+        if (empty($rows)) {
+            return [];
+        }
+
+        $serviceIds = array_map(static fn(array $r): int => (int)$r['id'], $rows);
+        $placements = $this->batchLoadPlacements($serviceIds);
+        $cancellations = $this->batchLoadCancellations($serviceIds);
+
+        $services = [];
+        foreach ($rows as $row) {
+            $sid = (int)$row['id'];
+            $placement = $placements[$sid] ?? null;
+            $cancellation = $cancellations[$sid] ?? null;
+            $services[] = $this->hydrateService($row, $placement, $cancellation, relationsPreloaded: true);
+        }
+
+        return $services;
+    }
+
+    /**
      * @param array<string, mixed> $row
      */
-    private function hydrateService(array $row): Service
-    {
+    private function hydrateService(
+        array $row,
+        ?ServicePlacement $placement = null,
+        ?ServiceCancellationRequest $cancellationRequest = null,
+        bool $relationsPreloaded = false
+    ): Service {
         $meta = !empty($row['metadata_json']) ? json_decode((string)$row['metadata_json'], true) : [];
         $serviceId = (int)$row['id'];
 
@@ -1134,8 +1217,10 @@ final class ServiceService
             terminationGracePeriodDays: isset($row['termination_grace_period_days']) ? (int)$row['termination_grace_period_days'] : 30
         );
 
-        $placement = $this->getPlacementForService($serviceId);
-        $cancellationRequest = $this->getCancellationForService($serviceId);
+        if (!$relationsPreloaded) {
+            $placement = $this->getPlacementForService($serviceId);
+            $cancellationRequest = $this->getCancellationForService($serviceId);
+        }
 
         return new Service(
             id: $serviceId,

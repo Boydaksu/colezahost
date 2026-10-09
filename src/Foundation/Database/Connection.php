@@ -12,6 +12,9 @@ use Throwable;
 final class Connection
 {
     private int $transactionDepth = 0;
+    /** @var array<int, array{query: string, bindings: array<mixed>, time_ms: float}> */
+    private array $queryLog = [];
+    private bool $loggingQueries = false;
 
     public function __construct(private PDO $pdo)
     {
@@ -188,11 +191,45 @@ final class Connection
         }
     }
 
+    public function enableQueryLog(): void
+    {
+        $this->loggingQueries = true;
+    }
+
+    public function disableQueryLog(): void
+    {
+        $this->loggingQueries = false;
+    }
+
+    public function isQueryLogEnabled(): bool
+    {
+        return $this->loggingQueries;
+    }
+
+    /**
+     * @return array<int, array{query: string, bindings: array<mixed>, time_ms: float}>
+     */
+    public function getQueryLog(): array
+    {
+        return $this->queryLog;
+    }
+
+    public function flushQueryLog(): void
+    {
+        $this->queryLog = [];
+    }
+
+    public function getQueryCount(): int
+    {
+        return count($this->queryLog);
+    }
+
     /**
      * @param array<int|string, mixed> $bindings
      */
     private function executeStatement(string $query, array $bindings = []): PDOStatement
     {
+        $start = $this->loggingQueries ? microtime(true) : 0.0;
         $stmt = $this->pdo->prepare($query);
 
         foreach ($bindings as $key => $value) {
@@ -207,6 +244,15 @@ final class Connection
         }
 
         $stmt->execute();
+
+        if ($this->loggingQueries) {
+            $this->queryLog[] = [
+                'query' => $query,
+                'bindings' => $bindings,
+                'time_ms' => (microtime(true) - $start) * 1000.0,
+            ];
+        }
+
         return $stmt;
     }
 }
