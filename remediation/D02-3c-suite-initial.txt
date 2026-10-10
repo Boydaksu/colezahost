@@ -1,0 +1,43 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+...............................................................  63 / 954 (  6%)
+............................................................... 126 / 954 ( 13%)
+............................................................... 189 / 954 ( 19%)
+............................................................... 252 / 954 ( 26%)
+............................................................... 315 / 954 ( 33%)
+............................................................... 378 / 954 ( 39%)
+............................................................... 441 / 954 ( 46%)
+............................................................... 504 / 954 ( 52%)
+............................................................... 567 / 954 ( 59%)
+............................................................... 630 / 954 ( 66%)
+............................................................... 693 / 954 ( 72%)
+............................................................... 756 / 954 ( 79%)
+............................................................... 819 / 954 ( 85%)
+............................................................... 882 / 954 ( 92%)
+.............................[41;37mF[0m................................[41;37mF[0m 945 / 954 ( 99%)
+.........                                                       954 / 954 (100%)
+
+Time: 00:39.876, Memory: 52.00 MB
+
+There were 2 failures:
+
+1) Coleza\Tests\Integration\Golden\GoldenMasterScenariosE2ETest::testG06RecoveryAndHardeningScenario
+Failed asserting that two variables reference the same object.
+--- Expected
++++ Actual
+@@ @@
+-Coleza\Domain\Health\HealthStatus Enum #6711 (HEALTHY, 'healthy')
++Coleza\Domain\Health\HealthStatus Enum #18110 (WARNING, 'warning')
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Golden\GoldenMasterScenariosE2ETest.php:841
+
+2) Tests\Integration\SharedHost\SharedHostCompatibilityMatrixTest::testSystemDoctorReportsHealthyOnSharedHostProfile
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\SharedHost\SharedHostCompatibilityMatrixTest.php:271
+
+[37;41mFAILURES![0m
+[37;41mTests: 954[0m[37;41m, Assertions: 8064[0m[37;41m, Failures: 2[0m[37;41m.[0m

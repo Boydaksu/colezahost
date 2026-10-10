@@ -65,10 +65,7 @@ final class QuoteService
         }
 
         $formattedValidUntil = date('Y-m-d', strtotime($validUntil) ?: time());
-        $quoteNumber = $this->numberGenerator->generateNextNumber(
-            DocumentType::QUOTE,
-            $organizationId !== null ? (string) $organizationId : '1'
-        );
+        $quoteNumber = $this->numberGenerator->generateNextGlobalNumber(DocumentType::QUOTE);
 
         $computedItems = [];
         $subtotalMinor = 0;

@@ -66,10 +66,7 @@ final class ProformaService
         $formattedIssueDate = $issueDate ?? date('Y-m-d');
         $formattedDueDate = $dueDate ?? date('Y-m-d', strtotime('+7 days'));
 
-        $proformaNumber = $this->numberGenerator->generateNextNumber(
-            DocumentType::PROFORMA,
-            $organizationId !== null ? (string) $organizationId : '1'
-        );
+        $proformaNumber = $this->numberGenerator->generateNextGlobalNumber(DocumentType::PROFORMA);
 
         $computedItems = [];
         $subtotalMinor = 0;

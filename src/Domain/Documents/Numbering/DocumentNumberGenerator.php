@@ -60,6 +60,25 @@ final class DocumentNumberGenerator
         };
     }
 
+    /** Global-unique document columns require a shared counter across customer organizations. */
+    public function generateNextGlobalNumber(DocumentType $type, ?int $year = null): string
+    {
+        return $this->generateNextNumber($type, '__global__', $year);
+    }
+
+    public function preserveLegacyGlobalCounters(): void
+    {
+        if ($this->pdo === null) { return; }
+        $rows = $this->pdo->query('SELECT document_type, year, MAX(last_number) AS n FROM document_sequences GROUP BY document_type, year')->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($rows as $row) {
+            $sql = 'INSERT INTO document_sequences (tenant_id, document_type, year, last_number) VALUES (?, ?, ?, ?)';
+            $sql .= $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'mysql'
+                ? ' ON DUPLICATE KEY UPDATE last_number = GREATEST(last_number, VALUES(last_number))'
+                : ' ON CONFLICT(tenant_id, document_type, year) DO UPDATE SET last_number = MAX(last_number, excluded.last_number)';
+            $this->pdo->prepare($sql)->execute(['__global__', $row['document_type'], $row['year'], $row['n']]);
+        }
+    }
+
     /**
      * Parses a document number string into its constituent components.
      *

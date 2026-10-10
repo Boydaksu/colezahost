@@ -1,0 +1,110 @@
+[
+  {
+    "path": "remediation/PLAN.md",
+    "sha256": "4238ccb4602bae0f2bf604b25e00a553ee07c4ce571d5ae2ede35f102edf5e43"
+  },
+  {
+    "path": "remediation/state.json",
+    "sha256": "5e76dfd8f3928648704f0cf5e9e8d1c222977eac891a1f1c7ffb0b19279a2c03"
+  },
+  {
+    "path": "src/Domain/Documents/Numbering/DocumentNumberGenerator.php",
+    "sha256": "a9b87be3d152dbc96c4da6460f8592e736f774a359d3325652bff9d30138b21c"
+  },
+  {
+    "path": "src/Domain/Documents/Proforma/ProformaService.php",
+    "sha256": "a160a4d1cae5e28ef665d9350392c5e81b341996f42ce2ff1d5fc749d6018957"
+  },
+  {
+    "path": "src/Domain/Documents/Quotes/QuoteService.php",
+    "sha256": "c043821aa957775ff23999e217f7b28c8ae25c2e3f0a2bfecf28254b8dc428d4"
+  },
+  {
+    "path": "src/Domain/Health/SystemDoctorService.php",
+    "sha256": "6ee7cec13007eac5e62d61abec467cf0d1e856bfbfeb2a332f38b3eafe0ca799"
+  },
+  {
+    "path": "src/Domain/Installer/DatabaseSetupService.php",
+    "sha256": "59a7b5dccd220eb4aabad919a8c69320bbc7c66d4f665aad8dccff82faacf604"
+  },
+  {
+    "path": "src/Domain/Installer/WebInstallerService.php",
+    "sha256": "6173633773fa61ad3d8ed1354f947243b46dffba04e4bc9e4880f4e1292f2d90"
+  },
+  {
+    "path": "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+    "sha256": "47b1a4346aede329f633b7df9494902d0123102d2ab2bdb355d8732f23a72eda"
+  },
+  {
+    "path": "tests/Integration/SharedHost/SharedHostCompatibilityMatrixTest.php",
+    "sha256": "0f2698a95b10bd4e5374987faef23e109456f07f814b524a7c8481da2a487691"
+  },
+  {
+    "path": "tests/MariaDb/DatabaseFoundationTest.php",
+    "sha256": "3cc5febf286887edcbc378fd9b808ce69858830cdefbe9046f7b42d9f45161b4"
+  },
+  {
+    "path": "tests/MariaDb/fixtures/financial-worker.php",
+    "sha256": "fcde68a5c1085bd1c278a8d6a79458ed92ada30e5538fcfe8a62712d4864d0b8"
+  },
+  {
+    "path": "tests/Unit/Foundation/Database/IdentitySchemaMigrationRegressionTest.php",
+    "sha256": "cffe6cc0ff1cd11b0c2d47e1c726fd81377551c1a5a059e0fb22b63876171348"
+  },
+  {
+    "path": "tests/Unit/Health/SystemDoctorHealthTest.php",
+    "sha256": "2a4b6f30b4140160cf19b371d0b647b8eb32947dbbfc8a85f6de10bc7d314cf4"
+  },
+  {
+    "path": "tests/Unit/Installer/WebInstallerTest.php",
+    "sha256": "5f6acc51bb878f8eb7135922e12fc0857efc8d853ca479db2706aed9e9c0ada3"
+  },
+  {
+    "path": "database/migrations/2026_10_10_000005_global_document_counters.php",
+    "sha256": "18af3b2c766c23390fc1a89c02d4ecc1655c1f782882933434e3ef2240c247a5"
+  },
+  {
+    "path": "database/migrations/2026_10_10_000006_core_domain_schemas.php",
+    "sha256": "aa1de4ec3e84284a4d261f7f46aafb6c6bf1826290ef8bd925941c98eef7a74d"
+  },
+  {
+    "path": "remediation/D02-3c-SONUC.md",
+    "sha256": "1801a8726f59946bd24c311cb65a891ae66cec314839c805605fafb4f2355bc9"
+  },
+  {
+    "path": "remediation/D02-3c-before.txt",
+    "sha256": "6dc951ac88998cf64b5f0d1d477e326a141795d0f208b226c3525e66a96e7086"
+  },
+  {
+    "path": "remediation/D02-3c-initial.txt",
+    "sha256": "3b2fcef6cd89bc11b5065995a7cde86f55625642937db39df407e205946b4aa4"
+  },
+  {
+    "path": "remediation/D02-3c-mariadb.txt",
+    "sha256": "2d59e2f429f35bfe1bb6cfd3255316d482b38c744a11e946a9fb00c58f8cb7f2"
+  },
+  {
+    "path": "remediation/D02-3c-mariadb.xml",
+    "sha256": "48001183acbfc19f71916ea72f0b42515f2aaa4e8dafd93ca743b2eb551e8329"
+  },
+  {
+    "path": "remediation/D02-3c-suite-initial.txt",
+    "sha256": "977f4ccc05a6655f07594e9157d9d13a9982809a5c030672a27ec3b7c36e461f"
+  },
+  {
+    "path": "remediation/D02-3c-suite.txt",
+    "sha256": "85be90047974df7a267d2b522682ecf6acae698a22979d797738893a95b5d032"
+  },
+  {
+    "path": "remediation/D02-3c-suite.xml",
+    "sha256": "375e67b30d03404573e6a410ff456dd31d73dd8ec7f40d97402c3f3c55f4f13a"
+  },
+  {
+    "path": "remediation/D02-INSTALL-MATRIX.md",
+    "sha256": "567660e255cda04f46812b752018814e1bc09b27f2b7e8ee3acec159c6b6d45e"
+  },
+  {
+    "path": "tests/MariaDb/InstallationAcceptanceTest.php",
+    "sha256": "1182720ff6c7d417da0da9560f8901606fac49ca02b35b9becac779ea9bdd561"
+  }
+]

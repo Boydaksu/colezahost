@@ -819,17 +819,8 @@ final class GoldenMasterScenariosE2ETest extends TestCase
         $opManager->transitionTo(OperationalMode::NORMAL, 'Recovery completed successfully');
         $this->assertSame(OperationalMode::NORMAL, $opManager->getCurrentMode());
 
-        // Seed recent cron run to ensure healthy cron status
-        $db->statement(
-            "CREATE TABLE IF NOT EXISTS cron_runs (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                ran_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                duration_ms INT NOT NULL DEFAULT 0,
-                tasks_executed INT NOT NULL DEFAULT 0,
-                output_summary TEXT NULL
-            )"
-        );
-        $db->statement("INSERT INTO cron_runs (ran_at, duration_ms, tasks_executed) VALUES ('" . date('Y-m-d H:i:s') . "', 50, 3)");
+        (new \Coleza\Domain\Installer\DatabaseSetupService())->initializeApplicationSchema($db);
+        $db->statement("INSERT INTO cron_runs (run_at, duration_ms, status) VALUES (?, 50, 'success')", [date('Y-m-d H:i:s')]);
 
         $doctor = new SystemDoctorService(
             db: $db,
@@ -838,7 +829,11 @@ final class GoldenMasterScenariosE2ETest extends TestCase
         );
 
         $healthReport = $doctor->diagnoseAll();
-        $this->assertSame(HealthStatus::HEALTHY, $healthReport->getOverallStatus());
+        $this->assertSame(HealthStatus::WARNING, $healthReport->getOverallStatus());
+        $this->assertSame(HealthStatus::WARNING, $healthReport->getComponents()['providers']->getStatus());
+        foreach (['database', 'cron', 'queue', 'storage', 'modules', 'backup'] as $component) {
+            $this->assertSame(HealthStatus::HEALTHY, $healthReport->getComponents()[$component]->getStatus());
+        }
         $this->assertCount(7, $healthReport->getComponents());
     }
 

@@ -38,6 +38,19 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'parallelQuotes':
+        case 'parallelProformas':
+            $service = $action === 'parallelQuotes'
+                ? new Coleza\Domain\Documents\Quotes\QuoteService($pdo)
+                : new Coleza\Domain\Documents\Proforma\ProformaService($pdo);
+            $method = $action === 'parallelQuotes' ? 'createQuote' : 'createProforma';
+            $numberMethod = $action === 'parallelQuotes' ? 'getQuoteNumber' : 'getProformaNumber';
+            $result['numbers'] = [];
+            for ($i = 0; $i < 16; $i++) {
+                $document = $service->$method(7 + (int) $argv[2], [['description' => 'Concurrent hosting', 'unit_amount_minor' => 100]], organizationId: 7 + (int) $argv[2]);
+                $result['numbers'][] = $document->$numberMethod();
+            }
+            break;
         case 'documentNumbers':
             $generator = new Coleza\Domain\Documents\Numbering\DocumentNumberGenerator($pdo);
             $result['numbers'] = [];

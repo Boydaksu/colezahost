@@ -81,6 +81,9 @@ final class WebInstallerService
     public function setupDatabase(DatabaseConfig $config): array
     {
         $this->assertNotLocked();
+        if ($config->getPrefix() !== '') {
+            throw new \InvalidArgumentException('Application installation requires a dedicated database without a table prefix.');
+        }
 
         // 1. Verify requirements pass first
         $reqReport = $this->requirementChecker->check();
@@ -103,7 +106,7 @@ final class WebInstallerService
 
         // 3. Establish connection and initialize schema
         $this->connection = $this->databaseSetupService->createConnection($config);
-        $schemaResult = $this->databaseSetupService->initializeCoreSchema($this->connection, $config->getPrefix());
+        $schemaResult = $this->databaseSetupService->initializeApplicationSchema($this->connection);
 
         $this->sessionState['db_driver'] = $config->getDriver();
         $this->sessionState['db_database'] = $config->getDatabase();

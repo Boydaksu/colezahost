@@ -1,0 +1,28 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+.[41;37mF[0m[41;37mF[0m.                                                                4 / 4 (100%)
+
+Time: 00:03.651, Memory: 20.00 MB
+
+There were 2 failures:
+
+1) Coleza\Tests\MariaDb\InstallationAcceptanceTest::testDoctorDoesNotCreateTablesOrCommitAnApplicationTransaction
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\InstallationAcceptanceTest.php:31
+
+2) Coleza\Tests\MariaDb\InstallationAcceptanceTest::testDoctorReadsInstalledCronAndActualQueue
+Failed asserting that two variables reference the same object.
+--- Expected
++++ Actual
+@@ @@
+-Coleza\Domain\Health\HealthStatus Enum #403 (HEALTHY, 'healthy')
++Coleza\Domain\Health\HealthStatus Enum #390 (WARNING, 'warning')
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\InstallationAcceptanceTest.php:43
+
+[37;41mFAILURES![0m
+[37;41mTests: 4[0m[37;41m, Assertions: 19[0m[37;41m, Failures: 2[0m[37;41m.[0m

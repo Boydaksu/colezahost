@@ -45,6 +45,18 @@ final class DatabaseSetupService
         return new Connection($pdo, $config->getDriver());
     }
 
+    /** @return array{success: bool, tables_initialized: list<string>, migrations_applied: list<string>} */
+    public function initializeApplicationSchema(Connection $connection, string $prefix = ''): array
+    {
+        if ($prefix !== '') {
+            throw new \InvalidArgumentException('Application modules do not support table prefixes; use a dedicated database without a prefix.');
+        }
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($connection->getPdo());
+        $result = $this->initializeCoreSchema($connection);
+        $result['migrations_applied'] = (new \Coleza\Foundation\Database\Migrator($connection))->migrate(dirname(__DIR__, 3) . '/database/migrations');
+        return $result;
+    }
+
     /**
      * Initializes all foundational schema tables required for application operation.
      *

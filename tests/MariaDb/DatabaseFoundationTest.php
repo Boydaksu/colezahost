@@ -172,7 +172,7 @@ final class DatabaseFoundationTest extends TestCase
         $this->db->statement('INSERT INTO roles VALUES (2, "legacy_billing", "Billing", ?, 1)', ['["invoices.view"]']);
         $this->db->statement('INSERT INTO user_roles VALUES (7, 1, "2025-01-02 03:04:05"), (8, 2, "2025-02-03 04:05:06")');
         $runner = new Migrator($this->db);
-        self::assertCount(4, $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'));
+        self::assertCount(6, $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'));
         $rbac = new RbacService($this->db);
         self::assertTrue($rbac->hasPermission(7, 'payments.manage'));
         self::assertTrue($rbac->hasPermission(8, 'invoices.view'));

@@ -226,21 +226,12 @@ final class SharedHostCompatibilityMatrixTest extends TestCase
      */
     public function testSystemDoctorReportsHealthyOnSharedHostProfile(): void
     {
-        // Seed cron_runs table for heartbeat
-        $this->db->statement(
-            'CREATE TABLE IF NOT EXISTS cron_runs (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                ran_at TIMESTAMP NOT NULL,
-                duration_ms INT NOT NULL DEFAULT 50,
-                tasks_executed INT NOT NULL DEFAULT 1,
-                output_summary TEXT NULL
-            )'
-        );
+        (new \Coleza\Domain\Installer\DatabaseSetupService())->initializeApplicationSchema($this->db);
         $this->db->insert('cron_runs', [
-            'ran_at' => date('Y-m-d H:i:s'),
+            'run_at' => date('Y-m-d H:i:s'),
             'duration_ms' => 50,
-            'tasks_executed' => 3,
-            'output_summary' => 'cron pass',
+            'status' => 'success',
+            'output' => 'cron pass',
         ]);
 
         $backupStorageDir = $this->tempDir . DIRECTORY_SEPARATOR . 'backups';

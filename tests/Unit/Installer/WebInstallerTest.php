@@ -102,6 +102,15 @@ final class WebInstallerTest extends TestCase
         $this->assertTrue($phpItem->isPassed());
     }
 
+    public function testDatabaseWizardAppliesDomainMigrationsBeforeProceedingToAdmin(): void
+    {
+        $installer = $this->createInstaller();
+        $installer->setupDatabase(DatabaseConfig::sqlite());
+        self::assertSame(InstallationStep::ADMIN, $installer->getCurrentStep());
+        self::assertCount(6, $installer->getConnection()->select('SELECT * FROM migrations'));
+        self::assertSame([], $installer->getConnection()->select('SELECT * FROM invoices'));
+    }
+
     public function testRequirementsCheckerFailsWhenRequiredExtensionMissing(): void
     {
         $checker = new EnvironmentRequirementChecker();

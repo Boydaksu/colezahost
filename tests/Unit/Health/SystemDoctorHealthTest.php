@@ -25,6 +25,10 @@ final class SystemDoctorHealthTest extends TestCase
 
         $pdo = new PDO('sqlite::memory:');
         $this->db = new Connection($pdo, 'sqlite');
+        (new \Coleza\Domain\Installer\DatabaseSetupService())->initializeCoreSchema($this->db);
+        (new \Coleza\Foundation\Queue\DatabaseQueue($this->db))->ensureTables();
+        (new \Coleza\Domain\Servers\Services\ServerService($this->db))->ensureTables();
+        (new \Coleza\Domain\Module\ModuleLifecycleService($this->db))->ensureTable();
 
         $this->tempStorageDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'health_storage_' . uniqid();
         $this->tempBackupDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'health_backup_' . uniqid();
@@ -75,7 +79,7 @@ final class SystemDoctorHealthTest extends TestCase
 
         // 2. Ran 2 hours ago (overdue)
         $pastDate = date('Y-m-d H:i:s', strtotime('-120 minutes'));
-        $this->db->statement("INSERT INTO cron_runs (ran_at, tasks_executed) VALUES (?, 5)", [$pastDate]);
+        $this->db->statement("INSERT INTO cron_runs (run_at, status) VALUES (?, 'success')", [$pastDate]);
 
         $critResult = $doctor->checkCron();
         $this->assertSame(HealthStatus::CRITICAL, $critResult->getStatus());
@@ -83,7 +87,7 @@ final class SystemDoctorHealthTest extends TestCase
 
         // 3. Ran 2 minutes ago (fresh)
         $freshDate = date('Y-m-d H:i:s', strtotime('-2 minutes'));
-        $this->db->statement("INSERT INTO cron_runs (ran_at, tasks_executed) VALUES (?, 10)", [$freshDate]);
+        $this->db->statement("INSERT INTO cron_runs (run_at, status) VALUES (?, 'success')", [$freshDate]);
 
         $healthyResult = $doctor->checkCron();
         $this->assertSame(HealthStatus::HEALTHY, $healthyResult->getStatus());
@@ -98,13 +102,13 @@ final class SystemDoctorHealthTest extends TestCase
         $this->assertSame(HealthStatus::HEALTHY, $res->getStatus());
 
         // 1 failed job -> Warning
-        $this->db->statement("INSERT INTO background_jobs (status) VALUES ('failed')");
+        $this->db->statement("INSERT INTO failed_jobs (queue, payload, exception) VALUES ('default', 'test', 'failed')");
         $warnRes = $doctor->checkQueue();
         $this->assertSame(HealthStatus::WARNING, $warnRes->getStatus());
 
         // 15 failed jobs -> Critical
         for ($i = 0; $i < 15; $i++) {
-            $this->db->statement("INSERT INTO background_jobs (status) VALUES ('failed')");
+            $this->db->statement("INSERT INTO failed_jobs (queue, payload, exception) VALUES ('default', 'test', 'failed')");
         }
         $critRes = $doctor->checkQueue();
         $this->assertSame(HealthStatus::CRITICAL, $critRes->getStatus());
@@ -118,10 +122,7 @@ final class SystemDoctorHealthTest extends TestCase
         file_put_contents($this->tempBackupDir . '/backup_init.zip', 'content');
 
         // Seed fresh cron
-        $this->db->statement(
-            "CREATE TABLE IF NOT EXISTS cron_runs (id INTEGER PRIMARY KEY AUTOINCREMENT, ran_at TIMESTAMP, duration_ms INT, tasks_executed INT, output_summary TEXT)"
-        );
-        $this->db->statement("INSERT INTO cron_runs (ran_at, tasks_executed) VALUES (?, 3)", [date('Y-m-d H:i:s')]);
+        $this->db->statement("INSERT INTO cron_runs (run_at, status) VALUES (?, 'success')", [date('Y-m-d H:i:s')]);
 
         $doctor = new SystemDoctorService(
             db: $this->db,

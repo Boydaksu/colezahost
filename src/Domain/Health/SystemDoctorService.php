@@ -107,25 +107,7 @@ final class SystemDoctorService
     {
         $t0 = microtime(true);
         try {
-            // Check cron_runs table
-            $driver = $this->db->getDriverName();
-            $autoInc = match ($driver) {
-                'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
-                default => 'INT AUTO_INCREMENT PRIMARY KEY',
-            };
-
-            $this->db->statement(sprintf(
-                'CREATE TABLE IF NOT EXISTS cron_runs (
-                    id %s,
-                    ran_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    duration_ms INT NOT NULL DEFAULT 0,
-                    tasks_executed INT NOT NULL DEFAULT 0,
-                    output_summary TEXT NULL
-                )',
-                $autoInc
-            ));
-
-            $lastRun = $this->db->selectOne("SELECT ran_at, tasks_executed FROM cron_runs ORDER BY id DESC LIMIT 1");
+            $lastRun = $this->db->selectOne('SELECT run_at, status FROM cron_runs ORDER BY id DESC LIMIT 1');
             $latency = round((microtime(true) - $t0) * 1000, 2);
 
             if ($lastRun === null) {
@@ -138,7 +120,10 @@ final class SystemDoctorService
                 );
             }
 
-            $lastRunTimestamp = strtotime((string) $lastRun['ran_at']);
+            $lastRunTimestamp = strtotime((string) $lastRun['run_at']);
+            if ($lastRunTimestamp === false || $lastRunTimestamp > time() + 60 || $lastRun['status'] !== 'success') {
+                return new ComponentHealthResult('cron', HealthStatus::CRITICAL, 'Latest cron run failed or has an invalid timestamp.', ['last_run' => $lastRun['run_at'], 'status' => $lastRun['status']]);
+            }
             $diffMinutes = (time() - $lastRunTimestamp) / 60;
 
             if ($diffMinutes > 15) {
@@ -146,7 +131,7 @@ final class SystemDoctorService
                     'cron',
                     HealthStatus::CRITICAL,
                     sprintf('Cron scheduler is overdue (last ran %.1f minutes ago).', $diffMinutes),
-                    ['last_run' => $lastRun['ran_at'], 'minutes_ago' => $diffMinutes],
+                    ['last_run' => $lastRun['run_at'], 'minutes_ago' => $diffMinutes],
                     $latency
                 );
             }
@@ -155,7 +140,7 @@ final class SystemDoctorService
                 'cron',
                 HealthStatus::HEALTHY,
                 'Cron scheduler executed recently.',
-                ['last_run' => $lastRun['ran_at'], 'minutes_ago' => $diffMinutes],
+                ['last_run' => $lastRun['run_at'], 'minutes_ago' => $diffMinutes],
                 $latency
             );
         } catch (Throwable $e) {
@@ -168,16 +153,8 @@ final class SystemDoctorService
     {
         $t0 = microtime(true);
         try {
-            $this->db->statement(
-                'CREATE TABLE IF NOT EXISTS background_jobs (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    status VARCHAR(50) NOT NULL DEFAULT "pending",
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )'
-            );
-
-            $pendingRow = $this->db->selectOne("SELECT count(*) as cnt FROM background_jobs WHERE status = 'pending'");
-            $failedRow = $this->db->selectOne("SELECT count(*) as cnt FROM background_jobs WHERE status = 'failed'");
+            $pendingRow = $this->db->selectOne('SELECT count(*) as cnt FROM jobs WHERE reserved_at IS NULL');
+            $failedRow = $this->db->selectOne('SELECT count(*) as cnt FROM failed_jobs');
 
             $pending = (int) ($pendingRow['cnt'] ?? 0);
             $failed = (int) ($failedRow['cnt'] ?? 0);
@@ -249,22 +226,14 @@ final class SystemDoctorService
     {
         $t0 = microtime(true);
         try {
-            $this->db->statement(
-                'CREATE TABLE IF NOT EXISTS servers (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    hostname VARCHAR(150) NOT NULL,
-                    status VARCHAR(50) NOT NULL DEFAULT "active"
-                )'
-            );
-
             $activeRow = $this->db->selectOne("SELECT count(*) as cnt FROM servers WHERE status = 'active'");
             $count = (int) ($activeRow['cnt'] ?? 0);
             $latency = round((microtime(true) - $t0) * 1000, 2);
 
             return new ComponentHealthResult(
                 'providers',
-                HealthStatus::HEALTHY,
-                'Provisioning provider connections registered.',
+                HealthStatus::WARNING,
+                'Provider inventory read; remote connectivity has not been verified.',
                 ['active_servers' => $count],
                 $latency
             );
@@ -278,18 +247,6 @@ final class SystemDoctorService
     {
         $t0 = microtime(true);
         try {
-            $this->db->statement(
-                'CREATE TABLE IF NOT EXISTS installed_modules (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    module_id VARCHAR(100) NOT NULL UNIQUE,
-                    name VARCHAR(150) NOT NULL,
-                    version VARCHAR(50) NOT NULL,
-                    type VARCHAR(50) NOT NULL,
-                    is_enabled INT NOT NULL DEFAULT 0,
-                    manifest LONGTEXT NOT NULL
-                )'
-            );
-
             $totalRow = $this->db->selectOne("SELECT count(*) as cnt FROM installed_modules");
             $enabledRow = $this->db->selectOne("SELECT count(*) as cnt FROM installed_modules WHERE is_enabled = 1");
 
