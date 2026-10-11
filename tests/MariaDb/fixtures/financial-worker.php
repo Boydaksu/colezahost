@@ -38,6 +38,16 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'automationClaim':
+            $result['claimed'] = (int) (new Coleza\Domain\Automation\Delay\DatabaseDelayManager($db))->claimForDispatch($argv[5]);
+            break;
+        case 'automationApprove':
+            try {
+                (new Coleza\Domain\Automation\Approval\DatabaseApprovalManager($db))->approve($argv[5], 'worker_' . $argv[2]);
+            } catch (InvalidArgumentException $error) {
+                $result = ['status' => 'rejected', 'reason' => $error->getMessage()];
+            }
+            break;
         case 'adoptService':
         case 'adoptDomain':
             $identityRepo = new Coleza\Domain\Migration\Adoption\AdoptedIdentityRepository($db);

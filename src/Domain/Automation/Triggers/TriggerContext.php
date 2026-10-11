@@ -8,15 +8,19 @@ use DateTimeImmutable;
 
 final class TriggerContext
 {
+    private readonly DateTimeImmutable $occurredAt;
+    private readonly string $correlationId;
     /**
      * @param array<string, mixed> $payload
      */
     public function __construct(
         private readonly string $eventName,
         private array $payload = [],
-        private readonly ?DateTimeImmutable $occurredAt = null,
-        private readonly ?string $correlationId = null
+        ?DateTimeImmutable $occurredAt = null,
+        ?string $correlationId = null
     ) {
+        $this->occurredAt = $occurredAt ?? new DateTimeImmutable();
+        $this->correlationId = $correlationId ?? bin2hex(random_bytes(8));
     }
 
     public function getEventName(): string
@@ -34,12 +38,12 @@ final class TriggerContext
 
     public function getOccurredAt(): DateTimeImmutable
     {
-        return $this->occurredAt ?? new DateTimeImmutable();
+        return $this->occurredAt;
     }
 
     public function getCorrelationId(): string
     {
-        return $this->correlationId ?? bin2hex(random_bytes(8));
+        return $this->correlationId;
     }
 
     /**

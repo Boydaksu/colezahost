@@ -36,6 +36,24 @@ final class CoreServiceProvider implements ServiceProviderInterface
             return \Coleza\Foundation\Database\ConnectionFactory::create($dbConfig);
         });
 
+        // Automation resolved through the application container always uses durable safety state.
+        $container->singleton(\Coleza\Domain\Automation\Actions\ActionRegistryInterface::class,
+            static fn(): \Coleza\Domain\Automation\Actions\ActionRegistry => new \Coleza\Domain\Automation\Actions\ActionRegistry());
+        $container->singleton(\Coleza\Domain\Automation\Engine\AutomationEngine::class,
+            static fn(Container $c): \Coleza\Domain\Automation\Engine\AutomationEngine => \Coleza\Domain\Automation\Engine\DatabaseAutomationFactory::create(
+                $c->get(\Coleza\Foundation\Database\Connection::class),
+                $c->get(\Coleza\Domain\Automation\Actions\ActionRegistryInterface::class),
+                $c->get(\Psr\Log\LoggerInterface::class)
+            ));
+        foreach ([
+            \Coleza\Domain\Automation\Approval\ApprovalManagerInterface::class => 'getApprovalManager',
+            \Coleza\Domain\Automation\Delay\DelayManagerInterface::class => 'getDelayManager',
+            \Coleza\Domain\Automation\Execution\RunHistoryRepositoryInterface::class => 'getHistoryRepository',
+            \Coleza\Domain\Automation\Safety\EmergencyPauseManagerInterface::class => 'getEmergencyPauseManager',
+        ] as $interface => $accessor) {
+            $container->singleton($interface, static fn(Container $c) => $c->get(\Coleza\Domain\Automation\Engine\AutomationEngine::class)->{$accessor}());
+        }
+
         // Bind CommandBus, QueryBus and EventBus
         $container->singleton(\Coleza\Foundation\Bus\CommandBus::class, static function (Container $c): \Coleza\Foundation\Bus\CommandBus {
             return new \Coleza\Foundation\Bus\CommandBus($c);

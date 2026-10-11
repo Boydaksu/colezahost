@@ -10,6 +10,8 @@ use DateTimeImmutable;
 
 interface DelayManagerInterface
 {
+    /** Atomically reserve a due execution before any external action. */
+    public function claimForDispatch(string $id): bool;
     /**
      * @param array<int, ActionInterface> $actions
      */

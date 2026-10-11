@@ -84,12 +84,28 @@ final class DelayedExecution
 
     public function markDispatched(): void
     {
-        if ($this->status !== DelayStatus::SCHEDULED) {
+        if (!in_array($this->status, [DelayStatus::SCHEDULED, DelayStatus::DISPATCHING], true)) {
             throw new InvalidArgumentException("Cannot dispatch execution in status '{$this->status->value}'");
         }
 
         $this->status = DelayStatus::DISPATCHED;
         $this->dispatchedAt = new DateTimeImmutable();
+    }
+
+    public function claim(): bool
+    {
+        if ($this->status !== DelayStatus::SCHEDULED) {
+            return false;
+        }
+        $this->status = DelayStatus::DISPATCHING;
+        return true;
+    }
+
+    public static function restore(self $execution, DelayStatus $status, ?DateTimeImmutable $dispatchedAt): self
+    {
+        $execution->status = $status;
+        $execution->dispatchedAt = $dispatchedAt;
+        return $execution;
     }
 
     public function cancel(): void

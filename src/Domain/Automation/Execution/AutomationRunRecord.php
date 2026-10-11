@@ -8,6 +8,7 @@ use DateTimeImmutable;
 
 final class AutomationRunRecord
 {
+    private readonly DateTimeImmutable $executedAt;
     /**
      * @param array<int, array<string, mixed>> $actionResults
      * @param array<string, mixed> $contextSummary
@@ -28,9 +29,10 @@ final class AutomationRunRecord
         private readonly array $contextSummary = [],
         private readonly float $durationMs = 0.0,
         private readonly ?string $errorMessage = null,
-        private readonly ?DateTimeImmutable $executedAt = null,
+        ?DateTimeImmutable $executedAt = null,
         private readonly array $metadata = []
     ) {
+        $this->executedAt = $executedAt ?? new DateTimeImmutable();
     }
 
     public function getRunId(): string
@@ -111,7 +113,7 @@ final class AutomationRunRecord
 
     public function getExecutedAt(): DateTimeImmutable
     {
-        return $this->executedAt ?? new DateTimeImmutable();
+        return $this->executedAt;
     }
 
     /**

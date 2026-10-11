@@ -97,6 +97,9 @@ final class PendingApproval
 
     public function approve(string $decidedBy, ?string $notes = null): void
     {
+        if ($this->isExpired(new DateTimeImmutable())) {
+            throw new InvalidArgumentException('Approval request has expired');
+        }
         if ($this->status !== ApprovalStatus::PENDING) {
             throw new InvalidArgumentException("Cannot approve request in status '{$this->status->value}'");
         }
@@ -135,7 +138,17 @@ final class PendingApproval
             return false;
         }
 
-        return $now > $this->expiresAt;
+        return $now >= $this->expiresAt;
+    }
+
+    /** Restore stored state without replaying a decision or changing its timestamp. */
+    public static function restore(self $request, ApprovalStatus $status, ?string $actor, ?string $notes, ?DateTimeImmutable $at): self
+    {
+        $request->status = $status;
+        $request->decidedBy = $actor;
+        $request->decisionNotes = $notes;
+        $request->decidedAt = $at;
+        return $request;
     }
 
     /**

@@ -166,6 +166,12 @@ final class AutomationEngine
         }
 
         // Active mode: check if actions require human approval
+        if (!empty($actions) && $rule->requiresApproval() && $this->approvalManager === null) {
+            throw new \LogicException('Approval-required rule has no approval manager');
+        }
+        if (!empty($actions) && $rule->hasDelay() && $this->delayManager === null) {
+            throw new \LogicException('Delayed rule has no delay manager');
+        }
         if (!empty($actions) && $rule->requiresApproval() && $this->approvalManager !== null) {
             $pending = $this->approvalManager->createRequest(
                 $rule->getId(),
@@ -282,6 +288,13 @@ final class AutomationEngine
             throw new \RuntimeException('No ApprovalManager configured on AutomationEngine');
         }
 
+        if ($this->emergencyPauseManager?->isPaused(scope: 'ALL')) {
+            throw new \LogicException('Emergency pause active; approval execution deferred');
+        }
+        $pending = $this->approvalManager->findById($approvalId);
+        if ($pending !== null && $this->actionsPaused($pending->getActionsToExecute())) {
+            throw new \LogicException('Emergency pause blocks approval actions; execution deferred');
+        }
         $approved = $this->approvalManager->approve($approvalId, $approvedBy);
         $start = microtime(true);
 
@@ -300,7 +313,7 @@ final class AutomationEngine
             }
         }
 
-        return RuleExecutionResult::executed(
+        $result = RuleExecutionResult::executed(
             $approved->getRuleId(),
             $approved->getRuleName(),
             true,
@@ -310,6 +323,8 @@ final class AutomationEngine
             $hasFailures ? RunStatus::FAILED : RunStatus::SUCCESS,
             ExecutionMode::ACTIVE
         );
+        $this->recordResumedHistory($approved->getRuleId(), $approved->getRuleName(), $approved->getContext(), $result, ['approval_id' => $approvalId]);
+        return $result;
     }
 
     /**
@@ -327,6 +342,9 @@ final class AutomationEngine
         $dispatchedResults = [];
 
         foreach ($due as $execution) {
+            if ($this->emergencyPauseManager?->isPaused(scope: 'ALL')) { break; }
+            if ($this->actionsPaused($execution->getActionsToExecute())) { continue; }
+            if (!$this->delayManager->claimForDispatch($execution->getId())) { continue; }
             $start = microtime(true);
             $actionResults = [];
             foreach ($execution->getActionsToExecute() as $action) {
@@ -354,6 +372,8 @@ final class AutomationEngine
                 $hasFailures ? RunStatus::FAILED : RunStatus::SUCCESS,
                 ExecutionMode::ACTIVE
             );
+            $this->recordResumedHistory($execution->getRuleId(), $execution->getRuleName(), $execution->getContext(),
+                $dispatchedResults[$execution->getId()], ['delay_id' => $execution->getId()]);
         }
 
         return $dispatchedResults;
@@ -405,6 +425,25 @@ final class AutomationEngine
                 'Action execution failed with exception: ' . $e->getMessage()
             );
         }
+    }
+
+    private function recordResumedHistory(string $ruleId, string $ruleName, TriggerContext $context, RuleExecutionResult $result, array $metadata): void
+    {
+        $this->historyRepository?->save(new AutomationRunRecord('run_' . bin2hex(random_bytes(8)), $ruleId, $ruleName,
+            0, $context->getEventName(), $context->getCorrelationId(), ExecutionMode::ACTIVE, $result->getStatus(),
+            false, 'UNKNOWN', array_map(fn(ActionResult $r) => $r->toArray(), $result->getActionResults()),
+            $context->all(), $result->getExecutionTimeMs(), metadata: $metadata + [
+                'rule_version_unknown' => true, 'branch_unknown' => true, 'condition_unknown' => true,
+            ]));
+    }
+
+    /** Keep paused work pending instead of consuming its decision/dispatch state. */
+    private function actionsPaused(array $actions): bool
+    {
+        foreach ($actions as $action) {
+            if ($this->emergencyPauseManager?->isPaused(actionType: $action->getType())) { return true; }
+        }
+        return false;
     }
 
     private function recordRunHistory(

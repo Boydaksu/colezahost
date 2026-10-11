@@ -10,6 +10,11 @@ use InvalidArgumentException;
 
 final class DelayManager implements DelayManagerInterface
 {
+    public function claimForDispatch(string $id): bool
+    {
+        $execution = $this->findById($id);
+        return $execution !== null && $execution->isDue(new DateTimeImmutable()) && $execution->claim();
+    }
     /** @var array<string, DelayedExecution> */
     private array $delayed = [];
 

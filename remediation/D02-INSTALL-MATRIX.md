@@ -1,10 +1,10 @@
 # D02 kurulum/geçiş kabul matrisi
 
-Güncelleme: 11.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f, D02-3g, D02-3h, D02-3i. Bu matris ürünün bağımsız kabulü değildir. D02 IN_PROGRESS.
+Güncelleme: 11.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f, D02-3g, D02-3h, D02-3i, D02-3j. Bu matris ürünün bağımsız kabulü değildir. D02 IN_PROGRESS.
 
 | Senaryo | Durum | Kanıt / sınır |
 |---|---|---|
-| Gerçek MariaDB 10.11, temiz veri tabanı, production iki migrationlar | Yerel test geçti | DatabaseFoundationTest; InstallationAcceptanceTest; on iki migration |
+| Gerçek MariaDB 10.11, temiz veri tabanı, production üç migrationlar | Yerel test geçti | DatabaseFoundationTest; InstallationAcceptanceTest; on üç migration |
 | SQLite kurulum sihirbazı, migrationlardan sonra ADMIN adımı | Yerel test geçti | WebInstallerTest; gerçek DatabaseConfig bağlantısı |
 | Migration tekrarında eski RBAC rollerinin, izinlerin ve tarihlerinin korunması | Yerel test geçti | DatabaseFoundationTest; IdentitySchemaMigrationRegressionTest |
 | Belge/kalem/duyuru kayıtlarının tekrar migrationda korunması | Yerel test geçti | DocumentPersistenceTest; D02-3b |
@@ -27,9 +27,11 @@ Güncelleme: 11.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f,
 | Bilinen eski services/domains adoption tabloları | Arşivli dönüşüm ve tekrar testi geçti | LegacyAdoptionUpgrade/migration 12; id/tutar/tarih/binding ve silinmiş id sayaç sınırı; rollback/retry; sonraki canonical değişiklikler korunur |
 | Belirsiz legacy shape, source FK/trigger/custom index/CHECK ve veri çelişkisi | Ön kontrol/durdurma; genel dönüşüm açık | Bilinmeyen bağımlılık kaldırılmaz; iki ondalık dışı para birimi ve eksik hizmet tarihi uzlaştırma ister |
 | Legacy arşivlerin backup/restore ve privacy/retention kapsamı | D05/D07 açık | Orijinal tablolar silinmez; arşivlerin silme/anonimleştirme ve gerçek restore kabulü ayrıca gerekli |
+| Otomasyon onay/gecikme/geçmiş/acil durdurma kayıtları | Yerel kalıcılık ve paralellik testleri geçti | Migration 13; SQLite/MariaDB; yeni bağlantıdan okuma; tek onay kararı/dispatch claim; paused işler bekler; D02-3j |
+| Otomasyon crash recovery, kalıcı rule/version ve tüm HTTP/CLI/cron bağları | D06/D08 açık | DISPATCHING ve APPROVED sonrası belirsiz dış etkiler otomatik tekrar edilmez; RBAC ve provider reconciliation gerekir |
 | Diğer otomasyon ve operasyonel domainler; genel runtime DDL sınırları | Açık | Kurulum şeması bütün iş akışlarının ve kısıtların kabulü değildir |
 | GoldenFinancialDataset'in üretim şemasıyla eşleşmesi | Açık | Test fixture kanonik kurulum şeması sayılmaz; F17/F30 |
 | Gerçek sağlayıcı bağlantısı ve gerçek cron çalıştırıcısının geçmiş yazımı | D06 kabulü açık | Doctor provider envanterini uzaktan doğrulanmış HEALTHY diye sunmaz |
 | Üretim veri tabanında upgrade/rollback | Yapılmadı | Yedek, bakım penceresi ve eski worker'ların durdurulması gerekir; yerel test üretim onayı değildir |
 
-Sıradaki D02 işi: D02-SCHEMA-INVENTORY.json içindeki kalan domain şema kurucularını gerçek kurulum/upgrade akışına bağlamak ve kısıt uyumunu sınamak. Envanter 88 CREATE TABLE kaynak dosyasını listeler; metinde migration referansı olması tek başına çalıştırma ya da kabul kanıtı değildir. D02 çıkış ölçütleri tamamlanmadan D03'e geçilmez.
+Sıradaki D02 işi: D02-SCHEMA-INVENTORY.json içindeki kalan domain şema kurucularını gerçek kurulum/upgrade akışına bağlamak ve kısıt uyumunu sınamak. Envanter 89 CREATE TABLE kaynak dosyasını listeler; metinde migration referansı olması tek başına çalıştırma ya da kabul kanıtı değildir. D02 çıkış ölçütleri tamamlanmadan D03'e geçilmez.

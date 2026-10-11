@@ -15,7 +15,8 @@ final class EmergencyPauseState
         private readonly ?DateTimeImmutable $pausedAt = null,
         private readonly ?string $resumedBy = null,
         private readonly ?DateTimeImmutable $resumedAt = null,
-        private readonly string $scope = 'ALL'
+        private readonly string $scope = 'ALL',
+        private readonly ?string $resumedReason = null
     ) {
     }
 
@@ -70,6 +71,11 @@ final class EmergencyPauseState
         return $this->scope;
     }
 
+    public function getResumedReason(): ?string
+    {
+        return $this->resumedReason;
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -82,6 +88,7 @@ final class EmergencyPauseState
             'paused_at' => $this->pausedAt?->format(DateTimeImmutable::ATOM),
             'resumed_by' => $this->resumedBy,
             'resumed_at' => $this->resumedAt?->format(DateTimeImmutable::ATOM),
+            'resumed_reason' => $this->resumedReason,
             'scope' => $this->scope,
         ];
     }

@@ -1,0 +1,26 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+[41;37mF[0m[41;37mF[0m                                                                  2 / 2 (100%)
+
+Time: 00:00.010, Memory: 20.00 MB
+
+There were 2 failures:
+
+1) Coleza\Tests\Unit\Automation\AutomationSafetyRegressionTest::testEventIdentityAndTimeRemainStable
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'7bc4c4e6b0cf19f9'
++'3cc1643cdba163d1'
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Automation\AutomationSafetyRegressionTest.php:20
+
+2) Coleza\Tests\Unit\Automation\AutomationSafetyRegressionTest::testMissingApprovalManagerCannotBypassApproval
+Failed asserting that exception of type "LogicException" is thrown.
+
+[37;41mFAILURES![0m
+[37;41mTests: 2[0m[37;41m, Assertions: 2[0m[37;41m, Failures: 2[0m[37;41m.[0m

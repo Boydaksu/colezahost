@@ -7,6 +7,7 @@ namespace Coleza\Domain\Automation\Delay;
 enum DelayStatus: string
 {
     case SCHEDULED = 'SCHEDULED';
+    case DISPATCHING = 'DISPATCHING';
     case DISPATCHED = 'DISPATCHED';
     case CANCELLED = 'CANCELLED';
 

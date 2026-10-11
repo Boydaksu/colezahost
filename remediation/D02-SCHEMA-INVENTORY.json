@@ -1,7 +1,7 @@
 {
   "date": "2026-10-11",
   "purpose": "DDL source inventory; direct references are not execution coverage or schema compatibility",
-  "file_count": 88,
+  "file_count": 89,
   "files": [
     {
       "file": "src/Api/Auth/ApiKeyService.php",
@@ -916,6 +916,21 @@
       "public_schema_methods": [],
       "literal_table_names": [
         "legacy_adoption_upgrades"
+      ],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Automation/Persistence/AutomationSchema.php",
+      "class": "Coleza\\Domain\\Automation\\Persistence\\AutomationSchema",
+      "public_schema_methods": [
+        "installSchema"
+      ],
+      "literal_table_names": [
+        "automation_emergency_pause",
+        "automation_pending",
+        "automation_run_history",
+        "automation_state_lock"
       ],
       "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"

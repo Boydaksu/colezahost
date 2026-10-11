@@ -11,9 +11,9 @@ final class EmergencyPauseManager implements EmergencyPauseManagerInterface
     private EmergencyPauseState $state;
     private DestructiveActionRegistry $destructiveRegistry;
 
-    public function __construct(?DestructiveActionRegistry $destructiveRegistry = null)
+    public function __construct(?DestructiveActionRegistry $destructiveRegistry = null, ?EmergencyPauseState $state = null)
     {
-        $this->state = EmergencyPauseState::active();
+        $this->state = $state ?? EmergencyPauseState::active();
         $this->destructiveRegistry = $destructiveRegistry ?? new DestructiveActionRegistry();
     }
 
@@ -34,7 +34,8 @@ final class EmergencyPauseManager implements EmergencyPauseManagerInterface
             pausedAt: $pausedAt,
             resumedBy: $resumedBy,
             resumedAt: new DateTimeImmutable(),
-            scope: $scope
+            scope: $scope,
+            resumedReason: $reason
         );
     }
 
