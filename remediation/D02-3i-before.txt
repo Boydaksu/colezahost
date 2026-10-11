@@ -1,0 +1,421 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[31;1mE[0m[31;1mE[0m[31;1mE[0m[41;37mF[0m[41;37mF[0m                                                               5 / 5 (100%)
+
+Time: 00:11.805, Memory: 24.00 MB
+
+There were 3 errors:
+
+1) Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testInstallerUpgradesLegacyServiceAndPreservesOriginalAndPlacement
+LogicException: Legacy services schema requires explicit reconciliation before installation/adoption.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Commerce\Services\ServiceService.php:35
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_10_000006_core_domain_schemas.php:32
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:91
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:163
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:90
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:61
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:182
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:61
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:56
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\LegacyAdoptionUpgradeCases.php:34
+
+2) Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testInstallerUpgradesLegacyDomainAndAllowsNewApplicationRecord
+LogicException: Legacy domains schema requires explicit reconciliation before installation/adoption.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Domains\DomainService.php:32
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_11_000011_domain_application_schema.php:6
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:91
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:163
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:90
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:61
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:182
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:61
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:56
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\LegacyAdoptionUpgradeCases.php:50
+
+3) Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testRepeatedUpgradeDoesNotOverwriteLaterServiceChanges
+LogicException: Legacy services schema requires explicit reconciliation before installation/adoption.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Commerce\Services\ServiceService.php:35
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_10_000006_core_domain_schemas.php:32
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:91
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:163
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:90
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:61
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:182
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:61
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:56
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\LegacyAdoptionUpgradeCases.php:67
+
+--
+
+There were 2 failures:
+
+1) Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testInvalidLegacyAmountStopsBothTablesBeforeRenaming
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+ Array &0 [
+     0 => Array &1 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'announcements',
++    ],
++    1 => Array &2 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'brands',
++    ],
++    2 => Array &3 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'capacity_reservations',
++    ],
++    3 => Array &4 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'configurable_option_subs',
++    ],
++    4 => Array &5 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'configurable_options',
++    ],
++    5 => Array &6 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'credit_balance_locks',
++    ],
++    6 => Array &7 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'credit_ledger',
++    ],
++    7 => Array &8 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'credit_sequences',
++    ],
++    8 => Array &9 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'cron_runs',
++    ],
++    9 => Array &10 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'document_sequences',
++    ],
++    10 => Array &11 [
+         'Tables_in_colezahost_d02_test_712c322964b23216' => 'domains',
++    ],
++    11 => Array &12 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'failed_jobs',
++    ],
++    12 => Array &13 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'gateway_refund_reservations',
++    ],
++    13 => Array &14 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'in_app_notifications',
++    ],
++    14 => Array &15 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'installer_provider_identity',
++    ],
++    15 => Array &16 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'invoice_items',
++    ],
++    16 => Array &17 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'invoice_sequences',
++    ],
++    17 => Array &18 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'invoices',
++    ],
++    18 => Array &19 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'jobs',
++    ],
++    19 => Array &20 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'locations',
++    ],
++    20 => Array &21 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'migrations',
++    ],
++    21 => Array &22 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'notification_logs',
++    ],
++    22 => Array &23 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'notification_preferences',
++    ],
++    23 => Array &24 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'order_items',
++    ],
++    24 => Array &25 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'orders',
++    ],
++    25 => Array &26 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'organization_members',
++    ],
++    26 => Array &27 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'organizations',
++    ],
++    27 => Array &28 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'payment_allocations',
++    ],
++    28 => Array &29 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'payment_refund_attempts',
+     ],
+-    1 => Array &2 [
++    29 => Array &30 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'payment_sequences',
++    ],
++    30 => Array &31 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'payment_webhook_events',
++    ],
++    31 => Array &32 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'payments',
++    ],
++    32 => Array &33 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'permissions',
++    ],
++    33 => Array &34 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'price_overrides',
++    ],
++    34 => Array &35 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'price_points',
++    ],
++    35 => Array &36 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'product_addons',
++    ],
++    36 => Array &37 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'product_availability',
++    ],
++    37 => Array &38 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'product_groups',
++    ],
++    38 => Array &39 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'products',
++    ],
++    39 => Array &40 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'proforma_invoices',
++    ],
++    40 => Array &41 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'proforma_items',
++    ],
++    41 => Array &42 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'quote_items',
++    ],
++    42 => Array &43 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'quotes',
++    ],
++    43 => Array &44 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'refund_sequences',
++    ],
++    44 => Array &45 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'refunds',
++    ],
++    45 => Array &46 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'role_permissions',
++    ],
++    46 => Array &47 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'roles',
++    ],
++    47 => Array &48 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'server_pools',
++    ],
++    48 => Array &49 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'servers',
++    ],
++    49 => Array &50 [
+         'Tables_in_colezahost_d02_test_712c322964b23216' => 'services',
++    ],
++    50 => Array &51 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'system_settings',
++    ],
++    51 => Array &52 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'tax_classes',
++    ],
++    52 => Array &53 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'tax_exemptions',
++    ],
++    53 => Array &54 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'tax_rates',
++    ],
++    54 => Array &55 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'tax_zones',
++    ],
++    55 => Array &56 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'user_roles',
++    ],
++    56 => Array &57 [
++        'Tables_in_colezahost_d02_test_712c322964b23216' => 'users',
+     ],
+ ]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\LegacyAdoptionUpgradeCases.php:100
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\LegacyAdoptionUpgradeCases.php:81
+
+2) Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testMissingLegacyDateIsNotInvented
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+ Array &0 [
+     0 => Array &1 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'announcements',
++    ],
++    1 => Array &2 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'brands',
++    ],
++    2 => Array &3 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'capacity_reservations',
++    ],
++    3 => Array &4 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'configurable_option_subs',
++    ],
++    4 => Array &5 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'configurable_options',
++    ],
++    5 => Array &6 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'credit_balance_locks',
++    ],
++    6 => Array &7 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'credit_ledger',
++    ],
++    7 => Array &8 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'credit_sequences',
++    ],
++    8 => Array &9 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'cron_runs',
++    ],
++    9 => Array &10 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'document_sequences',
++    ],
++    10 => Array &11 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'failed_jobs',
++    ],
++    11 => Array &12 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'gateway_refund_reservations',
++    ],
++    12 => Array &13 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'in_app_notifications',
++    ],
++    13 => Array &14 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'installer_provider_identity',
++    ],
++    14 => Array &15 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'invoice_items',
++    ],
++    15 => Array &16 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'invoice_sequences',
++    ],
++    16 => Array &17 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'invoices',
++    ],
++    17 => Array &18 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'jobs',
++    ],
++    18 => Array &19 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'locations',
++    ],
++    19 => Array &20 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'migrations',
++    ],
++    20 => Array &21 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'notification_logs',
++    ],
++    21 => Array &22 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'notification_preferences',
++    ],
++    22 => Array &23 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'order_items',
++    ],
++    23 => Array &24 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'orders',
++    ],
++    24 => Array &25 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'organization_members',
++    ],
++    25 => Array &26 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'organizations',
++    ],
++    26 => Array &27 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'payment_allocations',
++    ],
++    27 => Array &28 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'payment_refund_attempts',
++    ],
++    28 => Array &29 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'payment_sequences',
++    ],
++    29 => Array &30 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'payment_webhook_events',
++    ],
++    30 => Array &31 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'payments',
++    ],
++    31 => Array &32 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'permissions',
++    ],
++    32 => Array &33 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'price_overrides',
++    ],
++    33 => Array &34 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'price_points',
++    ],
++    34 => Array &35 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'product_addons',
++    ],
++    35 => Array &36 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'product_availability',
++    ],
++    36 => Array &37 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'product_groups',
++    ],
++    37 => Array &38 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'products',
++    ],
++    38 => Array &39 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'proforma_invoices',
++    ],
++    39 => Array &40 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'proforma_items',
++    ],
++    40 => Array &41 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'quote_items',
++    ],
++    41 => Array &42 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'quotes',
++    ],
++    42 => Array &43 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'refund_sequences',
++    ],
++    43 => Array &44 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'refunds',
++    ],
++    44 => Array &45 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'role_permissions',
++    ],
++    45 => Array &46 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'roles',
++    ],
++    46 => Array &47 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'server_pools',
++    ],
++    47 => Array &48 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'servers',
++    ],
++    48 => Array &49 [
+         'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'services',
++    ],
++    49 => Array &50 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'system_settings',
++    ],
++    50 => Array &51 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'tax_classes',
++    ],
++    51 => Array &52 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'tax_exemptions',
++    ],
++    52 => Array &53 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'tax_rates',
++    ],
++    53 => Array &54 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'tax_zones',
++    ],
++    54 => Array &55 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'user_roles',
++    ],
++    55 => Array &56 [
++        'Tables_in_colezahost_d02_test_cd9f5b679e98ccb2' => 'users',
+     ],
+ ]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\LegacyAdoptionUpgradeCases.php:100
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\LegacyAdoptionUpgradeCases.php:90
+
+[37;41mERRORS![0m
+[37;41mTests: 5[0m[37;41m, Assertions: 14[0m[37;41m, Errors: 3[0m[37;41m, Failures: 2[0m[37;41m.[0m

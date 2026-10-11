@@ -24,10 +24,11 @@ final class ServiceService
     ) {
     }
 
-    public function ensureTables(): void
+    public function ensureTables(bool $legacyUpgradeInProgress = false): void
     {
         if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchemaInTransaction($this->db, ['services' => ['id', 'service_number', 'user_id', 'organization_id', 'order_id', 'order_item_id', 'product_id', 'status', 'billing_cycle', 'recurring_amount_minor', 'currency_code', 'registration_date', 'next_due_date', 'domain', 'username', 'password_encrypted', 'server_name', 'ip_address', 'suspension_reason', 'termination_date', 'notes', 'metadata_json', 'auto_renew', 'grace_period_days', 'termination_grace_period_days', 'lock_version', 'created_at'], 'service_sequences' => ['date_prefix', 'last_number'], 'service_placements' => ['id', 'service_id', 'server_id', 'server_pool_id', 'location_id', 'status', 'package_identifier', 'dedicated_ip', 'hostname', 'disk_limit_mb', 'bandwidth_limit_mb', 'resource_quotas_json', 'assigned_at', 'released_at', 'created_at'], 'service_cancellations' => ['id', 'service_id', 'user_id', 'type', 'reason', 'status', 'requested_at', 'processed_at']])) { return; }
         \Coleza\Foundation\Database\PdoSchema::autoIncrement($this->db->getPdo());
+        if (!$legacyUpgradeInProgress) { (new \Coleza\Domain\Migration\Adoption\LegacyAdoptionUpgrade($this->db))->upgrade('services'); }
         $columns = $this->db->getDriverName() === 'sqlite'
             ? array_column($this->db->select('PRAGMA table_info(services)'), 'name')
             : array_column($this->db->select("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'services'"), 'COLUMN_NAME');

@@ -141,6 +141,9 @@ final class ServiceAdoptionService
             }
 
             $services = new \Coleza\Domain\Commerce\Services\ServiceService($this->db);
+            if ($username !== null && (new \Coleza\Domain\Migration\Execution\ConflictDetector($this->db))->detectServiceConflict($serverId, $username) !== null) {
+                return ServiceAdoptionResult::failed(['Existing service placement has no matching provider identity; reconcile before adoption.']);
+            }
             $service = $services->createService([
                 'user_id' => $userId, 'product_id' => $productId, 'status' => $serviceDto->getStatus(),
                 'billing_cycle' => $serviceDto->getBillingCycle(), 'recurring_amount_minor' => (int) round($amount * 100),

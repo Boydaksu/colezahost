@@ -52,6 +52,8 @@ final class DatabaseSetupService
             throw new \InvalidArgumentException('Application modules do not support table prefixes; use a dedicated database without a prefix.');
         }
         \Coleza\Foundation\Database\PdoSchema::autoIncrement($connection->getPdo());
+        (new \Coleza\Domain\Identity\LegacyIdentitySchema($connection))->preflight();
+        (new \Coleza\Domain\Migration\Adoption\LegacyAdoptionUpgrade($connection))->upgrade();
         $result = $this->initializeCoreSchema($connection);
         $result['migrations_applied'] = (new \Coleza\Foundation\Database\Migrator($connection))->migrate(dirname(__DIR__, 3) . '/database/migrations');
         return $result;

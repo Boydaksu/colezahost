@@ -21,10 +21,11 @@ final class DomainService
     ) {
     }
 
-    public function ensureTables(): void
+    public function ensureTables(bool $legacyUpgradeInProgress = false): void
     {
         if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchemaInTransaction($this->db, ['domains' => ['id', 'user_id', 'organization_id', 'domain', 'sld', 'tld', 'status', 'registration_period_years', 'registration_date', 'expiry_date', 'next_due_date', 'auto_renew', 'whois_privacy', 'dns_management', 'email_forwarding', 'is_locked', 'epp_code', 'registrar_id', 'nameservers_json', 'subscription_id', 'metadata_json', 'created_at', 'updated_at'], 'domain_contacts' => ['id', 'domain_id', 'contact_type', 'first_name', 'last_name', 'company_name', 'email', 'phone', 'fax', 'address_line_1', 'address_line_2', 'city', 'state', 'postal_code', 'country_code', 'additional_fields_json', 'created_at', 'updated_at'], 'domain_timeline_events' => ['id', 'domain_id', 'event_type', 'actor_id', 'actor_type', 'description', 'payload_json', 'created_at']])) { return; }
         \Coleza\Foundation\Database\PdoSchema::autoIncrement($this->db->getPdo());
+        if (!$legacyUpgradeInProgress) { (new \Coleza\Domain\Migration\Adoption\LegacyAdoptionUpgrade($this->db))->upgrade('domains'); }
         $columns = $this->db->getDriverName() === 'sqlite'
             ? array_column($this->db->select('PRAGMA table_info(domains)'), 'name')
             : array_column($this->db->select("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'domains'"), 'COLUMN_NAME');
