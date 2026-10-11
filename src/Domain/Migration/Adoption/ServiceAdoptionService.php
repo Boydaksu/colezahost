@@ -21,35 +21,8 @@ final class ServiceAdoptionService
 
     public function ensureServicesTable(): void
     {
-        $driver = $this->db->getDriverName();
-        $autoInc = match ($driver) {
-            'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
-            default => 'INT AUTO_INCREMENT PRIMARY KEY',
-        };
-
-        $sql = sprintf(
-            'CREATE TABLE IF NOT EXISTS %s (
-                id %s,
-                user_id INT NOT NULL,
-                product_id INT NOT NULL,
-                server_id INT NULL,
-                domain VARCHAR(255) NULL,
-                username VARCHAR(64) NULL,
-                status VARCHAR(32) NOT NULL DEFAULT "active",
-                billing_cycle VARCHAR(32) NOT NULL DEFAULT "monthly",
-                recurring_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-                currency VARCHAR(3) NOT NULL DEFAULT "USD",
-                registration_date VARCHAR(30) NULL,
-                next_due_date VARCHAR(30) NULL,
-                is_adopted TINYINT(1) NOT NULL DEFAULT 1,
-                metadata_json TEXT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )',
-            $this->servicesTable,
-            $autoInc
-        );
-
-        $this->db->statement($sql);
+        (new \Coleza\Domain\Commerce\Services\ServiceService($this->db))->ensureTables();
+        AdoptionSchema::ensure($this->db);
     }
 
     /**
@@ -63,6 +36,12 @@ final class ServiceAdoptionService
     ): ServiceAdoptionResult {
         $this->ensureServicesTable();
         $this->identityRepo->ensureTable();
+
+        foreach ([$serviceDto->getRegistrationDate(), $serviceDto->getNextDueDate()] as $date) {
+            if ($date === null || !preg_match('/^(\d{4})-(\d{2})-(\d{2})$/D', $date, $parts) || !checkdate((int) $parts[2], (int) $parts[3], (int) $parts[1])) {
+                return ServiceAdoptionResult::failed(['Service adoption requires explicit valid registration and next-due dates; reconcile missing source dates first.']);
+            }
+        }
 
         $errors = [];
         $warnings = [];
@@ -79,7 +58,7 @@ final class ServiceAdoptionService
         }
 
         // 2. Resolve product ID
-        $productId = $this->resolver->resolveProduct($serviceDto->getProductSourceId(), defaultProductId: 1);
+        $productId = $this->resolver->resolveProduct($serviceDto->getProductSourceId());
         if ($productId === null) {
             $errors[] = sprintf(
                 'Cannot adopt service [%s]: Product source ID [%s] could not be resolved.',
@@ -91,39 +70,15 @@ final class ServiceAdoptionService
 
         // 3. Resolve target server
         $serverId = $sourceServerKey !== null
-            ? $this->resolver->resolveServer($sourceServerKey, defaultServerId: 1)
-            : 1;
+            ? $this->resolver->resolveServer($sourceServerKey)
+            : null;
+        if ($serverId === null) {
+            return ServiceAdoptionResult::failed(['Service adoption requires an explicit target server mapping.']);
+        }
 
         $username = $serviceDto->getUsername();
         $domain = $serviceDto->getDomain();
-
-        // 4. Check for duplicate/conflict adoption
-        if ($username !== null && $serverId !== null) {
-            $existingIdentity = $this->identityRepo->findByExternalReference(
-                AdoptedIdentityType::HOSTING_SERVICE,
-                (string) $serverId,
-                $username
-            );
-
-            if ($existingIdentity !== null) {
-                // Idempotent adoption if same source ID
-                if ($existingIdentity->getSourceId() === $serviceDto->getSourceId()) {
-                    return ServiceAdoptionResult::successful(
-                        adoptedServiceId: $existingIdentity->getTargetEntityId(),
-                        identity: $existingIdentity,
-                        warnings: ['Service was already adopted previously under this server/username.']
-                    );
-                }
-
-                $errors[] = sprintf(
-                    'Conflict: Server account username [%s] on server [%d] is already adopted by source service [%s].',
-                    $username,
-                    $serverId,
-                    $existingIdentity->getSourceId()
-                );
-                return ServiceAdoptionResult::failed($errors);
-            }
-        }
+        $reference = $username ?? $domain ?? ($serviceDto->getSourceSystem() . ':' . $serviceDto->getSourceId());
 
         // 5. Optional remote read-only verification
         $verificationPassed = false;
@@ -146,64 +101,87 @@ final class ServiceAdoptionService
         // 6. Insert adopted service into services table WITHOUT provisioning hooks
         $meta = array_merge($serviceDto->getMetadata(), [
             'adopted_from' => $serviceDto->getSourceSystem(),
+            'is_adopted' => true,
             'source_service_id' => $serviceDto->getSourceId(),
             'provisioning_suppressed' => true,
         ]);
 
-        $this->db->statement(
-            sprintf(
-                'INSERT INTO %s
-                (user_id, product_id, server_id, domain, username, status, billing_cycle,
-                 recurring_amount, currency, registration_date, next_due_date, is_adopted, metadata_json)
-                VALUES
-                (:u, :p, :srv, :dom, :usr, :st, :bc, :amt, :curr, :rd, :nd, 1, :meta)',
-                $this->servicesTable
-            ),
-            [
-                'u' => $userId,
-                'p' => $productId,
-                'srv' => $serverId,
-                'dom' => $domain,
-                'usr' => $username,
-                'st' => $serviceDto->getStatus(),
-                'bc' => $serviceDto->getBillingCycle(),
-                'amt' => $serviceDto->getRecurringAmount(),
-                'curr' => $serviceDto->getCurrency(),
-                'rd' => $serviceDto->getRegistrationDate(),
-                'nd' => $serviceDto->getNextDueDate(),
-                'meta' => json_encode($meta, JSON_THROW_ON_ERROR),
-            ]
-        );
+        $amount = $serviceDto->getRecurringAmount();
+        if (!is_finite($amount) || $amount < 0 || $amount * 100 > PHP_INT_MAX) {
+            throw new \InvalidArgumentException('Invalid recurring amount for adoption.');
+        }
+        return $this->db->transaction(function () use ($serviceDto, $batchId, $userId, $productId, $serverId, $domain, $username, $reference, $meta, $verificationPassed, $warnings, $amount): ServiceAdoptionResult {
+            $this->db->lockRow('migration_adoption_lock', 1);
+            // 4. Check for duplicate/conflict adoption
+            if ($serverId !== null) {
+                $existingIdentity = $this->identityRepo->findByExternalReference(
+                    AdoptedIdentityType::HOSTING_SERVICE,
+                    (string) $serverId,
+                    $reference
+                );
 
-        $adoptedServiceId = (int) $this->db->getPdo()->lastInsertId();
+                if ($existingIdentity !== null) {
+                    // Idempotent adoption if same source ID
+                    if ($existingIdentity->getSourceId() === $serviceDto->getSourceId() && $existingIdentity->getSourceSystem() === $serviceDto->getSourceSystem() && (int) ($this->db->selectOne('SELECT user_id FROM services WHERE id = ?', [$existingIdentity->getTargetEntityId()])['user_id'] ?? 0) === $userId) {
+                        return ServiceAdoptionResult::successful(
+                            adoptedServiceId: $existingIdentity->getTargetEntityId(),
+                            identity: $existingIdentity,
+                            warnings: ['Service was already adopted previously under this server/username.']
+                        );
+                    }
 
-        // 7. Record adopted provider identity link
-        $providerIdentity = new AdoptedProviderIdentity(
-            id: null,
-            batchId: $batchId,
-            identityType: AdoptedIdentityType::HOSTING_SERVICE,
-            sourceId: $serviceDto->getSourceId(),
-            sourceSystem: $serviceDto->getSourceSystem(),
-            targetEntityId: $adoptedServiceId,
-            providerType: 'server',
-            providerIdentifier: (string) ($serverId ?? 'unassigned'),
-            externalReferenceId: (string) ($username ?? $domain ?? "service-{$adoptedServiceId}"),
-            externalMetadata: [
-                'domain' => $domain,
-                'username' => $username,
-                'dedicated_ip' => $serviceDto->getDedicatedIp(),
-            ],
-            remoteVerificationPassed: $verificationPassed,
-            suppressProvisioning: true,
-            adoptedAt: date('Y-m-d H:i:s')
-        );
+                    $errors = [sprintf(
+                        'Conflict: Server account username [%s] on server [%d] is already adopted by source service [%s].',
+                        $username,
+                        $serverId,
+                        $existingIdentity->getSourceId()
+                    )];
+                    return ServiceAdoptionResult::failed($errors);
+                }
+            }
 
-        $this->identityRepo->save($providerIdentity);
+            $services = new \Coleza\Domain\Commerce\Services\ServiceService($this->db);
+            $service = $services->createService([
+                'user_id' => $userId, 'product_id' => $productId, 'status' => $serviceDto->getStatus(),
+                'billing_cycle' => $serviceDto->getBillingCycle(), 'recurring_amount_minor' => (int) round($amount * 100),
+                'currency_code' => $serviceDto->getCurrency(), 'domain' => $domain, 'username' => $username,
+                'registration_date' => $serviceDto->getRegistrationDate(),
+                'next_due_date' => $serviceDto->getNextDueDate(),
+                'ip_address' => $serviceDto->getDedicatedIp(), 'metadata' => $meta,
+            ]);
+            $adoptedServiceId = $service->getId();
+            if ($serverId !== null) {
+                $services->assignPlacement($adoptedServiceId, ['server_id' => $serverId, 'dedicated_ip' => $serviceDto->getDedicatedIp()]);
+            }
 
-        return ServiceAdoptionResult::successful(
-            adoptedServiceId: $adoptedServiceId,
-            identity: $providerIdentity,
-            warnings: $warnings
-        );
+            // 7. Record adopted provider identity link
+            $providerIdentity = new AdoptedProviderIdentity(
+                id: null,
+                batchId: $batchId,
+                identityType: AdoptedIdentityType::HOSTING_SERVICE,
+                sourceId: $serviceDto->getSourceId(),
+                sourceSystem: $serviceDto->getSourceSystem(),
+                targetEntityId: $adoptedServiceId,
+                providerType: 'server',
+                providerIdentifier: (string) ($serverId ?? 'unassigned'),
+                externalReferenceId: $reference,
+                externalMetadata: [
+                    'domain' => $domain,
+                    'username' => $username,
+                    'dedicated_ip' => $serviceDto->getDedicatedIp(),
+                ],
+                remoteVerificationPassed: $verificationPassed,
+                suppressProvisioning: true,
+                adoptedAt: date('Y-m-d H:i:s')
+            );
+
+            $this->identityRepo->save($providerIdentity);
+
+            return ServiceAdoptionResult::successful(
+                adoptedServiceId: $adoptedServiceId,
+                identity: $providerIdentity,
+                warnings: $warnings
+            );
+        });
     }
 }

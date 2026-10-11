@@ -215,7 +215,7 @@ final class DryRunConflictCheckpointResumeTest extends TestCase
             "INSERT INTO users (email, password_hash, name, is_active) VALUES ('john@test.com', 'hash', 'Existing John', 1)"
         );
         $this->targetDb->statement(
-            "INSERT INTO domains (user_id, domain_name, registrar, status) VALUES (1, 'johndoe.com', 'other_registrar', 'active')"
+            "INSERT INTO domains (user_id, domain, sld, tld, registrar_id, status) VALUES (1, 'johndoe.com', 'johndoe', '.com', 'other_registrar', 'active')"
         );
 
         $batchId = 'dry-run-conflict-01';

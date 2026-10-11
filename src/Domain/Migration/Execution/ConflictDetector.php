@@ -54,7 +54,7 @@ final class ConflictDetector
         }
 
         $row = $this->targetDb->selectOne(
-            'SELECT id FROM domains WHERE domain_name = ?',
+            'SELECT id FROM domains WHERE domain = ?',
             [$cleanDomain]
         );
 
@@ -87,7 +87,7 @@ final class ConflictDetector
 
         // 2. Check services table
         $row = $this->targetDb->selectOne(
-            'SELECT id FROM services WHERE server_id = ? AND username = ?',
+            'SELECT s.id FROM services s JOIN service_placements p ON p.service_id = s.id WHERE p.server_id = ? AND s.username = ? AND p.released_at IS NULL',
             [$serverId, $cleanUsername]
         );
 

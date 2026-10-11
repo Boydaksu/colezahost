@@ -304,6 +304,7 @@ final class MigrationHoldAndSuppressionTest extends TestCase
         $validationEngine = new CanonicalValidationEngine();
         $stagingPipeline = new StagingPipelineService($stagingRepo, $mappingEngine, $validationEngine);
         $identityResolver = new ProviderIdentityResolver();
+        $identityResolver->registerServerMapping('1', 1);
         $adoptedRepo = new AdoptedIdentityRepository($this->db);
         $serviceAdopter = new ServiceAdoptionService($this->db, $adoptedRepo, $identityResolver);
         $domainAdopter = new DomainAdoptionService($this->db, $adoptedRepo, $identityResolver);

@@ -1,7 +1,7 @@
 {
   "date": "2026-10-11",
   "purpose": "DDL source inventory; direct references are not execution coverage or schema compatibility",
-  "file_count": 88,
+  "file_count": 87,
   "files": [
     {
       "file": "src/Api/Auth/ApiKeyService.php",
@@ -731,7 +731,7 @@
         "ensureTables"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -801,26 +801,6 @@
       "class": "Coleza\\Domain\\Domains\\Registrar\\Reconciliation\\DomainOperationRepository",
       "public_schema_methods": [
         "ensureTable"
-      ],
-      "literal_table_names": [],
-      "direct_migration_reference": false,
-      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
-    },
-    {
-      "file": "src/Domain/Migration/Adoption/ServiceAdoptionService.php",
-      "class": "Coleza\\Domain\\Migration\\Adoption\\ServiceAdoptionService",
-      "public_schema_methods": [
-        "ensureServicesTable"
-      ],
-      "literal_table_names": [],
-      "direct_migration_reference": false,
-      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
-    },
-    {
-      "file": "src/Domain/Migration/Adoption/DomainAdoptionService.php",
-      "class": "Coleza\\Domain\\Migration\\Adoption\\DomainAdoptionService",
-      "public_schema_methods": [
-        "ensureDomainsTable"
       ],
       "literal_table_names": [],
       "direct_migration_reference": false,
@@ -914,6 +894,18 @@
       ],
       "literal_table_names": [
         "privacy_tombstones"
+      ],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Migration/Adoption/AdoptionSchema.php",
+      "class": "Coleza\\Domain\\Migration\\Adoption\\AdoptionSchema",
+      "public_schema_methods": [
+        "ensure"
+      ],
+      "literal_table_names": [
+        "migration_adoption_lock"
       ],
       "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"

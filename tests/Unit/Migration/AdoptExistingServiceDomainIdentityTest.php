@@ -80,7 +80,7 @@ final class AdoptExistingServiceDomainIdentityTest extends TestCase
         $this->assertSame(50, (int) $rows[0]['user_id']);
         $this->assertSame(101, (int) $rows[0]['product_id']);
         $this->assertSame('mycpaneluser', $rows[0]['username']);
-        $this->assertSame(1, (int) $rows[0]['is_adopted']);
+        $this->assertSame(1, (int) json_decode($rows[0]['metadata_json'], true)['is_adopted']);
 
         $meta = json_encode($rows[0]['metadata_json']);
         $this->assertStringContainsString('provisioning_suppressed', $meta);
@@ -94,7 +94,9 @@ final class AdoptExistingServiceDomainIdentityTest extends TestCase
             clientSourceId: '10',
             productSourceId: '2',
             domain: 'mytestsite.com',
-            username: 'mycpaneluser'
+            username: 'mycpaneluser',
+            registrationDate: '2025-01-01',
+            nextDueDate: '2026-11-01'
         );
 
         $res1 = $this->serviceAdopter->adoptService($dto, 'BATCH-001', 'cpanel1');
@@ -114,7 +116,9 @@ final class AdoptExistingServiceDomainIdentityTest extends TestCase
             sourceSystem: 'whmcs',
             clientSourceId: '10',
             productSourceId: '2',
-            username: 'shareduser'
+            username: 'shareduser',
+            registrationDate: '2025-01-01',
+            nextDueDate: '2026-11-01'
         );
         $this->serviceAdopter->adoptService($dto1, 'BATCH-001', 'cpanel1');
 
@@ -124,7 +128,9 @@ final class AdoptExistingServiceDomainIdentityTest extends TestCase
             sourceSystem: 'whmcs',
             clientSourceId: '10',
             productSourceId: '2',
-            username: 'shareduser'
+            username: 'shareduser',
+            registrationDate: '2025-01-01',
+            nextDueDate: '2026-11-01'
         );
         $res2 = $this->serviceAdopter->adoptService($dto2, 'BATCH-001', 'cpanel1');
 
@@ -139,7 +145,9 @@ final class AdoptExistingServiceDomainIdentityTest extends TestCase
             sourceSystem: 'whmcs',
             clientSourceId: '999999', // Unknown client
             productSourceId: '2',
-            username: 'unknownuser'
+            username: 'unknownuser',
+            registrationDate: '2025-01-01',
+            nextDueDate: '2026-11-01'
         );
         $result = $this->serviceAdopter->adoptService($dto, 'BATCH-001', 'cpanel1');
 
@@ -184,9 +192,9 @@ final class AdoptExistingServiceDomainIdentityTest extends TestCase
         $rows = $this->db->select("SELECT * FROM domains WHERE id = :id", ['id' => $result->getAdoptedDomainId()]);
         $this->assertCount(1, $rows);
         $this->assertSame(50, (int) $rows[0]['user_id']);
-        $this->assertSame('existingdomain.org', $rows[0]['domain_name']);
-        $this->assertSame('enom', $rows[0]['registrar']);
-        $this->assertSame(1, (int) $rows[0]['is_adopted']);
+        $this->assertSame('existingdomain.org', $rows[0]['domain']);
+        $this->assertSame('enom', $rows[0]['registrar_id']);
+        $this->assertSame(1, (int) json_decode($rows[0]['metadata_json'], true)['is_adopted']);
     }
 
     public function testDomainAdoptionConflictDetection(): void
@@ -234,7 +242,9 @@ final class AdoptExistingServiceDomainIdentityTest extends TestCase
             sourceSystem: 'whmcs',
             clientSourceId: '10',
             productSourceId: '2',
-            username: 'verifieduser'
+            username: 'verifieduser',
+            registrationDate: '2025-01-01',
+            nextDueDate: '2026-11-01'
         );
         $resVer = $verifiedAdopter->adoptService($dtoVerified, 'BATCH-001', 'cpanel1', verifyRemote: true);
         $this->assertTrue($resVer->isSuccess());
@@ -245,7 +255,9 @@ final class AdoptExistingServiceDomainIdentityTest extends TestCase
             sourceSystem: 'whmcs',
             clientSourceId: '10',
             productSourceId: '2',
-            username: 'ghostuser'
+            username: 'ghostuser',
+            registrationDate: '2025-01-01',
+            nextDueDate: '2026-11-01'
         );
         $resUnver = $verifiedAdopter->adoptService($dtoUnverified, 'BATCH-001', 'cpanel1', verifyRemote: true);
         $this->assertTrue($resUnver->isSuccess());

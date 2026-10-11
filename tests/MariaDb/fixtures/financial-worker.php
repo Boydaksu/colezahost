@@ -38,6 +38,21 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'adoptService':
+        case 'adoptDomain':
+            $identityRepo = new Coleza\Domain\Migration\Adoption\AdoptedIdentityRepository($db);
+            $resolver = new Coleza\Domain\Migration\Adoption\ProviderIdentityResolver(serverMap: ['fixture' => 3], productMap: ['product' => 5], clientMap: ['client' => 7]);
+            if ($action === 'adoptService') {
+                $adopter = new Coleza\Domain\Migration\Adoption\ServiceAdoptionService($db, $identityRepo, $resolver);
+                $adopted = $adopter->adoptService(new Coleza\Domain\Migration\Canonical\CanonicalServiceDto('parallel-service', 'whmcs', 'client', 'product', 'parallel.test', 'parallel-user', registrationDate: '2025-01-01', nextDueDate: '2026-12-01'), 'parallel-batch', 'fixture');
+                $result['entity_id'] = $adopted->getAdoptedServiceId();
+            } else {
+                $adopter = new Coleza\Domain\Migration\Adoption\DomainAdoptionService($db, $identityRepo, $resolver);
+                $adopted = $adopter->adoptDomain(new Coleza\Domain\Migration\Canonical\CanonicalDomainDto('parallel-domain', 'whmcs', 'client', 'parallel.test', 'manual'), 'parallel-batch');
+                $result['entity_id'] = $adopted->getAdoptedDomainId();
+            }
+            if (!$adopted->isSuccess()) { throw new RuntimeException('Parallel adoption failed.'); }
+            break;
         case 'providerBrand':
             $provider = (new Coleza\Domain\Installer\BrandSetupService())->configureBrand($db, new Coleza\Domain\Installer\BrandSetupDto('Provider Company', 'Provider Brand', 'support@example.test'), ownerUserId: $id);
             $result['organization_id'] = $provider['organization_id'];

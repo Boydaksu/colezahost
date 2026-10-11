@@ -62,6 +62,7 @@ final class WhmcsCoreEntitiesMigrationTest extends TestCase
 
         // 4. Adoption and identity infrastructure
         $this->identityResolver = new ProviderIdentityResolver();
+        $this->identityResolver->registerServerMapping('1', 1);
         $this->adoptedRepo = new AdoptedIdentityRepository($this->targetDb);
         $this->serviceAdopter = new ServiceAdoptionService($this->targetDb, $this->adoptedRepo, $this->identityResolver);
         $this->domainAdopter = new DomainAdoptionService($this->targetDb, $this->adoptedRepo, $this->identityResolver);
@@ -269,8 +270,8 @@ final class WhmcsCoreEntitiesMigrationTest extends TestCase
         $this->whmcsDb->statement("INSERT INTO tblpricing (id, type, currency, relid, monthly, annually) VALUES (1, 'product', 1, 10, 15.00, 150.00)");
 
         // Service
-        $this->whmcsDb->statement("INSERT INTO tblhosting (id, userid, packageid, server, regdate, domain, amount, billingcycle, domainstatus, username)
-            VALUES (100, 1, 10, 1, '2025-01-05', 'acme.com', 15.00, 'Monthly', 'Active', 'acmeusr')");
+        $this->whmcsDb->statement("INSERT INTO tblhosting (id, userid, packageid, server, regdate, nextduedate, domain, amount, billingcycle, domainstatus, username)
+            VALUES (100, 1, 10, 1, '2025-01-05', '2026-11-05', 'acme.com', 15.00, 'Monthly', 'Active', 'acmeusr')");
 
         // Domain
         $this->whmcsDb->statement("INSERT INTO tbldomains (id, userid, domain, recurringamount, registrar, registrationperiod, status)
@@ -383,8 +384,8 @@ final class WhmcsCoreEntitiesMigrationTest extends TestCase
         $this->identityResolver->registerClientMapping('10', 501);
         $this->identityResolver->registerProductMapping('20', 601);
 
-        $this->whmcsDb->statement("INSERT INTO tblhosting (id, userid, packageid, server, regdate, domain, amount, billingcycle, domainstatus, username)
-            VALUES (901, 10, 20, 1, '2025-01-01', 'example.org', 9.99, 'Monthly', 'Active', 'exorguser')");
+        $this->whmcsDb->statement("INSERT INTO tblhosting (id, userid, packageid, server, regdate, nextduedate, domain, amount, billingcycle, domainstatus, username)
+            VALUES (901, 10, 20, 1, '2025-01-01', '2026-11-01', 'example.org', 9.99, 'Monthly', 'Active', 'exorguser')");
 
         $batchId = 'batch-service-01';
         $stats = $this->migrator->migrateServices($batchId);
@@ -399,7 +400,7 @@ final class WhmcsCoreEntitiesMigrationTest extends TestCase
         $this->assertSame(501, (int)$service['user_id']);
         $this->assertSame(601, (int)$service['product_id']);
         $this->assertSame('example.org', $service['domain']);
-        $this->assertSame(1, (int)$service['is_adopted']);
+        $this->assertSame(1, (int)json_decode($service['metadata_json'], true)['is_adopted']);
 
         $meta = json_decode((string)$service['metadata_json'], true);
         $this->assertTrue($meta['provisioning_suppressed']);
@@ -432,12 +433,12 @@ final class WhmcsCoreEntitiesMigrationTest extends TestCase
         $this->assertSame(0, $stats['quarantined']);
 
         // Verify domain in domains table
-        $domain = $this->targetDb->selectOne("SELECT * FROM domains WHERE domain_name = 'example.org'");
+        $domain = $this->targetDb->selectOne("SELECT * FROM domains WHERE domain = 'example.org'");
         $this->assertNotNull($domain);
         $this->assertSame(501, (int)$domain['user_id']);
-        $this->assertSame('example.org', $domain['domain_name']);
-        $this->assertSame('resellerclub', $domain['registrar']);
-        $this->assertSame(1, (int)$domain['is_adopted']);
+        $this->assertSame('example.org', $domain['domain']);
+        $this->assertSame('resellerclub', $domain['registrar_id']);
+        $this->assertSame(1, (int)json_decode($domain['metadata_json'], true)['is_adopted']);
 
         $meta = json_decode((string)$domain['metadata_json'], true);
         $this->assertTrue($meta['registrar_api_suppressed']);
@@ -471,10 +472,10 @@ final class WhmcsCoreEntitiesMigrationTest extends TestCase
         $this->whmcsDb->statement("INSERT INTO tblproducts (id, gid, name, type) VALUES (20, 1, 'Gold Plan', 'hostingaccount')");
 
         // 2 services: 1 for valid client 1, 1 referencing quarantined client 3
-        $this->whmcsDb->statement("INSERT INTO tblhosting (id, userid, packageid, server, domain, username, domainstatus)
-            VALUES (101, 1, 10, 1, 'validdomain.com', 'valuser', 'Active')");
-        $this->whmcsDb->statement("INSERT INTO tblhosting (id, userid, packageid, server, domain, username, domainstatus)
-            VALUES (102, 3, 20, 1, 'orphan.com', 'badclientuser', 'Active')");
+        $this->whmcsDb->statement("INSERT INTO tblhosting (id, userid, packageid, server, regdate, nextduedate, domain, username, domainstatus)
+            VALUES (101, 1, 10, 1, '2025-01-01', '2026-11-01', 'validdomain.com', 'valuser', 'Active')");
+        $this->whmcsDb->statement("INSERT INTO tblhosting (id, userid, packageid, server, regdate, nextduedate, domain, username, domainstatus)
+            VALUES (102, 3, 20, 1, '2025-01-01', '2026-11-01', 'orphan.com', 'badclientuser', 'Active')");
 
         // 2 domains: 1 valid domain for client 1, 1 invalid domain syntax (spaces in name)
         $this->whmcsDb->statement("INSERT INTO tbldomains (id, userid, domain, status, registrar)
@@ -549,8 +550,8 @@ final class WhmcsCoreEntitiesMigrationTest extends TestCase
         $this->identityResolver->registerClientMapping('10', 501);
         $this->identityResolver->registerProductMapping('20', 601);
 
-        $this->whmcsDb->statement("INSERT INTO tblhosting (id, userid, packageid, server, domain, username, domainstatus)
-            VALUES (901, 10, 20, 1, 'rerun-test.com', 'rerunuser', 'Active')");
+        $this->whmcsDb->statement("INSERT INTO tblhosting (id, userid, packageid, server, regdate, nextduedate, domain, username, domainstatus)
+            VALUES (901, 10, 20, 1, '2025-01-01', '2026-11-01', 'rerun-test.com', 'rerunuser', 'Active')");
 
         $batch1 = 'batch-run-1';
         $stats1 = $this->migrator->migrateServices($batch1);

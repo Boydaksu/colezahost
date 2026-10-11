@@ -1,10 +1,10 @@
 # D02 kurulum/geçiş kabul matrisi
 
-Güncelleme: 11.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f, D02-3g. Bu matris ürünün bağımsız kabulü değildir. D02 IN_PROGRESS.
+Güncelleme: 11.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f, D02-3g, D02-3h. Bu matris ürünün bağımsız kabulü değildir. D02 IN_PROGRESS.
 
 | Senaryo | Durum | Kanıt / sınır |
 |---|---|---|
-| Gerçek MariaDB 10.11, temiz veri tabanı, production migrationlar | Yerel test geçti | DatabaseFoundationTest; InstallationAcceptanceTest; on migration |
+| Gerçek MariaDB 10.11, temiz veri tabanı, production bir migrationlar | Yerel test geçti | DatabaseFoundationTest; InstallationAcceptanceTest; on bir migration |
 | SQLite kurulum sihirbazı, migrationlardan sonra ADMIN adımı | Yerel test geçti | WebInstallerTest; gerçek DatabaseConfig bağlantısı |
 | Migration tekrarında eski RBAC rollerinin, izinlerin ve tarihlerinin korunması | Yerel test geçti | DatabaseFoundationTest; IdentitySchemaMigrationRegressionTest |
 | Belge/kalem/duyuru kayıtlarının tekrar migrationda korunması | Yerel test geçti | DocumentPersistenceTest; D02-3b |
@@ -23,9 +23,11 @@ Güncelleme: 11.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f,
 | Legacy provider identity uzlaştırması | Açık id'lerle yerel test geçti; otomatik tahmin yok | bindExistingProvider başka sahibi devralmaz; eski belirsiz bağ operatörün açık seçimi olmadan kurulmaz |
 | Destek, API, oturum/kimlik güvenliği, sözleşme ve belge arşivi tabloları | Yerel kurulum/veri koruma testleri geçti | Migration 9; 24 tablo, eski ticket kolonları, API scope/sıralı sayaç, global sözleşme numarası; snapshot blob depolama taklidi |
 | Gizlilik ve migration geçmişinin 13 tablosu | Yerel kurulum/veri koruma testleri geçti | Migration 10; eski dar/signed tombstone, imzasız kaydın doğrulanmaması, checkpoint/retention korunması, transaction rollback |
-| Diğer otomasyon, domain/service adoption ve operasyonel domainler; genel runtime DDL sınırları | Açık | Kurulum şeması bütün iş akışlarının ve kısıtların kabulü değildir |
+| Domain/hizmet adoption uygulama şeması ve atomiklik | Yerel test geçti | Migration 11; uygulamadan okuma, yerleşim/timeline/identity rollback; dört paralel hizmet ve dört paralel domain aktarımı |
+| Eski dar services/domains adoption tabloları | Veri değiştirmeden durdurma testi geçti; dönüşüm açık | Tutar/tarih/isim/binding dönüşümü ve eski kısıt uyumu ayrı upgrade çalışması gerektirir |
+| Diğer otomasyon ve operasyonel domainler; genel runtime DDL sınırları | Açık | Kurulum şeması bütün iş akışlarının ve kısıtların kabulü değildir |
 | GoldenFinancialDataset'in üretim şemasıyla eşleşmesi | Açık | Test fixture kanonik kurulum şeması sayılmaz; F17/F30 |
 | Gerçek sağlayıcı bağlantısı ve gerçek cron çalıştırıcısının geçmiş yazımı | D06 kabulü açık | Doctor provider envanterini uzaktan doğrulanmış HEALTHY diye sunmaz |
 | Üretim veri tabanında upgrade/rollback | Yapılmadı | Yedek, bakım penceresi ve eski worker'ların durdurulması gerekir; yerel test üretim onayı değildir |
 
-Sıradaki D02 işi: D02-SCHEMA-INVENTORY.json içindeki kalan domain şema kurucularını gerçek kurulum/upgrade akışına bağlamak ve kısıt uyumunu sınamak. Envanter 88 CREATE TABLE kaynak dosyasını listeler; metinde migration referansı olması tek başına çalıştırma ya da kabul kanıtı değildir. D02 çıkış ölçütleri tamamlanmadan D03'e geçilmez.
+Sıradaki D02 işi: D02-SCHEMA-INVENTORY.json içindeki kalan domain şema kurucularını gerçek kurulum/upgrade akışına bağlamak ve kısıt uyumunu sınamak. Envanter 87 CREATE TABLE kaynak dosyasını listeler; metinde migration referansı olması tek başına çalıştırma ya da kabul kanıtı değildir. D02 çıkış ölçütleri tamamlanmadan D03'e geçilmez.

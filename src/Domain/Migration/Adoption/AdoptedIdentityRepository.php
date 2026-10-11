@@ -111,7 +111,7 @@ final class AdoptedIdentityRepository
 
         $rows = $this->db->select(
             sprintf(
-                'SELECT * FROM %s WHERE identity_type = :it AND provider_identifier = :pi AND external_reference_id = :er',
+                'SELECT * FROM %s WHERE identity_type = :it AND provider_identifier = :pi AND external_reference_id = :er' . $this->db->forUpdate(),
                 $this->table
             ),
             ['it' => $type->value, 'pi' => $providerIdentifier, 'er' => $referenceId]

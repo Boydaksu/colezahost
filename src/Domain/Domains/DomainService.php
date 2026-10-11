@@ -23,6 +23,17 @@ final class DomainService
 
     public function ensureTables(): void
     {
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchemaInTransaction($this->db, ['domains' => ['id', 'user_id', 'organization_id', 'domain', 'sld', 'tld', 'status', 'registration_period_years', 'registration_date', 'expiry_date', 'next_due_date', 'auto_renew', 'whois_privacy', 'dns_management', 'email_forwarding', 'is_locked', 'epp_code', 'registrar_id', 'nameservers_json', 'subscription_id', 'metadata_json', 'created_at', 'updated_at'], 'domain_contacts' => ['id', 'domain_id', 'contact_type', 'first_name', 'last_name', 'company_name', 'email', 'phone', 'fax', 'address_line_1', 'address_line_2', 'city', 'state', 'postal_code', 'country_code', 'additional_fields_json', 'created_at', 'updated_at'], 'domain_timeline_events' => ['id', 'domain_id', 'event_type', 'actor_id', 'actor_type', 'description', 'payload_json', 'created_at']])) { return; }
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($this->db->getPdo());
+        $columns = $this->db->getDriverName() === 'sqlite'
+            ? array_column($this->db->select('PRAGMA table_info(domains)'), 'name')
+            : array_column($this->db->select("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'domains'"), 'COLUMN_NAME');
+        if ($columns !== []) {
+            if (!in_array('domain', $columns, true)) { throw new \LogicException('Legacy domains schema requires explicit reconciliation before installation/adoption.'); }
+            if (!in_array('sld', $columns, true)) { throw new \LogicException('Legacy domains schema requires explicit reconciliation before installation/adoption.'); }
+            if (!in_array('tld', $columns, true)) { throw new \LogicException('Legacy domains schema requires explicit reconciliation before installation/adoption.'); }
+            if (!in_array('registrar_id', $columns, true)) { throw new \LogicException('Legacy domains schema requires explicit reconciliation before installation/adoption.'); }
+        }
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',

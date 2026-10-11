@@ -1,0 +1,92 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[31;1mE[0m[31;1mE[0m[41;37mF[0m[41;37mF[0m                                                                4 / 4 (100%)
+
+Time: 00:07.568, Memory: 24.00 MB
+
+There were 2 errors:
+
+1) Coleza\Tests\MariaDb\AdoptionPersistenceTest::testInstalledServiceAdoptionIsVisibleToApplicationAndRepeatSafe
+PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'server_id' in 'INSERT INTO'
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:115
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Migration\Adoption\ServiceAdoptionService.php:153
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AdoptionPersistenceCases.php:29
+
+2) Coleza\Tests\MariaDb\AdoptionPersistenceTest::testInstalledDomainAdoptionIsVisibleToApplicationAndRepeatSafe
+PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'domain' in 'WHERE'
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:49
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Domains\DomainService.php:223
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AdoptionPersistenceCases.php:49
+
+--
+
+There were 2 failures:
+
+1) Coleza\Tests\MariaDb\AdoptionPersistenceTest::testIdentityWriteFailureLeavesNoOrphanService
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+-Array &0 []
++Array &0 [
++    0 => Array &1 [
++        'id' => 1,
++        'user_id' => 7,
++        'product_id' => 5,
++        'server_id' => 3,
++        'domain' => 'example.test',
++        'username' => 'fixture-user',
++        'status' => 'active',
++        'billing_cycle' => 'monthly',
++        'recurring_amount' => '19.99',
++        'currency' => 'USD',
++        'registration_date' => '2025-01-02',
++        'next_due_date' => '2026-12-02',
++        'is_adopted' => 1,
++        'metadata_json' => '{"adopted_from":"whmcs","source_service_id":"service-1","provisioning_suppressed":true}',
++        'created_at' => '2026-10-11 13:07:12',
++    ],
++]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AdoptionPersistenceCases.php:70
+
+2) Coleza\Tests\MariaDb\AdoptionPersistenceTest::testIdentityWriteFailureLeavesNoOrphanDomain
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+-Array &0 []
++Array &0 [
++    0 => Array &1 [
++        'id' => 1,
++        'user_id' => 7,
++        'domain_name' => 'example.test',
++        'registrar' => 'manual',
++        'status' => 'active',
++        'registration_period_years' => 1,
++        'recurring_amount' => '9.99',
++        'currency' => 'USD',
++        'registration_date' => '2025-01-02',
++        'expiry_date' => '2026-12-02',
++        'next_due_date' => '2026-11-02',
++        'auto_renew' => 1,
++        'id_protection' => 0,
++        'nameservers_json' => '["ns1.example.test"]',
++        'is_adopted' => 1,
++        'metadata_json' => '{"adopted_from":"whmcs","source_domain_id":"domain-1","registrar_api_suppressed":true}',
++        'created_at' => '2026-10-11 13:07:12',
++    ],
++]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AdoptionPersistenceCases.php:83
+
+[37;41mERRORS![0m
+[37;41mTests: 4[0m[37;41m, Assertions: 13[0m[37;41m, Errors: 2[0m[37;41m, Failures: 2[0m[37;41m.[0m

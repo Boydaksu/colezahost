@@ -99,6 +99,7 @@ final class CutoverAndGoldenMigrationE2ETest extends TestCase
         $this->stagingPipeline = new StagingPipelineService($this->stagingRepo, $this->mappingEngine, $this->validationEngine);
 
         $this->identityResolver = new ProviderIdentityResolver();
+        $this->identityResolver->registerServerMapping('1', 1);
         $this->adoptedRepo = new AdoptedIdentityRepository($this->targetDb);
         $this->serviceAdopter = new ServiceAdoptionService($this->targetDb, $this->adoptedRepo, $this->identityResolver);
         $this->domainAdopter = new DomainAdoptionService($this->targetDb, $this->adoptedRepo, $this->identityResolver);
