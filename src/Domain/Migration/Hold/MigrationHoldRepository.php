@@ -20,6 +20,8 @@ final class MigrationHoldRepository
 
     public function ensureTable(): void
     {
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchemaInTransaction($this->db, ['migration_holds' => ['id', 'batch_id', 'entity_type', 'entity_id', 'status', 'reason', 'suppressed_actions_json', 'held_at', 'released_at', 'released_by', 'release_notes']])) { return; }
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($this->db->getPdo());
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',

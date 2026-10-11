@@ -17,6 +17,8 @@ final class AdoptedIdentityRepository
 
     public function ensureTable(): void
     {
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchemaInTransaction($this->db, ['adopted_provider_identities' => ['id', 'batch_id', 'identity_type', 'source_id', 'source_system', 'target_entity_id', 'provider_type', 'provider_identifier', 'external_reference_id', 'external_metadata_json', 'remote_verification_passed', 'suppress_provisioning', 'adopted_at']])) { return; }
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($this->db->getPdo());
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',

@@ -28,6 +28,8 @@ final class PrivacyErasureService
 
     public function ensureTables(): void
     {
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchemaInTransaction($this->db, ['privacy_erasure_logs' => ['id', 'user_id', 'executed_by', 'reason', 'deleted_count', 'anonymized_count', 'retained_count', 'summary_json', 'audit_checksum', 'created_at'], 'privacy_processing_restrictions' => ['id', 'user_id', 'is_active', 'reason', 'restricted_by', 'restricted_at', 'lifted_at', 'lifted_by', 'lift_reason']])) { return; }
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($this->db->getPdo());
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',

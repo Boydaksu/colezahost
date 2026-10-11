@@ -23,6 +23,8 @@ final class PrivacyRequestService
 
     public function ensureTables(): void
     {
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchemaInTransaction($this->db, ['privacy_requests' => ['id', 'user_id', 'organization_id', 'request_type', 'status', 'step_up_token', 'otp_code_hash', 'otp_attempts', 'expires_at', 'verified_at', 'completed_at', 'export_checksum', 'export_data_json', 'metadata_json', 'created_at']])) { return; }
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($this->db->getPdo());
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',

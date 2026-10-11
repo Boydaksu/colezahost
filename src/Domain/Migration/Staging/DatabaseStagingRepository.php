@@ -17,6 +17,8 @@ final class DatabaseStagingRepository implements StagingRepositoryInterface
 
     public function ensureTable(): void
     {
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchemaInTransaction($this->db, ['migration_staging_records' => ['id', 'batch_id', 'source_system', 'source_entity_type', 'source_entity_id', 'raw_payload_json', 'status', 'canonical_entity_type', 'canonical_payload_json', 'validation_errors_json', 'quarantine_reason', 'target_entity_id', 'processed_at', 'created_at']])) { return; }
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($this->db->getPdo());
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',

@@ -20,6 +20,8 @@ final class MigrationCheckpointRepository
 
     public function ensureTable(): void
     {
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchemaInTransaction($this->db, ['migration_checkpoints' => ['batch_id', 'current_step', 'last_processed_id', 'processed_count', 'total_count', 'status', 'metadata_json', 'updated_at']])) { return; }
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($this->db->getPdo());
         $sql = sprintf(
             'CREATE TABLE IF NOT EXISTS %s (
                 batch_id VARCHAR(64) PRIMARY KEY,

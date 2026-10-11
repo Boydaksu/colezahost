@@ -20,6 +20,8 @@ final class SuppressedNotificationRepository
 
     public function ensureTable(): void
     {
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchemaInTransaction($this->db, ['suppressed_notifications' => ['id', 'batch_id', 'recipient_email', 'notification_type', 'entity_type', 'entity_id', 'reason', 'payload_json', 'suppressed_at', 'status', 'replayed_at']])) { return; }
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($this->db->getPdo());
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',

@@ -22,6 +22,8 @@ final class RedactionAuditService
 
     public function ensureTables(): void
     {
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchemaInTransaction($this->db, ['privacy_redaction_audits' => ['id', 'user_id', 'domain_name', 'action_type', 'records_affected', 'redacted_fields', 'pre_checksum', 'post_checksum', 'verified_clean', 'audited_at', 'audited_by', 'audit_signature']])) { return; }
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($this->db->getPdo());
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',

@@ -20,6 +20,8 @@ final class RetentionAndLegalHoldService
 
     public function ensureTables(): void
     {
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchemaInTransaction($this->db, ['privacy_retention_policies' => ['id', 'policy_key', 'category', 'retention_days', 'action_on_expiry', 'is_statutory', 'description', 'created_at', 'updated_at'], 'privacy_legal_holds' => ['id', 'hold_reference', 'title', 'reason', 'scope_type', 'scope_id', 'scope_identifier', 'issued_by_authority', 'created_by_staff_id', 'is_active', 'created_at', 'released_at', 'released_by_staff_id', 'release_notes', 'metadata_json']])) { return; }
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($this->db->getPdo());
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',

@@ -33,36 +33,7 @@ final class PrivacyTombstoneService
 
     public function ensureTables(): void
     {
-        $driver = $this->db->getDriverName();
-        $autoInc = match ($driver) {
-            'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
-            default => 'INT AUTO_INCREMENT PRIMARY KEY',
-        };
-
-        $sql = sprintf(
-            'CREATE TABLE IF NOT EXISTS %s (
-                id %s,
-                user_id INT NOT NULL UNIQUE,
-                user_email_hash VARCHAR(64) NOT NULL,
-                erasure_type VARCHAR(32) NOT NULL,
-                reason TEXT NOT NULL,
-                erasure_checksum VARCHAR(64) NOT NULL,
-                metadata TEXT NULL,
-                tombstoned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                integrity_signature VARCHAR(64) NOT NULL
-            )',
-            $this->tableName,
-            $autoInc
-        );
-        $this->db->statement($sql);
-
-        if ($driver !== 'sqlite') {
-            try {
-                $this->db->statement("CREATE INDEX idx_tombstone_email_hash ON {$this->tableName} (user_email_hash)");
-            } catch (\Throwable) {
-                // Ignore if index already exists
-            }
-        }
+        PrivacyTombstoneSchema::ensure($this->db);
     }
 
     public function recordTombstone(

@@ -671,7 +671,7 @@
         "ensureTable"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -721,7 +721,7 @@
         "ensureTable"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -783,7 +783,7 @@
         "ensureTable"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -793,7 +793,7 @@
         "ensureTable"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -833,7 +833,7 @@
         "ensureTable"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -843,7 +843,7 @@
         "ensureTables"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -853,7 +853,7 @@
         "ensureTables"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -863,7 +863,7 @@
         "ensureTables"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -873,7 +873,7 @@
         "ensureTables"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -883,17 +883,7 @@
         "ensureTables"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
-      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
-    },
-    {
-      "file": "src/Domain/Privacy/Tombstone/PrivacyTombstoneService.php",
-      "class": "Coleza\\Domain\\Privacy\\Tombstone\\PrivacyTombstoneService",
-      "public_schema_methods": [
-        "ensureTables"
-      ],
-      "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -913,6 +903,18 @@
         "ensure"
       ],
       "literal_table_names": [],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Privacy/Tombstone/PrivacyTombstoneSchema.php",
+      "class": "Coleza\\Domain\\Privacy\\Tombstone\\PrivacyTombstoneSchema",
+      "public_schema_methods": [
+        "ensure"
+      ],
+      "literal_table_names": [
+        "privacy_tombstones"
+      ],
       "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     }

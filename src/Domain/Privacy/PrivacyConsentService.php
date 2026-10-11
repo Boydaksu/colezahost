@@ -21,6 +21,8 @@ final class PrivacyConsentService
 
     public function ensureTables(): void
     {
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchemaInTransaction($this->db, ['privacy_consents' => ['id', 'user_id', 'purpose', 'is_granted', 'granted_at', 'revoked_at', 'ip_address', 'user_agent'], 'privacy_tombstones' => ['id', 'user_id', 'user_email_hash', 'erasure_type', 'reason', 'erasure_checksum', 'metadata', 'tombstoned_at', 'integrity_signature']])) { return; }
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($this->db->getPdo());
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -45,19 +47,7 @@ final class PrivacyConsentService
         );
         $this->db->statement($sqlConsent);
 
-        // Privacy tombstones table (persists erasure status to prevent revival after backup restore)
-        $sqlTombstone = sprintf(
-            'CREATE TABLE IF NOT EXISTS %s (
-                id %s,
-                user_id INT NOT NULL UNIQUE,
-                erasure_type VARCHAR(50) NOT NULL,
-                reason VARCHAR(255) NULL,
-                tombstoned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )',
-            $this->tombstoneTable,
-            $autoInc
-        );
-        $this->db->statement($sqlTombstone);
+        \Coleza\Domain\Privacy\Tombstone\PrivacyTombstoneSchema::ensure($this->db);
     }
 
     /**
@@ -167,7 +157,10 @@ final class PrivacyConsentService
             $this->db->insert($this->tombstoneTable, [
                 'user_id' => $userId,
                 'erasure_type' => $erasureType,
-                'reason' => $reason,
+                'reason' => $reason ?? '',
+                'user_email_hash' => '',
+                'erasure_checksum' => '',
+                'integrity_signature' => '',
             ]);
         }
 

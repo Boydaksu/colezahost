@@ -1,0 +1,136 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[41;37mF[0m                                                  16 / 16 (100%)
+
+Time: 00:43.752, Memory: 24.00 MB
+
+There were 15 errors:
+
+1) Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#0 with data ('privacy_consents')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_d2ad0eda00636dfd.privacy_consents' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacyMigrationInstallCases.php:19
+
+2) Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#1 with data ('privacy_tombstones')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_e20f681bf977d198.privacy_tombstones' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacyMigrationInstallCases.php:19
+
+3) Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#2 with data ('privacy_requests')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_f882fb84f4bd520a.privacy_requests' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacyMigrationInstallCases.php:19
+
+4) Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#3 with data ('privacy_redaction_audits')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_0203ea3a03680183.privacy_redaction_audits' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacyMigrationInstallCases.php:19
+
+5) Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#4 with data ('privacy_retention_policies')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_d440928e818a096a.privacy_retention_policies' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacyMigrationInstallCases.php:19
+
+6) Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#5 with data ('privacy_legal_holds')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_9a25823469e5a610.privacy_legal_holds' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacyMigrationInstallCases.php:19
+
+7) Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#6 with data ('privacy_erasure_logs')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_5cbac3422c404c3f.privacy_erasure_logs' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacyMigrationInstallCases.php:19
+
+8) Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#7 with data ('privacy_processing_restrictions')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_3d4c8ecbd9503c39.privacy_processing_restrictions' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacyMigrationInstallCases.php:19
+
+9) Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#8 with data ('migration_staging_records')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_79a0f0b7ee8c5971.migration_staging_records' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacyMigrationInstallCases.php:19
+
+10) Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#9 with data ('migration_checkpoints')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_9d3d4e312ca7386d.migration_checkpoints' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacyMigrationInstallCases.php:19
+
+11) Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#10 with data ('migration_holds')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_fe315cef99273309.migration_holds' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacyMigrationInstallCases.php:19
+
+12) Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#11 with data ('suppressed_notifications')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_cf253ff62d741167.suppressed_notifications' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacyMigrationInstallCases.php:19
+
+13) Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#12 with data ('adopted_provider_identities')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_d3761c312dbd4c82.adopted_provider_identities' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacyMigrationInstallCases.php:19
+
+14) Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testConsentFirstAllowsSignedTombstoneAndRetainsSignatureOnReinstall
+PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'user_email_hash' in 'INSERT INTO'
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:68
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Privacy\Tombstone\PrivacyTombstoneService.php:103
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacyMigrationInstallCases.php:27
+
+15) Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testSignedSchemaFirstAllowsLegacyConsentApiWithoutInventingSignature
+PDOException: SQLSTATE[HY000]: General error: 1364 Field 'user_email_hash' doesn't have a default value
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:298
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:68
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Privacy\PrivacyConsentService.php:167
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacyMigrationInstallCases.php:40
+
+--
+
+There was 1 failure:
+
+1) Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testOldConsentTombstoneIsPreservedAsUnverified
+Failed asserting that null is identical to ''.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacyMigrationInstallCases.php:55
+
+--
+
+1 test triggered 1 PHP warning:
+
+1) C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacyMigrationInstallCases.php:55
+Undefined array key "integrity_signature"
+
+[37;41mERRORS![0m
+[37;41mTests: 16[0m[37;41m, Assertions: 34[0m[37;41m, Errors: 15[0m[37;41m, Failures: 1[0m[37;41m, Warnings: 1[0m[37;41m.[0m
