@@ -56,14 +56,13 @@ final class TicketService
         );
         $this->db->statement($sqlTickets);
 
-        try {
-            $this->db->statement(sprintf('ALTER TABLE %s ADD COLUMN invoice_id INT NULL', $this->ticketsTable));
-        } catch (\Throwable) {
-        }
-
-        try {
-            $this->db->statement(sprintf('ALTER TABLE %s ADD COLUMN order_id INT NULL', $this->ticketsTable));
-        } catch (\Throwable) {
+        $columns = $this->db->getDriverName() === 'sqlite'
+            ? array_column($this->db->select(sprintf('PRAGMA table_info(%s)', $this->ticketsTable)), 'name')
+            : array_column($this->db->select(sprintf('SHOW COLUMNS FROM %s', $this->ticketsTable)), 'Field');
+        foreach (['invoice_id', 'order_id'] as $column) {
+            if (!in_array($column, $columns, true)) {
+                $this->db->statement(sprintf('ALTER TABLE %s ADD COLUMN %s INT NULL', $this->ticketsTable, $column));
+            }
         }
 
         $sqlMessages = sprintf(

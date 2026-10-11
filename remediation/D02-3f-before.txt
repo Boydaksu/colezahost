@@ -1,0 +1,190 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m                                         25 / 25 (100%)
+
+Time: 01:02.226, Memory: 22.00 MB
+
+There were 25 errors:
+
+1) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#0 with data ('support_departments')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_732887c1ca285e62.support_departments' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:21
+
+2) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#1 with data ('support_department_agents')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_b4065c933e9f7bc6.support_department_agents' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:21
+
+3) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#2 with data ('support_tickets')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_a09c986f7069fb9a.support_tickets' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:21
+
+4) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#3 with data ('support_ticket_messages')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_dd4bc43167d6f7b3.support_ticket_messages' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:21
+
+5) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#4 with data ('support_ticket_attachments')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_a72ebb2d242ec1e4.support_ticket_attachments' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:21
+
+6) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#5 with data ('support_ticket_assignments_log')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_7661a9b9c966782d.support_ticket_assignments_log' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:21
+
+7) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#6 with data ('support_department_assignment_state')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_8f5811015b67bcf5.support_department_assignment_state' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:21
+
+8) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#7 with data ('support_sla_policies')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_463206b5986816fb.support_sla_policies' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:21
+
+9) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#8 with data ('support_ticket_sla')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_85eb2b2065e21d8f.support_ticket_sla' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:21
+
+10) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#9 with data ('support_canned_responses')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_d683614cf3d47ec0.support_canned_responses' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:21
+
+11) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#10 with data ('support_announcements')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_cb1ce7a7e389fa80.support_announcements' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:21
+
+12) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#11 with data ('support_context_command_logs')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_6be0b990186a3274.support_context_command_logs' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:21
+
+13) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#12 with data ('api_keys')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_65c9eafe43bc2c70.api_keys' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:21
+
+14) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#13 with data ('api_request_logs')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_2e015709a1e4d43c.api_request_logs' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:21
+
+15) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#14 with data ('api_rate_limits')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_30caff4a7b0e811f.api_rate_limits' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:21
+
+16) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#15 with data ('sessions')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_8aaea847a62dfb31.sessions' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:21
+
+17) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#16 with data ('password_resets')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_109470974718516e.password_resets' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:21
+
+18) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#17 with data ('email_verifications')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_657e0a7f86d83f44.email_verifications' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:21
+
+19) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#18 with data ('security_audit_logs')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_aad9d80776d5fe07.security_audit_logs' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:21
+
+20) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#19 with data ('user_two_factor')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_3d01fe4ccf09495c.user_two_factor' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:21
+
+21) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#20 with data ('user_recovery_codes')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_3cb815641ca32934.user_recovery_codes' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:21
+
+22) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#21 with data ('user_trusted_devices')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_f1f36e1892bd9e9f.user_trusted_devices' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:21
+
+23) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#22 with data ('contracts')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_ac1339af5159285e.contracts' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:21
+
+24) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#23 with data ('document_snapshots')
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_769ca18d3d75b58f.document_snapshots' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:21
+
+25) Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testContractCanBePersistedForDifferentOrganizations
+PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '
+                contract_number VARCHAR(64) NOT NULL UNIQUE,
+               ...' at line 2
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Documents\Contracts\ContractService.php:576
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Documents\Contracts\ContractService.php:32
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaInstallCases.php:25
+
+[37;41mERRORS![0m
+[37;41mTests: 25[0m[37;41m, Assertions: 50[0m[37;41m, Errors: 25[0m[37;41m.[0m

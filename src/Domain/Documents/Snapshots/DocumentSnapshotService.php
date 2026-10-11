@@ -7,6 +7,7 @@ namespace Coleza\Domain\Documents\Snapshots;
 use Coleza\Domain\Documents\DocumentType;
 use Coleza\Domain\Documents\Storage\DocumentStorageInterface;
 use Coleza\Domain\Documents\Storage\PrivateDocumentStorage;
+use Coleza\Foundation\Database\PdoSchema;
 use PDO;
 use RuntimeException;
 
@@ -21,6 +22,7 @@ final class DocumentSnapshotService
         private ?PDO $pdo = null,
         private ?DocumentStorageInterface $storage = null
     ) {
+        if ($this->pdo !== null) { PdoSchema::autoIncrement($this->pdo); }
         $this->storage ??= new PrivateDocumentStorage();
         if ($this->pdo !== null) {
             $this->ensureSchema();
@@ -293,13 +295,15 @@ final class DocumentSnapshotService
 
     private function ensureSchema(): void
     {
-        if ($this->pdo === null) {
-            return;
-        }
+        if ($this->pdo !== null) { self::installSchema($this->pdo); }
+    }
 
-        $this->pdo->exec(
-            'CREATE TABLE IF NOT EXISTS document_snapshots (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+    public static function installSchema(PDO $pdo): void
+    {
+        $id = PdoSchema::autoIncrement($pdo);
+        $pdo->exec(
+            "CREATE TABLE IF NOT EXISTS document_snapshots (
+                id {$id},
                 document_type VARCHAR(32) NOT NULL,
                 document_number VARCHAR(64) NOT NULL,
                 version INTEGER NOT NULL DEFAULT 1,
@@ -313,7 +317,7 @@ final class DocumentSnapshotService
                 change_reason TEXT,
                 is_latest INTEGER NOT NULL DEFAULT 1,
                 UNIQUE(document_type, document_number, version)
-            )'
+            )"
         );
     }
 }

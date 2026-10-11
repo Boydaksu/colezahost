@@ -27,7 +27,13 @@ final class AttachmentService
 
     public function ensureTables(): void
     {
-        $driver = $this->db->getDriverName();
+        self::installSchema($this->db);
+    }
+
+    public static function installSchema(Connection $db): void
+    {
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($db->getPdo());
+        $driver = $db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
             default => 'INT AUTO_INCREMENT PRIMARY KEY',
@@ -48,10 +54,10 @@ final class AttachmentService
                 metadata_json TEXT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )',
-            $this->attachmentsTable,
+            'support_ticket_attachments',
             $autoInc
         );
-        $this->db->statement($sql);
+        $db->statement($sql);
     }
 
     /**

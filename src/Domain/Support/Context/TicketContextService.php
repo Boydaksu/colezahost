@@ -25,7 +25,13 @@ final class TicketContextService
 
     public function ensureTables(): void
     {
-        $driver = $this->db->getDriverName();
+        self::installSchema($this->db);
+    }
+
+    public static function installSchema(Connection $db): void
+    {
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($db->getPdo());
+        $driver = $db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
             default => 'INT AUTO_INCREMENT PRIMARY KEY',
@@ -44,10 +50,10 @@ final class TicketContextService
                 payload_json TEXT NULL,
                 executed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )',
-            $this->commandLogsTable,
+            'support_context_command_logs',
             $autoInc
         );
-        $this->db->statement($sql);
+        $db->statement($sql);
     }
 
     public function registerCommandHandler(TicketContextCommandHandlerInterface $handler): void

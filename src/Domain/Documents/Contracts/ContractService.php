@@ -7,6 +7,7 @@ namespace Coleza\Domain\Documents\Contracts;
 use Coleza\Domain\Documents\DocumentType;
 use Coleza\Domain\Documents\Numbering\DocumentNumberGenerator;
 use Coleza\Foundation\Exceptions\ValidationException;
+use Coleza\Foundation\Database\PdoSchema;
 use PDO;
 use RuntimeException;
 
@@ -25,6 +26,7 @@ final class ContractService
         ?DocumentNumberGenerator $numberGenerator = null,
         ?ContractStateMachine $stateMachine = null
     ) {
+        if ($this->pdo !== null) { PdoSchema::autoIncrement($this->pdo); }
         $this->numberGenerator = $numberGenerator ?? new DocumentNumberGenerator($this->pdo);
         $this->stateMachine = $stateMachine ?? new ContractStateMachine();
 
@@ -74,10 +76,7 @@ final class ContractService
             $endDate = date('Y-m-d', strtotime("{$formattedStartDate} +{$commitmentPeriodMonths} months"));
         }
 
-        $contractNumber = $this->numberGenerator->generateNextNumber(
-            DocumentType::CONTRACT,
-            $organizationId !== null ? (string) $organizationId : '1'
-        );
+        $contractNumber = $this->numberGenerator->generateNextGlobalNumber(DocumentType::CONTRACT);
 
         $now = date('c');
 
@@ -569,20 +568,22 @@ final class ContractService
 
     private function ensureSchema(): void
     {
-        if ($this->pdo === null) {
-            return;
-        }
+        if ($this->pdo !== null) { self::installSchema($this->pdo); }
+    }
 
-        $this->pdo->exec(
-            'CREATE TABLE IF NOT EXISTS contracts (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+    public static function installSchema(PDO $pdo): void
+    {
+        $id = PdoSchema::autoIncrement($pdo);
+        $pdo->exec(
+            "CREATE TABLE IF NOT EXISTS contracts (
+                id {$id},
                 contract_number VARCHAR(64) NOT NULL UNIQUE,
                 user_id INTEGER NOT NULL,
                 organization_id INTEGER,
                 service_id INTEGER,
                 order_id INTEGER,
                 title VARCHAR(255) NOT NULL,
-                status VARCHAR(32) NOT NULL DEFAULT "draft",
+                status VARCHAR(32) NOT NULL DEFAULT 'draft',
                 commitment_period_months INTEGER NOT NULL DEFAULT 12,
                 start_date VARCHAR(32) NOT NULL,
                 end_date VARCHAR(32),
@@ -601,7 +602,7 @@ final class ContractService
                 notes TEXT,
                 created_at VARCHAR(64) NOT NULL,
                 updated_at VARCHAR(64) NOT NULL
-            );'
+            )"
         );
     }
 }

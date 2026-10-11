@@ -10,7 +10,7 @@
         "ensureTable"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -20,7 +20,7 @@
         "ensureTable"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -30,7 +30,7 @@
         "ensureTable"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -127,27 +127,33 @@
     {
       "file": "src/Domain/Documents/Snapshots/DocumentSnapshotService.php",
       "class": "Coleza\\Domain\\Documents\\Snapshots\\DocumentSnapshotService",
-      "public_schema_methods": [],
+      "public_schema_methods": [
+        "installSchema"
+      ],
       "literal_table_names": [
         "document_snapshots"
       ],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
       "file": "src/Domain/Documents/Contracts/ContractService.php",
       "class": "Coleza\\Domain\\Documents\\Contracts\\ContractService",
-      "public_schema_methods": [],
+      "public_schema_methods": [
+        "installSchema"
+      ],
       "literal_table_names": [
         "contracts"
       ],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
       "file": "src/Domain/Analytics/Testing/GoldenFinancialDataset.php",
       "class": "Coleza\\Domain\\Analytics\\Testing\\GoldenFinancialDataset",
-      "public_schema_methods": [],
+      "public_schema_methods": [
+        "ensureSchema"
+      ],
       "literal_table_names": [
         "analytics_daily_aggregations",
         "financial_account_transactions",
@@ -307,7 +313,7 @@
         "ensureTables"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -345,7 +351,7 @@
         "ensureTables"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -355,7 +361,7 @@
         "ensureTable"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -375,7 +381,7 @@
         "ensureTables"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -447,7 +453,7 @@
         "ensureTables"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -467,7 +473,7 @@
         "ensureTable"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -510,7 +516,7 @@
         "ensureTables"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -575,10 +581,11 @@
       "file": "src/Domain/Support/Attachments/AttachmentService.php",
       "class": "Coleza\\Domain\\Support\\Attachments\\AttachmentService",
       "public_schema_methods": [
-        "ensureTables"
+        "ensureTables",
+        "installSchema"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -595,10 +602,11 @@
       "file": "src/Domain/Support/Context/TicketContextService.php",
       "class": "Coleza\\Domain\\Support\\Context\\TicketContextService",
       "public_schema_methods": [
-        "ensureTables"
+        "ensureTables",
+        "installSchema"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -628,7 +636,7 @@
         "ensureTables"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -673,7 +681,7 @@
         "ensureTables"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -693,7 +701,7 @@
         "ensureTables"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
