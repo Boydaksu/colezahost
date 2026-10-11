@@ -176,7 +176,7 @@ final class WebInstallerService
 
         /** @var Connection $db */
         $db = $this->connection;
-        $result = $this->brandSetupService->configureBrand($db, $dto, $currency, $locale);
+        $result = $this->brandSetupService->configureBrand($db, $dto, $currency, $locale, ownerUserId: isset($this->sessionState['admin_id']) ? (int) $this->sessionState['admin_id'] : null);
 
         $this->sessionState['brand_id'] = $result['brand_id'];
         $this->sessionState['brand_name'] = $result['brand_name'];

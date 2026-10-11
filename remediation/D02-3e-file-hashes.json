@@ -1,0 +1,94 @@
+[
+  {
+    "path": "remediation/D02-INSTALL-MATRIX.md",
+    "sha256": "0ba49e52794533fd0b06bfaf6ad487a8699c05433d5b10608b6cf5e25f0a5dda"
+  },
+  {
+    "path": "remediation/D02-SCHEMA-INVENTORY.json",
+    "sha256": "66f248f3e718625bb6883668b487b9342aa4438d41c12db3766676c544ab81d4"
+  },
+  {
+    "path": "remediation/PLAN.md",
+    "sha256": "8aa0ab6f6c3c4dc94191f18f0e610a0763c150e1bf533c2fb2101093129afaa1"
+  },
+  {
+    "path": "remediation/state.json",
+    "sha256": "3c1ad4534eb73b0fe20bfc789986d6d8b6418ada78077c13d5134e3c0d156132"
+  },
+  {
+    "path": "src/Domain/Identity/Rbac/RbacService.php",
+    "sha256": "7ae690f2ad0d18467aba627210c880c027d4e9ba978788bfebb6241eb201406d"
+  },
+  {
+    "path": "src/Domain/Installer/BrandSetupService.php",
+    "sha256": "b8d450c5bfe926cb3f6eca1acccecdda9a95a2a55481a97a3d1ac6d80714fd3b"
+  },
+  {
+    "path": "src/Domain/Installer/DatabaseSetupService.php",
+    "sha256": "f5c0e6d66ba58a6efae633777dd2a39ce86b2818444b5dbb4cc6f0874898bb41"
+  },
+  {
+    "path": "src/Domain/Installer/WebInstallerService.php",
+    "sha256": "64395f89eb441fb8e6fea4dc784fc9280e4826a35bbe8ae8cb0a440eb6164d99"
+  },
+  {
+    "path": "tests/MariaDb/DatabaseFoundationTest.php",
+    "sha256": "406937f4f3f74c883f44223eacd9b8e78dd3649e421206a93a84aa9fbf5d15f1"
+  },
+  {
+    "path": "tests/MariaDb/fixtures/financial-worker.php",
+    "sha256": "3dccfff76bf95b56453cd648a8a55d01d79a46a22dfb6d278d4042f48df1d900"
+  },
+  {
+    "path": "tests/Unit/Foundation/Database/IdentitySchemaMigrationRegressionTest.php",
+    "sha256": "2122047af3e54cba298bd0a12fc8615ef8c3b2451e5a38712358ad0d2616bf9c"
+  },
+  {
+    "path": "tests/Unit/Installer/WebInstallerTest.php",
+    "sha256": "c4752c1edf4c9cccc20c82caa83debc46a89a400fdfb9d99cab06dd12857cb9f"
+  },
+  {
+    "path": "database/migrations/2026_10_11_000008_provider_identity.php",
+    "sha256": "e464af25a5f12b5a3be33fdc00b1f285c633027bb4b55aec2503988366de4fd8"
+  },
+  {
+    "path": "remediation/D02-3e-SONUC.md",
+    "sha256": "02e02a291e196d88f61a89001e5af5d0d9133c37682cfc692f30911ff2f41f7f"
+  },
+  {
+    "path": "remediation/D02-3e-before.txt",
+    "sha256": "7f3a5b4d486bfa5e9acafe08161239aa0aa57b2107ebe252d3c6ddd550107965"
+  },
+  {
+    "path": "remediation/D02-3e-mariadb.txt",
+    "sha256": "d95cb92277b46245519006bb33b3605416c098cfc4649d1469df1dbfb9c55094"
+  },
+  {
+    "path": "remediation/D02-3e-mariadb.xml",
+    "sha256": "d73e2341123ec8fefe78fd146a48079a7ab12c1006e0c6920144e4045bd284ea"
+  },
+  {
+    "path": "remediation/D02-3e-suite.txt",
+    "sha256": "1470967807be6bc6745f180329487ed5339752aac380f6fdf6936da5b8d215e4"
+  },
+  {
+    "path": "remediation/D02-3e-suite.xml",
+    "sha256": "b193e41d7406ca6f1c9d128870d4b0cf473fa0996958239161cc2af441c5106b"
+  },
+  {
+    "path": "src/Domain/Installer/ProviderIdentitySchema.php",
+    "sha256": "27e4a563fc08f1f072936147dfa7435723b098b92c05f47720925652ced2d3bc"
+  },
+  {
+    "path": "tests/MariaDb/ProviderBrandSetupTest.php",
+    "sha256": "eee656712467b6bd1d1d05757ca91b8e9c1b11c10753b427215f076281945632"
+  },
+  {
+    "path": "tests/Support/ProviderBrandSetupCases.php",
+    "sha256": "7856df5a14b35effc2da4ade7209d41ba9b35aedcd6610bbffc23fcfc941d1f5"
+  },
+  {
+    "path": "tests/Unit/Installer/ProviderBrandSetupTest.php",
+    "sha256": "a81a059e15552dc953f150fc1d472e5a343ff16b86c2b17897ff5f403c3a94fa"
+  }
+]

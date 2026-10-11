@@ -189,6 +189,8 @@ final class DatabaseSetupService
         ));
         $tables[] = $tCron;
 
+        (new ProviderIdentitySchema($connection, $prefix))->ensure();
+        $tables[] = $prefix . 'installer_provider_identity';
         return [
             'success' => true,
             'tables_initialized' => $tables,

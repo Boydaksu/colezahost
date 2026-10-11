@@ -1,10 +1,10 @@
 # D02 kurulum/geçiş kabul matrisi
 
-Güncelleme: 11.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d. Bu matris ürünün bağımsız kabulü değildir. D02 IN_PROGRESS.
+Güncelleme: 11.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e. Bu matris ürünün bağımsız kabulü değildir. D02 IN_PROGRESS.
 
 | Senaryo | Durum | Kanıt / sınır |
 |---|---|---|
-| Gerçek MariaDB 10.11, temiz veri tabanı, production migrationlar | Yerel test geçti | DatabaseFoundationTest; InstallationAcceptanceTest; yedi migration |
+| Gerçek MariaDB 10.11, temiz veri tabanı, production migrationlar | Yerel test geçti | DatabaseFoundationTest; InstallationAcceptanceTest; sekiz migration |
 | SQLite kurulum sihirbazı, migrationlardan sonra ADMIN adımı | Yerel test geçti | WebInstallerTest; gerçek DatabaseConfig bağlantısı |
 | Migration tekrarında eski RBAC rollerinin, izinlerin ve tarihlerinin korunması | Yerel test geçti | DatabaseFoundationTest; IdentitySchemaMigrationRegressionTest |
 | Belge/kalem/duyuru kayıtlarının tekrar migrationda korunması | Yerel test geçti | DocumentPersistenceTest; D02-3b |
@@ -19,10 +19,11 @@ Güncelleme: 11.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d. Bu matris ürü
 | Bilinen Auth/WHMCS ve eski installer user/organization kolonları | Yerel test geçti | LegacyIdentitySchemaTest (SQLite + MariaDB); veri koruma, NOT NULL ad, pasif giriş reddi, yarım geçişten devam |
 | Bilinmeyen kimlik şeması ve erişim durumu | Güvenli durdurma testi geçti | Preflight CREATE/ALTER öncesinde hata verir; parola veya erişim durumu tahmin edilmez |
 | Eski kolon boyutu, NULL/default, unique/FK/index ve diğer kimlik varyantları | Açık | Bu geçiş kolonları ekler; mevcut tipleri/kısıtları yıkıp yeniden oluşturmaz. Desteklenen kolon düzeni, bütün eski şemaların eşdeğerliği değildir |
-| BrandSetup ve eski NOT NULL organization owner | Açık | İlk müşteri şirketinin provider kuruluşu sayılmaması ve yeni kuruluşun açık sahip kimliğiyle oluşturulması ayrıca sınanmalı |
+| BrandSetup ve eski NOT NULL organization owner | Yerel test geçti | Açık aktif/yetkili sahip, kalıcı bağ, müşteri/diğer marka korunması, rollback ve dört paralel kurulum |
+| Legacy provider identity uzlaştırması | Açık id'lerle yerel test geçti; otomatik tahmin yok | bindExistingProvider başka sahibi devralmaz; eski belirsiz bağ operatörün açık seçimi olmadan kurulmaz |
 | Diğer destek, API, otomasyon, privacy, migration/adoption ve belge domainleri | Açık | Temel şema listesi bütün platformun kalıcılık listesi değildir |
 | GoldenFinancialDataset'in üretim şemasıyla eşleşmesi | Açık | Test fixture kanonik kurulum şeması sayılmaz; F17/F30 |
 | Gerçek sağlayıcı bağlantısı ve gerçek cron çalıştırıcısının geçmiş yazımı | D06 kabulü açık | Doctor provider envanterini uzaktan doğrulanmış HEALTHY diye sunmaz |
 | Üretim veri tabanında upgrade/rollback | Yapılmadı | Yedek, bakım penceresi ve eski worker'ların durdurulması gerekir; yerel test üretim onayı değildir |
 
-Sıradaki D02 işi: D02-SCHEMA-INVENTORY.json içindeki kalan domain şema kurucularını gerçek kurulum/upgrade akışına bağlamak ve kısıt uyumunu sınamak. Envanter 87 CREATE TABLE kaynak dosyasını listeler; metinde migration referansı olması tek başına çalıştırma ya da kabul kanıtı değildir. D02 çıkış ölçütleri tamamlanmadan D03'e geçilmez.
+Sıradaki D02 işi: D02-SCHEMA-INVENTORY.json içindeki kalan domain şema kurucularını gerçek kurulum/upgrade akışına bağlamak ve kısıt uyumunu sınamak. Envanter 88 CREATE TABLE kaynak dosyasını listeler; metinde migration referansı olması tek başına çalıştırma ya da kabul kanıtı değildir. D02 çıkış ölçütleri tamamlanmadan D03'e geçilmez.

@@ -107,7 +107,7 @@ final class WebInstallerTest extends TestCase
         $installer = $this->createInstaller();
         $installer->setupDatabase(DatabaseConfig::sqlite());
         self::assertSame(InstallationStep::ADMIN, $installer->getCurrentStep());
-        self::assertCount(7, $installer->getConnection()->select('SELECT * FROM migrations'));
+        self::assertCount(8, $installer->getConnection()->select('SELECT * FROM migrations'));
         self::assertSame([], $installer->getConnection()->select('SELECT * FROM invoices'));
     }
 
@@ -246,7 +246,8 @@ final class WebInstallerTest extends TestCase
             taxNumber: '1234567890'
         );
 
-        $brandResult = $brandService->configureBrand($this->db, $brandDto, 'TRY', 'tr');
+        $owner = (new AdminBootstrapService())->bootstrapAdmin($this->db, new AdminSetupDto('brand-admin@example.test', 'BrandAdminPassword123!', 'Brand', 'Admin'));
+        $brandResult = $brandService->configureBrand($this->db, $brandDto, 'TRY', 'tr', ownerUserId: $owner['id']);
         $this->assertSame('Coleza Cloud', $brandResult['brand_name']);
         $this->assertSame('Coleza Bulut Bilisim A.S.', $brandResult['company_name']);
 

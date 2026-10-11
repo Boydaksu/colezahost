@@ -38,6 +38,11 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'providerBrand':
+            $provider = (new Coleza\Domain\Installer\BrandSetupService())->configureBrand($db, new Coleza\Domain\Installer\BrandSetupDto('Provider Company', 'Provider Brand', 'support@example.test'), ownerUserId: $id);
+            $result['organization_id'] = $provider['organization_id'];
+            $result['brand_id'] = $provider['brand_id'];
+            break;
         case 'parallelQuotes':
         case 'parallelProformas':
             $service = $action === 'parallelQuotes'

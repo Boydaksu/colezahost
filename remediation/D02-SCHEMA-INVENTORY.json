@@ -1,7 +1,7 @@
 {
   "date": "2026-10-11",
   "purpose": "DDL source inventory; direct references are not execution coverage or schema compatibility",
-  "file_count": 87,
+  "file_count": 88,
   "files": [
     {
       "file": "src/Api/Auth/ApiKeyService.php",
@@ -893,6 +893,16 @@
       "class": "Coleza\\Domain\\Servers\\Capacity\\Services\\CapacityReservationService",
       "public_schema_methods": [
         "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Installer/ProviderIdentitySchema.php",
+      "class": "Coleza\\Domain\\Installer\\ProviderIdentitySchema",
+      "public_schema_methods": [
+        "ensure"
       ],
       "literal_table_names": [],
       "direct_migration_reference": true,

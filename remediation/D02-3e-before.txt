@@ -1,0 +1,56 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[31;1mE[0m[31;1mE[0m[41;37mF[0m[41;37mF[0m[31;1mE[0m                                                               5 / 5 (100%)
+
+Time: 00:02.569, Memory: 20.00 MB
+
+There were 3 errors:
+
+1) Coleza\Tests\MariaDb\ProviderBrandSetupTest::testCustomerOrganizationAndUnrelatedBrandAreNotOverwritten
+Error: Unknown named parameter $ownerUserId
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ProviderBrandSetupCases.php:25
+
+2) Coleza\Tests\MariaDb\ProviderBrandSetupTest::testLegacyNotNullOwnerReceivesExplicitOwner
+Error: Unknown named parameter $ownerUserId
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ProviderBrandSetupCases.php:42
+
+3) Coleza\Tests\MariaDb\ProviderBrandSetupTest::testOrdinaryUserCannotConfigureProviderIdentity
+Error: Unknown named parameter $ownerUserId
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ProviderBrandSetupCases.php:69
+
+--
+
+There were 2 failures:
+
+1) Coleza\Tests\MariaDb\ProviderBrandSetupTest::testMissingOwnerIsRejectedWithoutChangingRecords
+Failed asserting that null is not null.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ProviderBrandSetupCases.php:51
+
+2) Coleza\Tests\MariaDb\ProviderBrandSetupTest::testOwnerlessCallCannotMutateACustomerOrganization
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+ Array &0 [
+     'id' => 1,
+-    'name' => 'Protected Customer',
+-    'slug' => 'protected',
++    'name' => 'Provider Company',
++    'slug' => 'provider-company',
+     'owner_user_id' => 77,
+     'status' => 'active',
+     'billing_currency' => 'USD',
+     'created_at' => '2026-10-11 12:18:17',
+ ]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ProviderBrandSetupCases.php:62
+
+[37;41mERRORS![0m
+[37;41mTests: 5[0m[37;41m, Assertions: 12[0m[37;41m, Errors: 3[0m[37;41m, Failures: 2[0m[37;41m.[0m

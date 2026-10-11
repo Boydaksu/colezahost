@@ -135,6 +135,12 @@ final class RbacService
     public function hasPermission(int $userId, string $permission, ?int $orgId = null): bool
     {
         $this->ensureTables();
+        return $this->hasPermissionFromInitializedSchema($userId, $permission, $orgId);
+    }
+
+    /** Read migrated permission tables without DDL, including inside application transactions. */
+    public function hasPermissionFromInitializedSchema(int $userId, string $permission, ?int $orgId = null): bool
+    {
 
         $sql = sprintf(
             'SELECT rp.permission_name 
@@ -152,7 +158,7 @@ final class RbacService
             $params['oid'] = $orgId;
         }
 
-        $rows = $this->db->select($sql, $params);
+        $rows = $this->db->select($sql . $this->db->forUpdate(), $params);
 
         foreach ($rows as $row) {
             $perm = (string) $row['permission_name'];
