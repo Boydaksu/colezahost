@@ -1,0 +1,86 @@
+[
+  {
+    "path": "remediation/D02-INSTALL-MATRIX.md",
+    "sha256": "e4c1e69c3e52a51b37171912375d0dd7a508ef326ec247c9dc82b9671dab766b"
+  },
+  {
+    "path": "remediation/PLAN.md",
+    "sha256": "81eaa889a0a9add20ab60e497cba5474b1e28a214de91d363fc556048d790a2e"
+  },
+  {
+    "path": "remediation/state.json",
+    "sha256": "accd5bfac3475200c894ed99fc74b6932c90ac5d2f84c63f7b43d52aea4dd431"
+  },
+  {
+    "path": "src/Domain/Installer/AdminBootstrapService.php",
+    "sha256": "e2309812967a0bd2c4dd021742bfa81b939681f9e4221a5410ed6205403fe765"
+  },
+  {
+    "path": "src/Domain/Installer/DatabaseSetupService.php",
+    "sha256": "fd8e5f6d73928fb5dfb8ca8b09e6043eb4d14ed9dd38e24d77e16fc1d33b5b47"
+  },
+  {
+    "path": "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php",
+    "sha256": "b58fc871dfdaee8b91d63b8bd375a01622454ff311cb27f1a5c4702445802665"
+  },
+  {
+    "path": "tests/MariaDb/DatabaseFoundationTest.php",
+    "sha256": "a0b69f894a718a353c411193251bc46dcf671ab42c3a4cb7aaf66497ec7eb5ac"
+  },
+  {
+    "path": "tests/Unit/Foundation/Database/IdentitySchemaMigrationRegressionTest.php",
+    "sha256": "1da27898404f1417ababcada29a4e0f838a6aa13f1d261c882b5a76e0b8a0882"
+  },
+  {
+    "path": "tests/Unit/Installer/WebInstallerTest.php",
+    "sha256": "6a3ec727f4a9b8c09123264e92c18aec557f62b400bfaf45310dca2680a6dd33"
+  },
+  {
+    "path": "database/migrations/2026_10_11_000007_legacy_identity_columns.php",
+    "sha256": "1eb0c190fa17d8e5b6c5fff0481ebc2be5610f7dfe681dc63d10a319b1e1ec67"
+  },
+  {
+    "path": "remediation/D02-3d-SONUC.md",
+    "sha256": "f9b676e6152acec3abeb851dcef68fe31663b0812e79abe5ed26a1f1ddb7f3d4"
+  },
+  {
+    "path": "remediation/D02-3d-before.txt",
+    "sha256": "3b9bdaf1fffbf8747944de84a40dd501733a9a331292e7eba1d3395d0b4a116e"
+  },
+  {
+    "path": "remediation/D02-3d-mariadb.txt",
+    "sha256": "453d268ab097918283da8130d5c32ca5ccaf8f661fc39cb2ea95796b94750ff8"
+  },
+  {
+    "path": "remediation/D02-3d-mariadb.xml",
+    "sha256": "f11984846c4a5ceca7ad04811faeea2b1b256ef8edfdb619431b03e3b2641043"
+  },
+  {
+    "path": "remediation/D02-3d-suite.txt",
+    "sha256": "60f61c0c847336ba2d05932cd1b90d315c83314db2d1977cddfa80cf2879e91e"
+  },
+  {
+    "path": "remediation/D02-3d-suite.xml",
+    "sha256": "555282a90d5b152ad85c09828cd23ebda2ce5b01938118229558607ae2490db0"
+  },
+  {
+    "path": "remediation/D02-SCHEMA-INVENTORY.json",
+    "sha256": "1463ebe6609a5ab3fada99af9d5a2fe30b948f02b72fa402d461bc7996200c9c"
+  },
+  {
+    "path": "src/Domain/Identity/LegacyIdentitySchema.php",
+    "sha256": "299b642423d1c16b357c9475cd3c24685b7d4acaa69e10d8b73acd671789ac13"
+  },
+  {
+    "path": "tests/MariaDb/LegacyIdentitySchemaTest.php",
+    "sha256": "2a88085ad54aa5a6d63bcc35ee9767b3c12e6c5d76c040d2ea0a447675fe0711"
+  },
+  {
+    "path": "tests/Support/LegacyIdentityUpgradeCases.php",
+    "sha256": "929a76c73aa03dd993917e91b3fae062a82973dd474e6523575f4c5fe4360a7b"
+  },
+  {
+    "path": "tests/Unit/Installer/LegacyIdentitySchemaTest.php",
+    "sha256": "ceab485367eb8b9b53b6bd94f730d36a5aace8b3d96e8b859d4b2d39e177e928"
+  }
+]

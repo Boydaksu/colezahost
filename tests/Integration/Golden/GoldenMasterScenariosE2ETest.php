@@ -763,8 +763,8 @@ final class GoldenMasterScenariosE2ETest extends TestCase
     public function testG06RecoveryAndHardeningScenario(): void
     {
         $db = $this->createDb();
-        $db->statement("CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, email TEXT, status TEXT)");
-        $db->statement("INSERT INTO users (id, name, email, status) VALUES (1, 'Founder Admin', 'admin@colezahost.com', 'active')");
+        $db->statement("CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, email TEXT, password_hash TEXT NOT NULL, status TEXT)");
+        $db->statement("INSERT INTO users (id, name, email, password_hash, status) VALUES (1, 'Founder Admin', 'admin@colezahost.com', ?, 'active')", [password_hash('RecoveryFixturePassword123!', PASSWORD_BCRYPT)]);
 
         $appDir = $this->tempWorkDir . '/app';
         $backupDir = $this->tempWorkDir . '/backups';

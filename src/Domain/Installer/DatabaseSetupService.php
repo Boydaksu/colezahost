@@ -64,6 +64,9 @@ final class DatabaseSetupService
      */
     public function initializeCoreSchema(Connection $connection, string $prefix = ''): array
     {
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($connection->getPdo());
+        $legacyIdentity = new \Coleza\Domain\Identity\LegacyIdentitySchema($connection, $prefix);
+        $legacyIdentity->preflight();
         $identitySchema = new \Coleza\Domain\Identity\Rbac\RbacSchema($connection, $prefix);
         $driver = $connection->getDriverName();
         $autoInc = match ($driver) {
@@ -134,6 +137,8 @@ final class DatabaseSetupService
             $autoInc
         ));
         $tables[] = $tOrgMembers;
+
+        $legacyIdentity->upgrade();
 
         // 5. Brands table
         $tBrands = $prefix . 'brands';

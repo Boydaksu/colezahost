@@ -1,0 +1,902 @@
+{
+  "date": "2026-10-11",
+  "purpose": "DDL source inventory; direct references are not execution coverage or schema compatibility",
+  "file_count": 87,
+  "files": [
+    {
+      "file": "src/Api/Auth/ApiKeyService.php",
+      "class": "Coleza\\Api\\Auth\\ApiKeyService",
+      "public_schema_methods": [
+        "ensureTable"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Api/Logging/ApiRequestLogger.php",
+      "class": "Coleza\\Api\\Logging\\ApiRequestLogger",
+      "public_schema_methods": [
+        "ensureTable"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Api/RateLimit/RateLimiter.php",
+      "class": "Coleza\\Api\\RateLimit\\RateLimiter",
+      "public_schema_methods": [
+        "ensureTable"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Foundation/Scheduler/Scheduler.php",
+      "class": "Coleza\\Foundation\\Scheduler\\Scheduler",
+      "public_schema_methods": [
+        "ensureHeartbeatTable"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Foundation/Database/Migrator.php",
+      "class": "Coleza\\Foundation\\Database\\Migrator",
+      "public_schema_methods": [
+        "ensureMigrationsTable"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Pricing/Services/PricingService.php",
+      "class": "Coleza\\Domain\\Pricing\\Services\\PricingService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Webhooks/WebhookService.php",
+      "class": "Coleza\\Domain\\Webhooks\\WebhookService",
+      "public_schema_methods": [],
+      "literal_table_names": [
+        "webhook_deliveries",
+        "webhook_endpoints"
+      ],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Foundation/Lock/DatabaseLock.php",
+      "class": "Coleza\\Foundation\\Lock\\DatabaseLock",
+      "public_schema_methods": [
+        "ensureLocksTable"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Foundation/Idempotency/IdempotencyManager.php",
+      "class": "Coleza\\Foundation\\Idempotency\\IdempotencyManager",
+      "public_schema_methods": [
+        "ensureTable"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Foundation/Cache/DatabaseCache.php",
+      "class": "Coleza\\Foundation\\Cache\\DatabaseCache",
+      "public_schema_methods": [
+        "ensureCacheTable"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Foundation/Queue/DatabaseQueue.php",
+      "class": "Coleza\\Foundation\\Queue\\DatabaseQueue",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Vault/VaultService.php",
+      "class": "Coleza\\Domain\\Vault\\VaultService",
+      "public_schema_methods": [
+        "ensureTable"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Documents/Snapshots/DocumentSnapshotService.php",
+      "class": "Coleza\\Domain\\Documents\\Snapshots\\DocumentSnapshotService",
+      "public_schema_methods": [],
+      "literal_table_names": [
+        "document_snapshots"
+      ],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Documents/Contracts/ContractService.php",
+      "class": "Coleza\\Domain\\Documents\\Contracts\\ContractService",
+      "public_schema_methods": [],
+      "literal_table_names": [
+        "contracts"
+      ],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Analytics/Testing/GoldenFinancialDataset.php",
+      "class": "Coleza\\Domain\\Analytics\\Testing\\GoldenFinancialDataset",
+      "public_schema_methods": [],
+      "literal_table_names": [
+        "analytics_daily_aggregations",
+        "financial_account_transactions",
+        "financial_accounts",
+        "invoices",
+        "payment_refunds",
+        "payments",
+        "refunds"
+      ],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/OperationalMode/OperationalModeManager.php",
+      "class": "Coleza\\Domain\\OperationalMode\\OperationalModeManager",
+      "public_schema_methods": [],
+      "literal_table_names": [
+        "system_settings"
+      ],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Commerce/Services/ServiceService.php",
+      "class": "Coleza\\Domain\\Commerce\\Services\\ServiceService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Updater/ModuleCompatibilityChecker.php",
+      "class": "Coleza\\Domain\\Updater\\ModuleCompatibilityChecker",
+      "public_schema_methods": [],
+      "literal_table_names": [
+        "installed_modules"
+      ],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Analytics/Subscription/SubscriptionSnapshotService.php",
+      "class": "Coleza\\Domain\\Analytics\\Subscription\\SubscriptionSnapshotService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Backup/RestoreWizardService.php",
+      "class": "Coleza\\Domain\\Backup\\RestoreWizardService",
+      "public_schema_methods": [],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Abuse/AbuseCaseService.php",
+      "class": "Coleza\\Domain\\Abuse\\AbuseCaseService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Tax/Services/TaxService.php",
+      "class": "Coleza\\Domain\\Tax\\Services\\TaxService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Commerce/Orders/OrderService.php",
+      "class": "Coleza\\Domain\\Commerce\\Orders\\OrderService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Provisioning/Services/ProvisioningOperationService.php",
+      "class": "Coleza\\Domain\\Provisioning\\Services\\ProvisioningOperationService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Documents/Quotes/QuoteService.php",
+      "class": "Coleza\\Domain\\Documents\\Quotes\\QuoteService",
+      "public_schema_methods": [],
+      "literal_table_names": [
+        "quote_items",
+        "quotes"
+      ],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Commerce/Invoices/InvoiceService.php",
+      "class": "Coleza\\Domain\\Commerce\\Invoices\\InvoiceService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Documents/Proforma/ProformaService.php",
+      "class": "Coleza\\Domain\\Documents\\Proforma\\ProformaService",
+      "public_schema_methods": [],
+      "literal_table_names": [
+        "proforma_invoices",
+        "proforma_items"
+      ],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Documents/Numbering/DocumentNumberGenerator.php",
+      "class": "Coleza\\Domain\\Documents\\Numbering\\DocumentNumberGenerator",
+      "public_schema_methods": [],
+      "literal_table_names": [
+        "document_sequences"
+      ],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Commerce/Credit/CreditService.php",
+      "class": "Coleza\\Domain\\Commerce\\Credit\\CreditService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Support/Tickets/TicketService.php",
+      "class": "Coleza\\Domain\\Support\\Tickets\\TicketService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Analytics/ReadModels/ReadModelAggregationService.php",
+      "class": "Coleza\\Domain\\Analytics\\ReadModels\\ReadModelAggregationService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Catalog/Services/CatalogService.php",
+      "class": "Coleza\\Domain\\Catalog\\Services\\CatalogService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Installer/DatabaseSetupService.php",
+      "class": "Coleza\\Domain\\Installer\\DatabaseSetupService",
+      "public_schema_methods": [],
+      "literal_table_names": [],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Identity/TwoFactor/TwoFactorService.php",
+      "class": "Coleza\\Domain\\Identity\\TwoFactor\\TwoFactorService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Identity/Session/DatabaseSessionHandler.php",
+      "class": "Coleza\\Domain\\Identity\\Session\\DatabaseSessionHandler",
+      "public_schema_methods": [
+        "ensureTable"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Notifications/Announcements/AnnouncementService.php",
+      "class": "Coleza\\Domain\\Notifications\\Announcements\\AnnouncementService",
+      "public_schema_methods": [],
+      "literal_table_names": [
+        "announcements"
+      ],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Support/Sla/SlaService.php",
+      "class": "Coleza\\Domain\\Support\\Sla\\SlaService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Identity/Rbac/RbacSchema.php",
+      "class": "Coleza\\Domain\\Identity\\Rbac\\RbacSchema",
+      "public_schema_methods": [
+        "ensure"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Identity/Organization/OrganizationService.php",
+      "class": "Coleza\\Domain\\Identity\\Organization\\OrganizationService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Commerce/Recurring/Scheduler/MissedSchedulerCatchupService.php",
+      "class": "Coleza\\Domain\\Commerce\\Recurring\\Scheduler\\MissedSchedulerCatchupService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Notifications/Center/NotificationCenterService.php",
+      "class": "Coleza\\Domain\\Notifications\\Center\\NotificationCenterService",
+      "public_schema_methods": [],
+      "literal_table_names": [
+        "in_app_notifications",
+        "notification_logs",
+        "notification_preferences"
+      ],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Module/ModuleLifecycleService.php",
+      "class": "Coleza\\Domain\\Module\\ModuleLifecycleService",
+      "public_schema_methods": [
+        "ensureTable"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Commerce/Recurring/RenewalInvoiceService.php",
+      "class": "Coleza\\Domain\\Commerce\\Recurring\\RenewalInvoiceService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Identity/Auth/AuthService.php",
+      "class": "Coleza\\Domain\\Identity\\Auth\\AuthService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Brand/BrandService.php",
+      "class": "Coleza\\Domain\\Brand\\BrandService",
+      "public_schema_methods": [
+        "ensureTable"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Identity/Audit/AuditLogger.php",
+      "class": "Coleza\\Domain\\Identity\\Audit\\AuditLogger",
+      "public_schema_methods": [
+        "ensureTable"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Commerce/Payments/PaymentConcurrencySchema.php",
+      "class": "Coleza\\Domain\\Commerce\\Payments\\PaymentConcurrencySchema",
+      "public_schema_methods": [
+        "ensureSupportingTables"
+      ],
+      "literal_table_names": [
+        "credit_balance_locks",
+        "gateway_refund_reservations"
+      ],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Finance/Profitability/ProfitabilityService.php",
+      "class": "Coleza\\Domain\\Finance\\Profitability\\ProfitabilityService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Commerce/Payments/PaymentService.php",
+      "class": "Coleza\\Domain\\Commerce\\Payments\\PaymentService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Support/Departments/DepartmentService.php",
+      "class": "Coleza\\Domain\\Support\\Departments\\DepartmentService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Finance/Currency/CurrencyService.php",
+      "class": "Coleza\\Domain\\Finance\\Currency\\CurrencyService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Providers/Settings/ProviderSettingService.php",
+      "class": "Coleza\\Domain\\Providers\\Settings\\ProviderSettingService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Finance/Accounts/FinancialAccountService.php",
+      "class": "Coleza\\Domain\\Finance\\Accounts\\FinancialAccountService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Migration/Whmcs/WhmcsReadOnlyConnector.php",
+      "class": "Coleza\\Domain\\Migration\\Whmcs\\WhmcsReadOnlyConnector",
+      "public_schema_methods": [],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Finance/Expenses/ExpenseService.php",
+      "class": "Coleza\\Domain\\Finance\\Expenses\\ExpenseService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Fraud/Velocity/VelocityTrackerService.php",
+      "class": "Coleza\\Domain\\Fraud\\Velocity\\VelocityTrackerService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Support/Attachments/AttachmentService.php",
+      "class": "Coleza\\Domain\\Support\\Attachments\\AttachmentService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Fraud/Lists/FraudListService.php",
+      "class": "Coleza\\Domain\\Fraud\\Lists\\FraudListService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Support/Context/TicketContextService.php",
+      "class": "Coleza\\Domain\\Support\\Context\\TicketContextService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Fraud/Review/RiskReviewService.php",
+      "class": "Coleza\\Domain\\Fraud\\Review\\RiskReviewService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Fraud/Risk/RiskScoreService.php",
+      "class": "Coleza\\Domain\\Fraud\\Risk\\RiskScoreService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Support/Assignments/TicketAssignmentService.php",
+      "class": "Coleza\\Domain\\Support\\Assignments\\TicketAssignmentService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Migration/Whmcs/Support/WhmcsSupportMigrator.php",
+      "class": "Coleza\\Domain\\Migration\\Whmcs\\Support\\WhmcsSupportMigrator",
+      "public_schema_methods": [
+        "ensureSupportTables"
+      ],
+      "literal_table_names": [
+        "support_departments",
+        "support_ticket_attachments",
+        "support_ticket_messages",
+        "support_tickets"
+      ],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Domains/Catalog/DomainCatalogService.php",
+      "class": "Coleza\\Domain\\Domains\\Catalog\\DomainCatalogService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Migration/Hold/SuppressedNotificationRepository.php",
+      "class": "Coleza\\Domain\\Migration\\Hold\\SuppressedNotificationRepository",
+      "public_schema_methods": [
+        "ensureTable"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Support/Announcements/AnnouncementService.php",
+      "class": "Coleza\\Domain\\Support\\Announcements\\AnnouncementService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Domains/Registrar/Vault/VaultRegistrarSettingsManager.php",
+      "class": "Coleza\\Domain\\Domains\\Registrar\\Vault\\VaultRegistrarSettingsManager",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Support/CannedResponses/CannedResponseService.php",
+      "class": "Coleza\\Domain\\Support\\CannedResponses\\CannedResponseService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Servers/Services/ServerService.php",
+      "class": "Coleza\\Domain\\Servers\\Services\\ServerService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Migration/Hold/MigrationHoldRepository.php",
+      "class": "Coleza\\Domain\\Migration\\Hold\\MigrationHoldRepository",
+      "public_schema_methods": [
+        "ensureTable"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Domains/DomainService.php",
+      "class": "Coleza\\Domain\\Domains\\DomainService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Migration/Whmcs/Financial/WhmcsFinancialMigrator.php",
+      "class": "Coleza\\Domain\\Migration\\Whmcs\\Financial\\WhmcsFinancialMigrator",
+      "public_schema_methods": [
+        "ensureFinancialTables"
+      ],
+      "literal_table_names": [
+        "credit_ledger",
+        "invoice_items",
+        "invoices",
+        "payment_allocations",
+        "payments"
+      ],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Domains/Lifecycle/DomainExpiryService.php",
+      "class": "Coleza\\Domain\\Domains\\Lifecycle\\DomainExpiryService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Migration/Whmcs/Core/WhmcsCoreEntityMigrator.php",
+      "class": "Coleza\\Domain\\Migration\\Whmcs\\Core\\WhmcsCoreEntityMigrator",
+      "public_schema_methods": [
+        "ensureTargetTables"
+      ],
+      "literal_table_names": [
+        "organization_members",
+        "organizations",
+        "product_groups",
+        "products",
+        "users"
+      ],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Migration/Staging/DatabaseStagingRepository.php",
+      "class": "Coleza\\Domain\\Migration\\Staging\\DatabaseStagingRepository",
+      "public_schema_methods": [
+        "ensureTable"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Migration/Execution/MigrationCheckpointRepository.php",
+      "class": "Coleza\\Domain\\Migration\\Execution\\MigrationCheckpointRepository",
+      "public_schema_methods": [
+        "ensureTable"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Domains/Registrar/Reconciliation/DomainOperationRepository.php",
+      "class": "Coleza\\Domain\\Domains\\Registrar\\Reconciliation\\DomainOperationRepository",
+      "public_schema_methods": [
+        "ensureTable"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Migration/Adoption/ServiceAdoptionService.php",
+      "class": "Coleza\\Domain\\Migration\\Adoption\\ServiceAdoptionService",
+      "public_schema_methods": [
+        "ensureServicesTable"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Migration/Adoption/DomainAdoptionService.php",
+      "class": "Coleza\\Domain\\Migration\\Adoption\\DomainAdoptionService",
+      "public_schema_methods": [
+        "ensureDomainsTable"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Migration/Adoption/AdoptedIdentityRepository.php",
+      "class": "Coleza\\Domain\\Migration\\Adoption\\AdoptedIdentityRepository",
+      "public_schema_methods": [
+        "ensureTable"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Privacy/PrivacyConsentService.php",
+      "class": "Coleza\\Domain\\Privacy\\PrivacyConsentService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Privacy/Redaction/RedactionAuditService.php",
+      "class": "Coleza\\Domain\\Privacy\\Redaction\\RedactionAuditService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Privacy/Erasure/PrivacyErasureService.php",
+      "class": "Coleza\\Domain\\Privacy\\Erasure\\PrivacyErasureService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Privacy/Retention/RetentionAndLegalHoldService.php",
+      "class": "Coleza\\Domain\\Privacy\\Retention\\RetentionAndLegalHoldService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Privacy/Requests/PrivacyRequestService.php",
+      "class": "Coleza\\Domain\\Privacy\\Requests\\PrivacyRequestService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Privacy/Tombstone/PrivacyTombstoneService.php",
+      "class": "Coleza\\Domain\\Privacy\\Tombstone\\PrivacyTombstoneService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": false,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Servers/Capacity/Services/CapacityReservationService.php",
+      "class": "Coleza\\Domain\\Servers\\Capacity\\Services\\CapacityReservationService",
+      "public_schema_methods": [
+        "ensureTables"
+      ],
+      "literal_table_names": [],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    }
+  ]
+}

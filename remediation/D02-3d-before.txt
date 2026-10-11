@@ -1,0 +1,46 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m                                                                4 / 4 (100%)
+
+Time: 00:06.022, Memory: 22.00 MB
+
+There were 4 failures:
+
+1) Coleza\Tests\MariaDb\LegacyIdentitySchemaTest::testCoreSchemaInitializationCannotCommitAnApplicationTransaction
+DDL in an application transaction must be rejected.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\LegacyIdentitySchemaTest.php:14
+
+2) Coleza\Tests\MariaDb\LegacyIdentitySchemaTest::testLegacyUsersOrganizationsAndMembershipsSurviveRepeatedUpgrade
+Failed asserting that null is identical to 'inactive'.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\LegacyIdentityUpgradeCases.php:29
+
+3) Coleza\Tests\MariaDb\LegacyIdentitySchemaTest::testStatusOnlyLegacySchemaDoesNotReactivateDisabledUsers
+Failed asserting that null is identical to 'Ayşe Yılmaz'.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\LegacyIdentityUpgradeCases.php:55
+
+4) Coleza\Tests\MariaDb\LegacyIdentitySchemaTest::testUnknownAccessSchemaStopsBeforeAnyMutation
+Failed asserting that actual size 10 matches expected size 1.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\LegacyIdentityUpgradeCases.php:71
+
+--
+
+2 tests triggered 3 PHP warnings:
+
+1) C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\LegacyIdentityUpgradeCases.php:29
+Undefined array key "status"
+
+2) C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\LegacyIdentityUpgradeCases.php:52
+Undefined array key "is_active"
+
+3) C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\LegacyIdentityUpgradeCases.php:55
+Undefined array key "name"
+
+[37;41mFAILURES![0m
+[37;41mTests: 4[0m[37;41m, Assertions: 19[0m[37;41m, Failures: 4[0m[37;41m, Warnings: 3[0m[37;41m.[0m

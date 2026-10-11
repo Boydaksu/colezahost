@@ -26,16 +26,16 @@ final class AdminBootstrapService
         if ($existing !== null) {
             $userId = (int) $existing['id'];
             $db->statement(
-                sprintf('UPDATE %s SET password_hash = ?, first_name = ?, last_name = ?, status = "active", email_verified_at = CURRENT_TIMESTAMP WHERE id = ?', $tUsers),
-                [$passwordHash, $dto->getFirstName(), $dto->getLastName(), $userId]
+                sprintf('UPDATE %s SET password_hash = ?, name = ?, first_name = ?, last_name = ?, status = "active", is_active = 1, email_verified_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?', $tUsers),
+                [$passwordHash, $dto->getFirstName() . ' ' . $dto->getLastName(), $dto->getFirstName(), $dto->getLastName(), $userId]
             );
         } else {
             $db->statement(
                 sprintf(
-                    'INSERT INTO %s (email, password_hash, first_name, last_name, status, email_verified_at) VALUES (?, ?, ?, ?, "active", CURRENT_TIMESTAMP)',
+                    'INSERT INTO %s (email, password_hash, name, first_name, last_name, status, is_active, email_verified_at, created_at) VALUES (?, ?, ?, ?, ?, "active", 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)',
                     $tUsers
                 ),
-                [$dto->getEmail(), $passwordHash, $dto->getFirstName(), $dto->getLastName()]
+                [$dto->getEmail(), $passwordHash, $dto->getFirstName() . ' ' . $dto->getLastName(), $dto->getFirstName(), $dto->getLastName()]
             );
             $userId = (int) $db->getPdo()->lastInsertId();
         }
