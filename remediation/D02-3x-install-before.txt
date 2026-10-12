@@ -1,0 +1,31 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[41;37mF[0m                                                                   1 / 1 (100%)
+
+Time: 00:04.796, Memory: 24.00 MB
+
+There was 1 failure:
+
+1) Coleza\Tests\MariaDb\FraudSchemaTest::testProductionMigrationsInstallAllFraudTables
+Fraud schema must be installed before application requests
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+-Array &0 []
++Array &0 [
++    0 => 'fraud_risk_evaluations',
++    1 => 'fraud_risk_signals',
++    2 => 'fraud_risk_reviews',
++    3 => 'fraud_risk_review_decisions',
++    4 => 'fraud_list_entries',
++    5 => 'fraud_velocity_events',
++]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\FraudSchemaCases.php:58
+
+[37;41mFAILURES![0m
+[37;41mTests: 1[0m[37;41m, Assertions: 3[0m[37;41m, Failures: 1[0m[37;41m.[0m

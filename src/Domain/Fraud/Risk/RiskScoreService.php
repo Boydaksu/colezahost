@@ -12,6 +12,7 @@ use Coleza\Domain\Fraud\Risk\Rules\NewCustomerHighValueRule;
 use Coleza\Domain\Fraud\Risk\Rules\PaymentCountryMismatchRule;
 use Coleza\Domain\Fraud\Risk\Rules\RiskRuleInterface;
 use Coleza\Foundation\Database\Connection;
+use Coleza\Foundation\Database\PdoSchema;
 use DateTimeImmutable;
 
 final class RiskScoreService
@@ -61,55 +62,67 @@ final class RiskScoreService
         return $this->rules;
     }
 
-    public function ensureTables(): void
+    /** @return array<string, list<string>> */
+    public static function schemaRequirements(): array
     {
+        return [
+            'fraud_risk_evaluations' => ['id', 'entity_type', 'entity_id', 'user_id', 'organization_id', 'total_score', 'decision', 'signals_count', 'context_snapshot_json', 'created_at'],
+            'fraud_risk_signals' => ['id', 'evaluation_id', 'rule_code', 'score', 'severity', 'description', 'metadata_json', 'created_at'],
+        ];
+    }
+
+    public function ensureTables(bool $installSchema = false): void
+    {
+        $installed = PdoSchema::useInstalledSchema($this->db, self::schemaRequirements(), $installSchema);
+        if ($installed && !$installSchema) { return; }
         $driver = $this->db->getDriverName();
-        $autoInc = match ($driver) {
-            'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
-            default => 'INT AUTO_INCREMENT PRIMARY KEY',
-        };
+        $autoInc = PdoSchema::autoIncrement($this->db->getPdo());
+        $engine = $driver === 'mysql' ? ' ENGINE=InnoDB' : '';
+        if (!$installed) {
+            $sqlEvaluations = sprintf(
+                'CREATE TABLE IF NOT EXISTS %s (
+                    id %s,
+                    entity_type VARCHAR(50) NOT NULL,
+                    entity_id INT NULL,
+                    user_id INT NULL,
+                    organization_id INT NULL,
+                    total_score INT NOT NULL,
+                    decision VARCHAR(20) NOT NULL,
+                    signals_count INT NOT NULL DEFAULT 0,
+                    context_snapshot_json TEXT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )',
+                $this->evaluationsTable,
+                $autoInc
+            );
+            $this->db->statement($sqlEvaluations . $engine);
 
-        $sqlEvaluations = sprintf(
-            'CREATE TABLE IF NOT EXISTS %s (
-                id %s,
-                entity_type VARCHAR(50) NOT NULL,
-                entity_id INT NULL,
-                user_id INT NULL,
-                organization_id INT NULL,
-                total_score INT NOT NULL,
-                decision VARCHAR(20) NOT NULL,
-                signals_count INT NOT NULL DEFAULT 0,
-                context_snapshot_json TEXT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )',
-            $this->evaluationsTable,
-            $autoInc
-        );
-        $this->db->statement($sqlEvaluations);
-
-        $sqlSignals = sprintf(
-            'CREATE TABLE IF NOT EXISTS %s (
-                id %s,
-                evaluation_id INT NOT NULL,
-                rule_code VARCHAR(100) NOT NULL,
-                score INT NOT NULL,
-                severity VARCHAR(30) NOT NULL,
-                description TEXT NOT NULL,
-                metadata_json TEXT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )',
-            $this->signalsTable,
-            $autoInc
-        );
-        $this->db->statement($sqlSignals);
-
-        if ($driver !== 'sqlite') {
-            try {
-                $this->db->statement("CREATE INDEX idx_fraud_eval_entity ON {$this->evaluationsTable} (entity_type, entity_id)");
-                $this->db->statement("CREATE INDEX idx_fraud_eval_user ON {$this->evaluationsTable} (user_id)");
-                $this->db->statement("CREATE INDEX idx_fraud_signals_eval ON {$this->signalsTable} (evaluation_id)");
-            } catch (\Throwable) {
-                // Ignore if indices exist
+            $sqlSignals = sprintf(
+                'CREATE TABLE IF NOT EXISTS %s (
+                    id %s,
+                    evaluation_id INT NOT NULL,
+                    rule_code VARCHAR(100) NOT NULL,
+                    score INT NOT NULL,
+                    severity VARCHAR(30) NOT NULL,
+                    description TEXT NOT NULL,
+                    metadata_json TEXT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )',
+                $this->signalsTable,
+                $autoInc
+            );
+            $this->db->statement($sqlSignals . $engine);
+        }
+        foreach ([
+            'idx_fraud_eval_entity' => [$this->evaluationsTable, 'entity_type, entity_id'],
+            'idx_fraud_eval_user' => [$this->evaluationsTable, 'user_id'],
+            'idx_fraud_signals_eval' => [$this->signalsTable, 'evaluation_id'],
+        ] as $name => [$table, $columns]) {
+            if ($driver === 'sqlite') {
+                $this->db->statement("CREATE INDEX IF NOT EXISTS {$name} ON {$table} ({$columns})");
+            } else {
+                $exists = $this->db->selectOne('SELECT 1 FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = ? AND index_name = ?', [$table, $name]);
+                if ($exists === null) { $this->db->statement("CREATE INDEX {$name} ON {$table} ({$columns})"); }
             }
         }
     }

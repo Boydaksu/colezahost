@@ -578,8 +578,9 @@
         "ensureTables"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
-      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN",
+      "schema_migration_path": "database/migrations/2026_10_12_000022_fraud_schema.php"
     },
     {
       "file": "src/Domain/Support/Attachments/AttachmentService.php",
@@ -599,8 +600,9 @@
         "ensureTables"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
-      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN",
+      "schema_migration_path": "database/migrations/2026_10_12_000022_fraud_schema.php"
     },
     {
       "file": "src/Domain/Support/Context/TicketContextService.php",
@@ -620,8 +622,9 @@
         "ensureTables"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
-      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN",
+      "schema_migration_path": "database/migrations/2026_10_12_000022_fraud_schema.php"
     },
     {
       "file": "src/Domain/Fraud/Risk/RiskScoreService.php",
@@ -630,8 +633,9 @@
         "ensureTables"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
-      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN",
+      "schema_migration_path": "database/migrations/2026_10_12_000022_fraud_schema.php"
     },
     {
       "file": "src/Domain/Support/Assignments/TicketAssignmentService.php",

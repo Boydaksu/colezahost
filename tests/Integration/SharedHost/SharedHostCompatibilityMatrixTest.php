@@ -107,6 +107,9 @@ final class SharedHostCompatibilityMatrixTest extends TestCase
      * SH-02: Zero-Daemon Queue Execution via DatabaseQueue.
      * Verifies reliable background queue operations purely over database tables without Redis/RabbitMQ.
      */
+    // Measure the 64 MB worker baseline independently of the growing PHPUnit parent process.
+    #[\PHPUnit\Framework\Attributes\RunInSeparateProcess]
+    #[\PHPUnit\Framework\Attributes\PreserveGlobalState(false)]
     public function testQueueOperatesReliablyViaDatabaseQueueWithoutRedis(): void
     {
         $queue = new DatabaseQueue($this->db);

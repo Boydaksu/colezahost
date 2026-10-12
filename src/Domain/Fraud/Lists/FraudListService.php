@@ -6,6 +6,7 @@ namespace Coleza\Domain\Fraud\Lists;
 
 use Coleza\Domain\Fraud\Risk\RiskContext;
 use Coleza\Foundation\Database\Connection;
+use Coleza\Foundation\Database\PdoSchema;
 use Coleza\Foundation\Exceptions\ValidationException;
 use DateTimeImmutable;
 
@@ -18,36 +19,47 @@ final class FraudListService
     ) {
     }
 
-    public function ensureTables(): void
+    /** @return array<string, list<string>> */
+    public static function schemaRequirements(): array
     {
+        return [
+            'fraud_list_entries' => ['id', 'list_type', 'entry_type', 'value', 'reason', 'created_by', 'expires_at', 'is_active', 'created_at'],
+        ];
+    }
+
+    public function ensureTables(bool $installSchema = false): void
+    {
+        $installed = PdoSchema::useInstalledSchema($this->db, self::schemaRequirements(), $installSchema);
+        if ($installed && !$installSchema) { return; }
         $driver = $this->db->getDriverName();
-        $autoInc = match ($driver) {
-            'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
-            default => 'INT AUTO_INCREMENT PRIMARY KEY',
-        };
-
-        $sql = sprintf(
-            'CREATE TABLE IF NOT EXISTS %s (
-                id %s,
-                list_type VARCHAR(20) NOT NULL,
-                entry_type VARCHAR(30) NOT NULL,
-                value VARCHAR(255) NOT NULL,
-                reason TEXT NOT NULL,
-                created_by INT NULL,
-                expires_at TIMESTAMP NULL,
-                is_active TINYINT(1) NOT NULL DEFAULT 1,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )',
-            $this->table,
-            $autoInc
-        );
-        $this->db->statement($sql);
-
-        if ($driver !== 'sqlite') {
-            try {
-                $this->db->statement("CREATE INDEX idx_fraud_list_lookup ON {$this->table} (entry_type, is_active)");
-            } catch (\Throwable) {
-                // Ignore if index exists
+        $autoInc = PdoSchema::autoIncrement($this->db->getPdo());
+        $engine = $driver === 'mysql' ? ' ENGINE=InnoDB' : '';
+        if (!$installed) {
+            $sql = sprintf(
+                'CREATE TABLE IF NOT EXISTS %s (
+                    id %s,
+                    list_type VARCHAR(20) NOT NULL,
+                    entry_type VARCHAR(30) NOT NULL,
+                    value VARCHAR(255) NOT NULL,
+                    reason TEXT NOT NULL,
+                    created_by INT NULL,
+                    expires_at TIMESTAMP NULL,
+                    is_active TINYINT(1) NOT NULL DEFAULT 1,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )',
+                $this->table,
+                $autoInc
+            );
+            $this->db->statement($sql . $engine);
+        }
+        foreach ([
+            'idx_fraud_list_lookup' => [$this->table, 'entry_type, is_active'],
+        ] as $name => [$table, $columns]) {
+            if ($driver === 'sqlite') {
+                $this->db->statement("CREATE INDEX IF NOT EXISTS {$name} ON {$table} ({$columns})");
+            } else {
+                $exists = $this->db->selectOne('SELECT 1 FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = ? AND index_name = ?', [$table, $name]);
+                if ($exists === null) { $this->db->statement("CREATE INDEX {$name} ON {$table} ({$columns})"); }
             }
         }
     }

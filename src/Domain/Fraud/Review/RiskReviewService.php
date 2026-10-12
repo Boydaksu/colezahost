@@ -7,6 +7,7 @@ namespace Coleza\Domain\Fraud\Review;
 use Coleza\Domain\Fraud\Risk\RiskEvaluationResult;
 use Coleza\Domain\Fraud\Risk\RiskScoreService;
 use Coleza\Foundation\Database\Connection;
+use Coleza\Foundation\Database\PdoSchema;
 use Coleza\Foundation\Exceptions\ValidationException;
 use DateTimeImmutable;
 
@@ -21,60 +22,72 @@ final class RiskReviewService
     ) {
     }
 
-    public function ensureTables(): void
+    /** @return array<string, list<string>> */
+    public static function schemaRequirements(): array
     {
+        return [
+            'fraud_risk_reviews' => ['id', 'evaluation_id', 'entity_type', 'entity_id', 'user_id', 'organization_id', 'status', 'assigned_staff_id', 'priority', 'created_at', 'resolved_at', 'resolved_by'],
+            'fraud_risk_review_decisions' => ['id', 'review_id', 'evaluation_id', 'original_decision', 'final_decision', 'is_override', 'override_reason', 'decided_by_staff_id', 'decided_at', 'snapshot_checksum', 'metadata_json'],
+        ];
+    }
+
+    public function ensureTables(bool $installSchema = false): void
+    {
+        $installed = PdoSchema::useInstalledSchema($this->db, self::schemaRequirements(), $installSchema);
+        if ($installed && !$installSchema) { return; }
         $driver = $this->db->getDriverName();
-        $autoInc = match ($driver) {
-            'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
-            default => 'INT AUTO_INCREMENT PRIMARY KEY',
-        };
+        $autoInc = PdoSchema::autoIncrement($this->db->getPdo());
+        $engine = $driver === 'mysql' ? ' ENGINE=InnoDB' : '';
+        if (!$installed) {
+            $sqlReviews = sprintf(
+                'CREATE TABLE IF NOT EXISTS %s (
+                    id %s,
+                    evaluation_id INT NOT NULL,
+                    entity_type VARCHAR(50) NOT NULL,
+                    entity_id INT NULL,
+                    user_id INT NULL,
+                    organization_id INT NULL,
+                    status VARCHAR(30) NOT NULL DEFAULT \'pending\',
+                    assigned_staff_id INT NULL,
+                    priority VARCHAR(20) NOT NULL DEFAULT \'normal\',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    resolved_at TIMESTAMP NULL,
+                    resolved_by INT NULL
+                )',
+                $this->reviewsTable,
+                $autoInc
+            );
+            $this->db->statement($sqlReviews . $engine);
 
-        $sqlReviews = sprintf(
-            'CREATE TABLE IF NOT EXISTS %s (
-                id %s,
-                evaluation_id INT NOT NULL,
-                entity_type VARCHAR(50) NOT NULL,
-                entity_id INT NULL,
-                user_id INT NULL,
-                organization_id INT NULL,
-                status VARCHAR(30) NOT NULL DEFAULT \'pending\',
-                assigned_staff_id INT NULL,
-                priority VARCHAR(20) NOT NULL DEFAULT \'normal\',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                resolved_at TIMESTAMP NULL,
-                resolved_by INT NULL
-            )',
-            $this->reviewsTable,
-            $autoInc
-        );
-        $this->db->statement($sqlReviews);
-
-        $sqlDecisions = sprintf(
-            'CREATE TABLE IF NOT EXISTS %s (
-                id %s,
-                review_id INT NOT NULL,
-                evaluation_id INT NOT NULL,
-                original_decision VARCHAR(20) NOT NULL,
-                final_decision VARCHAR(20) NOT NULL,
-                is_override TINYINT(1) NOT NULL DEFAULT 0,
-                override_reason TEXT NOT NULL,
-                decided_by_staff_id INT NOT NULL,
-                decided_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                snapshot_checksum VARCHAR(64) NOT NULL,
-                metadata_json TEXT NULL
-            )',
-            $this->decisionsTable,
-            $autoInc
-        );
-        $this->db->statement($sqlDecisions);
-
-        if ($driver !== 'sqlite') {
-            try {
-                $this->db->statement("CREATE INDEX idx_fraud_reviews_eval ON {$this->reviewsTable} (evaluation_id)");
-                $this->db->statement("CREATE INDEX idx_fraud_reviews_status ON {$this->reviewsTable} (status, priority)");
-                $this->db->statement("CREATE INDEX idx_fraud_decisions_review ON {$this->decisionsTable} (review_id)");
-            } catch (\Throwable) {
-                // Ignore if indices exist
+            $sqlDecisions = sprintf(
+                'CREATE TABLE IF NOT EXISTS %s (
+                    id %s,
+                    review_id INT NOT NULL,
+                    evaluation_id INT NOT NULL,
+                    original_decision VARCHAR(20) NOT NULL,
+                    final_decision VARCHAR(20) NOT NULL,
+                    is_override TINYINT(1) NOT NULL DEFAULT 0,
+                    override_reason TEXT NOT NULL,
+                    decided_by_staff_id INT NOT NULL,
+                    decided_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    snapshot_checksum VARCHAR(64) NOT NULL,
+                    metadata_json TEXT NULL
+                )',
+                $this->decisionsTable,
+                $autoInc
+            );
+            $this->db->statement($sqlDecisions . $engine);
+        }
+        foreach ([
+            'idx_fraud_reviews_eval' => [$this->reviewsTable, 'evaluation_id'],
+            'idx_fraud_reviews_status' => [$this->reviewsTable, 'status, priority'],
+            'idx_fraud_decisions_review' => [$this->decisionsTable, 'review_id'],
+        ] as $name => [$table, $columns]) {
+            if ($driver === 'sqlite') {
+                $this->db->statement("CREATE INDEX IF NOT EXISTS {$name} ON {$table} ({$columns})");
+            } else {
+                $exists = $this->db->selectOne('SELECT 1 FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = ? AND index_name = ?', [$table, $name]);
+                if ($exists === null) { $this->db->statement("CREATE INDEX {$name} ON {$table} ({$columns})"); }
             }
         }
     }
