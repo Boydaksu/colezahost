@@ -1,6 +1,6 @@
 # D02 kurulum/geçiş kabul matrisi
 
-Güncelleme: 12.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f, D02-3g, D02-3h, D02-3i, D02-3j, D02-3k, D02-3l, D02-3m, D02-3n. Bu matris ürünün bağımsız kabulü değildir. D02 IN_PROGRESS.
+Güncelleme: 12.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f, D02-3g, D02-3h, D02-3i, D02-3j, D02-3k, D02-3l, D02-3m, D02-3n, D02-3o. Bu matris ürünün bağımsız kabulü değildir. D02 IN_PROGRESS.
 
 | Senaryo | Durum | Kanıt / sınır |
 |---|---|---|
@@ -38,6 +38,7 @@ Güncelleme: 12.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f,
 | Otomasyon actor RBAC ve tüm HTTP/CLI/cron bağları | D03/D06/D08 açık | Kalıcı engine/version interface container binding yerel doğrulandı; bütün ürün girişleri veya dış komut güvenliği kabul edilmiş sayılmaz |
 | Diğer otomasyon ve operasyonel domainler; genel runtime DDL sınırları | Açık | Kurulum şeması bütün iş akışlarının ve kısıtların kabulü değildir |
 | GoldenFinancialDataset'in üretim şemasıyla eşleşmesi | Açık | Test fixture kanonik kurulum şeması sayılmaz; F17/F30 |
+| Provisioning cPanel readback ve kalıcı yerel uzlaştırma | Yerel transport/SQL testleri geçti; gerçek sunucu kabulü açık | D02-3o; UNKNOWN hesabın yokluğu değildir, kimlik/etkinlik doğrulanır; service/placement/operation/audit atomik; dört süreçte tek completion |
 | Gerçek sağlayıcı bağlantısı ve gerçek cron çalıştırıcısının geçmiş yazımı | D06 kabulü açık | Doctor provider envanterini uzaktan doğrulanmış HEALTHY diye sunmaz |
 | Üretim veri tabanında upgrade/rollback | Yapılmadı | Yedek, bakım penceresi ve eski worker'ların durdurulması gerekir; yerel test üretim onayı değildir |
 

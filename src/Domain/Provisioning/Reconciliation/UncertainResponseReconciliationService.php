@@ -1,12 +1,7 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Coleza\Domain\Provisioning\Reconciliation;
-
-use Coleza\Domain\Commerce\Services\ServicePlacement;
-use Coleza\Domain\Commerce\Services\ServiceService;
-use Coleza\Domain\Commerce\Services\ServiceStateMachine;
+use Coleza\Domain\Commerce\Services\{ServicePlacement, ServiceService, ServiceStateMachine};
 use Coleza\Domain\Providers\Contracts\ProviderCapability;
 use Coleza\Domain\Providers\Cpanel\CpanelProvider;
 use Coleza\Domain\Providers\DTO\ProviderOperationResult;
@@ -14,135 +9,90 @@ use Coleza\Domain\Providers\Registry\ProviderRegistry;
 use Coleza\Domain\Provisioning\Entities\ProvisioningOperation;
 use Coleza\Domain\Provisioning\Services\ProvisioningOperationService;
 use Coleza\Domain\Servers\Services\ServerService;
-use Throwable;
 
 final class UncertainResponseReconciliationService
 {
-    public function __construct(
-        private ServerService $serverService,
-        private ProviderRegistry $providerRegistry,
-        private ServiceService $serviceService,
-        private ProvisioningOperationService $operationService
-    ) {
+    public function __construct(private ServerService $serverService, private ProviderRegistry $providerRegistry,
+        private ServiceService $serviceService, private ProvisioningOperationService $operationService)
+    {
+        if ($serviceService->getConnection() !== $operationService->getConnection()) {
+            throw new \LogicException('Reconciliation requires one shared connection for local state and audit.');
+        }
     }
-
-    /**
-     * Probes remote provider state to reconcile an uncertain, timed-out, or retrying operation.
-     */
     public function reconcile(ProvisioningOperation $operation): ReconciliationResult
     {
+        if ($this->operationService->getConnection()->inTransaction()) {
+            throw new \LogicException('Remote reconciliation probe must run outside the caller transaction.');
+        }
         $payload = $operation->getPayload();
-        $username = isset($payload['username']) ? (string)$payload['username'] : null;
-        $opUuid = $operation->getOperationUuid();
-        $serviceId = $operation->getServiceId();
-
-        if ($username === null || $username === '') {
-            return ReconciliationResult::notFound(
-                operationUuid: $opUuid,
-                serviceId: $serviceId,
-                message: 'Operation payload does not contain a username for remote probe.'
-            );
+        $unknown = fn(string $reason): ReconciliationResult => $this->persistObservation($operation,
+            ReconciliationResult::unknown($operation->getOperationUuid(), $operation->getServiceId(), $reason));
+        if ($operation->getAction() !== ProviderCapability::CREATE_ACCOUNT) { return $unknown('UNSUPPORTED_OPERATION_PROBE'); }
+        if ($operation->getStatus() === ProvisioningOperation::STATUS_COMPLETED) {
+            return ReconciliationResult::unknown($operation->getOperationUuid(), $operation->getServiceId(), 'OPERATION_ALREADY_COMPLETED');
         }
-
-        $serverId = $operation->getServerId();
-        if ($serverId === null) {
-            return ReconciliationResult::notFound(
-                operationUuid: $opUuid,
-                serviceId: $serviceId,
-                message: 'No server bound to operation for probe.'
-            );
+        foreach (['username', 'domain', 'package'] as $key) {
+            if (!is_string($payload[$key] ?? null) || trim($payload[$key]) === '') { return $unknown('INCOMPLETE_TARGET_IDENTITY'); }
         }
-
+        $username = $payload['username']; $serverId = $operation->getServerId();
+        if ($serverId === null) { return $unknown('MISSING_SERVER_BINDING'); }
         $server = $this->serverService->findServerById($serverId);
         if ($server === null || !$server->isActive()) {
-            return ReconciliationResult::unreachable(
-                operationUuid: $opUuid,
-                serviceId: $serviceId,
-                message: "Target server {$serverId} is unavailable for reconciliation probe."
-            );
+            return $this->persistObservation($operation, ReconciliationResult::unreachable($operation->getOperationUuid(), $operation->getServiceId(), 'TARGET_SERVER_UNAVAILABLE'));
         }
-
-        try {
-            $provider = $this->providerRegistry->get($operation->getProviderSlug());
-        } catch (Throwable $e) {
-            return ReconciliationResult::unreachable(
-                operationUuid: $opUuid,
-                serviceId: $serviceId,
-                message: "Provider '{$operation->getProviderSlug()}' unavailable: {$e->getMessage()}"
-            );
-        }
-
-        if ($provider instanceof CpanelProvider) {
-            try {
-                $client = $provider->createClient($server->toServerConnectionDto());
-                $summary = $client->getAccountSummary($username);
-            } catch (Throwable $e) {
-                // Remote node still unreachable / network failure
-                return ReconciliationResult::unreachable(
-                    operationUuid: $opUuid,
-                    serviceId: $serviceId,
-                    message: "Remote WHM probe failed: {$e->getMessage()}"
-                );
+        if ($server->getProviderSlug() !== $operation->getProviderSlug()) { return $unknown('SERVER_PROVIDER_BINDING_MISMATCH'); }
+        try { $provider = $this->providerRegistry->get($operation->getProviderSlug()); }
+        catch (\Throwable) { return $unknown('PROVIDER_UNAVAILABLE'); }
+        if (!$provider instanceof CpanelProvider) { return $unknown('UNSUPPORTED_PROVIDER_PROBE'); }
+        try { $summary = $provider->createClient($server->toServerConnectionDto())->getVerifiedAccountSummary($username); }
+        catch (\Coleza\Domain\Providers\Exceptions\ProviderException $error) {
+            if (in_array($error->getErrorCode(), ['PROVIDER_CONNECTION_FAILED', 'WHM_SERVER_ERROR'], true)) {
+                return $this->persistObservation($operation, ReconciliationResult::unreachable($operation->getOperationUuid(), $operation->getServiceId(), 'REMOTE_PROBE_UNREACHABLE'));
             }
-
-            // Case A: Account was created on remote host despite ambiguous response / timeout
-            if ($summary !== null && strcasecmp((string)($summary['user'] ?? ''), $username) === 0) {
-                $remoteIp = (string)($summary['ip'] ?? $server->getIpAddress());
-                $domain = (string)($summary['domain'] ?? ($payload['domain'] ?? ''));
-
-                // Reconcile local service state
-                $service = $this->serviceService->findServiceById($serviceId);
-                if ($service !== null && $service->getStatus() === ServiceStateMachine::STATUS_PENDING) {
-                    $this->serviceService->assignPlacement($serviceId, [
-                        'server_id' => $server->getId(),
-                        'server_pool_id' => $server->getServerPoolId(),
-                        'location_id' => $server->getLocationId(),
-                        'status' => ServicePlacement::STATUS_PLACED,
-                        'package_identifier' => (string)($summary['plan'] ?? ($payload['package'] ?? '')),
-                        'hostname' => $server->getHostname(),
-                        'dedicated_ip' => $remoteIp,
-                    ]);
-
-                    $this->serviceService->activateService($serviceId, [
-                        'domain' => $domain,
-                        'username' => $username,
-                        'server_name' => $server->getName(),
-                        'ip_address' => $remoteIp,
-                    ]);
-                }
-
-                // Transition operation to completed
-                $successRes = ProviderOperationResult::success(
-                    operationType: ProviderCapability::CREATE_ACCOUNT,
-                    message: "Reconciled ghost/uncertain response: cPanel account '{$username}' confirmed active on remote node.",
-                    externalIdentifier: $username,
-                    data: [
-                        'reconciled' => true,
-                        'remote_summary' => $summary,
-                    ]
-                );
-                $this->operationService->recordAttempt($opUuid, $successRes);
-
-                return ReconciliationResult::exists(
-                    operationUuid: $opUuid,
-                    serviceId: $serviceId,
-                    remoteData: $summary,
-                    message: "Account '{$username}' exists on remote node; reconciled as completed."
-                );
-            }
-
-            // Case B: Account definitely does not exist on remote host; safe to retry
-            return ReconciliationResult::notFound(
-                operationUuid: $opUuid,
-                serviceId: $serviceId,
-                message: "Account '{$username}' does not exist on remote node; safe for retry execution."
-            );
+            return $unknown('REMOTE_PROBE_UNAUTHORIZED_OR_INVALID');
+        } catch (\Throwable) { return $unknown('REMOTE_PROBE_AMBIGUOUS_OR_INVALID'); }
+        if ($summary === null) { return $unknown('REMOTE_ABSENCE_NOT_PROVEN'); }
+        if (strcasecmp($summary['domain'], $payload['domain']) !== 0 || $summary['plan'] !== $payload['package']
+            || !in_array($summary['suspended'], [0, '0'], true) || filter_var($summary['ip'], FILTER_VALIDATE_IP) === false) {
+            return $unknown('REMOTE_ACCOUNT_IDENTITY_OR_ACTIVE_STATE_MISMATCH');
         }
-
-        return ReconciliationResult::notFound(
-            operationUuid: $opUuid,
-            serviceId: $serviceId,
-            message: "Provider '{$operation->getProviderSlug()}' does not support remote summary probe."
-        );
+        return $this->operationService->commitReconciliation($operation, function (ProvisioningOperation $current) use ($payload, $summary, $server, $username): ReconciliationResult {
+            $service = $this->serviceService->findServiceById($current->getServiceId());
+            if ($service === null || $service->getStatus() !== ServiceStateMachine::STATUS_PENDING
+                || ($service->getDomain() !== null && $service->getDomain() !== '' && strcasecmp($service->getDomain(), $payload['domain']) !== 0)
+                || ($service->getUsername() !== null && $service->getUsername() !== '' && strcasecmp($service->getUsername(), $username) !== 0)) {
+                $result = ReconciliationResult::unknown($current->getOperationUuid(), $current->getServiceId(), 'LOCAL_SERVICE_STATE_OR_IDENTITY_MISMATCH');
+                $this->operationService->recordReconciliationObservation($current, $result);
+                return $result;
+            }
+            $placement = $this->serviceService->getPlacementForService($current->getServiceId());
+            if ($placement !== null && $placement->getServerId() !== null && $placement->getServerId() !== $server->getId()) {
+                $result = ReconciliationResult::unknown($current->getOperationUuid(), $current->getServiceId(), 'LOCAL_PLACEMENT_BINDING_MISMATCH');
+                $this->operationService->recordReconciliationObservation($current, $result);
+                return $result;
+            }
+            $this->serviceService->assignPlacement($current->getServiceId(), ['server_id' => $server->getId(),
+                'server_pool_id' => $server->getServerPoolId(), 'location_id' => $server->getLocationId(), 'status' => ServicePlacement::STATUS_PLACED,
+                'package_identifier' => $summary['plan'], 'hostname' => $server->getHostname(), 'dedicated_ip' => $summary['ip']]);
+            $this->serviceService->activateService($current->getServiceId(), ['domain' => $summary['domain'], 'username' => $username,
+                'server_name' => $server->getName(), 'ip_address' => $summary['ip']]);
+            $evidence = ['reconciled' => true, 'remote_summary' => $summary, 'evidence_type' => 'ACCOUNT_POSTCONDITION',
+                'historical_operation_applied_proven' => false, 'automatic_retry_allowed' => false,
+                'server_id' => $server->getId(), 'provider_slug' => $current->getProviderSlug(), 'observed_at' => (new \DateTimeImmutable())->format('c'),
+                'input_fingerprint' => hash('sha256', json_encode([$current->getServiceId(), $current->getServerId(), $current->getProviderSlug(),
+                    $current->getAction(), $current->getPayload(), $current->getCorrelationId()], JSON_THROW_ON_ERROR | JSON_PRESERVE_ZERO_FRACTION))];
+            $this->operationService->recordAttempt($current->getOperationUuid(), ProviderOperationResult::success(ProviderCapability::CREATE_ACCOUNT,
+                'Matching active remote account observed; local provisioning reconciled.', $username,
+                $evidence, $evidence));
+            return ReconciliationResult::exists($current->getOperationUuid(), $current->getServiceId(), $summary,
+                'Matching active account observed; original command execution is not independently proven.');
+        });
+    }
+    private function persistObservation(ProvisioningOperation $operation, ReconciliationResult $result): ReconciliationResult
+    {
+        return $this->operationService->commitReconciliation($operation, function (ProvisioningOperation $current) use ($result): ReconciliationResult {
+            $this->operationService->recordReconciliationObservation($current, $result);
+            return $result;
+        });
     }
 }

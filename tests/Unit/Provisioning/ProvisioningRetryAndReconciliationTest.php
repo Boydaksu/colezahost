@@ -180,6 +180,7 @@ final class ProvisioningRetryAndReconciliationTest extends TestCase
                         'domain' => 'ghostsite.com',
                         'plan' => 'starter',
                         'ip' => '10.0.1.25',
+                        'suspended' => 0,
                     ],
                 ],
             ],
@@ -208,7 +209,7 @@ final class ProvisioningRetryAndReconciliationTest extends TestCase
         $this->assertSame('completed', $updatedOp->getStatus());
     }
 
-    public function testUncertainResponseReconciliationPermitsSafeRetryWhenAccountNotFound(): void
+    public function testApiNotFoundErrorRequiresReconciliationRatherThanSafeRetry(): void
     {
         $server = $this->serverService->createServer([
             'name' => 'cPanel Recon 01',
@@ -245,16 +246,17 @@ final class ProvisioningRetryAndReconciliationTest extends TestCase
             serverId: (int)$server->getId()
         );
 
-        // Remote WHM confirms account does NOT exist
+        // An API error cannot prove authoritative account absence.
         $this->transport->stageResponse('accountsummary', 200, [
             'metadata' => ['result' => 0, 'reason' => 'User retryusr does not exist'],
         ]);
 
         $reconResult = $this->reconciliationService->reconcile($op);
 
-        $this->assertTrue($reconResult->isNotFound());
+        $this->assertFalse($reconResult->isNotFound());
+        $this->assertTrue($reconResult->isUnknown());
         $this->assertFalse($reconResult->isAccountFound());
-        $this->assertSame(ReconciliationStatus::RECONCILED_NOT_FOUND, $reconResult->getStatus());
+        $this->assertSame(ReconciliationStatus::RECONCILIATION_REQUIRED, $reconResult->getStatus());
 
         // Service remains in pending status
         $svc = $this->serviceService->findServiceById((int)$service->getId());
@@ -367,6 +369,7 @@ final class ProvisioningRetryAndReconciliationTest extends TestCase
                         'domain' => 'dueclient.com',
                         'plan' => 'starter',
                         'ip' => '192.168.1.110',
+                        'suspended' => 0,
                     ],
                 ],
             ],

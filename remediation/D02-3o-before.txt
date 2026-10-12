@@ -1,0 +1,30 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+FFF                                                                 3 / 3 (100%)
+
+Time: 00:00.019, Memory: 22.00 MB
+
+There were 3 failures:
+
+1) Coleza\Tests\Unit\Installer\ProvisioningProbeSafetyTest::testMissingTargetIsUnknownRatherThanAbsent
+Missing target is not proof of remote absence
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ProvisioningProbeSafetyCases.php:33
+
+2) Coleza\Tests\Unit\Installer\ProvisioningProbeSafetyTest::testSameUsernameWithWrongDomainCannotCompleteLocalService
+Foreign account cannot be adopted as completed
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ProvisioningProbeSafetyCases.php:40
+
+3) Coleza\Tests\Unit\Installer\ProvisioningProbeSafetyTest::testApiErrorIsUnknownRatherThanAuthoritativeAbsence
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ProvisioningProbeSafetyCases.php:48
+
+FAILURES!
+Tests: 3, Assertions: 3, Failures: 3.

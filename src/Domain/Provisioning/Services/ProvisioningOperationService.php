@@ -23,6 +23,42 @@ final class ProvisioningOperationService
     ) {
     }
 
+    public function getConnection(): Connection { return $this->db; }
+
+    /** Only local decisions belong in this transaction; the remote read has already finished. */
+    public function commitReconciliation(ProvisioningOperation $expected, callable $localDecision): mixed
+    {
+        return $this->db->transaction(function () use ($expected, $localDecision): mixed {
+            $this->db->lockRow($this->opsTable, $expected->getId() ?? 0);
+            $current = $this->findOperationByUuid($expected->getOperationUuid());
+            if ($current === null || $current->getId() !== $expected->getId() || $current->getServiceId() !== $expected->getServiceId()
+                || $current->getServerId() !== $expected->getServerId() || $current->getProviderSlug() !== $expected->getProviderSlug()
+                || $current->getAction() !== $expected->getAction() || $current->getPayload() !== $expected->getPayload()
+                || $current->getCorrelationId() !== $expected->getCorrelationId() || $current->getStatus() !== $expected->getStatus()
+                || $current->getAttemptCount() !== $expected->getAttemptCount()) {
+                throw new \LogicException('Provisioning inputs changed during remote probe; reconciliation must be refreshed.');
+            }
+            $this->db->lockRow('services', $current->getServiceId());
+            return $localDecision($current);
+        });
+    }
+
+    /** Observation consumes no retry budget; an ambiguous automatic retry is held for review. */
+    public function recordReconciliationObservation(ProvisioningOperation $op, \Coleza\Domain\Provisioning\Reconciliation\ReconciliationResult $result): void
+    {
+        $evidence = $result->toArray();
+        $evidence['input_fingerprint'] = hash('sha256', json_encode([$op->getServiceId(), $op->getServerId(), $op->getProviderSlug(),
+            $op->getAction(), $op->getPayload(), $op->getCorrelationId()], JSON_THROW_ON_ERROR | JSON_PRESERVE_ZERO_FRACTION));
+        $evidence['automatic_retry_allowed'] = false;
+        $this->db->insert($this->auditTable, ['operation_id' => $op->getId(), 'service_id' => $op->getServiceId(), 'action' => 'reconciliation',
+            'attempt_number' => $op->getAttemptCount(), 'success' => 0, 'client_safe_message' => 'Remote outcome requires reconciliation.',
+            'raw_response_json' => json_encode($evidence, JSON_THROW_ON_ERROR), 'logged_at' => date('Y-m-d H:i:s')]);
+        if ($result->isUnknown() && $op->getStatus() === ProvisioningOperation::STATUS_RETRYING) {
+            $this->db->update($this->opsTable, ['status' => ProvisioningOperation::STATUS_RECONCILIATION_REQUIRED,
+                'next_attempt_at' => null, 'updated_at' => date('Y-m-d H:i:s')], 'id = :id', ['id' => $op->getId()]);
+        }
+    }
+
     public function ensureTables(): void
     {
         $driver = $this->db->getDriverName();
@@ -228,13 +264,13 @@ final class ProvisioningOperationService
 
     public function findOperationByUuid(string $uuid): ?ProvisioningOperation
     {
-        $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE operation_uuid = ?', $this->opsTable), [$uuid]);
+        $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE operation_uuid = ?', $this->opsTable) . $this->db->forUpdate(), [$uuid]);
         return $row ? $this->hydrateOperation($row) : null;
     }
 
     public function findOperationById(int $id): ?ProvisioningOperation
     {
-        $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE id = ?', $this->opsTable), [$id]);
+        $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE id = ?', $this->opsTable) . $this->db->forUpdate(), [$id]);
         return $row ? $this->hydrateOperation($row) : null;
     }
 
@@ -250,9 +286,13 @@ final class ProvisioningOperationService
         return array_map([$this, 'hydrateOperation'], $rows);
     }
 
-    public function findActiveOperationForService(int $serviceId, ?string $action = null): ?ProvisioningOperation
+    public function findActiveOperationForService(int $serviceId, ?string $action = null, ?string $requiredStatus = null): ?ProvisioningOperation
     {
-        $statuses = [ProvisioningOperation::STATUS_QUEUED, ProvisioningOperation::STATUS_RETRYING];
+        $statuses = [ProvisioningOperation::STATUS_QUEUED, ProvisioningOperation::STATUS_RETRYING, ProvisioningOperation::STATUS_RECONCILIATION_REQUIRED];
+        if ($requiredStatus !== null) {
+            if (!in_array($requiredStatus, $statuses, true)) { throw new \InvalidArgumentException('Unsupported active provisioning state'); }
+            $statuses = [$requiredStatus];
+        }
         $placeholders = implode(',', array_fill(0, count($statuses), '?'));
 
         if ($action !== null) {

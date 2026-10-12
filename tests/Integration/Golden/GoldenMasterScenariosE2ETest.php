@@ -740,6 +740,7 @@ final class GoldenMasterScenariosE2ETest extends TestCase
                         'domain' => 'resilience-test.com',
                         'plan' => 'starter',
                         'ip' => '10.50.0.88',
+                        'suspended' => 0,
                     ],
                 ],
             ],

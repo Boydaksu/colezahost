@@ -80,7 +80,10 @@ final class ProvisioningRetryRunner
             ];
         }
 
-        // Step 2: Remote account confirmed NOT found; safe to execute retry
+        if (!$reconciliation->isNotFound()) {
+            return ['operation_uuid' => $opUuid, 'action' => $action, 'outcome' => 'reconciliation_required', 'details' => $reconciliation->toArray()];
+        }
+        // Only an explicit authoritative absence decision can authorize this path.
         return $this->executeRetryAttempt($op);
     }
 

@@ -13,6 +13,7 @@ final class ProvisioningOperation
     public const STATUS_COMPLETED = 'completed';
     public const STATUS_FAILED = 'failed';
     public const STATUS_RETRYING = 'retrying';
+    public const STATUS_RECONCILIATION_REQUIRED = 'reconciliation_required';
 
     /**
      * @param array<string, mixed> $payload

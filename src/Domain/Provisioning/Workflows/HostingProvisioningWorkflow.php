@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace Coleza\Domain\Provisioning\Workflows;
+use Coleza\Domain\Provisioning\Entities\ProvisioningOperation;
 
 use Coleza\Domain\Commerce\Services\Exceptions\ServiceConcurrencyException;
 use Coleza\Domain\Commerce\Services\ServicePlacement;
@@ -68,6 +69,12 @@ final class HostingProvisioningWorkflow
         }
 
         // Idempotency: if already active, treat as completed
+        $held = $this->operationService->findActiveOperationForService($serviceId, ProviderCapability::CREATE_ACCOUNT, ProvisioningOperation::STATUS_RECONCILIATION_REQUIRED);
+        if ($held?->getStatus() === ProvisioningOperation::STATUS_RECONCILIATION_REQUIRED) {
+            return HostingProvisioningResult::failure(serviceId: $serviceId, failedStep: HostingProvisioningStep::VALIDATE,
+                errorMessage: 'Remote outcome requires reconciliation before starting another provisioning workflow.',
+                errorCode: 'RECONCILIATION_REQUIRED', completedSteps: $completedSteps);
+        }
         if ($service->getStatus() === ServiceStateMachine::STATUS_ACTIVE) {
             return HostingProvisioningResult::success(
                 serviceId: $serviceId,

@@ -162,12 +162,27 @@ final class CpanelApiClient
         return is_array($data) ? (isset($data[0]) ? $data[0] : $data) : null;
     }
 
-    /**
-     * Change / upgrade / downgrade hosting package for a cPanel user via WHM changepackage.
-     *
-     * @return array<string, mixed>
-     * @throws ProviderException
-     */
+    /** Read-only, strict evidence for reconciliation. API errors are not authoritative absence. */
+    public function getVerifiedAccountSummary(string $username): ?array
+    {
+        $response = $this->call('accountsummary', ['user' => $username], 'GET', throwOnError: false);
+        if (($response['_meta']['status_code'] ?? null) !== 200) { throw new RuntimeException('Account probe HTTP response is not authoritative.'); }
+        if (!in_array($response['metadata']['result'] ?? null, [1, '1'], true)) { return null; }
+        $accounts = $response['data']['acct'] ?? null;
+        if (!is_array($accounts) || !array_is_list($accounts) || count($accounts) !== 1 || !is_array($accounts[0])) {
+            throw new RuntimeException('Account probe returned missing or ambiguous account data.');
+        }
+        $summary = $accounts[0];
+        foreach (['user', 'domain', 'plan', 'ip'] as $key) {
+            if (!is_string($summary[$key] ?? null) || trim($summary[$key]) === '') { throw new RuntimeException('Incomplete account identity evidence.'); }
+        }
+        if (strcasecmp($summary['user'], $username) !== 0 || !in_array($summary['suspended'] ?? null, [0, 1, '0', '1'], true)) {
+            throw new RuntimeException('Account identity or state evidence is inconsistent.');
+        }
+        return array_intersect_key($summary, array_flip(['user', 'domain', 'plan', 'ip', 'suspended']));
+    }
+
+    /** Change hosting package via WHM changepackage. @return array<string, mixed> */
     public function changePackage(string $username, string $newPackage): array
     {
         return $this->call('changepackage', ['user' => $username, 'pkg' => $newPackage], 'POST', throwOnError: false);

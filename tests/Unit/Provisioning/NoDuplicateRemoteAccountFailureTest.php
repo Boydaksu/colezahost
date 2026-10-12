@@ -319,6 +319,7 @@ final class NoDuplicateRemoteAccountFailureTest extends TestCase
                         'domain' => 'reconcheck.com',
                         'plan' => 'starter',
                         'ip' => '192.168.10.88',
+                        'suspended' => 0,
                     ],
                 ],
             ],

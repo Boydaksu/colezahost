@@ -1,0 +1,54 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+....................FF                                            22 / 22 (100%)
+
+Time: 00:00.045, Memory: 22.00 MB
+
+There were 2 failures:
+
+1) Coleza\Tests\Unit\Installer\ProvisioningProbeSafetyTest::testUnknownAutomaticRetryIsHeldInsteadOfPollingForever
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+-Array &0 []
++Array &0 [
++    0 => Coleza\Domain\Provisioning\Entities\ProvisioningOperation Object #107 (
++        'id' => 1,
++        'operationUuid' => 'OP-424ab07d6281bb7170d9fec492d2e5ec',
++        'serviceId' => 1,
++        'serverId' => 1,
++        'providerSlug' => 'cpanel',
++        'action' => 'create_account',
++        'status' => 'retrying',
++        'attemptCount' => 0,
++        'maxAttempts' => 3,
++        'nextAttemptAt' => '2026-10-01 00:00:00',
++        'errorClassification' => null,
++        'payload' => Array &1 [
++            'domain' => 'fixture.test',
++        ],
++        'resultData' => Array &2 [],
++        'correlationId' => 'REQ-03c0d9c4cc6ddb6f49ea6b85',
++        'createdAt' => '2026-10-12 10:56:38',
++        'updatedAt' => '2026-10-12 10:56:38',
++    ),
++]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ProvisioningProbeSafetyCases.php:239
+
+2) Coleza\Tests\Unit\Installer\ProvisioningProbeSafetyTest::testHeldOperationBlocksFreshWorkflowCreate
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'RECONCILIATION_REQUIRED'
++'MISSING_PACKAGE_IDENTIFIER'
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ProvisioningProbeSafetyCases.php:252
+
+FAILURES!
+Tests: 22, Assertions: 81, Failures: 2.

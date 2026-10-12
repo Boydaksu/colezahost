@@ -15,6 +15,7 @@ use RuntimeException;
 final class ServiceService
 {
     private string $servicesTable = 'services';
+    public function getConnection(): Connection { return $this->db; }
     private string $sequencesTable = 'service_sequences';
     private string $placementsTable = 'service_placements';
     private string $cancellationsTable = 'service_cancellations';
@@ -996,7 +997,7 @@ final class ServiceService
 
     public function findServiceById(int $id): ?Service
     {
-        $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE id = ?', $this->servicesTable), [$id]);
+        $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE id = ?', $this->servicesTable) . $this->db->forUpdate(), [$id]);
         return $row ? $this->hydrateService($row) : null;
     }
 

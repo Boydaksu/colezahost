@@ -73,6 +73,13 @@ final class ReconciliationResult
         return $this->status;
     }
 
+    public static function unknown(string $operationUuid, int $serviceId, string $message): self
+    {
+        return new self(ReconciliationStatus::RECONCILIATION_REQUIRED, $operationUuid, $serviceId, false, [], $message);
+    }
+
+    public function isUnknown(): bool { return $this->status === ReconciliationStatus::RECONCILIATION_REQUIRED; }
+
     public function getOperationUuid(): string
     {
         return $this->operationUuid;

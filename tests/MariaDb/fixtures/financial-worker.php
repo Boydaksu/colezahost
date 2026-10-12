@@ -38,6 +38,24 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'provisionReconcile':
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $operationService = new Coleza\Domain\Provisioning\Services\ProvisioningOperationService($db);
+            $operation = $operationService->findOperationByUuid($argv[5]);
+            $transport = new Coleza\Domain\Providers\Cpanel\CpanelMemoryTransport();
+            $transport->stageResponse('accountsummary', 200, ['metadata' => ['result' => 1], 'data' => ['acct' => [[
+                'user' => 'fixture', 'domain' => 'fixture.test', 'plan' => 'starter', 'ip' => '10.0.0.1', 'suspended' => 0]]]]);
+            $probe = new Coleza\Domain\Provisioning\Reconciliation\UncertainResponseReconciliationService($servers,
+                new Coleza\Domain\Providers\Registry\ProviderRegistry([new Coleza\Domain\Providers\Cpanel\CpanelProvider($transport)]),
+                new Coleza\Domain\Commerce\Services\ServiceService($db), $operationService);
+            try {
+                $observation = $probe->reconcile($operation);
+                $result['status'] = $observation->isExists() ? 'completed' : 'unresolved';
+            } catch (LogicException $error) {
+                if (!str_contains($error->getMessage(), 'inputs changed during remote probe')) { throw $error; }
+                $result['status'] = 'stale';
+            }
+            break;
         case 'automationBlast':
             $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $registry = new Coleza\Domain\Automation\Actions\ActionRegistry();

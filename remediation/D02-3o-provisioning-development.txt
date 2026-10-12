@@ -1,0 +1,43 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+.............F.............FF.F                                   31 / 31 (100%)
+
+Time: 00:00.060, Memory: 24.00 MB
+
+There were 4 failures:
+
+1) Tests\Unit\Provisioning\NoDuplicateRemoteAccountFailureTest::testConcurrentRetryDoesNotDuplicateWhenReconciled
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'reconciled_exists'
++'reconciled_unreachable'
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Provisioning\NoDuplicateRemoteAccountFailureTest.php:331
+
+2) Tests\Unit\Provisioning\ProvisioningRetryAndReconciliationTest::testUncertainResponseReconcilesGhostAccountAsSuccess
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Provisioning\ProvisioningRetryAndReconciliationTest.php:190
+
+3) Tests\Unit\Provisioning\ProvisioningRetryAndReconciliationTest::testUncertainResponseReconciliationPermitsSafeRetryWhenAccountNotFound
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Provisioning\ProvisioningRetryAndReconciliationTest.php:255
+
+4) Tests\Unit\Provisioning\ProvisioningRetryAndReconciliationTest::testRetryRunnerProcessesDueRetriesAndReconciles
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'reconciled_exists'
++'reconciled_unreachable'
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Provisioning\ProvisioningRetryAndReconciliationTest.php:378
+
+FAILURES!
+Tests: 31, Assertions: 213, Failures: 4.
