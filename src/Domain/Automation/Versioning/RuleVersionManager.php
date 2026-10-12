@@ -8,7 +8,7 @@ use Coleza\Domain\Automation\Engine\AutomationRule;
 use DateTimeImmutable;
 use InvalidArgumentException;
 
-final class RuleVersionManager
+final class RuleVersionManager implements RuleVersionManagerInterface
 {
     /** @var array<string, array<int, RuleVersion>> */
     private array $history = [];
@@ -22,17 +22,7 @@ final class RuleVersionManager
         $currentVersions = $this->history[$ruleId] ?? [];
         $nextVersionNum = count($currentVersions) + 1;
 
-        $snapshot = [
-            'id' => $rule->getId(),
-            'name' => $rule->getName(),
-            'description' => $rule->getDescription(),
-            'enabled' => $rule->isEnabled(),
-            'priority' => $rule->getPriority(),
-            'execution_mode' => $rule->getExecutionMode()->value,
-            'delay_seconds' => $rule->getDelaySeconds(),
-            'requires_approval' => $rule->requiresApproval(),
-            'metadata' => $rule->getMetadata(),
-        ];
+        $snapshot = RuleSnapshotCodec::snapshot($rule);
 
         $version = new RuleVersion(
             $nextVersionNum,

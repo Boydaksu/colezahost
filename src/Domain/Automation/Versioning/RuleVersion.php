@@ -8,6 +8,7 @@ use DateTimeImmutable;
 
 final class RuleVersion
 {
+    private readonly DateTimeImmutable $createdAt;
     /**
      * @param array<string, mixed> $snapshot
      */
@@ -22,8 +23,9 @@ final class RuleVersion
         private readonly string $createdBy,
         private readonly string $changeSummary,
         private readonly array $snapshot = [],
-        private readonly ?DateTimeImmutable $createdAt = null
+        ?DateTimeImmutable $createdAt = null
     ) {
+        $this->createdAt = $createdAt ?? new DateTimeImmutable();
     }
 
     public function getVersionNumber(): int
@@ -81,7 +83,7 @@ final class RuleVersion
 
     public function getCreatedAt(): DateTimeImmutable
     {
-        return $this->createdAt ?? new DateTimeImmutable();
+        return $this->createdAt;
     }
 
     /**
@@ -99,7 +101,7 @@ final class RuleVersion
             'priority' => $this->priority,
             'created_by' => $this->createdBy,
             'change_summary' => $this->changeSummary,
-            'created_at' => $this->getCreatedAt()->format(DateTimeImmutable::ATOM),
+            'created_at' => $this->getCreatedAt()->format('Y-m-d\TH:i:s.uP'),
             'snapshot' => $this->snapshot,
         ];
     }

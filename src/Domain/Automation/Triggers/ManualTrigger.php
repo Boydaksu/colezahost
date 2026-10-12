@@ -16,6 +16,8 @@ final class ManualTrigger implements TriggerInterface
         return 'manual';
     }
 
+    public function getTargetScope(): ?string { return $this->targetScope; }
+
     public function getName(): string
     {
         return $this->targetScope ? 'manual:' . $this->targetScope : 'manual';

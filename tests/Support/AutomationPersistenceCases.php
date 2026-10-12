@@ -17,7 +17,11 @@ trait AutomationPersistenceCases
     {
         return DatabaseAutomationFactory::create($this->db, new ActionRegistry());
     }
-    private function install(): void { AutomationSchema::installSchema($this->db); }
+    private function install(): void
+    {
+        AutomationSchema::installSchema($this->db);
+        \Coleza\Domain\Automation\Versioning\DatabaseRuleVersionManager::installSchema($this->db);
+    }
     private function dueDelay(): DelayedExecution
     {
         $entry = new DelayedExecution('delay_fixture', 'rule', 'Reminder', new TriggerContext('invoice.due', ['invoice_id' => 42]),
@@ -239,6 +243,8 @@ trait AutomationPersistenceCases
         $first = $makeContainer();
         $engine = $first->get(\Coleza\Domain\Automation\Engine\AutomationEngine::class);
         self::assertInstanceOf(DatabaseApprovalManager::class, $engine->getApprovalManager());
+        self::assertInstanceOf(\Coleza\Domain\Automation\Versioning\DatabaseRuleVersionManager::class, $engine->getVersionManager());
+        self::assertSame($engine->getVersionManager(), $first->get(\Coleza\Domain\Automation\Versioning\RuleVersionManagerInterface::class));
         self::assertSame($engine->getDelayManager(), $first->get(\Coleza\Domain\Automation\Delay\DelayManagerInterface::class));
         self::assertSame($engine->getHistoryRepository(), $first->get(\Coleza\Domain\Automation\Execution\RunHistoryRepositoryInterface::class));
         $first->get(\Coleza\Domain\Automation\Safety\EmergencyPauseManagerInterface::class)->pause('actor', 'container restart');

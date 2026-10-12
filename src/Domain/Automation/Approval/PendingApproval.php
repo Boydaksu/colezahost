@@ -27,8 +27,10 @@ final class PendingApproval
         private readonly array $actionsToExecute,
         private readonly ApprovalRequirement $requirement,
         private readonly DateTimeImmutable $requestedAt = new DateTimeImmutable(),
-        private readonly ?DateTimeImmutable $expiresAt = null
+        private readonly ?DateTimeImmutable $expiresAt = null,
+        private readonly array $executionSnapshot = []
     ) {
+        \Coleza\Domain\Automation\Execution\ExecutionSnapshot::validate($executionSnapshot);
         $this->status = ApprovalStatus::PENDING;
     }
 
@@ -36,6 +38,8 @@ final class PendingApproval
     {
         return $this->id;
     }
+
+    public function getExecutionSnapshot(): array { return $this->executionSnapshot; }
 
     public function getRuleId(): string
     {

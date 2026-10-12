@@ -10,9 +10,9 @@ final class DatabaseDelayManager implements DelayManagerInterface
 {
     private readonly PendingStore $store;
     public function __construct(Connection $db) { $this->store = new PendingStore($db, 'delay'); }
-    public function schedule(string $ruleId, string $ruleName, TriggerContext $context, array $actions, int $delaySeconds): DelayedExecution
+    public function schedule(string $ruleId, string $ruleName, TriggerContext $context, array $actions, int $delaySeconds, array $executionSnapshot = []): DelayedExecution
     {
-        $entry = (new DelayManager())->schedule($ruleId, $ruleName, $context, $actions, $delaySeconds);
+        $entry = (new DelayManager())->schedule($ruleId, $ruleName, $context, $actions, $delaySeconds, $executionSnapshot);
         $this->store->add($entry);
         return $entry;
     }

@@ -18,7 +18,8 @@ interface ApprovalManagerInterface
         string $ruleName,
         TriggerContext $context,
         array $actions,
-        ApprovalRequirement $requirement
+        ApprovalRequirement $requirement,
+        array $executionSnapshot = []
     ): PendingApproval;
 
     public function findById(string $id): ?PendingApproval;

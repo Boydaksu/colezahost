@@ -23,7 +23,8 @@ final class DelayManager implements DelayManagerInterface
         string $ruleName,
         TriggerContext $context,
         array $actions,
-        int $delaySeconds
+        int $delaySeconds,
+        array $executionSnapshot = []
     ): DelayedExecution {
         $id = 'delay_' . bin2hex(random_bytes(8));
         $now = new DateTimeImmutable();
@@ -36,7 +37,8 @@ final class DelayManager implements DelayManagerInterface
             $context,
             $actions,
             $executeAt,
-            $now
+            $now,
+            $executionSnapshot
         );
 
         $this->delayed[$id] = $execution;

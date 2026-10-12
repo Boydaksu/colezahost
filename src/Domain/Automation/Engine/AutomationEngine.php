@@ -29,8 +29,18 @@ final class AutomationEngine
         private readonly ?DelayManagerInterface $delayManager = null,
         private readonly ?RunHistoryRepositoryInterface $historyRepository = null,
         private readonly ?EmergencyPauseManagerInterface $emergencyPauseManager = null,
-        private readonly ?BlastRadiusLimiter $blastRadiusLimiter = null
+        private readonly ?BlastRadiusLimiter $blastRadiusLimiter = null,
+        private readonly ?\Coleza\Domain\Automation\Versioning\RuleVersionManagerInterface $versionManager = null
     ) {
+    }
+
+    public function getVersionManager(): ?\Coleza\Domain\Automation\Versioning\RuleVersionManagerInterface { return $this->versionManager; }
+
+    public function executeVersion(string $ruleId, int $version, TriggerContext $context, ?ExecutionMode $mode = null): RuleExecutionResult
+    {
+        $record = $this->versionManager?->getVersion($ruleId, $version);
+        if ($record === null) { throw new \InvalidArgumentException('Stored rule version not found'); }
+        return $this->executeRule(\Coleza\Domain\Automation\Versioning\RuleSnapshotCodec::restore($record->getSnapshot(), $version), $context, $mode);
     }
 
     public function getActionRegistry(): ActionRegistryInterface
@@ -71,6 +81,10 @@ final class AutomationEngine
         TriggerContext $context,
         ?ExecutionMode $overrideMode = null
     ): RuleExecutionResult {
+        $storedVersion = $this->versionManager?->getVersion($rule->getId(), $rule->getVersion());
+        if ($storedVersion !== null && $storedVersion->getSnapshot() !== \Coleza\Domain\Automation\Versioning\RuleSnapshotCodec::snapshot($rule)) {
+            throw new \LogicException('Rule differs from its recorded version; record a new version before executing');
+        }
         if (!$rule->isEnabled()) {
             $skipped = RuleExecutionResult::skipped(
                 $rule->getId(),
@@ -108,8 +122,11 @@ final class AutomationEngine
 
         $branch = $rule->getBranch();
         $conditionPassed = $branch->evaluateCondition($context);
-        $branchTaken = $branch->determineBranch($context);
-        $actions = $branch->getActionsToExecute($context);
+        $branchTaken = $conditionPassed ? 'THEN' : ($branch->getElseActions() === [] ? 'NONE' : 'ELSE');
+        $actions = $conditionPassed ? $branch->getThenActions() : $branch->getElseActions();
+        $executionSnapshot = ['rule_version' => $storedVersion?->getVersionNumber() ?? 0,
+            'condition_passed' => $conditionPassed, 'branch_taken' => $branchTaken,
+            'rule_fingerprint' => $storedVersion === null ? null : hash('sha256', \Coleza\Domain\Automation\Persistence\AutomationCodec::encode($storedVersion->getSnapshot()))];
 
         // Dry-run mode: simulate actions without executing side-effects
         if ($effectiveMode->isDryRun()) {
@@ -178,7 +195,8 @@ final class AutomationEngine
                 $rule->getName(),
                 $context,
                 $actions,
-                $rule->getApprovalRequirement()
+                $rule->getApprovalRequirement(),
+                $executionSnapshot
             );
 
             $durationMs = (microtime(true) - $start) * 1000;
@@ -203,7 +221,8 @@ final class AutomationEngine
                 $rule->getName(),
                 $context,
                 $actions,
-                $rule->getDelaySeconds()
+                $rule->getDelaySeconds(),
+                $executionSnapshot
             );
 
             $durationMs = (microtime(true) - $start) * 1000;
@@ -316,14 +335,14 @@ final class AutomationEngine
         $result = RuleExecutionResult::executed(
             $approved->getRuleId(),
             $approved->getRuleName(),
-            true,
-            'THEN',
+            $approved->getExecutionSnapshot()['condition_passed'] ?? true,
+            $approved->getExecutionSnapshot()['branch_taken'] ?? 'THEN',
             $actionResults,
             $durationMs,
             $hasFailures ? RunStatus::FAILED : RunStatus::SUCCESS,
             ExecutionMode::ACTIVE
         );
-        $this->recordResumedHistory($approved->getRuleId(), $approved->getRuleName(), $approved->getContext(), $result, ['approval_id' => $approvalId]);
+        $this->recordResumedHistory($approved->getRuleId(), $approved->getRuleName(), $approved->getContext(), $result, ['approval_id' => $approvalId], $approved->getExecutionSnapshot());
         return $result;
     }
 
@@ -365,15 +384,15 @@ final class AutomationEngine
             $dispatchedResults[$execution->getId()] = RuleExecutionResult::executed(
                 $execution->getRuleId(),
                 $execution->getRuleName(),
-                true,
-                'THEN',
+                $execution->getExecutionSnapshot()['condition_passed'] ?? true,
+                $execution->getExecutionSnapshot()['branch_taken'] ?? 'THEN',
                 $actionResults,
                 $durationMs,
                 $hasFailures ? RunStatus::FAILED : RunStatus::SUCCESS,
                 ExecutionMode::ACTIVE
             );
             $this->recordResumedHistory($execution->getRuleId(), $execution->getRuleName(), $execution->getContext(),
-                $dispatchedResults[$execution->getId()], ['delay_id' => $execution->getId()]);
+                $dispatchedResults[$execution->getId()], ['delay_id' => $execution->getId()], $execution->getExecutionSnapshot());
         }
 
         return $dispatchedResults;
@@ -427,13 +446,16 @@ final class AutomationEngine
         }
     }
 
-    private function recordResumedHistory(string $ruleId, string $ruleName, TriggerContext $context, RuleExecutionResult $result, array $metadata): void
+    private function recordResumedHistory(string $ruleId, string $ruleName, TriggerContext $context, RuleExecutionResult $result, array $metadata, array $snapshot = []): void
     {
         $this->historyRepository?->save(new AutomationRunRecord('run_' . bin2hex(random_bytes(8)), $ruleId, $ruleName,
-            0, $context->getEventName(), $context->getCorrelationId(), ExecutionMode::ACTIVE, $result->getStatus(),
-            false, 'UNKNOWN', array_map(fn(ActionResult $r) => $r->toArray(), $result->getActionResults()),
+            $snapshot['rule_version'] ?? 0, $context->getEventName(), $context->getCorrelationId(), ExecutionMode::ACTIVE, $result->getStatus(),
+            $snapshot['condition_passed'] ?? false, $snapshot['branch_taken'] ?? 'UNKNOWN', array_map(fn(ActionResult $r) => $r->toArray(), $result->getActionResults()),
             $context->all(), $result->getExecutionTimeMs(), metadata: $metadata + [
-                'rule_version_unknown' => true, 'branch_unknown' => true, 'condition_unknown' => true,
+                'rule_version_unknown' => ($snapshot['rule_version'] ?? 0) === 0,
+                'branch_unknown' => !array_key_exists('branch_taken', $snapshot),
+                'condition_unknown' => !array_key_exists('condition_passed', $snapshot),
+                'rule_fingerprint' => $snapshot['rule_fingerprint'] ?? null,
             ]));
     }
 

@@ -18,7 +18,8 @@ final class ApprovalManager implements ApprovalManagerInterface
         string $ruleName,
         TriggerContext $context,
         array $actions,
-        ApprovalRequirement $requirement
+        ApprovalRequirement $requirement,
+        array $executionSnapshot = []
     ): PendingApproval {
         $id = 'appr_' . bin2hex(random_bytes(8));
         $now = new DateTimeImmutable();
@@ -34,7 +35,8 @@ final class ApprovalManager implements ApprovalManagerInterface
             $actions,
             $requirement,
             $now,
-            $expiresAt
+            $expiresAt,
+            $executionSnapshot
         );
 
         $this->requests[$id] = $request;

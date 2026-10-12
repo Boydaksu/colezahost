@@ -24,8 +24,10 @@ final class DelayedExecution
         private readonly TriggerContext $context,
         private readonly array $actionsToExecute,
         private readonly DateTimeImmutable $executeAt,
-        private readonly DateTimeImmutable $scheduledAt = new DateTimeImmutable()
+        private readonly DateTimeImmutable $scheduledAt = new DateTimeImmutable(),
+        private readonly array $executionSnapshot = []
     ) {
+        \Coleza\Domain\Automation\Execution\ExecutionSnapshot::validate($executionSnapshot);
         $this->status = DelayStatus::SCHEDULED;
     }
 
@@ -33,6 +35,8 @@ final class DelayedExecution
     {
         return $this->id;
     }
+
+    public function getExecutionSnapshot(): array { return $this->executionSnapshot; }
 
     public function getRuleId(): string
     {

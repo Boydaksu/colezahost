@@ -21,6 +21,8 @@ final class EventTrigger implements TriggerInterface
         return 'event';
     }
 
+    public function getPayloadFilters(): array { return $this->payloadFilters; }
+
     public function getName(): string
     {
         return $this->eventPattern;

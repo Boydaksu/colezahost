@@ -38,6 +38,12 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'automationVersion':
+            $rule = new Coleza\Domain\Automation\Engine\AutomationRule('parallel_rule', 'Rule', new Coleza\Domain\Automation\Triggers\EventTrigger('event'),
+                new Coleza\Domain\Automation\Branching\IfElseBranch(new Coleza\Domain\Automation\Conditions\FieldCondition('value', '==', (int) $argv[2])));
+            $version = (new Coleza\Domain\Automation\Versioning\DatabaseRuleVersionManager($db))->recordVersion($rule, 'worker_' . $argv[2], 'Concurrent publication');
+            $result['version'] = $version->getVersionNumber();
+            break;
         case 'automationClaim':
             $result['claimed'] = (int) (new Coleza\Domain\Automation\Delay\DatabaseDelayManager($db))->claimForDispatch($argv[5]);
             break;

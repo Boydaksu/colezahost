@@ -18,9 +18,10 @@ final class DatabaseAutomationFactory
         }
         $db->select('SELECT id, kind, status, payload FROM automation_pending LIMIT 0');
         $db->select('SELECT id, rule_id, correlation_id, executed_at, payload FROM automation_run_history LIMIT 0');
+        $db->select('SELECT rule_id, version_number, payload FROM automation_rule_versions LIMIT 0');
         $pause = new DatabaseEmergencyPauseManager($db);
         $pause->getState(); // Missing/unreadable safety state must fail before any action.
         return new AutomationEngine($registry, $logger, new DatabaseApprovalManager($db), new DatabaseDelayManager($db),
-            new DatabaseRunHistoryRepository($db), $pause, new BlastRadiusLimiter(emergencyPause: $pause));
+            new DatabaseRunHistoryRepository($db), $pause, new BlastRadiusLimiter(emergencyPause: $pause), new \Coleza\Domain\Automation\Versioning\DatabaseRuleVersionManager($db));
     }
 }

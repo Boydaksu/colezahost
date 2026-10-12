@@ -1,7 +1,7 @@
 {
-  "date": "2026-10-11",
+  "date": "2026-10-12",
   "purpose": "DDL source inventory; direct references are not execution coverage or schema compatibility",
-  "file_count": 89,
+  "file_count": 90,
   "files": [
     {
       "file": "src/Api/Auth/ApiKeyService.php",
@@ -931,6 +931,18 @@
         "automation_pending",
         "automation_run_history",
         "automation_state_lock"
+      ],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Automation/Versioning/DatabaseRuleVersionManager.php",
+      "class": "Coleza\\Domain\\Automation\\Versioning\\DatabaseRuleVersionManager",
+      "public_schema_methods": [
+        "installSchema"
+      ],
+      "literal_table_names": [
+        "automation_rule_versions"
       ],
       "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"

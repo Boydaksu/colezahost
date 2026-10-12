@@ -38,6 +38,7 @@ final class AutomationCodec
     {
         $context = $entry->getContext();
         $data = $entry->toArray();
+        $data['execution_snapshot'] = $entry->getExecutionSnapshot();
         if ($entry instanceof PendingApproval) {
             $data['requested_at'] = $entry->getRequestedAt()->format('Y-m-d\TH:i:s.uP');
             $data['expires_at'] = $entry->getExpiresAt()?->format('Y-m-d\TH:i:s.uP');
@@ -68,12 +69,12 @@ final class AutomationCodec
         if ($kind === 'approval') {
             return PendingApproval::restore(new PendingApproval($data['id'], $data['rule_id'], $data['rule_name'], $context, $actions,
                 new ApprovalRequirement($data['required_role'], $data['timeout_seconds'], $data['reason']),
-                new DateTimeImmutable($data['requested_at']), self::date($data['expires_at'])),
+                new DateTimeImmutable($data['requested_at']), self::date($data['expires_at']), $data['execution_snapshot'] ?? []),
                 ApprovalStatus::from($data['status']), $data['decided_by'], $data['decision_notes'], self::date($data['decided_at']));
         }
         if ($kind !== 'delay') { throw new \UnexpectedValueException('Unknown automation entry kind.'); }
         return DelayedExecution::restore(new DelayedExecution($data['id'], $data['rule_id'], $data['rule_name'], $context, $actions,
-            new DateTimeImmutable($data['execute_at']), new DateTimeImmutable($data['scheduled_at'])),
+            new DateTimeImmutable($data['execute_at']), new DateTimeImmutable($data['scheduled_at']), $data['execution_snapshot'] ?? []),
             DelayStatus::from($data['status']), self::date($data['dispatched_at']));
     }
 

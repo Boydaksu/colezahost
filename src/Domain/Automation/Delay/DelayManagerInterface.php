@@ -20,7 +20,8 @@ interface DelayManagerInterface
         string $ruleName,
         TriggerContext $context,
         array $actions,
-        int $delaySeconds
+        int $delaySeconds,
+        array $executionSnapshot = []
     ): DelayedExecution;
 
     public function findById(string $id): ?DelayedExecution;
