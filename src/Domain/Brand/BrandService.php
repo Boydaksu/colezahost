@@ -15,8 +15,15 @@ final class BrandService
     {
     }
 
-    public function ensureTable(): void
+    public static function schemaRequirements(): array
     {
+        return ['brands' => ['id', 'name', 'code', 'domain', 'default_locale', 'default_currency', 'is_active', 'settings', 'created_at']];
+    }
+
+    public function ensureTable(bool $installSchema = false): void
+    {
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchema($this->db, self::schemaRequirements(), $installSchema)) { return; }
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($this->db->getPdo());
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',

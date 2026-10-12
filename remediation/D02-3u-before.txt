@@ -1,0 +1,39 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[41;37mF[0m[41;37mF[0m[41;37mF[0m                                                                 3 / 3 (100%)
+
+Time: 00:05.172, Memory: 24.00 MB
+
+There were 3 failures:
+
+1) Coleza\Tests\MariaDb\BrandCurrencySchemaTest::testBrandRuntimeWriteDoesNotCommitCallerTransaction
+Brand schema setup must not commit caller data
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\BrandCurrencySchemaCases.php:25
+
+2) Coleza\Tests\MariaDb\BrandCurrencySchemaTest::testCurrencySchemaCheckDoesNotCommitCallerTransaction
+Currency schema setup must not commit caller data
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\BrandCurrencySchemaCases.php:39
+
+3) Coleza\Tests\MariaDb\BrandCurrencySchemaTest::testProductionMigrationsInstallCurrencyAndFxWithoutSeedingDefaults
+Production migrations must include currency and FX schema
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+-Array &0 []
++Array &0 [
++    0 => 'currencies',
++    1 => 'fx_snapshots',
++]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\BrandCurrencySchemaCases.php:51
+
+[37;41mFAILURES![0m
+[37;41mTests: 3[0m[37;41m, Assertions: 9[0m[37;41m, Failures: 3[0m[37;41m.[0m

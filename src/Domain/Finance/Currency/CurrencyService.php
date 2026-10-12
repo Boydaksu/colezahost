@@ -29,8 +29,18 @@ final class CurrencyService
         $this->providers[$provider->getName()] = $provider;
     }
 
-    public function ensureTables(): void
+    public static function schemaRequirements(): array
     {
+        return [
+            'currencies' => ['code', 'name', 'symbol', 'format', 'decimal_places', 'is_default', 'is_active', 'created_at'],
+            'fx_snapshots' => ['id', 'base_currency', 'rates_json', 'provider', 'snapshot_date', 'created_at'],
+        ];
+    }
+
+    public function ensureTables(bool $installSchema = false): void
+    {
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchema($this->db, self::schemaRequirements(), $installSchema)) { return; }
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($this->db->getPdo());
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -178,6 +188,8 @@ final class CurrencyService
      */
     public function captureFxSnapshot(?string $providerName = null, ?string $snapshotDate = null): FxSnapshot
     {
+        // Validate the persistence target before fallback currency writes or provider I/O.
+        $this->ensureTables();
         $baseCurrency = $this->getDefaultCurrency()->getCode();
         $activeCurrencies = array_map(fn($c) => $c->getCode(), $this->listCurrencies(true));
 
