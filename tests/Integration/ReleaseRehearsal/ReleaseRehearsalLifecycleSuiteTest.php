@@ -230,6 +230,7 @@ final class ReleaseRehearsalLifecycleSuiteTest extends TestCase
 
         $verifier = new PackageSignatureVerifier($keyPair['public'], 'ed25519');
         $moduleChecker = new ModuleCompatibilityChecker($db);
+        (new \Coleza\Domain\Module\ModuleLifecycleService($db))->ensureTable();
 
         $updater = new StagedUpdateService(
             signatureVerifier: $verifier,

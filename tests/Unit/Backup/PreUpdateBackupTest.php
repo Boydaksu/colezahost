@@ -40,6 +40,7 @@ final class PreUpdateBackupTest extends TestCase
 
         $pdo = new PDO('sqlite::memory:');
         $this->db = new Connection($pdo, 'sqlite');
+        (new \Coleza\Domain\Module\ModuleLifecycleService($this->db))->ensureTable();
 
         // Seed some sample database tables
         $this->db->statement("CREATE TABLE app_config (key TEXT PRIMARY KEY, val TEXT)");

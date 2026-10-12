@@ -1,6 +1,6 @@
 # D02 kurulum/geçiş kabul matrisi
 
-Güncelleme: 12.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f, D02-3g, D02-3h, D02-3i, D02-3j, D02-3k, D02-3l, D02-3m, D02-3n, D02-3o, D02-3p, D02-3q, D02-3r, D02-3s, D02-3t, D02-3u, D02-3v, D02-3w, D02-3x, D02-3y, D02-3z. Bu matris ürünün bağımsız kabulü değildir. D02 IN_PROGRESS.
+Güncelleme: 12.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f, D02-3g, D02-3h, D02-3i, D02-3j, D02-3k, D02-3l, D02-3m, D02-3n, D02-3o, D02-3p, D02-3q, D02-3r, D02-3s, D02-3t, D02-3u, D02-3v, D02-3w, D02-3x, D02-3y, D02-3z, D02-4a. Bu matris ürünün bağımsız kabulü değildir. D02 IN_PROGRESS.
 
 | Senaryo | Durum | Kanıt / sınır |
 |---|---|---|
@@ -47,10 +47,11 @@ Güncelleme: 12.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f,
 | Fraud değerlendirme/sinyal/manuel karar/liste/velocity şemaları | Yerel kurulum, replay, indeks tamamlama, raw/managed caller rollback testleri geçti | D02-3x; migration22, altı tablo/sekiz indeks; toplu partial preflight; immutable karar workflow/concurrency/RBAC ve tam constraints ayrıca açık |
 | Fraud çoklu yazım ve cooperating manual review yarışları | Yerel failure/savepoint/current-read ve dört worker testleri geçti | D02-3y; evaluation+signals/terminal status+snapshot atomik; parent-before-review locks; direct SQL/DB unique constraint, actor/RBAC/audit/metadata checksum policy ayrıca açık |
 | Operational mode ortak settings şeması ve coherent geçiş | Yerel kurulum, rollback, file-boundary ve dört worker testi geçti | D02-3z; migration23, separate fixed-id mutex, no runtime DDL, mode/reason/time/IP tuple; FS+DB distributed commit/offline recovery/RBAC/gerçek girişler ayrıca açık |
+| Modül envanteri ve salt okunur update compatibility | Yerel SQLite/MariaDB kurulum, replay ve caller rollback testleri geçti | D02-4a; migration6 explicit installation, installed no-DDL, missing/partial inventory refusal, InnoDB writes; audit atomicity/manifest safety/required-module policy/legacy constraints açık |
 | Diğer otomasyon ve operasyonel domainler; genel runtime DDL sınırları | Açık | Kurulum şeması bütün iş akışlarının ve kısıtların kabulü değildir |
 | GoldenFinancialDataset'in üretim şemasıyla eşleşmesi | Açık | Test fixture kanonik kurulum şeması sayılmaz; F17/F30 |
 | Provisioning cPanel readback ve kalıcı yerel uzlaştırma | Yerel transport/SQL testleri geçti; gerçek sunucu kabulü açık | D02-3o; UNKNOWN hesabın yokluğu değildir, kimlik/etkinlik doğrulanır; service/placement/operation/audit atomik; dört süreçte tek completion |
 | Gerçek sağlayıcı bağlantısı ve gerçek cron çalıştırıcısının geçmiş yazımı | D06 kabulü açık | Doctor provider envanterini uzaktan doğrulanmış HEALTHY diye sunmaz |
 | Üretim veri tabanında upgrade/rollback | Yapılmadı | Yedek, bakım penceresi ve eski worker'ların durdurulması gerekir; yerel test üretim onayı değildir |
 
-Sıradaki D02 işi: D02-SCHEMA-INVENTORY.json içindeki kalan domain şema kurucularını gerçek kurulum/upgrade akışına bağlamak ve kısıt uyumunu sınamak. Envanter 93 CREATE TABLE kaynak dosyasını listeler; metinde migration referansı olması tek başına çalıştırma ya da kabul kanıtı değildir. D02 çıkış ölçütleri tamamlanmadan D03'e geçilmez.
+Sıradaki D02 işi: D02-SCHEMA-INVENTORY.json içindeki kalan domain şema kurucularını gerçek kurulum/upgrade akışına bağlamak ve kısıt uyumunu sınamak. Envanter 92 CREATE TABLE kaynak dosyasını listeler; compatibility checker ortak şemayı salt okunur kullanır ve artık DDL kaynağı değildir; metinde migration referansı olması tek başına çalıştırma ya da kabul kanıtı değildir. D02 çıkış ölçütleri tamamlanmadan D03'e geçilmez.

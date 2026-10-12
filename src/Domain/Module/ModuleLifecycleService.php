@@ -6,6 +6,7 @@ namespace Coleza\Domain\Module;
 
 use Coleza\Domain\Identity\Audit\AuditLogger;
 use Coleza\Foundation\Database\Connection;
+use Coleza\Foundation\Database\PdoSchema;
 use Coleza\Foundation\Exceptions\ValidationException;
 
 final class ModuleLifecycleService
@@ -19,8 +20,31 @@ final class ModuleLifecycleService
     ) {
     }
 
-    public function ensureTable(): void
+    public static function schemaRequirements(): array
     {
+        return ['installed_modules' => ['id', 'module_id', 'name', 'version', 'type', 'is_enabled', 'manifest', 'installed_at', 'updated_at']];
+    }
+
+    private static function assertCallerTransaction(Connection $db): void
+    {
+        if ($db->inTransaction() && !$db->getPdo()->inTransaction()) {
+            throw new \LogicException('Module operation refused: caller transaction ended unexpectedly.');
+        }
+    }
+
+    /** Compatibility inspection must not install or repair the inventory it is checking. */
+    public static function assertInstalledSchema(Connection $db): void
+    {
+        self::assertCallerTransaction($db);
+        if (!PdoSchema::useInstalledSchema($db, self::schemaRequirements())) {
+            throw new \LogicException('Module inventory schema is missing; run installation or explicit upgrade before checking compatibility.');
+        }
+    }
+
+    public function ensureTable(bool $installSchema = false): void
+    {
+        self::assertCallerTransaction($this->db);
+        if (PdoSchema::useInstalledSchema($this->db, self::schemaRequirements(), $installSchema)) { return; }
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -41,7 +65,7 @@ final class ModuleLifecycleService
             )',
             $this->table,
             $autoInc
-        );
+        ) . ($driver === 'mysql' ? ' ENGINE=InnoDB' : '');
 
         $this->db->statement($sql);
     }
@@ -90,6 +114,7 @@ final class ModuleLifecycleService
     public function install(ModuleManifest $manifest, ?int $actorUserId = null): void
     {
         $this->ensureTable();
+        $this->assertTransactionalStorage();
 
         // Compatibility check
         if (version_compare($this->coreVersion, $manifest->minCoreVersion, '<')) {
@@ -138,6 +163,7 @@ final class ModuleLifecycleService
     public function enable(string $moduleId, ?int $actorUserId = null): void
     {
         $this->ensureTable();
+        $this->assertTransactionalStorage();
         $record = $this->db->selectOne(
             sprintf('SELECT id FROM %s WHERE module_id = :id', $this->table),
             ['id' => $moduleId]
@@ -167,6 +193,7 @@ final class ModuleLifecycleService
     public function disable(string $moduleId, ?int $actorUserId = null): void
     {
         $this->ensureTable();
+        $this->assertTransactionalStorage();
         $record = $this->db->selectOne(
             sprintf('SELECT id FROM %s WHERE module_id = :id', $this->table),
             ['id' => $moduleId]
@@ -225,5 +252,15 @@ final class ModuleLifecycleService
         }
 
         return $matching;
+    }
+
+    private function assertTransactionalStorage(): void
+    {
+        if ($this->db->getDriverName() === 'mysql') {
+            $table = $this->db->selectOne("SELECT ENGINE FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'installed_modules'");
+            if ($table === null || strcasecmp((string) $table['ENGINE'], 'InnoDB') !== 0) {
+                throw new \LogicException('Module writes require InnoDB; explicit storage upgrade required.');
+            }
+        }
     }
 }

@@ -30,7 +30,7 @@ return new class implements \Coleza\Foundation\Database\MigrationInterface {
             \Coleza\Domain\Finance\Profitability\ProfitabilityService::class,
             \Coleza\Domain\Identity\Organization\OrganizationService::class,
         ] as $service) { (new $service($db))->ensureTables(); }
-        (new \Coleza\Domain\Module\ModuleLifecycleService($db))->ensureTable();
+        (new \Coleza\Domain\Module\ModuleLifecycleService($db))->ensureTable(true);
     }
     public function down(\Coleza\Foundation\Database\Connection $db): void
     {

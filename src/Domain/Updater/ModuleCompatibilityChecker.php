@@ -34,7 +34,7 @@ final class ModuleCompatibilityChecker
      */
     public function checkCompatibility(string $targetCoreVersion, array $targetRequiredModules = []): array
     {
-        $this->ensureModuleTable();
+        ModuleLifecycleService::assertInstalledSchema($this->db);
 
         $modules = $this->db->select(
             "SELECT module_id, name, version, is_enabled, manifest FROM installed_modules WHERE is_enabled = 1"
@@ -100,29 +100,4 @@ final class ModuleCompatibilityChecker
         ];
     }
 
-    private function ensureModuleTable(): void
-    {
-        $driver = $this->db->getDriverName();
-        $autoInc = match ($driver) {
-            'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
-            default => 'INT AUTO_INCREMENT PRIMARY KEY',
-        };
-
-        $sql = sprintf(
-            'CREATE TABLE IF NOT EXISTS installed_modules (
-                id %s,
-                module_id VARCHAR(100) NOT NULL UNIQUE,
-                name VARCHAR(150) NOT NULL,
-                version VARCHAR(50) NOT NULL,
-                type VARCHAR(50) NOT NULL,
-                is_enabled INT NOT NULL DEFAULT 0,
-                manifest LONGTEXT NOT NULL,
-                installed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP NULL
-            )',
-            $autoInc
-        );
-
-        $this->db->statement($sql);
-    }
 }

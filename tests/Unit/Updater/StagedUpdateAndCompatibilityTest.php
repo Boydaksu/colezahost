@@ -34,6 +34,7 @@ final class StagedUpdateAndCompatibilityTest extends TestCase
 
         $pdo = new PDO('sqlite::memory:');
         $this->db = new Connection($pdo, 'sqlite');
+        (new \Coleza\Domain\Module\ModuleLifecycleService($this->db))->ensureTable();
 
         $this->keyPair = PackageSignatureVerifier::generateKeyPair();
     }

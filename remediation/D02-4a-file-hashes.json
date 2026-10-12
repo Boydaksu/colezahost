@@ -1,0 +1,21 @@
+{
+  "remediation/D02-4a-SONUC.md": "f507e75770a94320540677c9c9210a4edc8d8dcd34919b668ac071672949390e",
+  "remediation/D02-4a-before.txt": "25972eb31657dd4250f9350ce225a269b13e63e8fef9774e315070940457e125",
+  "remediation/D02-4a-mariadb.txt": "7589e31471246024d214c94d128837424108436194fd3af1a9a6198e31e4c824",
+  "remediation/D02-4a-mariadb.xml": "7b6bfa4c380825ec91d2540ab35ea7efde28cbce612c3c3ae4df13e2751bdd1a",
+  "remediation/D02-4a-suite.txt": "f79e82cfbf14f7ab6217e5ea43ad642455e79078fcc687b0147bcfb6a271a8aa",
+  "remediation/D02-4a-suite.xml": "2165f881301eedf208d07e85212d8a0aa9ec2d27f48622ed4f6920051695e5d8",
+  "tests/MariaDb/ModuleSchemaSafetyTest.php": "eab3e99e0b7e72cb4eab2073241a571494fc54cf67d82b5b94d568263ae367a6",
+  "tests/Support/ModuleSchemaSafetyCases.php": "b019c8475448a6437a04fce7c2e5b3ed906b0c46d11c77778964b4702b4a0866",
+  "tests/Unit/Domain/Module/ModuleSchemaSafetyTest.php": "323e3648d91c397ca85a9dc21154d3b5a93f7d8dd2909f3b60968a6d911ef028",
+  "database/migrations/2026_10_10_000006_core_domain_schemas.php": "784c7885be7d11caee073a23431661341a9dc3389de09a53c4673a5ce8df64dc",
+  "remediation/D02-INSTALL-MATRIX.md": "2b349bb6c51e36a2597f513edf1e2c64caeead848e934bc377ed9582cea98aef",
+  "remediation/D02-SCHEMA-INVENTORY.json": "fd2b8fe38dd2d0ca484ebea5508c92a8716405f010fa54278c14b60d25d953fe",
+  "remediation/PLAN.md": "5ee93c4c47eedaf907225426d085c0a319447623565e7ae94d324b8f66ccb210",
+  "remediation/state.json": "12c50bf6bdd897654498fb1e538e3676a6504917bf816d5d965097d9279c4c42",
+  "src/Domain/Module/ModuleLifecycleService.php": "f6b9d4e8f78ec06b68137cc2962ed6a3df1ea48a734458638d0a7061e4acffba",
+  "src/Domain/Updater/ModuleCompatibilityChecker.php": "d1a1e7e5190ee63a08ac5c72da4a9700e89d01ca43596c4fd8a0492dba2e8b77",
+  "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php": "75d1bd80a57e912a4c444b45b1df5e27a8bbb524233b11adea1f67c2078b3b98",
+  "tests/Unit/Backup/PreUpdateBackupTest.php": "3bdf2e0ccd54f2c1acdc58dc79d953e4b8fbacb1c59b4878701145a23f0237b1",
+  "tests/Unit/Updater/StagedUpdateAndCompatibilityTest.php": "52d03e33a441e422336e8f58b10dd33f655953b6c8c1ddd87f7dc0a821715816"
+}

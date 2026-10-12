@@ -1,7 +1,7 @@
 {
   "date": "2026-10-12",
   "purpose": "DDL source inventory; direct references are not execution coverage or schema compatibility",
-  "file_count": 93,
+  "file_count": 92,
   "files": [
     {
       "file": "src/Api/Auth/ApiKeyService.php",
@@ -190,16 +190,6 @@
       ],
       "literal_table_names": [],
       "direct_migration_reference": true,
-      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
-    },
-    {
-      "file": "src/Domain/Updater/ModuleCompatibilityChecker.php",
-      "class": "Coleza\\Domain\\Updater\\ModuleCompatibilityChecker",
-      "public_schema_methods": [],
-      "literal_table_names": [
-        "installed_modules"
-      ],
-      "direct_migration_reference": false,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -437,11 +427,16 @@
       "file": "src/Domain/Module/ModuleLifecycleService.php",
       "class": "Coleza\\Domain\\Module\\ModuleLifecycleService",
       "public_schema_methods": [
-        "ensureTable"
+        "ensureTable",
+        "assertInstalledSchema"
       ],
       "literal_table_names": [],
       "direct_migration_reference": true,
-      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+      "acceptance": "D02-4a canonical install/replay/runtime caller rollback; full module lifecycle/audit/legacy constraints acceptance open",
+      "schema_migration_path": "database/migrations/2026_10_10_000006_core_domain_schemas.php",
+      "read_only_consumers": [
+        "src/Domain/Updater/ModuleCompatibilityChecker.php"
+      ]
     },
     {
       "file": "src/Domain/Commerce/Recurring/RenewalInvoiceService.php",

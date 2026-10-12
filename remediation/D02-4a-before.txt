@@ -1,0 +1,34 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m                                                                4 / 4 (100%)
+
+Time: 00:00.318, Memory: 20.00 MB
+
+There were 4 failures:
+
+1) Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testCompatibilityReadPreservesRawCallerRollback
+A read must never commit the caller
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaSafetyCases.php:34
+
+2) Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testLifecycleWritePreservesManagedCallerRollback
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaSafetyCases.php:46
+
+3) Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testCompatibilityDoesNotInventEmptyModuleInventory
+Missing module table reported compatible
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaSafetyCases.php:55
+
+4) Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testMissingModuleSchemaInsideRawCallerRefusesBeforeDdl
+Missing schema silently installed
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ModuleSchemaSafetyCases.php:66
+
+[37;41mFAILURES![0m
+[37;41mTests: 4[0m[37;41m, Assertions: 13[0m[37;41m, Failures: 4[0m[37;41m.[0m
