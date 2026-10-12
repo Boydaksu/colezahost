@@ -1,0 +1,34 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+[41;37mF[0m[41;37mF[0m[41;37mF[0m                                                                 3 / 3 (100%)
+
+Time: 00:00.014, Memory: 20.00 MB
+
+There were 3 failures:
+
+1) Coleza\Tests\Unit\Installer\AutomationLifecycleBoundaryTest::testPlacedSuspendCannotClaimProviderSuccess
+Provider-backed lifecycle needs a real provider command, not a local success
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AutomationLifecycleBoundaryCases.php:27
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AutomationLifecycleBoundaryCases.php:30
+
+2) Coleza\Tests\Unit\Installer\AutomationLifecycleBoundaryTest::testPlacedUnsuspendCannotClaimProviderSuccess
+Provider-backed lifecycle needs a real provider command, not a local success
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AutomationLifecycleBoundaryCases.php:27
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AutomationLifecycleBoundaryCases.php:31
+
+3) Coleza\Tests\Unit\Installer\AutomationLifecycleBoundaryTest::testPlacedTerminateCannotClaimProviderSuccess
+Provider-backed lifecycle needs a real provider command, not a local success
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AutomationLifecycleBoundaryCases.php:27
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AutomationLifecycleBoundaryCases.php:32
+
+[37;41mFAILURES![0m
+[37;41mTests: 3[0m[37;41m, Assertions: 3[0m[37;41m, Failures: 3[0m[37;41m.[0m

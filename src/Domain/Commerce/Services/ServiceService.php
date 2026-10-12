@@ -430,10 +430,36 @@ final class ServiceService
     }
 
     /**
-     * Suspend a service.
+     * Apply a local automation transition only when no placement evidence requires a provider workflow.
      *
      * @throws ServiceConcurrencyException
      */
+    public function executeLocalAutomationLifecycle(int $serviceId, string $action, string $reason = '', ?int $expectedLockVersion = null): Service
+    {
+        if ($serviceId < 1 || !in_array($action, ['suspend', 'unsuspend', 'terminate'], true)) {
+            throw new \InvalidArgumentException('Invalid local lifecycle target or action.');
+        }
+        return $this->db->transaction(function () use ($serviceId, $action, $reason, $expectedLockVersion): Service {
+            $this->db->lockRow($this->servicesTable, $serviceId);
+            $service = $this->findServiceById($serviceId);
+            if ($service === null) { throw new RuntimeException('Local lifecycle service not found.'); }
+            // Released/reserved/malformed placements also cannot prove that a remote account is absent.
+            $placements = $this->db->select('SELECT id FROM ' . $this->placementsTable . ' WHERE service_id = ?' . $this->db->forUpdate(), [$serviceId]);
+            if ($placements !== [] || ($service->getUsername() !== null && $service->getUsername() !== '')
+                || ($service->getServerName() !== null && $service->getServerName() !== '')
+                || ($service->getIpAddress() !== null && $service->getIpAddress() !== '')) {
+                throw new ServiceProviderLifecycleRequiredException();
+            }
+            $version = $expectedLockVersion ?? $service->getLockVersion();
+            return match ($action) {
+                'suspend' => $this->suspendService($serviceId, $reason, $version),
+                'unsuspend' => $this->unsuspendService($serviceId, $version),
+                'terminate' => $this->terminateService($serviceId, $reason, $version),
+            };
+        });
+    }
+
+    /** Suspend the local service record. Provider orchestration belongs to its application workflow. */
     public function suspendService(int $serviceId, string $reason, ?int $expectedLockVersion = null): Service
     {
         $service = $this->findServiceById($serviceId);

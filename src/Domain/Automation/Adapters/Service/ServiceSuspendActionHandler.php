@@ -40,20 +40,26 @@ final class ServiceSuspendActionHandler implements ActionHandlerInterface
             );
         }
 
-        $serviceId = (int) $rawId;
+        $serviceId = null;
         $reason = (string) ($resolved['reason'] ?? 'Suspended by automation policy');
-        $expectedLockVersion = isset($resolved['expected_lock_version']) ? (int) $resolved['expected_lock_version'] : null;
 
         try {
-            $service = $this->serviceService->suspendService($serviceId, $reason, $expectedLockVersion);
+            $serviceId = ServiceLifecycleInput::serviceId($rawId);
+            $expectedLockVersion = ServiceLifecycleInput::lockVersion($resolved['expected_lock_version'] ?? null);
+            $service = $this->serviceService->executeLocalAutomationLifecycle($serviceId, 'suspend', $reason, $expectedLockVersion);
             $durationMs = (microtime(true) - $start) * 1000;
 
             return ActionResult::success($action->getId(), $this->getType(), [
+                'effect_scope' => 'LOCAL_SERVICE_STATE',
+                'provider_outcome_proven' => false,
                 'service_id' => $service->getId(),
                 'service_number' => $service->getServiceNumber(),
                 'status' => $service->getStatus(),
                 'suspend_reason' => $service->getSuspensionReason(),
             ], $durationMs);
+        } catch (\Coleza\Domain\Commerce\Services\ServiceProviderLifecycleRequiredException $e) {
+            return ActionResult::failed($action->getId(), $this->getType(), $e->getMessage(),
+                ['service_id' => $serviceId, 'error_code' => 'PROVIDER_LIFECYCLE_REQUIRED', 'provider_outcome_proven' => false], (microtime(true) - $start) * 1000);
         } catch (Throwable $e) {
             $durationMs = (microtime(true) - $start) * 1000;
             return ActionResult::failed(

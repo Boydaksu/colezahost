@@ -1,0 +1,25 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+[41;37mF[0m[41;37mF[0m                                                                  2 / 2 (100%)
+
+Time: 00:00.014, Memory: 20.00 MB
+
+There were 2 failures:
+
+1) Coleza\Tests\Unit\Installer\AutomationLifecycleBoundaryTest::testMalformedServiceIdsCannotSelectAnExistingService
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AutomationLifecycleBoundaryCases.php:52
+C:\Users\alici\OneDrive\Desktop\colezahost\vendor\phpunit\phpunit\phpunit:104
+
+2) Coleza\Tests\Unit\Installer\AutomationLifecycleBoundaryTest::testMalformedLockVersionCannotDisableOrCoerceConcurrencyCheck
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AutomationLifecycleBoundaryCases.php:65
+C:\Users\alici\OneDrive\Desktop\colezahost\vendor\phpunit\phpunit\phpunit:104
+
+[37;41mFAILURES![0m
+[37;41mTests: 2[0m[37;41m, Assertions: 2[0m[37;41m, Failures: 2[0m[37;41m.[0m

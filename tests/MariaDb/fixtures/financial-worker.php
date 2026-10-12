@@ -38,6 +38,13 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'automationLocalLifecycle':
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            try {
+                (new Coleza\Domain\Commerce\Services\ServiceService($db))->executeLocalAutomationLifecycle($id, 'suspend', 'Local fixture', 1);
+                $result['changed'] = 1;
+            } catch (Coleza\Domain\Commerce\Services\Exceptions\ServiceConcurrencyException) { $result['changed'] = 0; }
+            break;
         case 'automationAttemptStart':
             $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $journal = new Coleza\Domain\Automation\Execution\DatabaseActionAttemptJournal($db);
