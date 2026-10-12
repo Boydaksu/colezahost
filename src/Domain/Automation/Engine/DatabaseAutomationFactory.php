@@ -22,6 +22,7 @@ final class DatabaseAutomationFactory
         $pause = new DatabaseEmergencyPauseManager($db);
         $pause->getState(); // Missing/unreadable safety state must fail before any action.
         return new AutomationEngine($registry, $logger, new DatabaseApprovalManager($db), new DatabaseDelayManager($db),
-            new DatabaseRunHistoryRepository($db), $pause, new BlastRadiusLimiter(emergencyPause: $pause), new \Coleza\Domain\Automation\Versioning\DatabaseRuleVersionManager($db));
+            new DatabaseRunHistoryRepository($db), $pause, new BlastRadiusLimiter(emergencyPause: $pause), new \Coleza\Domain\Automation\Versioning\DatabaseRuleVersionManager($db),
+            new \Coleza\Domain\Automation\Approval\DatabaseApprovalDelayCoordinator($db));
     }
 }

@@ -67,10 +67,12 @@ final class AutomationCodec
         $context = new TriggerContext($c['event'], $c['payload'], new DateTimeImmutable($c['occurred_at']), $c['correlation_id']);
         $actions = array_map(static fn(array $a) => new ActionDefinition($a['id'], $a['type'], $a['parameters']), $data['actions']);
         if ($kind === 'approval') {
-            return PendingApproval::restore(new PendingApproval($data['id'], $data['rule_id'], $data['rule_name'], $context, $actions,
+            $request = PendingApproval::restore(new PendingApproval($data['id'], $data['rule_id'], $data['rule_name'], $context, $actions,
                 new ApprovalRequirement($data['required_role'], $data['timeout_seconds'], $data['reason']),
                 new DateTimeImmutable($data['requested_at']), self::date($data['expires_at']), $data['execution_snapshot'] ?? []),
                 ApprovalStatus::from($data['status']), $data['decided_by'], $data['decision_notes'], self::date($data['decided_at']));
+            if (($data['linked_delay_id'] ?? null) !== null) { $request->linkDelay($data['linked_delay_id']); }
+            return $request;
         }
         if ($kind !== 'delay') { throw new \UnexpectedValueException('Unknown automation entry kind.'); }
         return DelayedExecution::restore(new DelayedExecution($data['id'], $data['rule_id'], $data['rule_name'], $context, $actions,

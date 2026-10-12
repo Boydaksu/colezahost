@@ -30,11 +30,13 @@ final class AutomationEngine
         private readonly ?RunHistoryRepositoryInterface $historyRepository = null,
         private readonly ?EmergencyPauseManagerInterface $emergencyPauseManager = null,
         private readonly ?BlastRadiusLimiter $blastRadiusLimiter = null,
-        private readonly ?\Coleza\Domain\Automation\Versioning\RuleVersionManagerInterface $versionManager = null
+        private readonly ?\Coleza\Domain\Automation\Versioning\RuleVersionManagerInterface $versionManager = null,
+        private readonly ?\Coleza\Domain\Automation\Approval\ApprovalDelayCoordinatorInterface $approvalDelayCoordinator = null
     ) {
     }
 
     public function getVersionManager(): ?\Coleza\Domain\Automation\Versioning\RuleVersionManagerInterface { return $this->versionManager; }
+    public function getApprovalDelayCoordinator(): ?\Coleza\Domain\Automation\Approval\ApprovalDelayCoordinatorInterface { return $this->approvalDelayCoordinator; }
 
     public function executeVersion(string $ruleId, int $version, TriggerContext $context, ?ExecutionMode $mode = null): RuleExecutionResult
     {
@@ -125,6 +127,7 @@ final class AutomationEngine
         $branchTaken = $conditionPassed ? 'THEN' : ($branch->getElseActions() === [] ? 'NONE' : 'ELSE');
         $actions = $conditionPassed ? $branch->getThenActions() : $branch->getElseActions();
         $executionSnapshot = ['rule_version' => $storedVersion?->getVersionNumber() ?? 0,
+            'delay_seconds' => $rule->getDelaySeconds(),
             'condition_passed' => $conditionPassed, 'branch_taken' => $branchTaken,
             'rule_fingerprint' => $storedVersion === null ? null : hash('sha256', \Coleza\Domain\Automation\Persistence\AutomationCodec::encode($storedVersion->getSnapshot()))];
 
@@ -311,8 +314,16 @@ final class AutomationEngine
             throw new \LogicException('Emergency pause active; approval execution deferred');
         }
         $pending = $this->approvalManager->findById($approvalId);
+        if ($pending === null) { throw new \InvalidArgumentException('Approval request not found'); }
         if ($pending !== null && $this->actionsPaused($pending->getActionsToExecute())) {
             throw new \LogicException('Emergency pause blocks approval actions; execution deferred');
+        }
+        $delaySeconds = \Coleza\Domain\Automation\Approval\ApprovalExecutionPolicy::delaySeconds($pending, $this->versionManager);
+        if ($delaySeconds > 0) {
+            if ($this->approvalDelayCoordinator === null) { throw new \LogicException('Atomic approval/delay coordinator not configured'); }
+            $delayed = $this->approvalDelayCoordinator->scheduleApproved($approvalId, $approvedBy);
+            return RuleExecutionResult::delayed($pending->getRuleId(), $pending->getRuleName(), $delayed->getId(),
+                $pending->getExecutionSnapshot()['condition_passed'] ?? true, $pending->getExecutionSnapshot()['branch_taken'] ?? 'THEN', 0.0);
         }
         $approved = $this->approvalManager->approve($approvalId, $approvedBy);
         $start = microtime(true);
@@ -392,7 +403,8 @@ final class AutomationEngine
                 ExecutionMode::ACTIVE
             );
             $this->recordResumedHistory($execution->getRuleId(), $execution->getRuleName(), $execution->getContext(),
-                $dispatchedResults[$execution->getId()], ['delay_id' => $execution->getId()], $execution->getExecutionSnapshot());
+                $dispatchedResults[$execution->getId()], ['delay_id' => $execution->getId()] +
+                    (isset($execution->getExecutionSnapshot()['approval_id']) ? ['approval_id' => $execution->getExecutionSnapshot()['approval_id']] : []), $execution->getExecutionSnapshot());
         }
 
         return $dispatchedResults;

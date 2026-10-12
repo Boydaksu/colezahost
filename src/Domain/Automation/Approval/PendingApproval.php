@@ -15,6 +15,7 @@ final class PendingApproval
     private ?string $decidedBy = null;
     private ?string $decisionNotes = null;
     private ?DateTimeImmutable $decidedAt = null;
+    private ?string $delayedExecutionId = null;
 
     /**
      * @param array<int, ActionInterface> $actionsToExecute
@@ -40,6 +41,15 @@ final class PendingApproval
     }
 
     public function getExecutionSnapshot(): array { return $this->executionSnapshot; }
+
+    public function getDelayedExecutionId(): ?string { return $this->delayedExecutionId; }
+    public function linkDelay(string $id): void
+    {
+        if ($this->status !== ApprovalStatus::APPROVED || $id === '' || $this->delayedExecutionId !== null) {
+            throw new InvalidArgumentException('Cannot link delayed execution to approval');
+        }
+        $this->delayedExecutionId = $id;
+    }
 
     public function getRuleId(): string
     {
@@ -173,6 +183,7 @@ final class PendingApproval
             'decision_notes' => $this->decisionNotes,
             'decided_at' => $this->decidedAt?->format(DateTimeImmutable::ATOM),
             'actions_count' => count($this->actionsToExecute),
+            'linked_delay_id' => $this->delayedExecutionId,
         ];
     }
 }

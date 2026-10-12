@@ -47,6 +47,7 @@ final class CoreServiceProvider implements ServiceProviderInterface
             ));
         foreach ([
             \Coleza\Domain\Automation\Versioning\RuleVersionManagerInterface::class => 'getVersionManager',
+            \Coleza\Domain\Automation\Approval\ApprovalDelayCoordinatorInterface::class => 'getApprovalDelayCoordinator',
             \Coleza\Domain\Automation\Approval\ApprovalManagerInterface::class => 'getApprovalManager',
             \Coleza\Domain\Automation\Delay\DelayManagerInterface::class => 'getDelayManager',
             \Coleza\Domain\Automation\Execution\RunHistoryRepositoryInterface::class => 'getHistoryRepository',

@@ -111,7 +111,7 @@ trait AutomationPersistenceCases
     {
         $this->install();
         $pending = $this->engine()->getApprovalManager()->createRequest('r', 'Ask', new TriggerContext('event'),
-            [new ActionDefinition('a', 'send')], new ApprovalRequirement());
+            [new ActionDefinition('a', 'send')], new ApprovalRequirement(), ['delay_seconds' => 0]);
         $calls = 0;
         $registry = new ActionRegistry();
         $registry->register(new CallbackActionHandler('send', function () use (&$calls) { $calls++; return ['sent' => true]; }));
@@ -245,6 +245,7 @@ trait AutomationPersistenceCases
         self::assertInstanceOf(DatabaseApprovalManager::class, $engine->getApprovalManager());
         self::assertInstanceOf(\Coleza\Domain\Automation\Versioning\DatabaseRuleVersionManager::class, $engine->getVersionManager());
         self::assertSame($engine->getVersionManager(), $first->get(\Coleza\Domain\Automation\Versioning\RuleVersionManagerInterface::class));
+        self::assertSame($engine->getApprovalDelayCoordinator(), $first->get(\Coleza\Domain\Automation\Approval\ApprovalDelayCoordinatorInterface::class));
         self::assertSame($engine->getDelayManager(), $first->get(\Coleza\Domain\Automation\Delay\DelayManagerInterface::class));
         self::assertSame($engine->getHistoryRepository(), $first->get(\Coleza\Domain\Automation\Execution\RunHistoryRepositoryInterface::class));
         $first->get(\Coleza\Domain\Automation\Safety\EmergencyPauseManagerInterface::class)->pause('actor', 'container restart');

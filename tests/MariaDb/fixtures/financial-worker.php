@@ -38,6 +38,15 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'approvalDelaySameActor':
+        case 'approvalDelayDifferentActors':
+            try {
+                $engine = Coleza\Domain\Automation\Engine\DatabaseAutomationFactory::create($db, new Coleza\Domain\Automation\Actions\ActionRegistry());
+                $result['delay_id'] = $engine->executeApprovedRequest($argv[5], $action === 'approvalDelaySameActor' ? 'actor' : 'actor_' . $argv[2])->getDelayId();
+            } catch (InvalidArgumentException $error) {
+                $result = ['status' => 'rejected', 'reason' => $error->getMessage()];
+            }
+            break;
         case 'automationVersion':
             $rule = new Coleza\Domain\Automation\Engine\AutomationRule('parallel_rule', 'Rule', new Coleza\Domain\Automation\Triggers\EventTrigger('event'),
                 new Coleza\Domain\Automation\Branching\IfElseBranch(new Coleza\Domain\Automation\Conditions\FieldCondition('value', '==', (int) $argv[2])));

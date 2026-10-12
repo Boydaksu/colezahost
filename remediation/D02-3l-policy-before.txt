@@ -1,0 +1,16 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+[41;37mF[0m                                                                   1 / 1 (100%)
+
+Time: 00:00.015, Memory: 20.00 MB
+
+There was 1 failure:
+
+1) Coleza\Tests\Unit\Installer\ApprovalDelayTest::testExplicitPolicyMustMatchFrozenVersionEvenWhenFingerprintIsValid
+Failed asserting that exception of type "LogicException" is thrown.
+
+[37;41mFAILURES![0m
+[37;41mTests: 1[0m[37;41m, Assertions: 1[0m[37;41m, Failures: 1[0m[37;41m.[0m
