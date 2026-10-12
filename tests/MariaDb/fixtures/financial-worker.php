@@ -47,6 +47,12 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'operationalModeTransition':
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $modes = [Coleza\Domain\OperationalMode\OperationalMode::SAFE, Coleza\Domain\OperationalMode\OperationalMode::READ_ONLY, Coleza\Domain\OperationalMode\OperationalMode::RECOVERY, Coleza\Domain\OperationalMode\OperationalMode::FULL_MAINTENANCE];
+            $worker = (int) $argv[2];
+            (new Coleza\Domain\OperationalMode\OperationalModeManager($db))->transitionTo($modes[$worker], 'Worker ' . $worker, ['192.0.2.' . ($worker + 1)]);
+            break;
         case 'fraudReviewCreate':
             $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $score = new Coleza\Domain\Fraud\Risk\RiskScoreService($db);

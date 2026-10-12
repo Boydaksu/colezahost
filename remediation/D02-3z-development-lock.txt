@@ -1,0 +1,37 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[31;1mE[0m                                                                   1 / 1 (100%)
+
+Time: 00:00.671, Memory: 20.00 MB
+
+There was 1 error:
+
+1) Coleza\Tests\MariaDb\OperationalModePersistenceTest::testFourParallelTransitionsStoreOneCoherentModeTuple
+RuntimeException: Worker output:
+Fatal error: Uncaught PDOException: SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; try restarting transaction in C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:298
+Stack trace:
+#0 C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php(298): PDOStatement->execute()
+#1 C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php(115): Coleza\Foundation\Database\Connection->executeStatement('INSERT INTO sys...', Array)
+#2 C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\OperationalMode\OperationalModeManager.php(203): Coleza\Foundation\Database\Connection->statement('INSERT INTO sys...', Array)
+#3 C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php(237): Coleza\Domain\OperationalMode\OperationalModeManager->{closure:Coleza\Domain\OperationalMode\OperationalModeManager::write():200}(Object(Coleza\Foundation\Database\Connection))
+#4 C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\OperationalMode\OperationalModeManager.php(208): Coleza\Foundation\Database\Connection->transaction(Object(Closure))
+#5 C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\OperationalMode\OperationalModeManager.php(84): Coleza\Domain\OperationalMode\OperationalModeManager->write(Object(Closure))
+#6 C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\fixtures\financial-worker.php(54): Coleza\Domain\OperationalMode\OperationalModeManager->transitionTo(Coleza\Domain\OperationalMode\OperationalMode::SAFE, 'Worker 0', Array)
+#7 {main}
+  thrown in C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php on line 298
+
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\MariaDbTestCase.php:67
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\OperationalModePersistenceTest.php:10
+
+Caused by
+JsonException: Syntax error
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\MariaDbTestCase.php:67
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\OperationalModePersistenceTest.php:10
+
+[37;41mERRORS![0m
+[37;41mTests: 1[0m[37;41m, Assertions: 8[0m[37;41m, Errors: 1[0m[37;41m.[0m

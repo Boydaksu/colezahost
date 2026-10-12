@@ -1,0 +1,162 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[31;1mE[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m                                                           9 / 9 (100%)
+
+Time: 00:08.349, Memory: 24.00 MB
+
+There was 1 error:
+
+1) Coleza\Tests\MariaDb\OperationalModePersistenceTest::testProductionSchemaSupportsFirstOperationalTransition
+PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'created_at' in 'INSERT INTO'
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:115
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\OperationalMode\OperationalModeManager.php:182
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\OperationalMode\OperationalModeManager.php:111
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\OperationalModePersistenceCases.php:15
+
+--
+
+There were 8 failures:
+
+1) Coleza\Tests\MariaDb\OperationalModePersistenceTest::testConstructAndReadInstalledSchemaPreserveRawCallerWithoutDdl
+Mode construction must not commit caller data
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\OperationalModePersistenceCases.php:24
+
+2) Coleza\Tests\MariaDb\OperationalModePersistenceTest::testFailedLaterSettingPreservesWholeModeAndCaller#0 with data ('standalone')
+Mode, reason, date and whitelist must roll back together
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+     0 => Array &1 [
+         'id' => 1,
+         'setting_key' => 'system.operational_mode',
+-        'setting_value' => 'safe',
++        'setting_value' => 'recovery',
+         'created_at' => '2026-10-12 22:18:21',
+-        'updated_at' => null,
++        'updated_at' => '2026-10-12 22:18:21',
+     ],
+     1 => Array &2 [
+         'id' => 2,
+         'setting_key' => 'system.operational_mode_reason',
+-        'setting_value' => 'Original',
++        'setting_value' => 'Changed',
+         'created_at' => '2026-10-12 22:18:21',
+-        'updated_at' => null,
++        'updated_at' => '2026-10-12 22:18:21',
+     ],
+     2 => Array &3 [
+         'id' => 3,
+@@ @@
+         'setting_key' => 'system.operational_mode_activated_at',
+         'setting_value' => '2026-10-12T19:18:21+00:00',
+         'created_at' => '2026-10-12 22:18:21',
+-        'updated_at' => null,
++        'updated_at' => '2026-10-12 22:18:21',
+     ],
+     3 => Array &4 [
+         'id' => 4,
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\OperationalModePersistenceCases.php:44
+
+3) Coleza\Tests\MariaDb\OperationalModePersistenceTest::testFailedLaterSettingPreservesWholeModeAndCaller#1 with data ('raw')
+Mode, reason, date and whitelist must roll back together
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+     0 => Array &1 [
+         'id' => 1,
+         'setting_key' => 'system.operational_mode',
+-        'setting_value' => 'safe',
++        'setting_value' => 'recovery',
+         'created_at' => '2026-10-12 22:18:21',
+-        'updated_at' => null,
++        'updated_at' => '2026-10-12 22:18:21',
+     ],
+     1 => Array &2 [
+         'id' => 2,
+         'setting_key' => 'system.operational_mode_reason',
+-        'setting_value' => 'Original',
++        'setting_value' => 'Changed',
+         'created_at' => '2026-10-12 22:18:21',
+-        'updated_at' => null,
++        'updated_at' => '2026-10-12 22:18:21',
+     ],
+     2 => Array &3 [
+         'id' => 3,
+@@ @@
+         'setting_key' => 'system.operational_mode_activated_at',
+         'setting_value' => '2026-10-12T19:18:21+00:00',
+         'created_at' => '2026-10-12 22:18:21',
+-        'updated_at' => null,
++        'updated_at' => '2026-10-12 22:18:21',
+     ],
+     3 => Array &4 [
+         'id' => 4,
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\OperationalModePersistenceCases.php:44
+
+4) Coleza\Tests\MariaDb\OperationalModePersistenceTest::testFailedLaterSettingPreservesWholeModeAndCaller#2 with data ('managed')
+Mode, reason, date and whitelist must roll back together
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+     0 => Array &1 [
+         'id' => 1,
+         'setting_key' => 'system.operational_mode',
+-        'setting_value' => 'safe',
++        'setting_value' => 'recovery',
+         'created_at' => '2026-10-12 22:18:21',
+-        'updated_at' => null,
++        'updated_at' => '2026-10-12 22:18:21',
+     ],
+     1 => Array &2 [
+         'id' => 2,
+         'setting_key' => 'system.operational_mode_reason',
+-        'setting_value' => 'Original',
++        'setting_value' => 'Changed',
+         'created_at' => '2026-10-12 22:18:21',
+-        'updated_at' => null,
++        'updated_at' => '2026-10-12 22:18:21',
+     ],
+     2 => Array &3 [
+         'id' => 3,
+@@ @@
+         'setting_key' => 'system.operational_mode_activated_at',
+         'setting_value' => '2026-10-12T19:18:21+00:00',
+         'created_at' => '2026-10-12 22:18:21',
+-        'updated_at' => null,
++        'updated_at' => '2026-10-12 22:18:21',
+     ],
+     3 => Array &4 [
+         'id' => 4,
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\OperationalModePersistenceCases.php:44
+
+5) Coleza\Tests\MariaDb\OperationalModePersistenceTest::testTransitionInsideRawCallerRemainsRollbackable
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\OperationalModePersistenceCases.php:55
+
+6) Coleza\Tests\MariaDb\OperationalModePersistenceTest::testMissingSchemaInCallerRefusesBeforeDdl
+Missing schema installed inside caller
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\OperationalModePersistenceCases.php:63
+
+7) Coleza\Tests\MariaDb\OperationalModePersistenceTest::testUnknownStoredModeRefusesInsteadOfOpeningNormalAccess
+Failed asserting that exception of type "LogicException" is thrown.
+
+8) Coleza\Tests\MariaDb\OperationalModePersistenceTest::testPartialStoredModeRefusesInsteadOfMixingDefaults
+Failed asserting that exception of type "LogicException" is thrown.
+
+[37;41mERRORS![0m
+[37;41mTests: 9[0m[37;41m, Assertions: 30[0m[37;41m, Errors: 1[0m[37;41m, Failures: 8[0m[37;41m.[0m

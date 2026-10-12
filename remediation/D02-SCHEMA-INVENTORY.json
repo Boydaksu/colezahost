@@ -171,12 +171,16 @@
     {
       "file": "src/Domain/OperationalMode/OperationalModeManager.php",
       "class": "Coleza\\Domain\\OperationalMode\\OperationalModeManager",
-      "public_schema_methods": [],
-      "literal_table_names": [
-        "system_settings"
+      "public_schema_methods": [
+        "ensureSchema"
       ],
-      "direct_migration_reference": false,
-      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+      "literal_table_names": [
+        "system_settings",
+        "operational_mode_write_lock"
+      ],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN",
+      "schema_migration_path": "database/migrations/2026_10_12_000023_operational_mode_schema.php"
     },
     {
       "file": "src/Domain/Commerce/Services/ServiceService.php",

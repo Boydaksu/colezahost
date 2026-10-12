@@ -1,10 +1,10 @@
 # D02 kurulum/geçiş kabul matrisi
 
-Güncelleme: 12.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f, D02-3g, D02-3h, D02-3i, D02-3j, D02-3k, D02-3l, D02-3m, D02-3n, D02-3o, D02-3p, D02-3q, D02-3r, D02-3s, D02-3t, D02-3u, D02-3v, D02-3w, D02-3x, D02-3y. Bu matris ürünün bağımsız kabulü değildir. D02 IN_PROGRESS.
+Güncelleme: 12.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f, D02-3g, D02-3h, D02-3i, D02-3j, D02-3k, D02-3l, D02-3m, D02-3n, D02-3o, D02-3p, D02-3q, D02-3r, D02-3s, D02-3t, D02-3u, D02-3v, D02-3w, D02-3x, D02-3y, D02-3z. Bu matris ürünün bağımsız kabulü değildir. D02 IN_PROGRESS.
 
 | Senaryo | Durum | Kanıt / sınır |
 |---|---|---|
-| Gerçek MariaDB 10.11, temiz veri tabanı, production yirmi iki migration | Yerel test geçti | DatabaseFoundationTest; InstallationAcceptanceTest; yirmi iki migration |
+| Gerçek MariaDB 10.11, temiz veri tabanı, production yirmi üç migration | Yerel test geçti | DatabaseFoundationTest; InstallationAcceptanceTest; yirmi üç migration |
 | SQLite kurulum sihirbazı, migrationlardan sonra ADMIN adımı | Yerel test geçti | WebInstallerTest; gerçek DatabaseConfig bağlantısı |
 | Migration tekrarında eski RBAC rollerinin, izinlerin ve tarihlerinin korunması | Yerel test geçti | DatabaseFoundationTest; IdentitySchemaMigrationRegressionTest |
 | Belge/kalem/duyuru kayıtlarının tekrar migrationda korunması | Yerel test geçti | DocumentPersistenceTest; D02-3b |
@@ -46,6 +46,7 @@ Güncelleme: 12.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f,
 | Abuse şikâyet/mesaj şeması ve runtime DDL | Yerel kurulum, kayıt koruma, indeks tamamlama ve raw caller rollback testleri geçti | D02-3w; migration 21, iki tablo, installed no-DDL; yarım şemada duruş ve explicit fixture repair sonrası devam; tam constraint/engine/RBAC/retention matrisi açık |
 | Fraud değerlendirme/sinyal/manuel karar/liste/velocity şemaları | Yerel kurulum, replay, indeks tamamlama, raw/managed caller rollback testleri geçti | D02-3x; migration22, altı tablo/sekiz indeks; toplu partial preflight; immutable karar workflow/concurrency/RBAC ve tam constraints ayrıca açık |
 | Fraud çoklu yazım ve cooperating manual review yarışları | Yerel failure/savepoint/current-read ve dört worker testleri geçti | D02-3y; evaluation+signals/terminal status+snapshot atomik; parent-before-review locks; direct SQL/DB unique constraint, actor/RBAC/audit/metadata checksum policy ayrıca açık |
+| Operational mode ortak settings şeması ve coherent geçiş | Yerel kurulum, rollback, file-boundary ve dört worker testi geçti | D02-3z; migration23, separate fixed-id mutex, no runtime DDL, mode/reason/time/IP tuple; FS+DB distributed commit/offline recovery/RBAC/gerçek girişler ayrıca açık |
 | Diğer otomasyon ve operasyonel domainler; genel runtime DDL sınırları | Açık | Kurulum şeması bütün iş akışlarının ve kısıtların kabulü değildir |
 | GoldenFinancialDataset'in üretim şemasıyla eşleşmesi | Açık | Test fixture kanonik kurulum şeması sayılmaz; F17/F30 |
 | Provisioning cPanel readback ve kalıcı yerel uzlaştırma | Yerel transport/SQL testleri geçti; gerçek sunucu kabulü açık | D02-3o; UNKNOWN hesabın yokluğu değildir, kimlik/etkinlik doğrulanır; service/placement/operation/audit atomik; dört süreçte tek completion |

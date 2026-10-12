@@ -156,8 +156,8 @@ trait BrandCurrencySchemaCases
         self::assertFalse($this->tableExists('currencies'));
         // Explicit fixture maintenance keeps the unknown historical timestamp NULL.
         $this->db->statement('ALTER TABLE fx_snapshots ADD COLUMN created_at TIMESTAMP NULL');
-        self::assertSame(['2026_10_12_000019_brand_currency_schema', '2026_10_12_000020_configuration_write_locks', '2026_10_12_000021_abuse_schema', '2026_10_12_000022_fraud_schema'], $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'));
-        self::assertCount(22, $runner->getRanMigrations());
+        self::assertSame(['2026_10_12_000019_brand_currency_schema', '2026_10_12_000020_configuration_write_locks', '2026_10_12_000021_abuse_schema', '2026_10_12_000022_fraud_schema', '2026_10_12_000023_operational_mode_schema'], $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'));
+        self::assertCount(23, $runner->getRanMigrations());
         $after = $this->db->select('SELECT * FROM fx_snapshots'); self::assertNull($after[0]['created_at']);
         unset($after[0]['created_at']); self::assertSame($before, $after);
         self::assertSame([], $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'));
