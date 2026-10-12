@@ -19,6 +19,17 @@ final class AutomationRecoveryInspector
     }
     public function listUnresolved(): array
     {
+        $attempts = [];
+        $dispatchSizes = [];
+        $pendingSizes = [];
+        foreach ($this->db->select('SELECT * FROM automation_action_attempts') as $attempt) {
+            $attempts[$attempt['id']] = $attempt;
+            $dispatchSizes[$attempt['dispatch_id']] = ($dispatchSizes[$attempt['dispatch_id']] ?? 0) + 1;
+            if ($attempt['pending_kind'] !== null && $attempt['pending_id'] !== null) {
+                $kind = $attempt['pending_kind']; $id = $attempt['pending_id'];
+                $pendingSizes[$kind][$id] = ($pendingSizes[$kind][$id] ?? 0) + 1;
+            }
+        }
         $outcomes = [];
         foreach ($this->db->select('SELECT * FROM automation_run_history') as $row) {
             $run = AutomationCodec::decode($row['payload']);
@@ -62,6 +73,7 @@ final class AutomationRecoveryInspector
             $records = array_values(array_filter($outcomes[$row['kind']][$row['id']] ?? [], static fn(array $r) =>
                 $r['rule_id'] === $entry->getRuleId() && $r['correlation_id'] === $entry->getContext()->getCorrelationId()));
             $completed = count($records) === 1 && PendingExecutionIdentity::matchesSuccessfulOutcome($entry, $records[0])
+                && ActionAttemptIdentity::matchesPendingOutcome($entry, $records[0], $attempts, $dispatchSizes, $pendingSizes)
                 && $row['status'] !== 'DISPATCHING';
             if ($completed) { continue; }
             $result[] = $this->unresolved($row, $entry, $records === [] ? 'MISSING_OUTCOME' : 'AMBIGUOUS_OR_FAILED_OUTCOME');

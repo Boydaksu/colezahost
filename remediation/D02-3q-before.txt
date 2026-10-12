@@ -1,0 +1,28 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+...................[41;37mF[0m[41;37mF[0m[41;37mF[0m                                            22 / 22 (100%)
+
+Time: 00:00.047, Memory: 22.00 MB
+
+There were 3 failures:
+
+1) Coleza\Tests\Unit\Installer\AutomationRecoveryIntegrityTest::testSuccessHistoryCannotHideMissingActionAttempt
+Failed asserting that actual size 0 matches expected size 1.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AutomationRecoveryIntegrityCases.php:258
+
+2) Coleza\Tests\Unit\Installer\AutomationRecoveryIntegrityTest::testSuccessHistoryCannotHideUnknownActionOutcome
+Failed asserting that actual size 0 matches expected size 1.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AutomationRecoveryIntegrityCases.php:266
+
+3) Coleza\Tests\Unit\Installer\AutomationRecoveryIntegrityTest::testSuccessHistoryCannotBorrowAnotherApprovalActionAttempt
+Failed asserting that actual size 0 matches expected size 1.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AutomationRecoveryIntegrityCases.php:278
+
+[37;41mFAILURES![0m
+[37;41mTests: 22[0m[37;41m, Assertions: 97[0m[37;41m, Failures: 3[0m[37;41m.[0m

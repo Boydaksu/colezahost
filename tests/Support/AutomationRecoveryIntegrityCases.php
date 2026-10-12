@@ -250,4 +250,116 @@ trait AutomationRecoveryIntegrityCases
         try { $engine->getDelayManager()->claimForDispatch($child); self::fail('Inconsistent delay interval claimed'); }
         catch (\LogicException) { self::assertSame('SCHEDULED', $engine->getDelayManager()->findById($child)->getStatus()->value); }
     }
+    public function testSuccessHistoryCannotHideMissingActionAttempt(): void
+    {
+        [, , $runId] = $this->completedApproval();
+        $run = AutomationCodec::decode($this->db->selectOne('SELECT payload FROM automation_run_history WHERE id = ?', [$runId])['payload']);
+        $this->db->delete('automation_action_attempts', 'id = :id', ['id' => $run['metadata']['action_attempt_ids'][0]]);
+        self::assertCount(1, (new AutomationRecoveryInspector($this->db))->listUnresolved());
+    }
+    public function testSuccessHistoryCannotHideUnknownActionOutcome(): void
+    {
+        [, , $runId] = $this->completedApproval();
+        $run = AutomationCodec::decode($this->db->selectOne('SELECT payload FROM automation_run_history WHERE id = ?', [$runId])['payload']);
+        $this->db->update('automation_action_attempts', ['status' => 'OUTCOME_UNKNOWN', 'reason_code' => 'HANDLER_EXCEPTION'],
+            'id = :id', ['id' => $run['metadata']['action_attempt_ids'][0]]);
+        self::assertCount(1, (new AutomationRecoveryInspector($this->db))->listUnresolved());
+    }
+    public function testSuccessHistoryCannotBorrowAnotherApprovalActionAttempt(): void
+    {
+        [$engine, , $runId] = $this->completedApproval();
+        $other = $engine->getApprovalManager()->createRequest('r', 'Rule', new TriggerContext('event', ['value' => 42]),
+            [new ActionDefinition('a', 'send', ['value' => '{{ value }}'])], new ApprovalRequirement(),
+            ['rule_version' => 0, 'rule_fingerprint' => null, 'condition_passed' => true, 'branch_taken' => 'THEN', 'delay_seconds' => 0]);
+        $engine->executeApprovedRequest($other->getId(), 'actor');
+        $foreign = $this->db->selectOne('SELECT id FROM automation_action_attempts WHERE pending_id = ?', [$other->getId()])['id'];
+        $this->changePayload('automation_run_history', $runId, static function (&$d) use ($foreign) { $d['metadata']['action_attempt_ids'] = [$foreign]; });
+        $items = (new AutomationRecoveryInspector($this->db))->listUnresolved();
+        self::assertCount(1, $items);
+        self::assertNotSame($other->getId(), $items[0]['id']);
+    }
+    public function testSuccessHistoryRequiresExactActionInputsStateAndTimesWithoutMutatingEvidence(): void
+    {
+        [, $pendingId] = $this->completedApproval();
+        $original = $this->db->selectOne('SELECT * FROM automation_action_attempts WHERE pending_id = ?', [$pendingId]);
+        $changes = [
+            ['rule_id' => 'other'], ['correlation_id' => 'other'], ['pending_kind' => 'delay'], ['pending_id' => 'other'],
+            ['pending_fingerprint' => str_repeat('a', 64)], ['rule_version' => 99], ['rule_fingerprint' => str_repeat('a', 64)],
+            ['action_id' => 'other'], ['action_type' => 'service.terminate'], ['action_position' => 9],
+            ['action_definition_fingerprint' => str_repeat('a', 64)], ['planned_input_fingerprint' => str_repeat('a', 64)],
+            ['input_fingerprint' => str_repeat('a', 64)], ['dispatch_id' => str_repeat('b', 32)],
+            ['status' => 'DISPATCHING'], ['status' => 'BLOCKED'], ['status' => 'UNKNOWN_NEW_STATUS'],
+            ['reason_code' => 'HANDLER_REPORTED_FAILURE'], ['started_at' => null], ['finished_at' => null],
+            ['finished_at' => 'not-a-time'], ['created_at' => (new \DateTimeImmutable('-1 year'))->format('Y-m-d\TH:i:s.uP')],
+            ['finished_at' => (new \DateTimeImmutable('+1 hour'))->format('Y-m-d\TH:i:s.uP')],
+            ['started_at' => (new \DateTimeImmutable('+1 hour'))->format('Y-m-d\TH:i:s.uP')],
+        ];
+        foreach ($changes as $change) {
+            $this->db->update('automation_action_attempts', array_replace($original, $change), 'id = :id', ['id' => $original['id']]);
+            $before = [$this->db->select('SELECT * FROM automation_action_attempts'), $this->db->select('SELECT * FROM automation_pending'),
+                $this->db->select('SELECT * FROM automation_run_history')];
+            $items = (new AutomationRecoveryInspector($this->db))->listUnresolved();
+            self::assertCount(1, $items, json_encode(array_keys($change)));
+            self::assertFalse($items[0]['automatic_retry_allowed']);
+            self::assertSame($before, [$this->db->select('SELECT * FROM automation_action_attempts'), $this->db->select('SELECT * FROM automation_pending'),
+                $this->db->select('SELECT * FROM automation_run_history')]);
+        }
+        self::assertSame(1, $this->calls);
+        $this->db->update('automation_action_attempts', $original, 'id = :id', ['id' => $original['id']]);
+        self::assertSame([], (new AutomationRecoveryInspector($this->db))->listUnresolved());
+    }
+    public function testLegacySuccessWithoutAttemptReferencesRequiresReviewAndIsNotBackfilled(): void
+    {
+        [, , $runId] = $this->completedApproval();
+        $this->changePayload('automation_run_history', $runId, static function (&$d) { unset($d['metadata']['action_attempt_ids']); });
+        $this->db->statement('DELETE FROM automation_action_attempts');
+        $before = $this->db->select('SELECT * FROM automation_run_history');
+        $items = (new AutomationRecoveryInspector($this->db))->listUnresolved();
+        self::assertCount(1, $items);
+        self::assertFalse($items[0]['automatic_retry_allowed']);
+        self::assertSame($before, $this->db->select('SELECT * FROM automation_run_history'));
+        self::assertSame([], $this->db->select('SELECT * FROM automation_action_attempts'));
+    }
+    private function completedTwoActions(): array
+    {
+        $engine = $this->recoveryEngine();
+        $pending = $engine->getApprovalManager()->createRequest('r', 'Two actions', new TriggerContext('event', ['value' => 42]),
+            [new ActionDefinition('a', 'send', ['value' => 1]), new ActionDefinition('b', 'send', ['value' => 2])],
+            new ApprovalRequirement(), ['rule_version' => 0, 'rule_fingerprint' => null,
+                'condition_passed' => true, 'branch_taken' => 'THEN', 'delay_seconds' => 0]);
+        $engine->executeApprovedRequest($pending->getId(), 'actor');
+        return [$engine, $pending, $engine->getHistoryRepository()->listRecent()[0]->getRunId()];
+    }
+    public function testOrderedCompleteActionsSurviveRestartButReversedDuplicatedOrPartialReferencesDoNot(): void
+    {
+        [, , $runId] = $this->completedTwoActions();
+        $original = AutomationCodec::decode($this->db->selectOne('SELECT payload FROM automation_run_history WHERE id = ?', [$runId])['payload']);
+        $ids = $original['metadata']['action_attempt_ids'];
+        self::assertSame([], (new AutomationRecoveryInspector($this->db))->listUnresolved());
+        foreach ([array_reverse($ids), [$ids[0], $ids[0]], [$ids[0]], ['unknown', $ids[1]], []] as $references) {
+            $data = $original; $data['metadata']['action_attempt_ids'] = $references;
+            $this->db->update('automation_run_history', ['payload' => AutomationCodec::encode($data)], 'id = :id', ['id' => $runId]);
+            self::assertCount(1, (new AutomationRecoveryInspector($this->db))->listUnresolved());
+        }
+        self::assertSame(2, $this->calls);
+    }
+    public function testAdditionalUnreferencedDispatchCannotBeHiddenByEarlierSuccess(): void
+    {
+        [$engine, $pending] = $this->completedTwoActions();
+        $engine->getActionJournal()->prepare($pending->getRuleId(), $pending->getActionsToExecute(), $pending->getContext(),
+            'approval', $pending->getId(), \Coleza\Domain\Automation\Execution\PendingExecutionIdentity::fingerprint($pending), $pending->getExecutionSnapshot());
+        $items = (new AutomationRecoveryInspector($this->db))->listUnresolved();
+        self::assertCount(1, $items);
+        self::assertFalse($items[0]['automatic_retry_allowed']);
+        self::assertSame(2, $this->calls);
+        self::assertCount(2, (new AutomationRecoveryInspector($this->db))->listUnresolvedActionAttempts());
+    }
+    public function testSecondActionCannotStartBeforeFirstActionFinishedInCompletionEvidence(): void
+    {
+        [, $pending] = $this->completedTwoActions();
+        $rows = $this->db->select('SELECT * FROM automation_action_attempts WHERE pending_id = ? ORDER BY action_position', [$pending->getId()]);
+        $this->db->update('automation_action_attempts', ['started_at' => $rows[0]['started_at']], 'id = :id', ['id' => $rows[1]['id']]);
+        self::assertCount(1, (new AutomationRecoveryInspector($this->db))->listUnresolved());
+        self::assertSame(2, $this->calls);
+    }
 }

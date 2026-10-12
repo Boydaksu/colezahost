@@ -1,0 +1,18 @@
+{
+  "remediation/D02-3q-SONUC.md": "22966ca9b0c5b16690d5a46f0b5166ba0a43e0bd6b4a47aa2d324bc810705e96",
+  "remediation/D02-3q-before.txt": "14c738975574e9e7e976912e527cb2912e0a5745ecd849d91689854209c3625b",
+  "remediation/D02-3q-development-main.txt": "b35c4c97b00c0fc10723c979f6bd0995bff776592443d218d31d9e2845fe17ad",
+  "remediation/D02-3q-mariadb.txt": "241f1aac3c13d40adf1ab1d94f9c3f70c8f9da5156ad77719cc1646d400a5804",
+  "remediation/D02-3q-mariadb.xml": "20a02420587a19d426ef3f38e752a8a3c8ae25cecfa23d92392fb79aabc08db3",
+  "remediation/D02-3q-recovery-development.txt": "cd0f0623ff21b4b3befb11bd2ec8fc8dfa7f7b72e83b0608e2d734081fc727e7",
+  "remediation/D02-3q-recovery-mariadb-development.txt": "a4e337de410fb3202215ee90ce1031bf42f41a2989112b6e52bc680d6227305b",
+  "remediation/D02-3q-suite.txt": "b8983c3359f5d7335ec5422c647f995b31bb2641bd89c87c7232a909f176812e",
+  "remediation/D02-3q-suite.xml": "6b7eecc6cfe0fd874c9d025caf22c0d71a7377309e5329132d31661515d518c6",
+  "src/Domain/Automation/Execution/ActionAttemptIdentity.php": "c96763d227163fc66794b31db3f6bcc3a5579e3f5df78765fcf605ec01813544",
+  "remediation/D02-INSTALL-MATRIX.md": "d5f96565cee9998c447ae704cc009ebb5bf7c5bbcf56b34c40cacd3f180ccef7",
+  "remediation/PLAN.md": "8088ef62cb0bf08e46c3ce056d8fcf6b1ddebecfd0c3ef6eb00c7487e488ed04",
+  "remediation/state.json": "c6e3cdd34c39a889eab46c0952a0c035a203c840b2b3a5e9347cf57f39f5a182",
+  "src/Domain/Automation/Execution/AutomationRecoveryInspector.php": "872e6717be132953524a5e5f037da41c53a168e44f41f598ff10dd88a0bee082",
+  "src/Domain/Automation/Execution/DatabaseActionAttemptJournal.php": "4a21a74fc21f3a9358d8effa15711ae825ef3edfe2e61c53a741ef5b2018a6c0",
+  "tests/Support/AutomationRecoveryIntegrityCases.php": "51e8991429bdd79a367a059156d35d33f4d9c8f3d89774e53163fc8835946b99"
+}

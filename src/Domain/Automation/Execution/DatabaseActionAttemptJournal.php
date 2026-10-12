@@ -4,7 +4,6 @@ namespace Coleza\Domain\Automation\Execution;
 
 use Coleza\Foundation\Database\{Connection, PdoSchema};
 use Coleza\Domain\Automation\Actions\{ActionDefinition, ActionInterface};
-use Coleza\Domain\Automation\Persistence\AutomationCodec;
 use Coleza\Domain\Automation\Triggers\TriggerContext;
 
 /** Committed observations, never a provider receipt or permission to retry. */
@@ -60,9 +59,9 @@ final class DatabaseActionAttemptJournal
                 'pending_kind' => $pendingKind, 'pending_id' => $pendingId, 'pending_fingerprint' => $pendingFingerprint,
                 'action_id' => $action->getId(), 'action_type' => $action->getType(),
                 'rule_version' => $snapshot['rule_version'] ?? 0, 'rule_fingerprint' => $snapshot['rule_fingerprint'] ?? null,
-                'action_definition_fingerprint' => $this->definitionFingerprint($action),
-                'planned_input_fingerprint' => $this->fingerprint($action, $context),
-                'input_fingerprint' => $this->fingerprint($action, $context), 'status' => 'PREPARED',
+                'action_definition_fingerprint' => ActionAttemptIdentity::definitionFingerprint($action),
+                'planned_input_fingerprint' => ActionAttemptIdentity::inputFingerprint($action, $context),
+                'input_fingerprint' => ActionAttemptIdentity::inputFingerprint($action, $context), 'status' => 'PREPARED',
                 'reason_code' => null, 'created_at' => $this->now(), 'started_at' => null, 'finished_at' => null];
         }
         $this->db->transaction(function () use ($rows): void {
@@ -75,10 +74,10 @@ final class DatabaseActionAttemptJournal
     {
         $this->assertOutsideTransaction();
         $updated = $this->db->update('automation_action_attempts', ['status' => 'DISPATCHING',
-            'input_fingerprint' => $this->fingerprint($action, $context), 'started_at' => $this->now()],
+            'input_fingerprint' => ActionAttemptIdentity::inputFingerprint($action, $context), 'started_at' => $this->now()],
             'id = :id AND status = :expected AND action_id = :action AND action_type = :type AND action_definition_fingerprint = :definition AND correlation_id = :correlation',
             ['id' => $id, 'expected' => 'PREPARED', 'action' => $action->getId(), 'type' => $action->getType(),
-                'definition' => $this->definitionFingerprint($action), 'correlation' => $context->getCorrelationId()]);
+                'definition' => ActionAttemptIdentity::definitionFingerprint($action), 'correlation' => $context->getCorrelationId()]);
         if ($updated !== 1) { throw new \LogicException('Action attempt changed or missing; handler refused.'); }
     }
 
@@ -114,16 +113,5 @@ final class DatabaseActionAttemptJournal
         return $result;
     }
 
-    private function definitionFingerprint(ActionInterface $action): string
-    {
-        return hash('sha256', AutomationCodec::encode(['id' => $action->getId(), 'type' => $action->getType(), 'parameters' => $action->getParameters()]));
-    }
-
-    private function fingerprint(ActionInterface $action, TriggerContext $context): string
-    {
-        return hash('sha256', AutomationCodec::encode(['action_id' => $action->getId(), 'action_type' => $action->getType(),
-            'parameters' => $action->getParameters(), 'resolved_parameters' => $action->resolveParameters($context),
-            'event' => $context->getEventName(), 'context' => $context->all(), 'correlation_id' => $context->getCorrelationId()]));
-    }
     private function now(): string { return (new \DateTimeImmutable())->format('Y-m-d\TH:i:s.uP'); }
 }

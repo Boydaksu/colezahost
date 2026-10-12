@@ -37,6 +37,7 @@ Güncelleme: 12.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f,
 | Kalıcı global yıkıcı işlem kontenjanı | Yerel kalıcılık, hata ve dört süreçli yarış testleri geçti | Migration 15; 5 girişim/3600 saniye, işlemden önce committed permit; başarısız/belirsiz sonuç da sayılır; D02-3m |
 | Otomasyon actor RBAC ve tüm HTTP/CLI/cron bağları | D03/D06/D08 açık | Kalıcı engine/version interface container binding yerel doğrulandı; bütün ürün girişleri veya dış komut güvenliği kabul edilmiş sayılmaz |
 | Otomasyon eylem deneme günlüğü | Yerel SQLite/MariaDB testleri geçti; sağlayıcı kanıtı ve genel kurtarma açık | D02-3p; migration 16, kayıt-before-handler, write fault sonrası duruş, pending/input bağı, dört süreçte tek start |
+| Otomasyon başarı geçmişi ve eylem kayıt bağı | Yerel SQLite/MariaDB testleri geçti; dış sağlayıcı kabulü açık | D02-3q; exact pending/ordered action/input/version/time/dispatch bağı; missing/unknown/foreign/extra deneme işi gizleyemez; salt okunur, no retry/backfill |
 | Diğer otomasyon ve operasyonel domainler; genel runtime DDL sınırları | Açık | Kurulum şeması bütün iş akışlarının ve kısıtların kabulü değildir |
 | GoldenFinancialDataset'in üretim şemasıyla eşleşmesi | Açık | Test fixture kanonik kurulum şeması sayılmaz; F17/F30 |
 | Provisioning cPanel readback ve kalıcı yerel uzlaştırma | Yerel transport/SQL testleri geçti; gerçek sunucu kabulü açık | D02-3o; UNKNOWN hesabın yokluğu değildir, kimlik/etkinlik doğrulanır; service/placement/operation/audit atomik; dört süreçte tek completion |
