@@ -1,0 +1,29 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+FFF                                                                 3 / 3 (100%)
+
+Time: 00:00.021, Memory: 20.00 MB
+
+There were 3 failures:
+
+1) Coleza\Tests\Unit\Installer\AutomationRecoveryIntegrityTest::testWrongVersionSuccessCannotHideUnresolvedApproval
+Failed asserting that actual size 0 matches expected size 1.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AutomationRecoveryIntegrityCases.php:60
+
+2) Coleza\Tests\Unit\Installer\AutomationRecoveryIntegrityTest::testChangedLinkedActionsCannotHideApproval
+Failed asserting that an array is not empty.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AutomationRecoveryIntegrityCases.php:67
+
+3) Coleza\Tests\Unit\Installer\AutomationRecoveryIntegrityTest::testChangedLinkedActionsCannotBeDispatched
+Changed child action must never reach a handler
+Failed asserting that 1 is identical to 0.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AutomationRecoveryIntegrityCases.php:79
+
+FAILURES!
+Tests: 3, Assertions: 3, Failures: 3.

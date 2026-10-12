@@ -23,9 +23,7 @@ final class DatabaseApprovalDelayCoordinator implements ApprovalDelayCoordinator
             if ($request->getDelayedExecutionId() !== null) {
                 $linked = $delay->findById($request->getDelayedExecutionId());
                 if ($request->getDecidedBy() !== $approvedBy) { throw new \InvalidArgumentException('Approval already decided by another actor'); }
-                if ($linked === null || $linked->getRuleId() !== $request->getRuleId()
-                    || $linked->getContext()->getCorrelationId() !== $request->getContext()->getCorrelationId()
-                    || ($linked->getExecutionSnapshot()['approval_id'] ?? null) !== $id) {
+                if ($linked === null || !ApprovalDelayLink::matches($request, $linked, new DatabaseRuleVersionManager($this->db))) {
                     throw new \LogicException('Linked approval/delay state is inconsistent; reconciliation required');
                 }
                 return $linked;

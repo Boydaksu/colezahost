@@ -1,6 +1,6 @@
 # D02 kurulum/geçiş kabul matrisi
 
-Güncelleme: 12.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f, D02-3g, D02-3h, D02-3i, D02-3j, D02-3k, D02-3l, D02-3m. Bu matris ürünün bağımsız kabulü değildir. D02 IN_PROGRESS.
+Güncelleme: 12.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f, D02-3g, D02-3h, D02-3i, D02-3j, D02-3k, D02-3l, D02-3m, D02-3n. Bu matris ürünün bağımsız kabulü değildir. D02 IN_PROGRESS.
 
 | Senaryo | Durum | Kanıt / sınır |
 |---|---|---|
@@ -31,6 +31,8 @@ Güncelleme: 12.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f,
 | Kalıcı kural sürümleri ve özgün onay/gecikme provenance | Yerel kurulum, restore ve paralel yayın testleri geçti | Migration 14; tam trigger/condition/action snapshot; v1 işi v2 sonrası v1 ile çalışır; dörder süreçte numara; D02-3k |
 | Onay ve ertelemenin birleşik akışı | Yerel atomiklik, replay ve paralellik testleri geçti | D02-3l; karar/child/history tek transaction; onay sonrası bekleme; aynı actor tekrarında tek child, farklı actor kararı değiştiremez |
 | Eski onayın bekleme politikası | Bilinen frozen sürümden doğrulama ve belirsizliği durdurma testleri geçti | Yeni JSON delay alanı yoksa özgün kayıtlı sürüm/hash kontrol edilir; bilinmeyen politika sıfır kabul edilmez |
+| Otomasyon tamamlanma kanıtının iş girdileriyle eşleşmesi | Yerel bütünlük testleri geçti | D02-3n; hash/version/branch/context/action sonuçları; eksik veya çelişkili eski sonuç otomatik doğrulanmaz |
+| Onaydan doğan delay'in özgün onayla bütünlüğü | Yerel claim/replay, reverse link ve paralellik testleri geçti | D02-3n; değiştirilmiş eylem/context/policy/zaman aralığı durur; silinmiş origin alanı reverse parent lookup ile aşamaz |
 | Yarım kalan otomasyon işleri | Salt okunur inceleme testi geçti; güvenli dış recovery açık | Eksik/başarısız/çelişkili outcome gösterilir, otomatik retry yok; provider reconciliation ve lease/idempotency ayrı D06 kabulü |
 | Kalıcı global yıkıcı işlem kontenjanı | Yerel kalıcılık, hata ve dört süreçli yarış testleri geçti | Migration 15; 5 girişim/3600 saniye, işlemden önce committed permit; başarısız/belirsiz sonuç da sayılır; D02-3m |
 | Otomasyon actor RBAC ve tüm HTTP/CLI/cron bağları | D03/D06/D08 açık | Kalıcı engine/version interface container binding yerel doğrulandı; bütün ürün girişleri veya dış komut güvenliği kabul edilmiş sayılmaz |

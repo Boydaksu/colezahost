@@ -17,14 +17,23 @@ final class PendingStore
 
     public function find(string $id): PendingApproval|DelayedExecution|null
     {
-        $row = $this->db->selectOne('SELECT payload FROM automation_pending WHERE id = ? AND kind = ?' . $this->db->forUpdate(), [$id, $this->kind]);
-        return $row === null ? null : AutomationCodec::hydrate(AutomationCodec::decode($row['payload']), $this->kind);
+        $row = $this->db->selectOne('SELECT * FROM automation_pending WHERE id = ? AND kind = ?' . $this->db->forUpdate(), [$id, $this->kind]);
+        return $row === null ? null : self::hydrateRow($row);
     }
 
     public function list(string $status): array
     {
-        return array_map(fn(array $r) => AutomationCodec::hydrate(AutomationCodec::decode($r['payload']), $this->kind),
-            $this->db->select('SELECT payload FROM automation_pending WHERE kind = ? AND status = ? ORDER BY id', [$this->kind, $status]));
+        return array_map(self::hydrateRow(...),
+            $this->db->select('SELECT * FROM automation_pending WHERE kind = ? AND status = ? ORDER BY id' . $this->db->forUpdate(), [$this->kind, $status]));
+    }
+
+    public static function hydrateRow(array $row): PendingApproval|DelayedExecution
+    {
+        $entry = AutomationCodec::hydrate(AutomationCodec::decode($row['payload']), $row['kind']);
+        if ($entry->getId() !== $row['id'] || $entry->getStatus()->value !== $row['status']) {
+            throw new \UnexpectedValueException('Pending identity or state mismatch; reconciliation required');
+        }
+        return $entry;
     }
 
     /** Lock before reading, including SQLite. Mutations and their stored payload commit together. */

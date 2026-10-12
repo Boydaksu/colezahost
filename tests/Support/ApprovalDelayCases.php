@@ -56,6 +56,8 @@ trait ApprovalDelayCases
         $row = $this->db->selectOne('SELECT payload FROM automation_pending WHERE id = ?', [$id]);
         $data = \Coleza\Domain\Automation\Persistence\AutomationCodec::decode($row['payload']);
         $data['execute_at'] = (new \DateTimeImmutable('-1 hour'))->format('Y-m-d\TH:i:s.uP');
+        // Simulate elapsed time while retaining the approved waiting interval.
+        $data['scheduled_at'] = (new \DateTimeImmutable($data['execute_at']))->modify('-' . $data['execution_snapshot']['delay_seconds'] . ' seconds')->format('Y-m-d\TH:i:s.uP');
         $this->db->update('automation_pending', ['payload' => \Coleza\Domain\Automation\Persistence\AutomationCodec::encode($data)], 'id = :id', ['id' => $id]);
     }
     public function testRestartAndRepeatedApprovalPreserveOneChildAndOriginalDecision(): void

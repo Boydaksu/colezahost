@@ -325,6 +325,7 @@ final class AutomationEngine
             return RuleExecutionResult::delayed($pending->getRuleId(), $pending->getRuleName(), $delayed->getId(),
                 $pending->getExecutionSnapshot()['condition_passed'] ?? true, $pending->getExecutionSnapshot()['branch_taken'] ?? 'THEN', 0.0);
         }
+        $pendingFingerprint = $this->capturePendingFingerprint($pending);
         $approved = $this->approvalManager->approve($approvalId, $approvedBy);
         $start = microtime(true);
 
@@ -353,7 +354,8 @@ final class AutomationEngine
             $hasFailures ? RunStatus::FAILED : RunStatus::SUCCESS,
             ExecutionMode::ACTIVE
         );
-        $this->recordResumedHistory($approved->getRuleId(), $approved->getRuleName(), $approved->getContext(), $result, ['approval_id' => $approvalId], $approved->getExecutionSnapshot());
+        $this->recordResumedHistory($approved->getRuleId(), $approved->getRuleName(), $approved->getContext(), $result,
+            ['approval_id' => $approvalId, 'pending_execution_fingerprint' => $pendingFingerprint], $approved->getExecutionSnapshot());
         return $result;
     }
 
@@ -374,6 +376,7 @@ final class AutomationEngine
         foreach ($due as $execution) {
             if ($this->emergencyPauseManager?->isPaused(scope: 'ALL')) { break; }
             if ($this->actionsPaused($execution->getActionsToExecute())) { continue; }
+            $pendingFingerprint = $this->capturePendingFingerprint($execution);
             if (!$this->delayManager->claimForDispatch($execution->getId())) { continue; }
             $start = microtime(true);
             $actionResults = [];
@@ -403,7 +406,8 @@ final class AutomationEngine
                 ExecutionMode::ACTIVE
             );
             $this->recordResumedHistory($execution->getRuleId(), $execution->getRuleName(), $execution->getContext(),
-                $dispatchedResults[$execution->getId()], ['delay_id' => $execution->getId()] +
+                $dispatchedResults[$execution->getId()], ['delay_id' => $execution->getId(),
+                    'pending_execution_fingerprint' => $pendingFingerprint] +
                     (isset($execution->getExecutionSnapshot()['approval_id']) ? ['approval_id' => $execution->getExecutionSnapshot()['approval_id']] : []), $execution->getExecutionSnapshot());
         }
 
@@ -448,6 +452,13 @@ final class AutomationEngine
                 'Action execution failed with exception: ' . $e->getMessage()
             );
         }
+    }
+
+    private function capturePendingFingerprint(\Coleza\Domain\Automation\Approval\PendingApproval|\Coleza\Domain\Automation\Delay\DelayedExecution $entry): ?string
+    {
+        if ($this->historyRepository === null || $this->historyRepository instanceof \Coleza\Domain\Automation\Execution\InMemoryRunHistoryRepository) { return null; }
+        // Validate and capture before the decision/claim and external handler, never after an effect.
+        return \Coleza\Domain\Automation\Execution\PendingExecutionIdentity::fingerprint($entry);
     }
 
     private function recordResumedHistory(string $ruleId, string $ruleName, TriggerContext $context, RuleExecutionResult $result, array $metadata, array $snapshot = []): void
