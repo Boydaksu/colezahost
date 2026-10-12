@@ -1,10 +1,10 @@
 # D02 kurulum/geçiş kabul matrisi
 
-Güncelleme: 12.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f, D02-3g, D02-3h, D02-3i, D02-3j, D02-3k, D02-3l, D02-3m, D02-3n, D02-3o, D02-3p, D02-3q, D02-3r, D02-3s, D02-3t, D02-3u. Bu matris ürünün bağımsız kabulü değildir. D02 IN_PROGRESS.
+Güncelleme: 12.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f, D02-3g, D02-3h, D02-3i, D02-3j, D02-3k, D02-3l, D02-3m, D02-3n, D02-3o, D02-3p, D02-3q, D02-3r, D02-3s, D02-3t, D02-3u, D02-3v. Bu matris ürünün bağımsız kabulü değildir. D02 IN_PROGRESS.
 
 | Senaryo | Durum | Kanıt / sınır |
 |---|---|---|
-| Gerçek MariaDB 10.11, temiz veri tabanı, production on dokuz migration | Yerel test geçti | DatabaseFoundationTest; InstallationAcceptanceTest; on dokuz migration |
+| Gerçek MariaDB 10.11, temiz veri tabanı, production yirmi migration | Yerel test geçti | DatabaseFoundationTest; InstallationAcceptanceTest; yirmi migration |
 | SQLite kurulum sihirbazı, migrationlardan sonra ADMIN adımı | Yerel test geçti | WebInstallerTest; gerçek DatabaseConfig bağlantısı |
 | Migration tekrarında eski RBAC rollerinin, izinlerin ve tarihlerinin korunması | Yerel test geçti | DatabaseFoundationTest; IdentitySchemaMigrationRegressionTest |
 | Belge/kalem/duyuru kayıtlarının tekrar migrationda korunması | Yerel test geçti | DocumentPersistenceTest; D02-3b |
@@ -42,10 +42,11 @@ Güncelleme: 12.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f,
 | Foundation cache/locks/idempotency/heartbeat ve migration metadata runtime DDL | Yerel SQLite/MariaDB şema ve transaction testleri geçti | D02-3s; migration 17, installed schema no-DDL, raw/managed caller rollback, eksik/yarım şemada duruş; tam constraint/engine matrisi açık |
 | Sağlayıcı ayarları/Vault ve denetim bağımlılığının runtime DDL yolu | Yerel kurulum, veri koruma ve caller rollback testleri geçti | D02-3t; keyless migration 18, ciphertext/version/date korunması, installed audit no-DDL; anahtar/RBAC/secret audit güvenlik kabulü D03 açık |
 | Marka/para birimi/kur geçmişi şeması ve runtime DDL | Yerel kurulum, kayıt koruma ve caller rollback testleri geçti | D02-3u; migration 19, installed no-DDL, FX schema check before fallback/provider; single-active/default yarışları ve gerçek FX kabulü açık |
+| Tek aktif marka ve default currency cooperating writer bütünlüğü | Yerel rollback, current-read ve dört worker testleri geçti | D02-3v; ortak row mutex, savepoint/raw caller, installer/domain ortak policy, failed default insert eski varsayılanı korur; bypass SQL/DB unique constraint/diğer writer matrisi açık |
 | Diğer otomasyon ve operasyonel domainler; genel runtime DDL sınırları | Açık | Kurulum şeması bütün iş akışlarının ve kısıtların kabulü değildir |
 | GoldenFinancialDataset'in üretim şemasıyla eşleşmesi | Açık | Test fixture kanonik kurulum şeması sayılmaz; F17/F30 |
 | Provisioning cPanel readback ve kalıcı yerel uzlaştırma | Yerel transport/SQL testleri geçti; gerçek sunucu kabulü açık | D02-3o; UNKNOWN hesabın yokluğu değildir, kimlik/etkinlik doğrulanır; service/placement/operation/audit atomik; dört süreçte tek completion |
 | Gerçek sağlayıcı bağlantısı ve gerçek cron çalıştırıcısının geçmiş yazımı | D06 kabulü açık | Doctor provider envanterini uzaktan doğrulanmış HEALTHY diye sunmaz |
 | Üretim veri tabanında upgrade/rollback | Yapılmadı | Yedek, bakım penceresi ve eski worker'ların durdurulması gerekir; yerel test üretim onayı değildir |
 
-Sıradaki D02 işi: D02-SCHEMA-INVENTORY.json içindeki kalan domain şema kurucularını gerçek kurulum/upgrade akışına bağlamak ve kısıt uyumunu sınamak. Envanter 92 CREATE TABLE kaynak dosyasını listeler; metinde migration referansı olması tek başına çalıştırma ya da kabul kanıtı değildir. D02 çıkış ölçütleri tamamlanmadan D03'e geçilmez.
+Sıradaki D02 işi: D02-SCHEMA-INVENTORY.json içindeki kalan domain şema kurucularını gerçek kurulum/upgrade akışına bağlamak ve kısıt uyumunu sınamak. Envanter 93 CREATE TABLE kaynak dosyasını listeler; metinde migration referansı olması tek başına çalıştırma ya da kabul kanıtı değildir. D02 çıkış ölçütleri tamamlanmadan D03'e geçilmez.

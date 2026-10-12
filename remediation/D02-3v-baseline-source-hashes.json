@@ -1,0 +1,8 @@
+{
+  "reference_commit": "c345521b2abb7f037b2fc0e52399a84f2590e796",
+  "source_sha256": {
+    "src/Domain/Brand/BrandService.php": "c3e41150c57ecfe21e62a8639c160848b3fec27ee6cae92d411712abab7ecaf3",
+    "src/Domain/Finance/Currency/CurrencyService.php": "91a032019e69dc374643b4a5b73710661bdd19b8e99ef1d2b0f44a9e1ca82bc6"
+  },
+  "scheduling_probe": "Baseline PDOStatement sleeps 300ms after old count/read-clear gaps; algorithms unchanged. Current acceptance does not use this mode."
+}

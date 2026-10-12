@@ -13,9 +13,14 @@ final class BrandSetupService
     {
         new ProviderIdentitySchema($db, $prefix); // Identifier validation only; no application-time DDL.
         if ($ownerUserId === null || $ownerUserId <= 0) { $this->reject('An explicit provider owner is required.'); }
-        return $db->transaction(function () use ($db, $dto, $defaultCurrency, $defaultLocale, $prefix, $ownerUserId): array {
+        return (new \Coleza\Foundation\Database\ConfigurationWriteLock($db, $prefix))->run('brand', function () use ($db, $dto, $defaultCurrency, $defaultLocale, $prefix, $ownerUserId): array {
             $binding = $this->lockBinding($db, $prefix);
             $this->requireOwner($db, $prefix, $ownerUserId);
+            $active = $db->select("SELECT id FROM {$prefix}brands WHERE is_active = 1 ORDER BY id LIMIT 2" . $db->forUpdate());
+            if (count($active) > 1 || ($binding['brand_id'] === null && $active !== [])
+                || ($binding['brand_id'] !== null && (count($active) !== 1 || (int) $active[0]['id'] !== (int) $binding['brand_id']))) {
+                $this->reject('Active brand requires explicit provider binding or reconciliation.');
+            }
             $slug = preg_replace('/[^a-z0-9]+/', '-', strtolower($dto->getCompanyName())) ?: 'default-org';
             $code = preg_replace('/[^a-z0-9]+/', '-', strtolower($dto->getBrandName())) ?: 'default-brand';
             if ($binding['organization_id'] === null) {
@@ -40,7 +45,7 @@ final class BrandSetupService
                 $db->statement($sql, [$key, $value]);
             }
             return ['brand_id' => $brandId, 'organization_id' => $orgId, 'brand_name' => $dto->getBrandName(), 'company_name' => $dto->getCompanyName()];
-        });
+        }, [$prefix . 'organizations', $prefix . 'organization_members', $prefix . 'installer_provider_identity', $prefix . 'system_settings']);
     }
 
     /** Explicit reconciliation of a legacy installation; never select the first available row. */
@@ -48,9 +53,11 @@ final class BrandSetupService
     {
         new ProviderIdentitySchema($db, $prefix);
         if (min($organizationId, $brandId, $ownerUserId) <= 0) { $this->reject('Explicit positive provider identity ids are required.'); }
-        $db->transaction(function () use ($db, $organizationId, $brandId, $ownerUserId, $prefix): void {
+        (new \Coleza\Foundation\Database\ConfigurationWriteLock($db, $prefix))->run('brand', function () use ($db, $organizationId, $brandId, $ownerUserId, $prefix): void {
             $binding = $this->lockBinding($db, $prefix);
             $this->requireOwner($db, $prefix, $ownerUserId);
+            $active = $db->select("SELECT id FROM {$prefix}brands WHERE is_active = 1 ORDER BY id LIMIT 2" . $db->forUpdate());
+            if (count($active) !== 1 || (int) $active[0]['id'] !== $brandId) { $this->reject('Selected brand is not the unique active brand; explicit reconciliation required.'); }
             if ($binding['organization_id'] !== null) {
                 if ((int) $binding['organization_id'] !== $organizationId || (int) $binding['brand_id'] !== $brandId || (int) $binding['owner_user_id'] !== $ownerUserId) {
                     $this->reject('Provider identity is already bound; implicit reassignment is forbidden.');
@@ -67,7 +74,7 @@ final class BrandSetupService
             $conflict = $db->getDriverName() === 'mysql' ? ' ON DUPLICATE KEY UPDATE role = VALUES(role)' : ' ON CONFLICT(organization_id, user_id) DO UPDATE SET role = excluded.role';
             $db->statement("INSERT INTO {$prefix}organization_members (organization_id, user_id, role) VALUES (?, ?, ?)" . $conflict, [$organizationId, $ownerUserId, 'owner']);
             $db->update($prefix . 'installer_provider_identity', ['organization_id' => $organizationId, 'brand_id' => $brandId, 'owner_user_id' => $ownerUserId], 'id = :id', ['id' => 1]);
-        });
+        }, [$prefix . 'organizations', $prefix . 'organization_members', $prefix . 'installer_provider_identity']);
     }
 
     private function lockBinding(Connection $db, string $prefix): array

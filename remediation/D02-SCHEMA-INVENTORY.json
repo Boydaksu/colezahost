@@ -1,7 +1,7 @@
 {
   "date": "2026-10-12",
   "purpose": "DDL source inventory; direct references are not execution coverage or schema compatibility",
-  "file_count": 92,
+  "file_count": 93,
   "files": [
     {
       "file": "src/Api/Auth/ApiKeyService.php",
@@ -972,6 +972,16 @@
       "literal_table_names": [
         "automation_action_attempts"
       ],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Foundation/Database/ConfigurationWriteLock.php",
+      "class": "Coleza\\Foundation\\Database\\ConfigurationWriteLock",
+      "public_schema_methods": [
+        "ensureSchema"
+      ],
+      "literal_table_names": [],
       "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     }

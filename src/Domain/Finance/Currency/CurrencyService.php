@@ -39,7 +39,7 @@ final class CurrencyService
 
     public function ensureTables(bool $installSchema = false): void
     {
-        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchema($this->db, self::schemaRequirements(), $installSchema)) { return; }
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchema($this->db, self::schemaRequirements() + \Coleza\Foundation\Database\ConfigurationWriteLock::schemaRequirements(), $installSchema)) { return; }
         \Coleza\Foundation\Database\PdoSchema::autoIncrement($this->db->getPdo());
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
@@ -77,6 +77,7 @@ final class CurrencyService
             $autoInc
         );
         $this->db->statement($sqlFx);
+        \Coleza\Foundation\Database\ConfigurationWriteLock::ensureSchema($this->db, $installSchema);
     }
 
     /**
@@ -89,56 +90,60 @@ final class CurrencyService
             throw new ValidationException(['code' => ['ISO 4217 code must be exactly 3 characters.']], 'Invalid currency code.');
         }
 
-        if ($this->findCurrency($code) !== null) {
-            throw new ValidationException(['code' => ['Currency code already exists.']], "Currency {$code} already exists.");
-        }
+        return (new \Coleza\Foundation\Database\ConfigurationWriteLock($this->db))->run('currency', function () use ($data, $code): Currency {
+            if ($this->db->selectOne('SELECT code FROM currencies WHERE code = ?' . $this->db->forUpdate(), [$code]) !== null) {
+                throw new ValidationException(['code' => ['Currency code already exists.']], "Currency {$code} already exists.");
+            }
 
-        $name = trim((string)($data['name'] ?? ''));
-        if ($name === '') {
-            throw new ValidationException(['name' => ['Currency name is required.']], 'Currency name is required.');
-        }
+            $name = trim((string)($data['name'] ?? ''));
+            if ($name === '') {
+                throw new ValidationException(['name' => ['Currency name is required.']], 'Currency name is required.');
+            }
 
-        $symbol = trim((string)($data['symbol'] ?? ''));
-        if ($symbol === '') {
-            throw new ValidationException(['symbol' => ['Currency symbol is required.']], 'Currency symbol is required.');
-        }
+            $symbol = trim((string)($data['symbol'] ?? ''));
+            if ($symbol === '') {
+                throw new ValidationException(['symbol' => ['Currency symbol is required.']], 'Currency symbol is required.');
+            }
 
-        $format = (string)($data['format'] ?? '{symbol}{amount}');
-        $decimalPlaces = (int)($data['decimal_places'] ?? 2);
-        $isDefault = (bool)($data['is_default'] ?? false);
-        $isActive = (bool)($data['is_active'] ?? true);
+            $format = (string)($data['format'] ?? '{symbol}{amount}');
+            $decimalPlaces = (int)($data['decimal_places'] ?? 2);
+            $isDefault = (bool)($data['is_default'] ?? false);
+            $isActive = (bool)($data['is_active'] ?? true);
 
-        if ($isDefault) {
-            // Unset previous default
-            $this->db->statement(sprintf('UPDATE %s SET is_default = 0', $this->currenciesTable));
-        }
+            if ($isDefault && !$isActive) { throw new ValidationException(['is_default' => ['Default currency must be active.']], 'Invalid default currency.'); }
+            $this->requireUnambiguousDefaults();
+            if ($isDefault) {
+                // Unset previous default
+                $this->db->statement(sprintf('UPDATE %s SET is_default = 0', $this->currenciesTable));
+            }
 
-        $sql = sprintf(
-            'INSERT INTO %s (code, name, symbol, format, decimal_places, is_default, is_active)
-             VALUES (?, ?, ?, ?, ?, ?, ?)',
-            $this->currenciesTable
-        );
+            $sql = sprintf(
+                'INSERT INTO %s (code, name, symbol, format, decimal_places, is_default, is_active)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)',
+                $this->currenciesTable
+            );
 
-        $this->db->statement($sql, [
-            $code,
-            $name,
-            $symbol,
-            $format,
-            $decimalPlaces,
-            $isDefault ? 1 : 0,
-            $isActive ? 1 : 0,
-        ]);
+            $this->db->statement($sql, [
+                $code,
+                $name,
+                $symbol,
+                $format,
+                $decimalPlaces,
+                $isDefault ? 1 : 0,
+                $isActive ? 1 : 0,
+            ]);
 
-        return new Currency(
-            code: $code,
-            name: $name,
-            symbol: $symbol,
-            format: $format,
-            decimalPlaces: $decimalPlaces,
-            isDefault: $isDefault,
-            isActive: $isActive,
-            createdAt: date('Y-m-d H:i:s')
-        );
+            return new Currency(
+                code: $code,
+                name: $name,
+                symbol: $symbol,
+                format: $format,
+                decimalPlaces: $decimalPlaces,
+                isDefault: $isDefault,
+                isActive: $isActive,
+                createdAt: date('Y-m-d H:i:s')
+            );
+        });
     }
 
     public function findCurrency(string $code): ?Currency
@@ -149,23 +154,24 @@ final class CurrencyService
 
     public function getDefaultCurrency(): Currency
     {
-        $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE is_default = 1', $this->currenciesTable));
-        if ($row === null) {
-            // Fallback to active currency or create default TRY
-            $fallback = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE is_active = 1 LIMIT 1', $this->currenciesTable));
-            if ($fallback === null) {
-                return $this->createCurrency([
-                    'code' => 'TRY',
-                    'name' => 'Turkish Lira',
-                    'symbol' => '₺',
-                    'format' => '{amount} {symbol}',
-                    'is_default' => true,
-                ]);
+        return (new \Coleza\Foundation\Database\ConfigurationWriteLock($this->db))->run('currency', function (): Currency {
+            $defaults = $this->requireUnambiguousDefaults();
+            if ($defaults !== []) {
+                if (!(bool) $defaults[0]['is_active']) { throw new ValidationException(['currency' => ['Default currency is inactive; explicit reconciliation required.']], 'Inactive default currency.'); }
+                return $this->hydrateCurrency($defaults[0]);
             }
-            return $this->hydrateCurrency($fallback);
-        }
+            $active = $this->db->select('SELECT * FROM currencies WHERE is_active = 1 ORDER BY code LIMIT 2' . $this->db->forUpdate());
+            if (count($active) > 1) { throw new ValidationException(['currency' => ['Select an explicit default currency.']], 'Ambiguous default currency.'); }
+            if ($active !== []) { return $this->hydrateCurrency($active[0]); }
+            return $this->createCurrency(['code' => 'TRY', 'name' => 'Turkish Lira', 'symbol' => '₺', 'format' => '{amount} {symbol}', 'is_default' => true]);
+        });
+    }
 
-        return $this->hydrateCurrency($row);
+    private function requireUnambiguousDefaults(): array
+    {
+        $rows = $this->db->select('SELECT * FROM currencies WHERE is_default = 1 ORDER BY code LIMIT 2' . $this->db->forUpdate());
+        if (count($rows) > 1) { throw new ValidationException(['currency' => ['Multiple default currencies require explicit reconciliation.']], 'Ambiguous default currency.'); }
+        return $rows;
     }
 
     /**

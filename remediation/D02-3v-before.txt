@@ -1,0 +1,48 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m                                                                4 / 4 (100%)
+
+Time: 00:00.505, Memory: 20.00 MB
+
+There were 4 failures:
+
+1) Coleza\Tests\MariaDb\ConfigurationSingletonTest::testFailedDefaultInsertKeepsPreviousDefaultAndAllRows
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+         'symbol' => 'USD',
+         'format' => '{symbol}{amount}',
+         'decimal_places' => 2,
+-        'is_default' => 1,
++        'is_default' => 0,
+         'is_active' => 1,
+         'created_at' => '2026-10-12 18:59:28',
+     ],
+ ]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ConfigurationSingletonCases.php:29
+
+2) Coleza\Tests\MariaDb\ConfigurationSingletonTest::testAmbiguousActiveBrandsAreRejectedWithoutChoosingOrChangingOne
+Multiple active brands must require explicit reconciliation
+Failed asserting that null is not null.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ConfigurationSingletonCases.php:38
+
+3) Coleza\Tests\MariaDb\ConfigurationSingletonTest::testMultipleDefaultCurrenciesRequireExplicitReconciliation
+Multiple defaults must not pick the first row
+Failed asserting that null is not null.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ConfigurationSingletonCases.php:48
+
+4) Coleza\Tests\MariaDb\ConfigurationSingletonTest::testAmbiguousActiveCurrencyFallbackDoesNotPickFirstRow
+Several active currencies without a default must require explicit selection
+Failed asserting that null is not null.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ConfigurationSingletonCases.php:57
+
+[37;41mFAILURES![0m
+[37;41mTests: 4[0m[37;41m, Assertions: 13[0m[37;41m, Failures: 4[0m[37;41m.[0m

@@ -17,6 +17,12 @@ $queue->ensureTables();
 $servers = new Coleza\Domain\Servers\Services\ServerService($db);
 $reservations = new Coleza\Domain\Servers\Capacity\Services\CapacityReservationService($db, $servers);
 $action = $argv[3];
+if (in_array($action, ['configurationBrandCreate', 'configurationCurrencyDefault'], true) && ($argv[5] ?? '') === 'baseline') {
+    // Unmodified HEAD sources; widen only the old read/write gap to make the race reproducible.
+    require dirname(__DIR__, 3) . '/remediation/runtime/baseline-configuration-brand.php';
+    require dirname(__DIR__, 3) . '/remediation/runtime/baseline-configuration-currency.php';
+    $pdo->setAttribute(PDO::ATTR_STATEMENT_CLASS, [ConfigurationBaselineStatement::class]);
+}
 $id = (int) $argv[4];
 $number = $action === 'callback' ? $payments->findPaymentById($id)->getPaymentNumber() : '';
 $calls = 0;
@@ -38,6 +44,27 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'configurationBrandCreate':
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $result['brand_id'] = (new Coleza\Domain\Brand\BrandService($db))->createBrand('Worker ' . $argv[2], 'worker-' . $argv[2]);
+            break;
+        case 'configurationCurrencyDefault':
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $code = ['USD', 'EUR', 'JPY', 'BHD'][(int) $argv[2]];
+            (new Coleza\Domain\Finance\Currency\CurrencyService($db))->createCurrency(['code' => $code, 'name' => $code, 'symbol' => $code, 'is_default' => true]);
+            break;
+        case 'configurationFallback':
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $result['brand_id'] = (new Coleza\Domain\Brand\BrandService($db))->getActiveBrand(['code' => 'worker-' . $argv[2]])['id'];
+            $result['currency'] = (new Coleza\Domain\Finance\Currency\CurrencyService($db))->getDefaultCurrency()->getCode();
+            break;
+        case 'configurationMixedBrand':
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            if ((int) $argv[2] % 2 === 0) {
+                $provider = (new Coleza\Domain\Installer\BrandSetupService())->configureBrand($db, new Coleza\Domain\Installer\BrandSetupDto('Company', 'Provider', 'support@example.test'), ownerUserId: $id);
+                $result['brand_id'] = $provider['brand_id'];
+            } else { $result['brand_id'] = (new Coleza\Domain\Brand\BrandService($db))->createBrand('Worker ' . $argv[2], 'worker-' . $argv[2]); }
+            break;
         case 'automationLocalLifecycle':
             $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             try {
@@ -189,3 +216,15 @@ try {
 }
 $result['provider_calls'] = $calls;
 echo json_encode($result, JSON_THROW_ON_ERROR);
+
+final class ConfigurationBaselineStatement extends PDOStatement
+{
+    protected function __construct() {}
+    public function execute(?array $params = null): bool
+    {
+        $result = parent::execute($params);
+        if (preg_match('/^\s*SELECT COUNT\(\*\) as cnt FROM brands WHERE is_active = 1\s*$/i', $this->queryString)
+            || preg_match('/^\s*UPDATE currencies SET is_default = 0\s*$/i', $this->queryString)) { usleep(300000); }
+        return $result;
+    }
+}

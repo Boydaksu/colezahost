@@ -193,6 +193,8 @@ final class DatabaseSetupService
 
         (new ProviderIdentitySchema($connection, $prefix))->ensure();
         $tables[] = $prefix . 'installer_provider_identity';
+        \Coleza\Foundation\Database\ConfigurationWriteLock::ensureSchema($connection, installSchema: true, prefix: $prefix);
+        $tables[] = $prefix . 'configuration_write_locks';
         return [
             'success' => true,
             'tables_initialized' => $tables,

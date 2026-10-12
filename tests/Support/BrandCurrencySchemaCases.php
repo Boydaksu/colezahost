@@ -156,8 +156,8 @@ trait BrandCurrencySchemaCases
         self::assertFalse($this->tableExists('currencies'));
         // Explicit fixture maintenance keeps the unknown historical timestamp NULL.
         $this->db->statement('ALTER TABLE fx_snapshots ADD COLUMN created_at TIMESTAMP NULL');
-        self::assertSame(['2026_10_12_000019_brand_currency_schema'], $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'));
-        self::assertCount(19, $runner->getRanMigrations());
+        self::assertSame(['2026_10_12_000019_brand_currency_schema', '2026_10_12_000020_configuration_write_locks'], $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'));
+        self::assertCount(20, $runner->getRanMigrations());
         $after = $this->db->select('SELECT * FROM fx_snapshots'); self::assertNull($after[0]['created_at']);
         unset($after[0]['created_at']); self::assertSame($before, $after);
         self::assertSame([], $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'));
@@ -195,7 +195,7 @@ trait BrandCurrencySchemaCases
         $before = [];
         foreach (['brands', 'currencies', 'fx_snapshots', 'migrations'] as $table) { $before[$table] = $this->db->select("SELECT * FROM {$table}"); }
         try { $runner->rollback($path); self::fail('Rollback deleted financial history'); }
-        catch (\RuntimeException $error) { self::assertStringContainsString('financial currency/FX history require an explicit backup', $error->getMessage()); }
+        catch (\RuntimeException $error) { self::assertStringContainsString('explicit maintenance plan', $error->getMessage()); }
         foreach ($before as $table => $rows) { self::assertSame($rows, $this->db->select("SELECT * FROM {$table}")); }
     }
     public function testMissingFxSchemaStopsBeforeFetchingRatesOrSeedingDefaultCurrency(): void

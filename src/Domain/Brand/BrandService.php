@@ -22,7 +22,7 @@ final class BrandService
 
     public function ensureTable(bool $installSchema = false): void
     {
-        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchema($this->db, self::schemaRequirements(), $installSchema)) { return; }
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchema($this->db, self::schemaRequirements() + \Coleza\Foundation\Database\ConfigurationWriteLock::schemaRequirements(), $installSchema)) { return; }
         \Coleza\Foundation\Database\PdoSchema::autoIncrement($this->db->getPdo());
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
@@ -47,6 +47,7 @@ final class BrandService
         );
 
         $this->db->statement($sql);
+        \Coleza\Foundation\Database\ConfigurationWriteLock::ensureSchema($this->db, $installSchema);
     }
 
     /**
@@ -60,47 +61,49 @@ final class BrandService
     {
         $this->ensureTable();
 
-        $active = $this->db->selectOne(
-            sprintf('SELECT * FROM %s WHERE is_active = 1 ORDER BY id ASC', $this->table)
-        );
+        return (new \Coleza\Foundation\Database\ConfigurationWriteLock($this->db))->run('brand', function () use ($defaults): array {
+            $rows = $this->db->select(sprintf('SELECT * FROM %s WHERE is_active = 1 ORDER BY id ASC LIMIT 2', $this->table) . $this->db->forUpdate());
+            if (count($rows) > 1) { throw new ValidationException(['brand' => ['Multiple active brands require explicit reconciliation.']], 'Ambiguous active brand.'); }
+            $active = $rows[0] ?? null;
 
-        if ($active !== null) {
-            if (!empty($active['settings'])) {
-                $active['settings'] = json_decode((string) $active['settings'], true) ?: [];
-            } else {
-                $active['settings'] = [];
+            if ($active !== null) {
+                if (!empty($active['settings'])) {
+                    $active['settings'] = json_decode((string) $active['settings'], true) ?: [];
+                } else {
+                    $active['settings'] = [];
+                }
+                return $active;
             }
-            return $active;
-        }
 
-        // Initialize default primary brand if none exists
-        $name = $defaults['name'] ?? 'Coleza Host';
-        $code = $defaults['code'] ?? 'default';
-        $domain = $defaults['domain'] ?? 'localhost';
-        $locale = $defaults['default_locale'] ?? 'tr_TR';
-        $currency = $defaults['default_currency'] ?? 'TRY';
-        $settings = $defaults['settings'] ?? [];
+            // Initialize default primary brand if none exists
+            $name = $defaults['name'] ?? 'Coleza Host';
+            $code = $defaults['code'] ?? 'default';
+            $domain = $defaults['domain'] ?? 'localhost';
+            $locale = $defaults['default_locale'] ?? 'tr_TR';
+            $currency = $defaults['default_currency'] ?? 'TRY';
+            $settings = $defaults['settings'] ?? [];
 
-        $id = $this->db->insert($this->table, [
-            'name' => $name,
-            'code' => $code,
-            'domain' => $domain,
-            'default_locale' => $locale,
-            'default_currency' => $currency,
-            'is_active' => 1,
-            'settings' => json_encode($settings, JSON_UNESCAPED_SLASHES),
-        ]);
+            $id = $this->db->insert($this->table, [
+                'name' => $name,
+                'code' => $code,
+                'domain' => $domain,
+                'default_locale' => $locale,
+                'default_currency' => $currency,
+                'is_active' => 1,
+                'settings' => json_encode($settings, JSON_UNESCAPED_SLASHES),
+            ]);
 
-        return [
-            'id' => (int) $id,
-            'name' => $name,
-            'code' => $code,
-            'domain' => $domain,
-            'default_locale' => $locale,
-            'default_currency' => $currency,
-            'is_active' => 1,
-            'settings' => $settings,
-        ];
+            return [
+                'id' => (int) $id,
+                'name' => $name,
+                'code' => $code,
+                'domain' => $domain,
+                'default_locale' => $locale,
+                'default_currency' => $currency,
+                'is_active' => 1,
+                'settings' => $settings,
+            ];
+        });
     }
 
     /**
@@ -112,33 +115,35 @@ final class BrandService
     public function updateActiveBrand(array $updates): array
     {
         $this->ensureTable();
-        $brand = $this->getActiveBrand();
+        return (new \Coleza\Foundation\Database\ConfigurationWriteLock($this->db))->run('brand', function () use ($updates): array {
+            $brand = $this->getActiveBrand();
 
-        $fields = [];
-        $params = ['id' => $brand['id']];
+            $fields = [];
+            $params = ['id' => $brand['id']];
 
-        if (isset($updates['name'])) {
-            $fields['name'] = trim((string) $updates['name']);
-        }
-        if (isset($updates['domain'])) {
-            $fields['domain'] = trim((string) $updates['domain']);
-        }
-        if (isset($updates['default_locale'])) {
-            $fields['default_locale'] = trim((string) $updates['default_locale']);
-        }
-        if (isset($updates['default_currency'])) {
-            $fields['default_currency'] = strtoupper(trim((string) $updates['default_currency']));
-        }
-        if (isset($updates['settings']) && is_array($updates['settings'])) {
-            $mergedSettings = array_merge($brand['settings'], $updates['settings']);
-            $fields['settings'] = json_encode($mergedSettings, JSON_UNESCAPED_SLASHES);
-        }
+            if (isset($updates['name'])) {
+                $fields['name'] = trim((string) $updates['name']);
+            }
+            if (isset($updates['domain'])) {
+                $fields['domain'] = trim((string) $updates['domain']);
+            }
+            if (isset($updates['default_locale'])) {
+                $fields['default_locale'] = trim((string) $updates['default_locale']);
+            }
+            if (isset($updates['default_currency'])) {
+                $fields['default_currency'] = strtoupper(trim((string) $updates['default_currency']));
+            }
+            if (isset($updates['settings']) && is_array($updates['settings'])) {
+                $mergedSettings = array_merge($brand['settings'], $updates['settings']);
+                $fields['settings'] = json_encode($mergedSettings, JSON_UNESCAPED_SLASHES);
+            }
 
-        if (!empty($fields)) {
-            $this->db->update($this->table, $fields, 'id = :id', $params);
-        }
+            if (!empty($fields)) {
+                $this->db->update($this->table, $fields, 'id = :id', $params);
+            }
 
-        return $this->getActiveBrand();
+            return $this->getActiveBrand();
+        });
     }
 
     /**
@@ -147,21 +152,22 @@ final class BrandService
     public function createBrand(string $name, string $code): int
     {
         $this->ensureTable();
-        $existingCount = (int) $this->db->selectOne(
-            sprintf('SELECT COUNT(*) as cnt FROM %s WHERE is_active = 1', $this->table)
-        )['cnt'];
+        return (new \Coleza\Foundation\Database\ConfigurationWriteLock($this->db))->run('brand', function () use ($name, $code): int {
+            $rows = $this->db->select('SELECT id FROM brands WHERE is_active = 1 LIMIT 1' . $this->db->forUpdate());
+            $existingCount = count($rows);
 
-        if ($existingCount >= 1) {
-            throw new ValidationException(
-                ['brand' => ['V1 architecture strictly enforces a single-active Brand. Multi-brand isolation is scheduled for V1.1.']],
-                'Cannot create multiple active brands in V1 release family.'
-            );
-        }
+            if ($existingCount >= 1) {
+                throw new ValidationException(
+                    ['brand' => ['V1 architecture strictly enforces a single-active Brand. Multi-brand isolation is scheduled for V1.1.']],
+                    'Cannot create multiple active brands in V1 release family.'
+                );
+            }
 
-        return (int) $this->db->insert($this->table, [
-            'name' => $name,
-            'code' => $code,
-            'is_active' => 1,
-        ]);
+            return (int) $this->db->insert($this->table, [
+                'name' => $name,
+                'code' => $code,
+                'is_active' => 1,
+            ]);
+        });
     }
 }

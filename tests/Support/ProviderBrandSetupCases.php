@@ -22,17 +22,13 @@ trait ProviderBrandSetupCases
         $this->db->insert('brands', ['name' => 'Other Brand', 'code' => 'other', 'is_active' => 1]);
         $beforeOrg = $this->db->select('SELECT * FROM organizations');
         $beforeBrand = $this->db->select('SELECT * FROM brands');
-        $result = (new BrandSetupService())->configureBrand($this->db, $this->brandDto(), ownerUserId: $owner);
-        self::assertNotSame($customer, $result['organization_id']);
-        self::assertSame($beforeOrg[0], $this->db->selectOne('SELECT * FROM organizations WHERE id = ?', [$customer]));
-        self::assertSame($beforeBrand[0], $this->db->selectOne('SELECT * FROM brands WHERE id = ?', [$beforeBrand[0]['id']]));
-        $org = $this->db->selectOne('SELECT * FROM organizations WHERE id = ?', [$result['organization_id']]);
-        self::assertSame($owner, (int) $org['owner_user_id']);
-        self::assertSame('owner', $this->db->selectOne('SELECT role FROM organization_members WHERE organization_id = ? AND user_id = ?', [$org['id'], $owner])['role']);
-        $again = (new BrandSetupService())->configureBrand($this->db, $this->brandDto(), ownerUserId: $owner);
-        self::assertSame($result['organization_id'], $again['organization_id']);
-        self::assertSame($result['brand_id'], $again['brand_id']);
-        self::assertCount(2, $this->db->select('SELECT * FROM organizations'));
+        $caught = null;
+        try { (new BrandSetupService())->configureBrand($this->db, $this->brandDto(), ownerUserId: $owner); }
+        catch (\Coleza\Foundation\Exceptions\ValidationException $error) { $caught = $error; }
+        self::assertNotNull($caught, 'An unrelated active brand must require explicit binding, never a second active brand.');
+        self::assertSame($beforeOrg, $this->db->select('SELECT * FROM organizations'));
+        self::assertSame($beforeBrand, $this->db->select('SELECT * FROM brands'));
+        self::assertNull($this->db->selectOne('SELECT brand_id FROM installer_provider_identity WHERE id = 1')['brand_id']);
     }
     public function testLegacyNotNullOwnerReceivesExplicitOwner(): void
     {
