@@ -1,0 +1,57 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m                                                               5 / 5 (100%)
+
+Time: 00:05.992, Memory: 24.00 MB
+
+There were 5 failures:
+
+1) Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testCacheDoesNotCommitCallerTransaction
+Runtime schema setup must not commit the caller transaction
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RuntimeSchemaSafetyCases.php:42
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RuntimeSchemaSafetyCases.php:45
+
+2) Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testLockDoesNotCommitCallerTransaction
+Runtime schema setup must not commit the caller transaction
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RuntimeSchemaSafetyCases.php:42
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RuntimeSchemaSafetyCases.php:46
+
+3) Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testIdempotencyDoesNotCommitCallerTransaction
+Runtime schema setup must not commit the caller transaction
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RuntimeSchemaSafetyCases.php:42
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RuntimeSchemaSafetyCases.php:47
+
+4) Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testSchedulerDoesNotCommitCallerTransaction
+Runtime schema setup must not commit the caller transaction
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RuntimeSchemaSafetyCases.php:42
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RuntimeSchemaSafetyCases.php:48
+
+5) Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testProductionMigrationsInstallAllFourRuntimeTables
+Installed application must not need first-use infrastructure DDL
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+-Array &0 []
++Array &0 [
++    0 => 'locks',
++    1 => 'cache',
++    2 => 'idempotency_keys',
++    3 => 'cron_heartbeats',
++]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RuntimeSchemaSafetyCases.php:57
+
+[37;41mFAILURES![0m
+[37;41mTests: 5[0m[37;41m, Assertions: 15[0m[37;41m, Failures: 5[0m[37;41m.[0m

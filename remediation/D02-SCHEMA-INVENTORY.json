@@ -40,7 +40,7 @@
         "ensureHeartbeatTable"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -81,7 +81,7 @@
         "ensureLocksTable"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -91,7 +91,7 @@
         "ensureTable"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {
@@ -101,7 +101,7 @@
         "ensureCacheTable"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {

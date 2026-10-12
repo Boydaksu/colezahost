@@ -1,0 +1,77 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+.....[31;1mE[0m....[31;1mE[0m.                                                      12 / 12 (100%)
+
+Time: 00:00.071, Memory: 24.00 MB
+
+There were 2 errors:
+
+1) Coleza\Tests\Unit\Installer\RuntimeSchemaSafetyTest::testProductionMigrationsInstallAllFourRuntimeTables
+LogicException: Initialize complete schema before starting an application transaction.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Cache\DatabaseCache.php:21
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_12_000017_foundation_runtime_schema.php:6
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:237
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RuntimeSchemaSafetyCases.php:54
+
+Caused by
+PDOException: SQLSTATE[HY000]: General error: 1 no such table: cache
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:22
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Cache\DatabaseCache.php:21
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_12_000017_foundation_runtime_schema.php:6
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:237
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RuntimeSchemaSafetyCases.php:54
+
+2) Coleza\Tests\Unit\Installer\RuntimeSchemaSafetyTest::testFailedMigrationIsNotRecordedAndCanResumeAfterExplicitEmptyTableRepair
+LogicException: Initialize complete schema before starting an application transaction.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Lock\DatabaseLock.php:21
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_12_000017_foundation_runtime_schema.php:7
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:237
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RuntimeSchemaSafetyCases.php:138
+
+Caused by
+PDOException: SQLSTATE[HY000]: General error: 1 no such table: locks
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:285
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:22
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Lock\DatabaseLock.php:21
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_12_000017_foundation_runtime_schema.php:7
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:237
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RuntimeSchemaSafetyCases.php:138
+
+[37;41mERRORS![0m
+[37;41mTests: 12[0m[37;41m, Assertions: 85[0m[37;41m, Errors: 2[0m[37;41m.[0m

@@ -16,8 +16,10 @@ final class DatabaseCache implements CacheInterface
     {
     }
 
-    public function ensureCacheTable(): void
+    public function ensureCacheTable(bool $installSchema = false): void
     {
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchema($this->db, [$this->table => ['cache_key', 'cache_value', 'expires_at']], $installSchema)) { return; }
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($this->db->getPdo());
         $driver = $this->db->getDriverName();
         $keyCol = match ($driver) {
             'sqlite' => 'TEXT PRIMARY KEY',

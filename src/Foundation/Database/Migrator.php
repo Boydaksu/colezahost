@@ -16,6 +16,8 @@ final class Migrator
 
     public function ensureMigrationsTable(): void
     {
+        if (PdoSchema::useInstalledSchema($this->db, [$this->table => ['id', 'migration', 'batch', 'applied_at']])) { return; }
+        PdoSchema::autoIncrement($this->db->getPdo());
         $driver = $this->db->getDriverName();
 
         $autoIncrement = match ($driver) {

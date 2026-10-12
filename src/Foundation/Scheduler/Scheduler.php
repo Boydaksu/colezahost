@@ -24,11 +24,14 @@ final class Scheduler
     ) {
     }
 
-    public function ensureHeartbeatTable(): void
+    public function ensureHeartbeatTable(bool $installSchema = false): void
     {
         if ($this->db === null) {
             return;
         }
+
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchema($this->db, [$this->heartbeatTable => ['id', 'task_name', 'last_started_at', 'last_finished_at', 'status', 'message']], $installSchema)) { return; }
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($this->db->getPdo());
 
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {

@@ -16,8 +16,10 @@ final class IdempotencyManager
     {
     }
 
-    public function ensureTable(): void
+    public function ensureTable(bool $installSchema = false): void
     {
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchema($this->db, [$this->table => ['idempotency_key', 'status', 'response', 'expires_at']], $installSchema)) { return; }
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($this->db->getPdo());
         $driver = $this->db->getDriverName();
         $pkCol = match ($driver) {
             'sqlite' => 'TEXT PRIMARY KEY',

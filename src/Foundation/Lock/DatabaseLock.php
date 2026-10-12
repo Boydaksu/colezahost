@@ -16,8 +16,10 @@ final class DatabaseLock implements LockInterface
     {
     }
 
-    public function ensureLocksTable(): void
+    public function ensureLocksTable(bool $installSchema = false): void
     {
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchema($this->db, [$this->table => ['resource', 'owner', 'expires_at']], $installSchema)) { return; }
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($this->db->getPdo());
         $driver = $this->db->getDriverName();
         $pkCol = match ($driver) {
             'sqlite' => 'TEXT PRIMARY KEY',

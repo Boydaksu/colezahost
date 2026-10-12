@@ -1,10 +1,10 @@
 # D02 kurulum/geçiş kabul matrisi
 
-Güncelleme: 12.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f, D02-3g, D02-3h, D02-3i, D02-3j, D02-3k, D02-3l, D02-3m, D02-3n, D02-3o. Bu matris ürünün bağımsız kabulü değildir. D02 IN_PROGRESS.
+Güncelleme: 12.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f, D02-3g, D02-3h, D02-3i, D02-3j, D02-3k, D02-3l, D02-3m, D02-3n, D02-3o, D02-3p, D02-3q, D02-3r, D02-3s. Bu matris ürünün bağımsız kabulü değildir. D02 IN_PROGRESS.
 
 | Senaryo | Durum | Kanıt / sınır |
 |---|---|---|
-| Gerçek MariaDB 10.11, temiz veri tabanı, production on altı migration | Yerel test geçti | DatabaseFoundationTest; InstallationAcceptanceTest; on altı migration |
+| Gerçek MariaDB 10.11, temiz veri tabanı, production on yedi migration | Yerel test geçti | DatabaseFoundationTest; InstallationAcceptanceTest; on yedi migration |
 | SQLite kurulum sihirbazı, migrationlardan sonra ADMIN adımı | Yerel test geçti | WebInstallerTest; gerçek DatabaseConfig bağlantısı |
 | Migration tekrarında eski RBAC rollerinin, izinlerin ve tarihlerinin korunması | Yerel test geçti | DatabaseFoundationTest; IdentitySchemaMigrationRegressionTest |
 | Belge/kalem/duyuru kayıtlarının tekrar migrationda korunması | Yerel test geçti | DocumentPersistenceTest; D02-3b |
@@ -39,6 +39,7 @@ Güncelleme: 12.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f,
 | Otomasyon eylem deneme günlüğü | Yerel SQLite/MariaDB testleri geçti; sağlayıcı kanıtı ve genel kurtarma açık | D02-3p; migration 16, kayıt-before-handler, write fault sonrası duruş, pending/input bağı, dört süreçte tek start |
 | Otomasyon başarı geçmişi ve eylem kayıt bağı | Yerel SQLite/MariaDB testleri geçti; dış sağlayıcı kabulü açık | D02-3q; exact pending/ordered action/input/version/time/dispatch bağı; missing/unknown/foreign/extra deneme işi gizleyemez; salt okunur, no retry/backfill |
 | Hizmet otomasyonu yerel/sağlayıcı sınırı | Yerel SQLite/MariaDB koruma testleri geçti; gerçek sağlayıcı komutu açık | D02-3r; placement/legacy remote identity için local-only başarı reddi; strict id/version; current-read/CAS; dört worker tek geçiş |
+| Foundation cache/locks/idempotency/heartbeat ve migration metadata runtime DDL | Yerel SQLite/MariaDB şema ve transaction testleri geçti | D02-3s; migration 17, installed schema no-DDL, raw/managed caller rollback, eksik/yarım şemada duruş; tam constraint/engine matrisi açık |
 | Diğer otomasyon ve operasyonel domainler; genel runtime DDL sınırları | Açık | Kurulum şeması bütün iş akışlarının ve kısıtların kabulü değildir |
 | GoldenFinancialDataset'in üretim şemasıyla eşleşmesi | Açık | Test fixture kanonik kurulum şeması sayılmaz; F17/F30 |
 | Provisioning cPanel readback ve kalıcı yerel uzlaştırma | Yerel transport/SQL testleri geçti; gerçek sunucu kabulü açık | D02-3o; UNKNOWN hesabın yokluğu değildir, kimlik/etkinlik doğrulanır; service/placement/operation/audit atomik; dört süreçte tek completion |
