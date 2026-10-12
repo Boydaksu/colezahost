@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Coleza\Domain\Abuse;
 
 use Coleza\Foundation\Database\Connection;
+use Coleza\Foundation\Database\PdoSchema;
 use Coleza\Foundation\Exceptions\ValidationException;
 use DateTimeImmutable;
 
@@ -18,65 +19,83 @@ final class AbuseCaseService
     ) {
     }
 
-    public function ensureTables(): void
+    /** @return array<string, list<string>> */
+    public static function schemaRequirements(): array
     {
+        return [
+            'abuse_cases' => ['id', 'case_number', 'category', 'severity', 'status', 'organization_id',
+                'user_id', 'reporter_email', 'reporter_name', 'resource_type', 'resource_id',
+                'resource_identifier', 'subject', 'description', 'evidence_text', 'evidence_url',
+                'deadline_at', 'resolved_at', 'resolution_notes', 'created_at', 'updated_at'],
+            'abuse_case_messages' => ['id', 'case_id', 'author_type', 'author_id', 'message', 'is_internal', 'created_at'],
+        ];
+    }
+
+    public function ensureTables(bool $installSchema = false): void
+    {
+        // Probe every existing table before any DDL; runtime never repairs partial schemas.
+        $installed = PdoSchema::useInstalledSchema($this->db, self::schemaRequirements(), $installSchema);
+        if ($installed && !$installSchema) { return; }
         $driver = $this->db->getDriverName();
-        $autoInc = match ($driver) {
-            'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
-            default => 'INT AUTO_INCREMENT PRIMARY KEY',
-        };
+        $autoInc = PdoSchema::autoIncrement($this->db->getPdo());
+        $engine = $driver === 'mysql' ? ' ENGINE=InnoDB' : '';
 
-        $sqlCases = sprintf(
-            'CREATE TABLE IF NOT EXISTS %s (
-                id %s,
-                case_number VARCHAR(50) NOT NULL UNIQUE,
-                category VARCHAR(50) NOT NULL,
-                severity VARCHAR(20) NOT NULL,
-                status VARCHAR(30) NOT NULL DEFAULT \'open\',
-                organization_id INT NULL,
-                user_id INT NULL,
-                reporter_email VARCHAR(150) NOT NULL,
-                reporter_name VARCHAR(150) NULL,
-                resource_type VARCHAR(50) NOT NULL,
-                resource_id INT NULL,
-                resource_identifier VARCHAR(255) NOT NULL,
-                subject VARCHAR(255) NOT NULL,
-                description TEXT NOT NULL,
-                evidence_text TEXT NULL,
-                evidence_url VARCHAR(500) NULL,
-                deadline_at TIMESTAMP NULL,
-                resolved_at TIMESTAMP NULL,
-                resolution_notes TEXT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )',
-            $this->casesTable,
-            $autoInc
-        );
-        $this->db->statement($sqlCases);
+        if (!$installed) {
+            $sqlCases = sprintf(
+                'CREATE TABLE IF NOT EXISTS %s (
+                    id %s,
+                    case_number VARCHAR(50) NOT NULL UNIQUE,
+                    category VARCHAR(50) NOT NULL,
+                    severity VARCHAR(20) NOT NULL,
+                    status VARCHAR(30) NOT NULL DEFAULT \'open\',
+                    organization_id INT NULL,
+                    user_id INT NULL,
+                    reporter_email VARCHAR(150) NOT NULL,
+                    reporter_name VARCHAR(150) NULL,
+                    resource_type VARCHAR(50) NOT NULL,
+                    resource_id INT NULL,
+                    resource_identifier VARCHAR(255) NOT NULL,
+                    subject VARCHAR(255) NOT NULL,
+                    description TEXT NOT NULL,
+                    evidence_text TEXT NULL,
+                    evidence_url VARCHAR(500) NULL,
+                    deadline_at TIMESTAMP NULL,
+                    resolved_at TIMESTAMP NULL,
+                    resolution_notes TEXT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )',
+                $this->casesTable,
+                $autoInc
+            );
+            $this->db->statement($sqlCases . $engine);
 
-        $sqlMessages = sprintf(
-            'CREATE TABLE IF NOT EXISTS %s (
-                id %s,
-                case_id INT NOT NULL,
-                author_type VARCHAR(30) NOT NULL,
-                author_id INT NULL,
-                message TEXT NOT NULL,
-                is_internal TINYINT(1) NOT NULL DEFAULT 0,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )',
-            $this->messagesTable,
-            $autoInc
-        );
-        $this->db->statement($sqlMessages);
+            $sqlMessages = sprintf(
+                'CREATE TABLE IF NOT EXISTS %s (
+                    id %s,
+                    case_id INT NOT NULL,
+                    author_type VARCHAR(30) NOT NULL,
+                    author_id INT NULL,
+                    message TEXT NOT NULL,
+                    is_internal TINYINT(1) NOT NULL DEFAULT 0,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )',
+                $this->messagesTable,
+                $autoInc
+            );
+            $this->db->statement($sqlMessages . $engine);
+        }
 
-        if ($driver !== 'sqlite') {
-            try {
-                $this->db->statement("CREATE INDEX idx_abuse_resource ON {$this->casesTable} (resource_type, resource_identifier)");
-                $this->db->statement("CREATE INDEX idx_abuse_status ON {$this->casesTable} (status, deadline_at)");
-                $this->db->statement("CREATE INDEX idx_abuse_messages_case ON {$this->messagesTable} (case_id)");
-            } catch (\Throwable) {
-                // Ignore if indices exist
+        foreach ([
+            'idx_abuse_resource' => [$this->casesTable, 'resource_type, resource_identifier'],
+            'idx_abuse_status' => [$this->casesTable, 'status, deadline_at'],
+            'idx_abuse_messages_case' => [$this->messagesTable, 'case_id'],
+        ] as $name => [$table, $columns]) {
+            if ($driver === 'sqlite') {
+                $this->db->statement("CREATE INDEX IF NOT EXISTS {$name} ON {$table} ({$columns})");
+            } else {
+                $exists = $this->db->selectOne('SELECT 1 FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = ? AND index_name = ?', [$table, $name]);
+                if ($exists === null) { $this->db->statement("CREATE INDEX {$name} ON {$table} ({$columns})"); }
             }
         }
     }
