@@ -14,7 +14,7 @@ use Coleza\Domain\Automation\Execution\AutomationRunRecord;
 use Coleza\Domain\Automation\Execution\ExecutionMode;
 use Coleza\Domain\Automation\Execution\RunHistoryRepositoryInterface;
 use Coleza\Domain\Automation\Execution\RunStatus;
-use Coleza\Domain\Automation\Safety\BlastRadiusLimiter;
+use Coleza\Domain\Automation\Safety\BlastRadiusLimiterInterface;
 use Coleza\Domain\Automation\Safety\EmergencyPauseManagerInterface;
 use Coleza\Domain\Automation\Triggers\TriggerContext;
 use Psr\Log\LoggerInterface;
@@ -29,7 +29,7 @@ final class AutomationEngine
         private readonly ?DelayManagerInterface $delayManager = null,
         private readonly ?RunHistoryRepositoryInterface $historyRepository = null,
         private readonly ?EmergencyPauseManagerInterface $emergencyPauseManager = null,
-        private readonly ?BlastRadiusLimiter $blastRadiusLimiter = null,
+        private readonly ?BlastRadiusLimiterInterface $blastRadiusLimiter = null,
         private readonly ?\Coleza\Domain\Automation\Versioning\RuleVersionManagerInterface $versionManager = null,
         private readonly ?\Coleza\Domain\Automation\Approval\ApprovalDelayCoordinatorInterface $approvalDelayCoordinator = null
     ) {
@@ -70,7 +70,7 @@ final class AutomationEngine
         return $this->emergencyPauseManager;
     }
 
-    public function getBlastRadiusLimiter(): ?BlastRadiusLimiter
+    public function getBlastRadiusLimiter(): ?BlastRadiusLimiterInterface
     {
         return $this->blastRadiusLimiter;
     }
@@ -424,15 +424,6 @@ final class AutomationEngine
             );
         }
 
-        if ($this->blastRadiusLimiter !== null && !$this->blastRadiusLimiter->canExecute($actionType)) {
-            $this->blastRadiusLimiter->recordAndCheck($actionType);
-            return ActionResult::failed(
-                $action->getId(),
-                $actionType,
-                "Action execution blocked: blast radius limit exceeded for destructive action '{$actionType}'"
-            );
-        }
-
         if (!$this->actionRegistry->has($actionType)) {
             return ActionResult::failed(
                 $action->getId(),
@@ -444,10 +435,11 @@ final class AutomationEngine
         $handler = $this->actionRegistry->get($actionType);
 
         try {
-            $result = $handler->execute($action, $context);
-            if ($result->isSuccessful() && $this->blastRadiusLimiter !== null) {
-                $this->blastRadiusLimiter->recordAndCheck($actionType);
+            if ($this->blastRadiusLimiter !== null && !$this->blastRadiusLimiter->tryAcquire($actionType)) {
+                return ActionResult::failed($action->getId(), $actionType,
+                    "Action execution blocked: blast radius limit exceeded or safety pause active for destructive action '{$actionType}'");
             }
+            $result = $handler->execute($action, $context);
             return $result;
         } catch (Throwable $e) {
             return ActionResult::failed(

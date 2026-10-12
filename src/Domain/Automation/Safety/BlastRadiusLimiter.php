@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Coleza\Domain\Automation\Safety;
 
-final class BlastRadiusLimiter
+final class BlastRadiusLimiter implements BlastRadiusLimiterInterface
 {
     /**
      * @var array<int, array{action: string, target_id: ?string, timestamp: int}>
@@ -17,6 +17,7 @@ final class BlastRadiusLimiter
         private readonly ?DestructiveActionRegistry $registry = null,
         private readonly ?EmergencyPauseManagerInterface $emergencyPause = null
     ) {
+        if ($maxDestructiveActions < 1 || $windowSeconds < 1) { throw new \InvalidArgumentException('Positive blast radius policy required.'); }
     }
 
     public function getMaxDestructiveActions(): int
@@ -51,6 +52,17 @@ final class BlastRadiusLimiter
 
         $recentCount = $this->getRecentDestructiveCount();
         return $recentCount < $this->maxDestructiveActions;
+    }
+
+    public function tryAcquire(string $actionType, ?string $targetId = null): bool
+    {
+        if (!$this->getDestructiveRegistry()->isDestructive($actionType)) { return true; }
+        if ($this->emergencyPause?->isPaused(actionType: $actionType)) { return false; }
+        if (!$this->canExecute($actionType)) {
+            $this->emergencyPause?->pause('BlastRadiusLimiter', 'Blast radius admission limit reached', 'DESTRUCTIVE');
+            return false;
+        }
+        return $this->recordAndCheck($actionType, $targetId);
     }
 
     /**

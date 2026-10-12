@@ -6,7 +6,7 @@ use Coleza\Domain\Automation\Actions\ActionRegistryInterface;
 use Coleza\Domain\Automation\Approval\DatabaseApprovalManager;
 use Coleza\Domain\Automation\Delay\DatabaseDelayManager;
 use Coleza\Domain\Automation\Execution\DatabaseRunHistoryRepository;
-use Coleza\Domain\Automation\Safety\{DatabaseEmergencyPauseManager, BlastRadiusLimiter};
+use Coleza\Domain\Automation\Safety\{DatabaseEmergencyPauseManager, DatabaseBlastRadiusLimiter};
 
 /** Requires installed migrations. Does not run DDL during application requests. */
 final class DatabaseAutomationFactory
@@ -22,7 +22,7 @@ final class DatabaseAutomationFactory
         $pause = new DatabaseEmergencyPauseManager($db);
         $pause->getState(); // Missing/unreadable safety state must fail before any action.
         return new AutomationEngine($registry, $logger, new DatabaseApprovalManager($db), new DatabaseDelayManager($db),
-            new DatabaseRunHistoryRepository($db), $pause, new BlastRadiusLimiter(emergencyPause: $pause), new \Coleza\Domain\Automation\Versioning\DatabaseRuleVersionManager($db),
+            new DatabaseRunHistoryRepository($db), $pause, new DatabaseBlastRadiusLimiter($db), new \Coleza\Domain\Automation\Versioning\DatabaseRuleVersionManager($db),
             new \Coleza\Domain\Automation\Approval\DatabaseApprovalDelayCoordinator($db));
     }
 }

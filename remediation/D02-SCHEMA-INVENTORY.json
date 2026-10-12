@@ -1,7 +1,7 @@
 {
   "date": "2026-10-12",
   "purpose": "DDL source inventory; direct references are not execution coverage or schema compatibility",
-  "file_count": 90,
+  "file_count": 91,
   "files": [
     {
       "file": "src/Api/Auth/ApiKeyService.php",
@@ -943,6 +943,19 @@
       ],
       "literal_table_names": [
         "automation_rule_versions"
+      ],
+      "direct_migration_reference": true,
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Automation/Safety/DatabaseBlastRadiusLimiter.php",
+      "class": "Coleza\\Domain\\Automation\\Safety\\DatabaseBlastRadiusLimiter",
+      "public_schema_methods": [
+        "installSchema"
+      ],
+      "literal_table_names": [
+        "automation_blast_policy",
+        "automation_destructive_permits"
       ],
       "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"

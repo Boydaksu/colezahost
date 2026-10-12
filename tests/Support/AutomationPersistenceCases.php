@@ -21,6 +21,7 @@ trait AutomationPersistenceCases
     {
         AutomationSchema::installSchema($this->db);
         \Coleza\Domain\Automation\Versioning\DatabaseRuleVersionManager::installSchema($this->db);
+        \Coleza\Domain\Automation\Safety\DatabaseBlastRadiusLimiter::installSchema($this->db);
     }
     private function dueDelay(): DelayedExecution
     {
@@ -243,6 +244,8 @@ trait AutomationPersistenceCases
         $first = $makeContainer();
         $engine = $first->get(\Coleza\Domain\Automation\Engine\AutomationEngine::class);
         self::assertInstanceOf(DatabaseApprovalManager::class, $engine->getApprovalManager());
+        self::assertInstanceOf(\Coleza\Domain\Automation\Safety\DatabaseBlastRadiusLimiter::class, $engine->getBlastRadiusLimiter());
+        self::assertSame($engine->getBlastRadiusLimiter(), $first->get(\Coleza\Domain\Automation\Safety\BlastRadiusLimiterInterface::class));
         self::assertInstanceOf(\Coleza\Domain\Automation\Versioning\DatabaseRuleVersionManager::class, $engine->getVersionManager());
         self::assertSame($engine->getVersionManager(), $first->get(\Coleza\Domain\Automation\Versioning\RuleVersionManagerInterface::class));
         self::assertSame($engine->getApprovalDelayCoordinator(), $first->get(\Coleza\Domain\Automation\Approval\ApprovalDelayCoordinatorInterface::class));

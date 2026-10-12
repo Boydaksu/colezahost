@@ -1,10 +1,10 @@
 # D02 kurulum/geçiş kabul matrisi
 
-Güncelleme: 12.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f, D02-3g, D02-3h, D02-3i, D02-3j, D02-3k, D02-3l. Bu matris ürünün bağımsız kabulü değildir. D02 IN_PROGRESS.
+Güncelleme: 12.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f, D02-3g, D02-3h, D02-3i, D02-3j, D02-3k, D02-3l, D02-3m. Bu matris ürünün bağımsız kabulü değildir. D02 IN_PROGRESS.
 
 | Senaryo | Durum | Kanıt / sınır |
 |---|---|---|
-| Gerçek MariaDB 10.11, temiz veri tabanı, production dört migrationlar | Yerel test geçti | DatabaseFoundationTest; InstallationAcceptanceTest; on dört migration |
+| Gerçek MariaDB 10.11, temiz veri tabanı, production on beş migration | Yerel test geçti | DatabaseFoundationTest; InstallationAcceptanceTest; on beş migration |
 | SQLite kurulum sihirbazı, migrationlardan sonra ADMIN adımı | Yerel test geçti | WebInstallerTest; gerçek DatabaseConfig bağlantısı |
 | Migration tekrarında eski RBAC rollerinin, izinlerin ve tarihlerinin korunması | Yerel test geçti | DatabaseFoundationTest; IdentitySchemaMigrationRegressionTest |
 | Belge/kalem/duyuru kayıtlarının tekrar migrationda korunması | Yerel test geçti | DocumentPersistenceTest; D02-3b |
@@ -32,10 +32,11 @@ Güncelleme: 12.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f,
 | Onay ve ertelemenin birleşik akışı | Yerel atomiklik, replay ve paralellik testleri geçti | D02-3l; karar/child/history tek transaction; onay sonrası bekleme; aynı actor tekrarında tek child, farklı actor kararı değiştiremez |
 | Eski onayın bekleme politikası | Bilinen frozen sürümden doğrulama ve belirsizliği durdurma testleri geçti | Yeni JSON delay alanı yoksa özgün kayıtlı sürüm/hash kontrol edilir; bilinmeyen politika sıfır kabul edilmez |
 | Yarım kalan otomasyon işleri | Salt okunur inceleme testi geçti; güvenli dış recovery açık | Eksik/başarısız/çelişkili outcome gösterilir, otomatik retry yok; provider reconciliation ve lease/idempotency ayrı D06 kabulü |
-| Otomasyon blast-radius, actor RBAC ve tüm HTTP/CLI/cron bağları | D03/D06/D08 açık | Kalıcı engine/version interface container binding yerel doğrulandı; bütün ürün girişleri veya dış komut güvenliği kabul edilmiş sayılmaz |
+| Kalıcı global yıkıcı işlem kontenjanı | Yerel kalıcılık, hata ve dört süreçli yarış testleri geçti | Migration 15; 5 girişim/3600 saniye, işlemden önce committed permit; başarısız/belirsiz sonuç da sayılır; D02-3m |
+| Otomasyon actor RBAC ve tüm HTTP/CLI/cron bağları | D03/D06/D08 açık | Kalıcı engine/version interface container binding yerel doğrulandı; bütün ürün girişleri veya dış komut güvenliği kabul edilmiş sayılmaz |
 | Diğer otomasyon ve operasyonel domainler; genel runtime DDL sınırları | Açık | Kurulum şeması bütün iş akışlarının ve kısıtların kabulü değildir |
 | GoldenFinancialDataset'in üretim şemasıyla eşleşmesi | Açık | Test fixture kanonik kurulum şeması sayılmaz; F17/F30 |
 | Gerçek sağlayıcı bağlantısı ve gerçek cron çalıştırıcısının geçmiş yazımı | D06 kabulü açık | Doctor provider envanterini uzaktan doğrulanmış HEALTHY diye sunmaz |
 | Üretim veri tabanında upgrade/rollback | Yapılmadı | Yedek, bakım penceresi ve eski worker'ların durdurulması gerekir; yerel test üretim onayı değildir |
 
-Sıradaki D02 işi: D02-SCHEMA-INVENTORY.json içindeki kalan domain şema kurucularını gerçek kurulum/upgrade akışına bağlamak ve kısıt uyumunu sınamak. Envanter 90 CREATE TABLE kaynak dosyasını listeler; metinde migration referansı olması tek başına çalıştırma ya da kabul kanıtı değildir. D02 çıkış ölçütleri tamamlanmadan D03'e geçilmez.
+Sıradaki D02 işi: D02-SCHEMA-INVENTORY.json içindeki kalan domain şema kurucularını gerçek kurulum/upgrade akışına bağlamak ve kısıt uyumunu sınamak. Envanter 91 CREATE TABLE kaynak dosyasını listeler; metinde migration referansı olması tek başına çalıştırma ya da kabul kanıtı değildir. D02 çıkış ölçütleri tamamlanmadan D03'e geçilmez.

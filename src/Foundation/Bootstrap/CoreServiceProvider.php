@@ -52,6 +52,7 @@ final class CoreServiceProvider implements ServiceProviderInterface
             \Coleza\Domain\Automation\Delay\DelayManagerInterface::class => 'getDelayManager',
             \Coleza\Domain\Automation\Execution\RunHistoryRepositoryInterface::class => 'getHistoryRepository',
             \Coleza\Domain\Automation\Safety\EmergencyPauseManagerInterface::class => 'getEmergencyPauseManager',
+            \Coleza\Domain\Automation\Safety\BlastRadiusLimiterInterface::class => 'getBlastRadiusLimiter',
         ] as $interface => $accessor) {
             $container->singleton($interface, static fn(Container $c) => $c->get(\Coleza\Domain\Automation\Engine\AutomationEngine::class)->{$accessor}());
         }

@@ -38,6 +38,23 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'automationBlast':
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $registry = new Coleza\Domain\Automation\Actions\ActionRegistry();
+            $registry->register(new Coleza\Domain\Automation\Actions\Handlers\CallbackActionHandler('service.terminate', function () use ($db, &$calls, $id, $argv): array {
+                $calls++;
+                $db->insert('destructive_effect_fixture', ['worker_id' => (int) $argv[2]]);
+                if ($id === 1) { throw new RuntimeException('Uncertain outcome after simulated effect'); }
+                return [];
+            }));
+            $engine = Coleza\Domain\Automation\Engine\DatabaseAutomationFactory::create($db, $registry);
+            $rule = new Coleza\Domain\Automation\Engine\AutomationRule('parallel_blast', 'Parallel destructive', new Coleza\Domain\Automation\Triggers\EventTrigger('event'),
+                new Coleza\Domain\Automation\Branching\IfElseBranch(new Coleza\Domain\Automation\Conditions\FieldCondition('ok', '==', true),
+                    [new Coleza\Domain\Automation\Actions\ActionDefinition('a', 'service.terminate')]));
+            $run = $engine->executeRule($rule, new Coleza\Domain\Automation\Triggers\TriggerContext('event', ['ok' => true]));
+            $result['calls'] = $calls;
+            $result['successful'] = (int) $run->isSuccessful();
+            break;
         case 'approvalDelaySameActor':
         case 'approvalDelayDifferentActors':
             try {

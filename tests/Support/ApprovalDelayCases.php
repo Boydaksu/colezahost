@@ -17,6 +17,7 @@ trait ApprovalDelayCases
     {
         AutomationSchema::installSchema($this->db);
         DatabaseRuleVersionManager::installSchema($this->db);
+        \Coleza\Domain\Automation\Safety\DatabaseBlastRadiusLimiter::installSchema($this->db);
     }
     private function combinedRule(int $delay = 3600): AutomationRule
     {

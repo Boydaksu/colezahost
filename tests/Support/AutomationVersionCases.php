@@ -18,6 +18,7 @@ trait AutomationVersionCases
     {
         AutomationSchema::installSchema($this->db);
         DatabaseRuleVersionManager::installSchema($this->db);
+        \Coleza\Domain\Automation\Safety\DatabaseBlastRadiusLimiter::installSchema($this->db);
     }
     private function rule(int $value = 1, $trigger = null, ?ApprovalRequirement $approval = null, int $delay = 0): AutomationRule
     {

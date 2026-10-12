@@ -1,0 +1,25 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+FF                                                                  2 / 2 (100%)
+
+Time: 00:00.016, Memory: 20.00 MB
+
+There were 2 failures:
+
+1) Coleza\Tests\Unit\Installer\BlastRadiusTest::testFreshEnginesShareOneBudget
+Reconstruction must not reset the shared destructive budget
+Failed asserting that 7 is identical to 5.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\BlastRadiusCases.php:35
+
+2) Coleza\Tests\Unit\Installer\BlastRadiusTest::testUncertainFailuresStillConsumeBudgetBeforeCallback
+Unknown external outcomes must not release destructive permits
+Failed asserting that 7 is identical to 5.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\BlastRadiusCases.php:48
+
+FAILURES!
+Tests: 2, Assertions: 2, Failures: 2.

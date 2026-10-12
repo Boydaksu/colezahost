@@ -107,7 +107,7 @@ final class WebInstallerTest extends TestCase
         $installer = $this->createInstaller();
         $installer->setupDatabase(DatabaseConfig::sqlite());
         self::assertSame(InstallationStep::ADMIN, $installer->getCurrentStep());
-        self::assertCount(14, $installer->getConnection()->select('SELECT * FROM migrations'));
+        self::assertCount(15, $installer->getConnection()->select('SELECT * FROM migrations'));
         self::assertSame([], $installer->getConnection()->select('SELECT * FROM invoices'));
     }
 
