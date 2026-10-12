@@ -118,11 +118,13 @@
       "file": "src/Domain/Vault/VaultService.php",
       "class": "Coleza\\Domain\\Vault\\VaultService",
       "public_schema_methods": [
-        "ensureTable"
+        "ensureTable",
+        "ensureSchema"
       ],
       "literal_table_names": [],
       "direct_migration_reference": false,
-      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN",
+      "schema_migration_path": "Migration 18 -> ProviderSettingService.ensureSchema -> VaultService.ensureSchema (transitive, not direct text reference)"
     },
     {
       "file": "src/Domain/Documents/Snapshots/DocumentSnapshotService.php",
@@ -533,10 +535,11 @@
       "file": "src/Domain/Providers/Settings/ProviderSettingService.php",
       "class": "Coleza\\Domain\\Providers\\Settings\\ProviderSettingService",
       "public_schema_methods": [
-        "ensureTables"
+        "ensureTables",
+        "ensureSchema"
       ],
       "literal_table_names": [],
-      "direct_migration_reference": false,
+      "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {

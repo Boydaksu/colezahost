@@ -1,0 +1,41 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[41;37mF[0m[41;37mF[0m[41;37mF[0m                                                                 3 / 3 (100%)
+
+Time: 00:05.198, Memory: 24.00 MB
+
+There were 3 failures:
+
+1) Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testVaultWritePreservesCallerTransaction
+Schema DDL must not commit caller data
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ProviderVaultSchemaCases.php:24
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ProviderVaultSchemaCases.php:29
+
+2) Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testProviderSettingsWritePreservesCallerTransaction
+Schema DDL must not commit caller data
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ProviderVaultSchemaCases.php:24
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ProviderVaultSchemaCases.php:30
+
+3) Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testProductionMigrationsInstallVaultAndProviderSettings
+Production migration must install both configuration tables without an encryption key
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+-Array &0 []
++Array &0 [
++    0 => 'vault_secrets',
++    1 => 'provider_module_settings',
++]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ProviderVaultSchemaCases.php:39
+
+[37;41mFAILURES![0m
+[37;41mTests: 3[0m[37;41m, Assertions: 9[0m[37;41m, Failures: 3[0m[37;41m.[0m

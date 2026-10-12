@@ -37,7 +37,18 @@ final class ProviderSettingService
 
     public function ensureTables(): void
     {
-        $driver = $this->db->getDriverName();
+        self::ensureSchema($this->db);
+    }
+
+    /** Configuration installation is independent of encryption keys and provider adapters. */
+    public static function ensureSchema(Connection $db, bool $installSchema = false): void
+    {
+        $requirements = ['provider_module_settings' => ['id', 'provider_slug', 'setting_key', 'setting_value', 'is_secret', 'created_at', 'updated_at']] + VaultService::schemaRequirements();
+        // Validate both existing tables before any DDL; never repair a partial secret store implicitly.
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchema($db, $requirements, $installSchema)) { return; }
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($db->getPdo());
+        $table = 'provider_module_settings';
+        $driver = $db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
             default => 'INT AUTO_INCREMENT PRIMARY KEY',
@@ -54,13 +65,13 @@ final class ProviderSettingService
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 UNIQUE(provider_slug, setting_key)
             )',
-            $this->table,
+            $table,
             $autoInc
         );
-        $this->db->statement($sql);
+        $db->statement($sql);
 
         // Ensure Vault table exists as well
-        $this->vaultService->ensureTable();
+        VaultService::ensureSchema($db, $installSchema);
     }
 
     /**

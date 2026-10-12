@@ -21,7 +21,22 @@ final class VaultService
 
     public function ensureTable(): void
     {
-        $driver = $this->db->getDriverName();
+        self::ensureSchema($this->db);
+    }
+
+    /** Required columns for metadata-only preflight of dependent schemas. */
+    public static function schemaRequirements(): array
+    {
+        return ['vault_secrets' => ['id', 'namespace', 'secret_key', 'encrypted_value', 'version', 'last_rotated_at', 'created_at']];
+    }
+
+    /** Install schema without constructing an encryptor or accessing secret values. */
+    public static function ensureSchema(Connection $db, bool $installSchema = false): void
+    {
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchema($db, self::schemaRequirements(), $installSchema)) { return; }
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($db->getPdo());
+        $table = 'vault_secrets';
+        $driver = $db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
             default => 'INT AUTO_INCREMENT PRIMARY KEY',
@@ -38,11 +53,11 @@ final class VaultService
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 UNIQUE(namespace, secret_key)
             )',
-            $this->table,
+            $table,
             $autoInc
         );
 
-        $this->db->statement($sql);
+        $db->statement($sql);
     }
 
     /**

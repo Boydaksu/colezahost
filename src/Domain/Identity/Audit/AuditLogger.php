@@ -16,6 +16,10 @@ final class AuditLogger
 
     public function ensureTable(): void
     {
+        // Keep legacy SQLite transactional bootstrap used by migration 9.
+        // MySQL implicit-commit DDL remains prohibited in caller transactions.
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchema($this->db, [$this->table => ['id', 'actor_user_id', 'impersonator_user_id', 'event_type', 'target_resource', 'ip_address', 'user_agent', 'payload', 'created_at']], installSchema: true)) { return; }
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($this->db->getPdo());
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -78,10 +82,10 @@ final class AuditLogger
         $this->ensureTable();
         return $this->db->select(
             sprintf(
-                'SELECT * FROM %s WHERE actor_user_id = :uid OR impersonator_user_id = :uid ORDER BY id DESC',
+                'SELECT * FROM %s WHERE actor_user_id = :actor_uid OR impersonator_user_id = :impersonator_uid ORDER BY id DESC',
                 $this->table
             ),
-            ['uid' => $userId]
+            ['actor_uid' => $userId, 'impersonator_uid' => $userId]
         );
     }
 }
