@@ -17,6 +17,9 @@ $queue->ensureTables();
 $servers = new Coleza\Domain\Servers\Services\ServerService($db);
 $reservations = new Coleza\Domain\Servers\Capacity\Services\CapacityReservationService($db, $servers);
 $action = $argv[3];
+if (str_starts_with($action, 'fraudReview') && getenv('COLEZA_FRAUD_BASELINE') === '1') {
+    $pdo->setAttribute(PDO::ATTR_STATEMENT_CLASS, [FraudBaselineStatement::class]);
+}
 if (in_array($action, ['configurationBrandCreate', 'configurationCurrencyDefault'], true) && ($argv[5] ?? '') === 'baseline') {
     // Unmodified HEAD sources; widen only the old read/write gap to make the race reproducible.
     require dirname(__DIR__, 3) . '/remediation/runtime/baseline-configuration-brand.php';
@@ -44,6 +47,26 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'fraudReviewCreate':
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $score = new Coleza\Domain\Fraud\Risk\RiskScoreService($db);
+            $review = new Coleza\Domain\Fraud\Review\RiskReviewService($db, $score);
+            $result['review_id'] = $review->createReview($score->getEvaluation($id))->getId();
+            break;
+        case 'fraudReviewResolve':
+        case 'fraudReviewMixed':
+        case 'fraudReviewCreateResolve':
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $score = new Coleza\Domain\Fraud\Risk\RiskScoreService($db);
+            $review = new Coleza\Domain\Fraud\Review\RiskReviewService($db, $score);
+            if ($action === 'fraudReviewCreateResolve' && (int) $argv[2] % 2 === 1) {
+                $result['review_id'] = $review->createReview($score->getEvaluation($review->getReview($id)->getEvaluationId()))->getId(); break;
+            }
+            if ($action === 'fraudReviewMixed' && (int) $argv[2] === 1) { $review->claimReview($id, 41); break; }
+            if ($action === 'fraudReviewMixed' && (int) $argv[2] === 3) { $review->escalateReview($id, 43); break; }
+            if ((int) $argv[2] % 2 === 0 && (int) $argv[2] !== 2) { $review->approveReview($id, 40 + (int) $argv[2], 'Worker approved'); }
+            else { $review->rejectReview($id, 40 + (int) $argv[2], 'Worker rejected'); }
+            break;
         case 'configurationBrandCreate':
             $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $result['brand_id'] = (new Coleza\Domain\Brand\BrandService($db))->createBrand('Worker ' . $argv[2], 'worker-' . $argv[2]);
@@ -225,6 +248,17 @@ final class ConfigurationBaselineStatement extends PDOStatement
         $result = parent::execute($params);
         if (preg_match('/^\s*SELECT COUNT\(\*\) as cnt FROM brands WHERE is_active = 1\s*$/i', $this->queryString)
             || preg_match('/^\s*UPDATE currencies SET is_default = 0\s*$/i', $this->queryString)) { usleep(300000); }
+        return $result;
+    }
+}
+
+final class FraudBaselineStatement extends PDOStatement
+{
+    protected function __construct() {}
+    public function execute(?array $params = null): bool
+    {
+        $result = parent::execute($params);
+        if (preg_match('/^\s*SELECT \* FROM fraud_risk_reviews WHERE (?:id = :id|evaluation_id = :eval_id) LIMIT 1\s*$/i', $this->queryString)) { usleep(300000); }
         return $result;
     }
 }

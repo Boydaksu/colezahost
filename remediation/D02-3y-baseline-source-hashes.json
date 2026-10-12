@@ -1,0 +1,8 @@
+{
+  "reference_commit": "2e8b58bb9ecdd2a4864a14dbe4b54cc9ddd27d87",
+  "sources": {
+    "src/Domain/Fraud/Risk/RiskScoreService.php": "916e14b3645b66fcdc14f70087d2bff4a9a504b0026aa25f53b12586421c8ba0",
+    "src/Domain/Fraud/Review/RiskReviewService.php": "1d1d39788cb93940a766ee5345a19c2dbdc9fcaccb6c6b0ac3d9ea7bb255c4fa"
+  },
+  "probe": "Concurrency only: unchanged live HEAD code; PDOStatement delays the old review read/write gap 300ms; final acceptance disables COLEZA_FRAUD_BASELINE."
+}

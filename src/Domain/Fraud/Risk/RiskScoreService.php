@@ -11,6 +11,7 @@ use Coleza\Domain\Fraud\Risk\Rules\HighOrderValueRule;
 use Coleza\Domain\Fraud\Risk\Rules\NewCustomerHighValueRule;
 use Coleza\Domain\Fraud\Risk\Rules\PaymentCountryMismatchRule;
 use Coleza\Domain\Fraud\Risk\Rules\RiskRuleInterface;
+use Coleza\Domain\Fraud\FraudWriteTransaction;
 use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Database\PdoSchema;
 use DateTimeImmutable;
@@ -133,6 +134,7 @@ final class RiskScoreService
         ?int $rejectThreshold = null,
         bool $persist = true
     ): RiskEvaluationResult {
+        if ($persist) { FraudWriteTransaction::assertCaller($this->db); }
         $this->ensureTables();
 
         $reviewLimit = $reviewThreshold ?? $this->defaultReviewThreshold;
@@ -163,30 +165,33 @@ final class RiskScoreService
         $now = new DateTimeImmutable();
 
         if ($persist) {
-            $evalRow = [
-                'entity_type' => $context->getEntityType(),
-                'entity_id' => $context->getEntityId(),
-                'user_id' => $context->getUserId(),
-                'organization_id' => $context->getOrganizationId(),
-                'total_score' => $totalScore,
-                'decision' => $decision->value,
-                'signals_count' => count($triggeredSignals),
-                'context_snapshot_json' => json_encode($context->toArray(), JSON_UNESCAPED_SLASHES),
-            ];
-
-            $evaluationId = $this->db->insert($this->evaluationsTable, $evalRow);
-
-            foreach ($triggeredSignals as $signal) {
-                $signalRow = [
-                    'evaluation_id' => $evaluationId,
-                    'rule_code' => $signal->getRuleCode(),
-                    'score' => $signal->getScore(),
-                    'severity' => $signal->getSeverity(),
-                    'description' => $signal->getDescription(),
-                    'metadata_json' => json_encode($signal->getMetadata(), JSON_UNESCAPED_SLASHES),
+            $evaluationId = FraudWriteTransaction::run($this->db, self::schemaRequirements(), function () use ($context, $totalScore, $decision, $triggeredSignals): int {
+                $evalRow = [
+                    'entity_type' => $context->getEntityType(),
+                    'entity_id' => $context->getEntityId(),
+                    'user_id' => $context->getUserId(),
+                    'organization_id' => $context->getOrganizationId(),
+                    'total_score' => $totalScore,
+                    'decision' => $decision->value,
+                    'signals_count' => count($triggeredSignals),
+                    'context_snapshot_json' => json_encode($context->toArray(), JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR),
                 ];
-                $this->db->insert($this->signalsTable, $signalRow);
-            }
+
+                $evaluationId = $this->db->insert($this->evaluationsTable, $evalRow);
+
+                foreach ($triggeredSignals as $signal) {
+                    $signalRow = [
+                        'evaluation_id' => $evaluationId,
+                        'rule_code' => $signal->getRuleCode(),
+                        'score' => $signal->getScore(),
+                        'severity' => $signal->getSeverity(),
+                        'description' => $signal->getDescription(),
+                        'metadata_json' => json_encode($signal->getMetadata(), JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR),
+                    ];
+                    $this->db->insert($this->signalsTable, $signalRow);
+                }
+                return (int) $evaluationId;
+            });
         }
 
         return new RiskEvaluationResult(

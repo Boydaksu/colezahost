@@ -1,0 +1,23 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[41;37mF[0m[41;37mF[0m                                                                  2 / 2 (100%)
+
+Time: 00:02.437, Memory: 20.00 MB
+
+There were 2 failures:
+
+1) Coleza\Tests\MariaDb\FraudAtomicWriteTest::testParallelCreateUsesOneReviewForOneEvaluation
+Failed asserting that actual size 4 matches expected size 1.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\FraudAtomicWriteTest.php:13
+
+2) Coleza\Tests\MariaDb\FraudAtomicWriteTest::testParallelOpposingResolutionsProduceOneTerminalDecision
+Failed asserting that actual size 4 matches expected size 1.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\FraudAtomicWriteTest.php:20
+
+[37;41mFAILURES![0m
+[37;41mTests: 2[0m[37;41m, Assertions: 25[0m[37;41m, Failures: 2[0m[37;41m.[0m

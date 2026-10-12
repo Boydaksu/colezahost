@@ -1,0 +1,20 @@
+{
+  "remediation/D02-3y-SONUC.md": "7336d989d0acc27b1a6ab8cf7fe1f9147ce306020ff96cbef7952efe232868ca",
+  "remediation/D02-3y-atomic-before.txt": "26a5ff995d46b4658332366d2843c70a59f09434b5422778aebff52efb55f552",
+  "remediation/D02-3y-baseline-source-hashes.json": "ef724ec794344fe602e4fd16140539a2725f6e3ffc6c9259d4d9022e03e89d2a",
+  "remediation/D02-3y-concurrency-before.txt": "bcbe0dd9f7096575b5462e67e832b758b01c190d5a7493d68416bf01c325e3be",
+  "remediation/D02-3y-mariadb.txt": "4b5dcd3e7d62e94a74a5446becd9879b11030b140dfc4c7b4d7d87f2c77fa1c0",
+  "remediation/D02-3y-mariadb.xml": "248fde8da4101e4f0fac4f53241ab163f63370565044e849d4dc84ccb6265677",
+  "remediation/D02-3y-suite.txt": "546de1e1d2b662a7ed184732f3384b0d10e843f3655b7161359678a48641224d",
+  "remediation/D02-3y-suite.xml": "0e9bb429c0e01965da0252dbaa12c82f831ac7e342423290245334238c9bcd4b",
+  "src/Domain/Fraud/FraudWriteTransaction.php": "0dc99d6be5928778714fd364c46a71d4af6b6dc69231150c04e635e31d9d5fba",
+  "tests/MariaDb/FraudAtomicWriteTest.php": "08da16478d2d4e83476c9bbaa5943a194c2afd3fc966383cd1bd5a41d2018df0",
+  "tests/Support/FraudAtomicWriteCases.php": "d56f4b412ee892ea549ab4c3327b8493f5c094299dd7c74bde1a41c5c86f56f9",
+  "tests/Unit/Fraud/FraudAtomicWriteTest.php": "00db0d3e0b107aeacbba33f945ce1738701556fdf2661d1129abdc4a0188868a",
+  "remediation/D02-INSTALL-MATRIX.md": "3392b2dfa7a7455bb325cda89e1d3cd79f82c65bd51657b292572132861d36f1",
+  "remediation/PLAN.md": "251214a764c9e8664e50f128a45a3210c7bd0af3bcc8b25571d26e6fd7993a0a",
+  "remediation/state.json": "1fdc1fc8239f01f4c25817cb1913560bfdeb4ab9ab7e3164d3587b89f00a565e",
+  "src/Domain/Fraud/Review/RiskReviewService.php": "ede7401b2ce4f7cfa91df3ce477d0393d050155d0658d4edb8d7c6d210b56557",
+  "src/Domain/Fraud/Risk/RiskScoreService.php": "0e7fcac54044438981339dbdff66cb94e9c821c0f337387736e5637424a997f8",
+  "tests/MariaDb/fixtures/financial-worker.php": "8bcc965a318569d4d60221dfbcfdd93d59561d28aac042fee0d02b5ec4096b6f"
+}

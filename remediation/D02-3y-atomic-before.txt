@@ -1,0 +1,217 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m                                                              6 / 6 (100%)
+
+Time: 00:02.738, Memory: 20.00 MB
+
+There were 6 failures:
+
+1) Coleza\Tests\MariaDb\FraudAtomicWriteTest::testFailedChildInsertRollsBackEntireOperationAndPreservesCaller#0 with data ('score', 'standalone')
+No parent, first signal or resolved status may survive the failed operation
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+ Array &0 [
+-    'fraud_risk_evaluations' => Array &1 [],
+-    'fraud_risk_signals' => Array &2 [],
+-    'fraud_risk_reviews' => Array &3 [],
+-    'fraud_risk_review_decisions' => Array &4 [],
++    'fraud_risk_evaluations' => Array &1 [
++        0 => Array &2 [
++            'id' => 1,
++            'entity_type' => 'order',
++            'entity_id' => 71,
++            'user_id' => null,
++            'organization_id' => null,
++            'total_score' => 40,
++            'decision' => 'review',
++            'signals_count' => 2,
++            'context_snapshot_json' => '{"entity_type":"order","entity_id":71,"user_id":null,"organization_id":null,"email":"test@example.test","client_ip":null,"user_agent":null,"billing_country":null,"geo_ip_country":null,"is_proxy_or_vpn":false,"is_tor":false,"payment_method":null,"card_issuing_country":null,"card_is_prepaid":false,"order_amount":0,"currency":"USD","order_item_count":1,"is_new_customer":true,"prior_successful_orders_count":0,"custom_attributes":[]}',
++            'created_at' => '2026-10-12 21:33:16',
++        ],
++    ],
++    'fraud_risk_signals' => Array &3 [
++        0 => Array &4 [
++            'id' => 1,
++            'evaluation_id' => 1,
++            'rule_code' => 'first',
++            'score' => 20,
++            'severity' => 'medium',
++            'description' => 'Fixture 🧪',
++            'metadata_json' => '[]',
++            'created_at' => '2026-10-12 21:33:16',
++        ],
++    ],
++    'fraud_risk_reviews' => Array &5 [],
++    'fraud_risk_review_decisions' => Array &6 [],
+ ]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\FraudAtomicWriteCases.php:54
+
+2) Coleza\Tests\MariaDb\FraudAtomicWriteTest::testFailedChildInsertRollsBackEntireOperationAndPreservesCaller#1 with data ('score', 'raw')
+No parent, first signal or resolved status may survive the failed operation
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+ Array &0 [
+-    'fraud_risk_evaluations' => Array &1 [],
+-    'fraud_risk_signals' => Array &2 [],
+-    'fraud_risk_reviews' => Array &3 [],
+-    'fraud_risk_review_decisions' => Array &4 [],
++    'fraud_risk_evaluations' => Array &1 [
++        0 => Array &2 [
++            'id' => 1,
++            'entity_type' => 'order',
++            'entity_id' => 71,
++            'user_id' => null,
++            'organization_id' => null,
++            'total_score' => 40,
++            'decision' => 'review',
++            'signals_count' => 2,
++            'context_snapshot_json' => '{"entity_type":"order","entity_id":71,"user_id":null,"organization_id":null,"email":"test@example.test","client_ip":null,"user_agent":null,"billing_country":null,"geo_ip_country":null,"is_proxy_or_vpn":false,"is_tor":false,"payment_method":null,"card_issuing_country":null,"card_is_prepaid":false,"order_amount":0,"currency":"USD","order_item_count":1,"is_new_customer":true,"prior_successful_orders_count":0,"custom_attributes":[]}',
++            'created_at' => '2026-10-12 21:33:16',
++        ],
++    ],
++    'fraud_risk_signals' => Array &3 [
++        0 => Array &4 [
++            'id' => 1,
++            'evaluation_id' => 1,
++            'rule_code' => 'first',
++            'score' => 20,
++            'severity' => 'medium',
++            'description' => 'Fixture 🧪',
++            'metadata_json' => '[]',
++            'created_at' => '2026-10-12 21:33:16',
++        ],
++    ],
++    'fraud_risk_reviews' => Array &5 [],
++    'fraud_risk_review_decisions' => Array &6 [],
+ ]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\FraudAtomicWriteCases.php:54
+
+3) Coleza\Tests\MariaDb\FraudAtomicWriteTest::testFailedChildInsertRollsBackEntireOperationAndPreservesCaller#2 with data ('score', 'managed')
+No parent, first signal or resolved status may survive the failed operation
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+ Array &0 [
+-    'fraud_risk_evaluations' => Array &1 [],
+-    'fraud_risk_signals' => Array &2 [],
+-    'fraud_risk_reviews' => Array &3 [],
+-    'fraud_risk_review_decisions' => Array &4 [],
++    'fraud_risk_evaluations' => Array &1 [
++        0 => Array &2 [
++            'id' => 1,
++            'entity_type' => 'order',
++            'entity_id' => 71,
++            'user_id' => null,
++            'organization_id' => null,
++            'total_score' => 40,
++            'decision' => 'review',
++            'signals_count' => 2,
++            'context_snapshot_json' => '{"entity_type":"order","entity_id":71,"user_id":null,"organization_id":null,"email":"test@example.test","client_ip":null,"user_agent":null,"billing_country":null,"geo_ip_country":null,"is_proxy_or_vpn":false,"is_tor":false,"payment_method":null,"card_issuing_country":null,"card_is_prepaid":false,"order_amount":0,"currency":"USD","order_item_count":1,"is_new_customer":true,"prior_successful_orders_count":0,"custom_attributes":[]}',
++            'created_at' => '2026-10-12 21:33:17',
++        ],
++    ],
++    'fraud_risk_signals' => Array &3 [
++        0 => Array &4 [
++            'id' => 1,
++            'evaluation_id' => 1,
++            'rule_code' => 'first',
++            'score' => 20,
++            'severity' => 'medium',
++            'description' => 'Fixture 🧪',
++            'metadata_json' => '[]',
++            'created_at' => '2026-10-12 21:33:17',
++        ],
++    ],
++    'fraud_risk_reviews' => Array &5 [],
++    'fraud_risk_review_decisions' => Array &6 [],
+ ]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\FraudAtomicWriteCases.php:54
+
+4) Coleza\Tests\MariaDb\FraudAtomicWriteTest::testFailedChildInsertRollsBackEntireOperationAndPreservesCaller#3 with data ('review', 'standalone')
+No parent, first signal or resolved status may survive the failed operation
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+             'entity_id' => 71,
+             'user_id' => null,
+             'organization_id' => null,
+-            'status' => 'pending',
++            'status' => 'approved',
+             'assigned_staff_id' => null,
+             'priority' => 'normal',
+             'created_at' => '2026-10-12 18:33:17',
+-            'resolved_at' => null,
+-            'resolved_by' => null,
++            'resolved_at' => '2026-10-12 18:33:17',
++            'resolved_by' => 42,
+         ],
+     ],
+     'fraud_risk_review_decisions' => Array &8 [],
+ ]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\FraudAtomicWriteCases.php:54
+
+5) Coleza\Tests\MariaDb\FraudAtomicWriteTest::testFailedChildInsertRollsBackEntireOperationAndPreservesCaller#4 with data ('review', 'raw')
+No parent, first signal or resolved status may survive the failed operation
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+             'entity_id' => 71,
+             'user_id' => null,
+             'organization_id' => null,
+-            'status' => 'pending',
++            'status' => 'approved',
+             'assigned_staff_id' => null,
+             'priority' => 'normal',
+             'created_at' => '2026-10-12 18:33:18',
+-            'resolved_at' => null,
+-            'resolved_by' => null,
++            'resolved_at' => '2026-10-12 18:33:18',
++            'resolved_by' => 42,
+         ],
+     ],
+     'fraud_risk_review_decisions' => Array &8 [],
+ ]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\FraudAtomicWriteCases.php:54
+
+6) Coleza\Tests\MariaDb\FraudAtomicWriteTest::testFailedChildInsertRollsBackEntireOperationAndPreservesCaller#5 with data ('review', 'managed')
+No parent, first signal or resolved status may survive the failed operation
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+             'entity_id' => 71,
+             'user_id' => null,
+             'organization_id' => null,
+-            'status' => 'pending',
++            'status' => 'approved',
+             'assigned_staff_id' => null,
+             'priority' => 'normal',
+             'created_at' => '2026-10-12 18:33:18',
+-            'resolved_at' => null,
+-            'resolved_by' => null,
++            'resolved_at' => '2026-10-12 18:33:18',
++            'resolved_by' => 42,
+         ],
+     ],
+     'fraud_risk_review_decisions' => Array &8 [],
+ ]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\FraudAtomicWriteCases.php:54
+
+[37;41mFAILURES![0m
+[37;41mTests: 6[0m[37;41m, Assertions: 24[0m[37;41m, Failures: 6[0m[37;41m.[0m
