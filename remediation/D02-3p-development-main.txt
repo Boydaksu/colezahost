@@ -1,0 +1,41 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+.............................................................   61 / 1178 (  5%)
+.............................................................  122 / 1178 ( 10%)
+.............................................................  183 / 1178 ( 15%)
+.............................................................  244 / 1178 ( 20%)
+.............................................................  305 / 1178 ( 25%)
+.............................................................  366 / 1178 ( 31%)
+.............................................................  427 / 1178 ( 36%)
+.............................................................  488 / 1178 ( 41%)
+.............................................................  549 / 1178 ( 46%)
+.[31;1mE[0m...........................................................  610 / 1178 ( 51%)
+.............................................................  671 / 1178 ( 56%)
+.............................................................  732 / 1178 ( 62%)
+.............................................................  793 / 1178 ( 67%)
+.............................................................  854 / 1178 ( 72%)
+.............................................................  915 / 1178 ( 77%)
+.............................................................  976 / 1178 ( 82%)
+............................................................. 1037 / 1178 ( 88%)
+............................................................. 1098 / 1178 ( 93%)
+............................................................. 1159 / 1178 ( 98%)
+...................                                           1178 / 1178 (100%)
+
+Time: 00:12.776, Memory: 60.00 MB
+
+There was 1 error:
+
+1) Coleza\Tests\Unit\Installer\BlastRadiusTest::testCallerTransactionCannotErasePermitAfterExternalEffect
+LogicException: Action evidence must commit before a handler; caller transaction refused.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Automation\Execution\DatabaseActionAttemptJournal.php:44
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Automation\Execution\DatabaseActionAttemptJournal.php:52
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Automation\Engine\AutomationEngine.php:424
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Automation\Engine\AutomationEngine.php:249
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\BlastRadiusCases.php:124
+
+[37;41mERRORS![0m
+[37;41mTests: 1178[0m[37;41m, Assertions: 8927[0m[37;41m, Errors: 1[0m[37;41m.[0m

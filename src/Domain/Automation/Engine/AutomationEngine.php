@@ -31,12 +31,14 @@ final class AutomationEngine
         private readonly ?EmergencyPauseManagerInterface $emergencyPauseManager = null,
         private readonly ?BlastRadiusLimiterInterface $blastRadiusLimiter = null,
         private readonly ?\Coleza\Domain\Automation\Versioning\RuleVersionManagerInterface $versionManager = null,
-        private readonly ?\Coleza\Domain\Automation\Approval\ApprovalDelayCoordinatorInterface $approvalDelayCoordinator = null
+        private readonly ?\Coleza\Domain\Automation\Approval\ApprovalDelayCoordinatorInterface $approvalDelayCoordinator = null,
+        private readonly ?\Coleza\Domain\Automation\Execution\DatabaseActionAttemptJournal $actionJournal = null
     ) {
     }
 
     public function getVersionManager(): ?\Coleza\Domain\Automation\Versioning\RuleVersionManagerInterface { return $this->versionManager; }
     public function getApprovalDelayCoordinator(): ?\Coleza\Domain\Automation\Approval\ApprovalDelayCoordinatorInterface { return $this->approvalDelayCoordinator; }
+    public function getActionJournal(): ?\Coleza\Domain\Automation\Execution\DatabaseActionAttemptJournal { return $this->actionJournal; }
 
     public function executeVersion(string $ruleId, int $version, TriggerContext $context, ?ExecutionMode $mode = null): RuleExecutionResult
     {
@@ -244,10 +246,8 @@ final class AutomationEngine
         }
 
         // Active mode: execute actions live
-        $actionResults = [];
-        foreach ($actions as $action) {
-            $actionResults[] = $this->executeAction($action, $context);
-        }
+        $attemptIds = [];
+        $actionResults = $this->executeActions($rule->getId(), $actions, $context, snapshot: $executionSnapshot, attemptIds: $attemptIds);
 
         $durationMs = (microtime(true) - $start) * 1000;
 
@@ -270,7 +270,7 @@ final class AutomationEngine
             ExecutionMode::ACTIVE
         );
 
-        $this->recordRunHistory($rule, $result, $context);
+        $this->recordRunHistory($rule, $result, $context, $attemptIds === [] ? [] : ['action_attempt_ids' => $attemptIds]);
         $this->logExecution($rule, $result, $context);
 
         return $result;
@@ -326,13 +326,16 @@ final class AutomationEngine
                 $pending->getExecutionSnapshot()['condition_passed'] ?? true, $pending->getExecutionSnapshot()['branch_taken'] ?? 'THEN', 0.0);
         }
         $pendingFingerprint = $this->capturePendingFingerprint($pending);
+        $this->actionJournal?->assertOutsideTransaction();
         $approved = $this->approvalManager->approve($approvalId, $approvedBy);
+        if ($pendingFingerprint !== null && $this->capturePendingFingerprint($approved) !== $pendingFingerprint) {
+            throw new \LogicException('Approved inputs changed; action execution requires reconciliation.');
+        }
         $start = microtime(true);
 
-        $actionResults = [];
-        foreach ($approved->getActionsToExecute() as $action) {
-            $actionResults[] = $this->executeAction($action, $approved->getContext());
-        }
+        $attemptIds = [];
+        $actionResults = $this->executeActions($approved->getRuleId(), $approved->getActionsToExecute(),
+            $approved->getContext(), 'approval', $approvalId, $pendingFingerprint, $approved->getExecutionSnapshot(), $attemptIds);
 
         $durationMs = (microtime(true) - $start) * 1000;
 
@@ -355,7 +358,7 @@ final class AutomationEngine
             ExecutionMode::ACTIVE
         );
         $this->recordResumedHistory($approved->getRuleId(), $approved->getRuleName(), $approved->getContext(), $result,
-            ['approval_id' => $approvalId, 'pending_execution_fingerprint' => $pendingFingerprint], $approved->getExecutionSnapshot());
+            ['approval_id' => $approvalId, 'pending_execution_fingerprint' => $pendingFingerprint, 'action_attempt_ids' => $attemptIds], $approved->getExecutionSnapshot());
         return $result;
     }
 
@@ -377,12 +380,16 @@ final class AutomationEngine
             if ($this->emergencyPauseManager?->isPaused(scope: 'ALL')) { break; }
             if ($this->actionsPaused($execution->getActionsToExecute())) { continue; }
             $pendingFingerprint = $this->capturePendingFingerprint($execution);
+            $this->actionJournal?->assertOutsideTransaction();
             if (!$this->delayManager->claimForDispatch($execution->getId())) { continue; }
-            $start = microtime(true);
-            $actionResults = [];
-            foreach ($execution->getActionsToExecute() as $action) {
-                $actionResults[] = $this->executeAction($action, $execution->getContext());
+            $claimed = $this->delayManager->findById($execution->getId());
+            if ($pendingFingerprint !== null && ($claimed === null || $this->capturePendingFingerprint($claimed) !== $pendingFingerprint)) {
+                throw new \LogicException('Claimed delay inputs changed; action execution requires reconciliation.');
             }
+            $start = microtime(true);
+            $attemptIds = [];
+            $actionResults = $this->executeActions($execution->getRuleId(), $execution->getActionsToExecute(),
+                $execution->getContext(), 'delay', $execution->getId(), $pendingFingerprint, $execution->getExecutionSnapshot(), $attemptIds);
 
             $durationMs = (microtime(true) - $start) * 1000;
             $this->delayManager->markDispatched($execution->getId());
@@ -407,20 +414,35 @@ final class AutomationEngine
             );
             $this->recordResumedHistory($execution->getRuleId(), $execution->getRuleName(), $execution->getContext(),
                 $dispatchedResults[$execution->getId()], ['delay_id' => $execution->getId(),
-                    'pending_execution_fingerprint' => $pendingFingerprint] +
+                    'pending_execution_fingerprint' => $pendingFingerprint, 'action_attempt_ids' => $attemptIds] +
                     (isset($execution->getExecutionSnapshot()['approval_id']) ? ['approval_id' => $execution->getExecutionSnapshot()['approval_id']] : []), $execution->getExecutionSnapshot());
         }
 
         return $dispatchedResults;
     }
 
-    private function executeAction(ActionInterface $action, TriggerContext $context): ActionResult
+    private function executeActions(string $ruleId, array $actions, TriggerContext $context,
+        ?string $pendingKind = null, ?string $pendingId = null, ?string $fingerprint = null, array $snapshot = [], ?array &$attemptIds = null): array
+    {
+        $attempts = $this->actionJournal?->prepare($ruleId, $actions, $context, $pendingKind, $pendingId, $fingerprint, $snapshot);
+        $attemptIds = $attempts ?? [];
+        $results = [];
+        foreach (array_values($actions) as $position => $action) {
+            $results[] = $this->executeAction($action, $context, $attempts[$position] ?? null);
+        }
+        return $results;
+    }
+
+    private function executeAction(ActionInterface $action, TriggerContext $context, ?string $attemptId = null): ActionResult
     {
         $actionType = $action->getType();
+        // Journal failures propagate: no handler or subsequent action may hide a lost observation.
+        if ($attemptId !== null) { $this->actionJournal->start($attemptId, $action, $context); }
 
         if ($this->emergencyPauseManager !== null && $this->emergencyPauseManager->isPaused(actionType: $actionType)) {
             $scope = $this->emergencyPauseManager->getState()->getScope();
             $reason = $this->emergencyPauseManager->getState()->getReason() ?? 'Emergency pause';
+            if ($attemptId !== null) { $this->actionJournal->finish($attemptId, 'BLOCKED', 'PAUSED'); }
             return ActionResult::failed(
                 $action->getId(),
                 $actionType,
@@ -429,6 +451,7 @@ final class AutomationEngine
         }
 
         if (!$this->actionRegistry->has($actionType)) {
+            if ($attemptId !== null) { $this->actionJournal->finish($attemptId, 'BLOCKED', 'HANDLER_MISSING'); }
             return ActionResult::failed(
                 $action->getId(),
                 $actionType,
@@ -438,20 +461,35 @@ final class AutomationEngine
 
         $handler = $this->actionRegistry->get($actionType);
 
+        $reasonCode = 'HANDLER_REPORTED_SUCCESS';
         try {
             if ($this->blastRadiusLimiter !== null && !$this->blastRadiusLimiter->tryAcquire($actionType)) {
-                return ActionResult::failed($action->getId(), $actionType,
+                $result = ActionResult::failed($action->getId(), $actionType,
                     "Action execution blocked: blast radius limit exceeded or safety pause active for destructive action '{$actionType}'");
+                $reasonCode = 'ADMISSION_DENIED';
+            } else {
+                $result = $handler->execute($action, $context);
+                if ($result->getActionId() !== $action->getId() || $result->getActionType() !== $actionType
+                    || ($result->isSuccess() && $result->getErrorMessage() !== null)) {
+                    $result = ActionResult::failed($action->getId(), $actionType, 'Handler receipt does not match the dispatched action');
+                    $reasonCode = 'HANDLER_RECEIPT_MISMATCH';
+                } elseif ($result->isFailed()) { $reasonCode = 'HANDLER_REPORTED_FAILURE'; }
+                elseif ($result->isSkipped()) { $reasonCode = 'HANDLER_SKIPPED'; }
             }
-            $result = $handler->execute($action, $context);
-            return $result;
         } catch (Throwable $e) {
-            return ActionResult::failed(
+            $reasonCode = 'HANDLER_EXCEPTION';
+            $result = ActionResult::failed(
                 $action->getId(),
                 $actionType,
                 'Action execution failed with exception: ' . $e->getMessage()
             );
         }
+        if ($attemptId !== null) {
+            $status = $reasonCode === 'HANDLER_REPORTED_SUCCESS' ? 'REPORTED_SUCCESS'
+                : ($reasonCode === 'ADMISSION_DENIED' ? 'BLOCKED' : 'OUTCOME_UNKNOWN');
+            $this->actionJournal->finish($attemptId, $status, $reasonCode);
+        }
+        return $result;
     }
 
     private function capturePendingFingerprint(\Coleza\Domain\Automation\Approval\PendingApproval|\Coleza\Domain\Automation\Delay\DelayedExecution $entry): ?string
@@ -486,7 +524,8 @@ final class AutomationEngine
     private function recordRunHistory(
         AutomationRule $rule,
         RuleExecutionResult $result,
-        TriggerContext $context
+        TriggerContext $context,
+        array $metadata = []
     ): void {
         if ($this->historyRepository === null) {
             return;
@@ -507,7 +546,8 @@ final class AutomationEngine
             $result->getBranchTaken(),
             array_map(fn (ActionResult $r) => $r->toArray(), $result->getActionResults()),
             $context->all(),
-            $result->getExecutionTimeMs()
+            $result->getExecutionTimeMs(),
+            metadata: $metadata
         );
 
         $this->historyRepository->save($record);

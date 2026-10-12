@@ -38,6 +38,18 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'automationAttemptStart':
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $journal = new Coleza\Domain\Automation\Execution\DatabaseActionAttemptJournal($db);
+            try {
+                $journal->start($argv[5], new Coleza\Domain\Automation\Actions\ActionDefinition('a0', 'send', ['token' => '{{ token }}']),
+                    new Coleza\Domain\Automation\Triggers\TriggerContext('event', ['ok' => true, 'token' => 'SECRET_NOT_FOR_JOURNAL'], correlationId: 'parallel'));
+                $result['claimed'] = 1;
+            } catch (LogicException $error) {
+                if (!str_contains($error->getMessage(), 'Action attempt changed or missing')) { throw $error; }
+                $result['claimed'] = 0;
+            }
+            break;
         case 'provisionReconcile':
             $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $operationService = new Coleza\Domain\Provisioning\Services\ProvisioningOperationService($db);

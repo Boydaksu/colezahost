@@ -10,6 +10,7 @@ final class AutomationSchema
     public static function installSchema(Connection $db): void
     {
         PdoSchema::autoIncrement($db->getPdo()); // Reject MySQL DDL inside a transaction.
+        \Coleza\Domain\Automation\Execution\DatabaseActionAttemptJournal::installSchema($db);
         $text = $db->getDriverName() === 'mysql' ? 'LONGTEXT' : 'TEXT';
         $suffix = $db->getDriverName() === 'mysql' ? ' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin' : '';
         $db->statement("CREATE TABLE IF NOT EXISTS automation_state_lock (id INT PRIMARY KEY CHECK (id = 1)){$suffix}");

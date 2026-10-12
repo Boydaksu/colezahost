@@ -12,6 +12,11 @@ use Coleza\Domain\Automation\Versioning\DatabaseRuleVersionManager;
 final class AutomationRecoveryInspector
 {
     public function __construct(private readonly Connection $db) {}
+    /** Includes direct ACTIVE runs even when no approval/delay or final history exists. */
+    public function listUnresolvedActionAttempts(): array
+    {
+        return (new DatabaseActionAttemptJournal($this->db))->listUnresolved();
+    }
     public function listUnresolved(): array
     {
         $outcomes = [];

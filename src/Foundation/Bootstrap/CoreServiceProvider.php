@@ -51,6 +51,7 @@ final class CoreServiceProvider implements ServiceProviderInterface
             \Coleza\Domain\Automation\Approval\ApprovalManagerInterface::class => 'getApprovalManager',
             \Coleza\Domain\Automation\Delay\DelayManagerInterface::class => 'getDelayManager',
             \Coleza\Domain\Automation\Execution\RunHistoryRepositoryInterface::class => 'getHistoryRepository',
+            \Coleza\Domain\Automation\Execution\DatabaseActionAttemptJournal::class => 'getActionJournal',
             \Coleza\Domain\Automation\Safety\EmergencyPauseManagerInterface::class => 'getEmergencyPauseManager',
             \Coleza\Domain\Automation\Safety\BlastRadiusLimiterInterface::class => 'getBlastRadiusLimiter',
         ] as $interface => $accessor) {

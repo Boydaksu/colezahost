@@ -121,9 +121,8 @@ trait BlastRadiusCases
         $engine = DatabaseAutomationFactory::create($this->db, $registry);
         $this->db->beginTransaction();
         try {
-            $result = $engine->executeRule($this->destructiveRule(), new TriggerContext('event', ['ok' => true]));
-            self::assertFalse($result->isSuccessful());
-            self::assertStringContainsString('outside the caller transaction', $result->getActionResults()[0]->getErrorMessage());
+            try { $engine->executeRule($this->destructiveRule(), new TriggerContext('event', ['ok' => true])); self::fail('Caller transaction accepted'); }
+            catch (\LogicException $error) { self::assertStringContainsString('caller transaction refused', $error->getMessage()); }
             self::assertSame(0, $calls);
         } finally { $this->db->rollBack(); }
         self::assertSame(0, $this->limiter()->getRecentDestructiveCount());
