@@ -1,0 +1,11 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\remediation\API-SESSION-C01-native.xml
+
+...............................................................  63 / 122 ( 51%)
+...........................................................     122 / 122 (100%)
+
+Time: 04:27.405, Memory: 30.00 MB
+
+[30;42mOK (122 tests, 719 assertions)[0m

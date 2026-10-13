@@ -1,0 +1,10 @@
+{
+  "reference_commit": "b7f8f493a303ecf9753bd1230d236c61d85c7252",
+  "source": "git show reference:path; before tests run before these sources changed",
+  "files": {
+    "src/Api/Auth/ApiKeyService.php": "9e0eda565a198d35c6c43fa176a33f988db6815d2cfdf2cfafc125951b72505d",
+    "src/Api/Logging/ApiRequestLogger.php": "95b652823e5d1a4793585631dafd8669d6d6c3d934c0bf440e204108f1372967",
+    "src/Api/RateLimit/RateLimiter.php": "96c7188f86e98ac5f9ce2727fee95f2542742d076b1ba3faa6dd816956fe95bb",
+    "src/Domain/Identity/Session/DatabaseSessionHandler.php": "54a77169192ef2dc70788fd1eea36b02a8efae9486ffb4b3eed34820cb255680"
+  }
+}

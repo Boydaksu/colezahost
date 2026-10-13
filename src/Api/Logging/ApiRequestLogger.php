@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Coleza\Api\Logging;
 
 use Coleza\Foundation\Database\Connection;
+use Coleza\Foundation\Database\ApiSessionSchema;
 
 final class ApiRequestLogger
 {
@@ -14,8 +15,9 @@ final class ApiRequestLogger
     {
     }
 
-    public function ensureTable(): void
+    public function ensureTable(bool $installation = true): void
     {
+        if (ApiSessionSchema::installed($this->db, $this->table, $installation)) { return; }
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -38,7 +40,7 @@ final class ApiRequestLogger
             $autoInc
         );
 
-        $this->db->statement($sql);
+        $this->db->statement($sql . ($this->db->getDriverName() === 'mysql' ? ' ENGINE=InnoDB' : ''));
     }
 
     /**
@@ -53,7 +55,7 @@ final class ApiRequestLogger
         ?string $ip = null,
         ?string $requestId = null
     ): int {
-        $this->ensureTable();
+        $this->ensureTable(installation: false);
 
         return (int) $this->db->insert($this->table, [
             'key_id' => $keyId,
@@ -73,7 +75,7 @@ final class ApiRequestLogger
      */
     public function getLogsForKey(int $keyId): array
     {
-        $this->ensureTable();
+        $this->ensureTable(installation: false);
         return $this->db->select(
             sprintf('SELECT * FROM %s WHERE key_id = :kid ORDER BY id DESC', $this->table),
             ['kid' => $keyId]

@@ -1,0 +1,83 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m.[41;37mF[0m[41;37mF[0m[41;37mF[0m.                                                        10 / 10 (100%)
+
+Time: 00:00.013, Memory: 20.00 MB
+
+There were 8 failures:
+
+1) Coleza\Tests\Unit\Api\ApiSessionPersistenceTest::testInstalledSetupPreservesCallerAndExecutesNoDdl#0 with data ('key')
+Failed asserting that 'CREATE TABLE IF NOT EXISTS api_keys (\n
+                id INTEGER PRIMARY KEY AUTOINCREMENT,\n
+                user_id INT NOT NULL,\n
+                name VARCHAR(100) NOT NULL,\n
+                key_prefix VARCHAR(16) NOT NULL,\n
+                key_hash VARCHAR(128) NOT NULL UNIQUE,\n
+                scopes LONGTEXT NOT NULL,\n
+                is_active INT NOT NULL DEFAULT 1,\n
+                last_used_at TIMESTAMP NULL,\n
+                expires_at INT NULL,\n
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n
+            )' does not match PCRE pattern "/^\s*(CREATE|ALTER|DROP)\b/i".
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ApiSessionPersistenceCases.php:26
+
+2) Coleza\Tests\Unit\Api\ApiSessionPersistenceTest::testInstalledSetupPreservesCallerAndExecutesNoDdl#1 with data ('log')
+Failed asserting that 'CREATE TABLE IF NOT EXISTS api_request_logs (\n
+                id INTEGER PRIMARY KEY AUTOINCREMENT,\n
+                key_id INT NULL,\n
+                method VARCHAR(10) NOT NULL,\n
+                path VARCHAR(191) NOT NULL,\n
+                status_code INT NOT NULL,\n
+                duration_ms INT NOT NULL,\n
+                ip_address VARCHAR(45) NULL,\n
+                request_id VARCHAR(64) NULL,\n
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n
+            )' does not match PCRE pattern "/^\s*(CREATE|ALTER|DROP)\b/i".
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ApiSessionPersistenceCases.php:26
+
+3) Coleza\Tests\Unit\Api\ApiSessionPersistenceTest::testInstalledSetupPreservesCallerAndExecutesNoDdl#2 with data ('rate')
+Failed asserting that 'CREATE TABLE IF NOT EXISTS api_rate_limits (\n
+                rate_key VARCHAR(128) PRIMARY KEY,\n
+                hits INT NOT NULL,\n
+                reset_at INT NOT NULL\n
+            )' does not match PCRE pattern "/^\s*(CREATE|ALTER|DROP)\b/i".
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ApiSessionPersistenceCases.php:26
+
+4) Coleza\Tests\Unit\Api\ApiSessionPersistenceTest::testInstalledSetupPreservesCallerAndExecutesNoDdl#3 with data ('session')
+Failed asserting that 'CREATE TABLE IF NOT EXISTS sessions (\n
+                id VARCHAR(128) PRIMARY KEY,\n
+                user_id INT NULL,\n
+                ip_address VARCHAR(45) NULL,\n
+                user_agent VARCHAR(255) NULL,\n
+                payload LONGTEXT NOT NULL,\n
+                last_activity INT NOT NULL\n
+            )' does not match PCRE pattern "/^\s*(CREATE|ALTER|DROP)\b/i".
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ApiSessionPersistenceCases.php:26
+
+5) Coleza\Tests\Unit\Api\ApiSessionPersistenceTest::testInvalidSessionJsonPreservesPreviousPayload
+Invalid UTF-8 persisted
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ApiSessionPersistenceCases.php:33
+
+6) Coleza\Tests\Unit\Api\ApiSessionPersistenceTest::testMalformedPersistedScopesCannotAuthenticateWithoutRequiredScope
+Failed asserting that exception of type "Coleza\Foundation\Exceptions\ValidationException" is thrown.
+
+7) Coleza\Tests\Unit\Api\ApiSessionPersistenceTest::testInvalidRatePolicyDoesNotConsumeQuota
+Zero budget accepted
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ApiSessionPersistenceCases.php:56
+
+8) Coleza\Tests\Unit\Api\ApiSessionPersistenceTest::testRateAdmissionRejectsCallerBeforeBudgetWrite
+Caller can roll back quota
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ApiSessionPersistenceCases.php:63
+
+[37;41mFAILURES![0m
+[37;41mTests: 10[0m[37;41m, Assertions: 21[0m[37;41m, Failures: 8[0m[37;41m.[0m

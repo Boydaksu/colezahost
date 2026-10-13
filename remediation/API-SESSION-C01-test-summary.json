@@ -1,0 +1,29 @@
+{
+  "reference_commit": "b7f8f493a303ecf9753bd1230d236c61d85c7252",
+  "main": {
+    "tests": 1472,
+    "assertions": 10856,
+    "scope": "full main"
+  },
+  "native": {
+    "tests": 123,
+    "assertions": 722,
+    "classes": [
+      "Coleza\\Tests\\MariaDb\\ApiSessionPersistenceTest",
+      "Coleza\\Tests\\MariaDb\\DatabaseFoundationTest",
+      "Coleza\\Tests\\MariaDb\\ModuleSchemaInstallTest",
+      "Coleza\\Tests\\MariaDb\\LegacyIdentitySchemaTest",
+      "Coleza\\Tests\\MariaDb\\RuntimeSchemaSafetyTest",
+      "Coleza\\Tests\\MariaDb\\ModuleSchemaSafetyTest",
+      "Coleza\\Tests\\MariaDb\\InstallationAcceptanceTest"
+    ],
+    "scope": "seven affected classes, exact discovery coverage",
+    "full_suite": false
+  },
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "total_executed": 1595,
+  "independent_acceptance": "PENDING",
+  "production_ready": false
+}

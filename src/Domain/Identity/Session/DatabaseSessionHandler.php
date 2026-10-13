@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Coleza\Domain\Identity\Session;
 
 use Coleza\Foundation\Database\Connection;
+use Coleza\Foundation\Database\ApiSessionSchema;
 
 final class DatabaseSessionHandler
 {
@@ -14,16 +15,12 @@ final class DatabaseSessionHandler
         private Connection $db,
         private int $lifetimeSeconds = 7200
     ) {
+        if ($lifetimeSeconds < 1) { throw new \InvalidArgumentException("Session lifetime must be positive."); }
     }
 
-    public function ensureTable(): void
+    public function ensureTable(bool $installation = true): void
     {
-        $driver = $this->db->getDriverName();
-        $autoInc = match ($driver) {
-            'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
-            default => 'INT AUTO_INCREMENT PRIMARY KEY',
-        };
-
+        if (ApiSessionSchema::installed($this->db, $this->table, $installation)) { return; }
         $sql = sprintf(
             'CREATE TABLE IF NOT EXISTS %s (
                 id VARCHAR(128) PRIMARY KEY,
@@ -36,7 +33,7 @@ final class DatabaseSessionHandler
             $this->table
         );
 
-        $this->db->statement($sql);
+        $this->db->statement($sql . ($this->db->getDriverName() === 'mysql' ? ' ENGINE=InnoDB' : ''));
     }
 
     /**
@@ -46,22 +43,12 @@ final class DatabaseSessionHandler
      */
     public function read(string $sessionId): array
     {
-        $this->ensureTable();
-        $row = $this->db->selectOne(
-            sprintf('SELECT payload, last_activity FROM %s WHERE id = :id', $this->table),
-            ['id' => $sessionId]
-        );
-
-        if ($row === null) {
-            return [];
-        }
-
-        // Expired session check
-        if ((time() - (int) $row['last_activity']) > $this->lifetimeSeconds) {
-            $this->destroy($sessionId);
-            return [];
-        }
-
+        $this->validateId($sessionId); $this->ensureTable(installation: false);
+        $cutoff = time() - $this->lifetimeSeconds;
+        // Delete only rows that are still expired when the write lock is acquired.
+        $this->db->delete($this->table, 'id = :id AND last_activity < :cutoff', ['id' => $sessionId, 'cutoff' => $cutoff]);
+        $row = $this->db->selectOne('SELECT payload FROM sessions WHERE id = ? AND last_activity >= ?', [$sessionId, $cutoff]);
+        if ($row === null) { return []; }
         $decoded = json_decode((string) $row['payload'], true);
         return is_array($decoded) ? $decoded : [];
     }
@@ -78,46 +65,21 @@ final class DatabaseSessionHandler
         ?string $ipAddress = null,
         ?string $userAgent = null
     ): void {
-        $this->ensureTable();
-        $now = time();
-        $encoded = json_encode($payload, JSON_UNESCAPED_SLASHES);
-
-        $existing = $this->db->selectOne(
-            sprintf('SELECT id FROM %s WHERE id = :id', $this->table),
-            ['id' => $sessionId]
-        );
-
-        if ($existing === null) {
-            $this->db->insert($this->table, [
-                'id' => $sessionId,
-                'user_id' => $userId,
-                'ip_address' => $ipAddress,
-                'user_agent' => $userAgent,
-                'payload' => $encoded,
-                'last_activity' => $now,
-            ]);
+        $this->validateId($sessionId);
+        $encoded = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+        $this->ensureTable(installation: false);
+        $bindings = [$sessionId, $userId, $ipAddress, $userAgent, $encoded, time()];
+        $sql = 'INSERT INTO sessions (id, user_id, ip_address, user_agent, payload, last_activity) VALUES (?, ?, ?, ?, ?, ?)';
+        if ($this->db->getDriverName() === 'mysql') {
+            $sql .= ' ON DUPLICATE KEY UPDATE user_id = COALESCE(VALUES(user_id), user_id),
+                ip_address = COALESCE(VALUES(ip_address), ip_address), user_agent = COALESCE(VALUES(user_agent), user_agent),
+                payload = VALUES(payload), last_activity = VALUES(last_activity)';
         } else {
-            $updates = [
-                'payload' => $encoded,
-                'last_activity' => $now,
-            ];
-            if ($userId !== null) {
-                $updates['user_id'] = $userId;
-            }
-            if ($ipAddress !== null) {
-                $updates['ip_address'] = $ipAddress;
-            }
-            if ($userAgent !== null) {
-                $updates['user_agent'] = $userAgent;
-            }
-
-            $this->db->update(
-                $this->table,
-                $updates,
-                'id = :id',
-                ['id' => $sessionId]
-            );
+            $sql .= ' ON CONFLICT(id) DO UPDATE SET user_id = COALESCE(excluded.user_id, sessions.user_id),
+                ip_address = COALESCE(excluded.ip_address, sessions.ip_address), user_agent = COALESCE(excluded.user_agent, sessions.user_agent),
+                payload = excluded.payload, last_activity = excluded.last_activity';
         }
+        $this->db->statement($sql, $bindings);
     }
 
     /**
@@ -125,7 +87,8 @@ final class DatabaseSessionHandler
      */
     public function destroy(string $sessionId): void
     {
-        $this->ensureTable();
+        $this->validateId($sessionId);
+        $this->ensureTable(installation: false);
         $this->db->delete($this->table, 'id = :id', ['id' => $sessionId]);
     }
 
@@ -134,7 +97,7 @@ final class DatabaseSessionHandler
      */
     public function destroyForUser(int $userId): void
     {
-        $this->ensureTable();
+        $this->ensureTable(installation: false);
         $this->db->delete($this->table, 'user_id = :user_id', ['user_id' => $userId]);
     }
 
@@ -143,8 +106,13 @@ final class DatabaseSessionHandler
      */
     public function gc(): int
     {
-        $this->ensureTable();
+        $this->ensureTable(installation: false);
         $cutoff = time() - $this->lifetimeSeconds;
         return $this->db->delete($this->table, 'last_activity < :cutoff', ['cutoff' => $cutoff]);
     }
+    private function validateId(string $id): void
+    {
+        if ($id === '' || strlen($id) > 128 || str_contains($id, "\0")) { throw new \InvalidArgumentException('Invalid session ID.'); }
+    }
+
 }

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Api\ApiSessionPersistenceTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Api\ApiSessionPersistenceTest.php" tests="10" assertions="21" errors="0" failures="8" skipped="0" time="0.009677">
+    <testsuite name="Coleza\Tests\Unit\Api\ApiSessionPersistenceTest::testInstalledSetupPreservesCallerAndExecutesNoDdl" tests="4" assertions="8" errors="0" failures="4" skipped="0" time="0.007172">
+      <testcase name="testInstalledSetupPreservesCallerAndExecutesNoDdl with data set #0" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ApiSessionPersistenceCases.php" line="18" class="Coleza\Tests\Unit\Api\ApiSessionPersistenceTest" classname="Coleza.Tests.Unit.Api.ApiSessionPersistenceTest" assertions="2" time="0.004862">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Api\ApiSessionPersistenceTest::testInstalledSetupPreservesCallerAndExecutesNoDdl with data set #0&#13;
+Failed asserting that 'CREATE TABLE IF NOT EXISTS api_keys (\n
+                id INTEGER PRIMARY KEY AUTOINCREMENT,\n
+                user_id INT NOT NULL,\n
+                name VARCHAR(100) NOT NULL,\n
+                key_prefix VARCHAR(16) NOT NULL,\n
+                key_hash VARCHAR(128) NOT NULL UNIQUE,\n
+                scopes LONGTEXT NOT NULL,\n
+                is_active INT NOT NULL DEFAULT 1,\n
+                last_used_at TIMESTAMP NULL,\n
+                expires_at INT NULL,\n
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n
+            )' does not match PCRE pattern "/^\s*(CREATE|ALTER|DROP)\b/i".
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ApiSessionPersistenceCases.php:26</failure>
+      </testcase>
+      <testcase name="testInstalledSetupPreservesCallerAndExecutesNoDdl with data set #1" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ApiSessionPersistenceCases.php" line="18" class="Coleza\Tests\Unit\Api\ApiSessionPersistenceTest" classname="Coleza.Tests.Unit.Api.ApiSessionPersistenceTest" assertions="2" time="0.000790">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Api\ApiSessionPersistenceTest::testInstalledSetupPreservesCallerAndExecutesNoDdl with data set #1&#13;
+Failed asserting that 'CREATE TABLE IF NOT EXISTS api_request_logs (\n
+                id INTEGER PRIMARY KEY AUTOINCREMENT,\n
+                key_id INT NULL,\n
+                method VARCHAR(10) NOT NULL,\n
+                path VARCHAR(191) NOT NULL,\n
+                status_code INT NOT NULL,\n
+                duration_ms INT NOT NULL,\n
+                ip_address VARCHAR(45) NULL,\n
+                request_id VARCHAR(64) NULL,\n
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n
+            )' does not match PCRE pattern "/^\s*(CREATE|ALTER|DROP)\b/i".
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ApiSessionPersistenceCases.php:26</failure>
+      </testcase>
+      <testcase name="testInstalledSetupPreservesCallerAndExecutesNoDdl with data set #2" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ApiSessionPersistenceCases.php" line="18" class="Coleza\Tests\Unit\Api\ApiSessionPersistenceTest" classname="Coleza.Tests.Unit.Api.ApiSessionPersistenceTest" assertions="2" time="0.000712">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Api\ApiSessionPersistenceTest::testInstalledSetupPreservesCallerAndExecutesNoDdl with data set #2&#13;
+Failed asserting that 'CREATE TABLE IF NOT EXISTS api_rate_limits (\n
+                rate_key VARCHAR(128) PRIMARY KEY,\n
+                hits INT NOT NULL,\n
+                reset_at INT NOT NULL\n
+            )' does not match PCRE pattern "/^\s*(CREATE|ALTER|DROP)\b/i".
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ApiSessionPersistenceCases.php:26</failure>
+      </testcase>
+      <testcase name="testInstalledSetupPreservesCallerAndExecutesNoDdl with data set #3" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ApiSessionPersistenceCases.php" line="18" class="Coleza\Tests\Unit\Api\ApiSessionPersistenceTest" classname="Coleza.Tests.Unit.Api.ApiSessionPersistenceTest" assertions="2" time="0.000808">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Api\ApiSessionPersistenceTest::testInstalledSetupPreservesCallerAndExecutesNoDdl with data set #3&#13;
+Failed asserting that 'CREATE TABLE IF NOT EXISTS sessions (\n
+                id VARCHAR(128) PRIMARY KEY,\n
+                user_id INT NULL,\n
+                ip_address VARCHAR(45) NULL,\n
+                user_agent VARCHAR(255) NULL,\n
+                payload LONGTEXT NOT NULL,\n
+                last_activity INT NOT NULL\n
+            )' does not match PCRE pattern "/^\s*(CREATE|ALTER|DROP)\b/i".
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ApiSessionPersistenceCases.php:26</failure>
+      </testcase>
+    </testsuite>
+    <testcase name="testInvalidSessionJsonPreservesPreviousPayload" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ApiSessionPersistenceCases.php" line="30" class="Coleza\Tests\Unit\Api\ApiSessionPersistenceTest" classname="Coleza.Tests.Unit.Api.ApiSessionPersistenceTest" assertions="1" time="0.000403">
+      <failure type="PHPUnit\Framework\AssertionFailedError">Coleza\Tests\Unit\Api\ApiSessionPersistenceTest::testInvalidSessionJsonPreservesPreviousPayload&#13;
+Invalid UTF-8 persisted
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ApiSessionPersistenceCases.php:33</failure>
+    </testcase>
+    <testcase name="testSessionUpdatePreservesMetadataAndCallerRollback" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ApiSessionPersistenceCases.php" line="36" class="Coleza\Tests\Unit\Api\ApiSessionPersistenceTest" classname="Coleza.Tests.Unit.Api.ApiSessionPersistenceTest" assertions="6" time="0.000320"/>
+    <testcase name="testMalformedPersistedScopesCannotAuthenticateWithoutRequiredScope" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ApiSessionPersistenceCases.php" line="47" class="Coleza\Tests\Unit\Api\ApiSessionPersistenceTest" classname="Coleza.Tests.Unit.Api.ApiSessionPersistenceTest" assertions="1" time="0.000368">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Api\ApiSessionPersistenceTest::testMalformedPersistedScopesCannotAuthenticateWithoutRequiredScope&#13;
+Failed asserting that exception of type "Coleza\Foundation\Exceptions\ValidationException" is thrown.</failure>
+    </testcase>
+    <testcase name="testInvalidRatePolicyDoesNotConsumeQuota" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ApiSessionPersistenceCases.php" line="53" class="Coleza\Tests\Unit\Api\ApiSessionPersistenceTest" classname="Coleza.Tests.Unit.Api.ApiSessionPersistenceTest" assertions="1" time="0.000343">
+      <failure type="PHPUnit\Framework\AssertionFailedError">Coleza\Tests\Unit\Api\ApiSessionPersistenceTest::testInvalidRatePolicyDoesNotConsumeQuota&#13;
+Zero budget accepted
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ApiSessionPersistenceCases.php:56</failure>
+    </testcase>
+    <testcase name="testRateAdmissionRejectsCallerBeforeBudgetWrite" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ApiSessionPersistenceCases.php" line="59" class="Coleza\Tests\Unit\Api\ApiSessionPersistenceTest" classname="Coleza.Tests.Unit.Api.ApiSessionPersistenceTest" assertions="1" time="0.000389">
+      <failure type="PHPUnit\Framework\AssertionFailedError">Coleza\Tests\Unit\Api\ApiSessionPersistenceTest::testRateAdmissionRejectsCallerBeforeBudgetWrite&#13;
+Caller can roll back quota
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ApiSessionPersistenceCases.php:63</failure>
+    </testcase>
+    <testcase name="testExpiredWindowResetsInPlaceAndRejectedAttemptIsPersisted" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ApiSessionPersistenceCases.php" line="67" class="Coleza\Tests\Unit\Api\ApiSessionPersistenceTest" classname="Coleza.Tests.Unit.Api.ApiSessionPersistenceTest" assertions="3" time="0.000683"/>
+  </testsuite>
+</testsuites>

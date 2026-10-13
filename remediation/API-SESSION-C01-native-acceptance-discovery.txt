@@ -1,0 +1,3 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Wrote list of tests that would have been run to remediation/API-SESSION-C01-native-acceptance-expected.xml

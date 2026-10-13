@@ -1,0 +1,269 @@
+<?xml version="1.0"?>
+<testSuite xmlns="https://xml.phpunit.de/testSuite">
+ <tests>
+  <testClass name="Coleza\Tests\MariaDb\ApiSessionPersistenceTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\ApiSessionPersistenceTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testConcurrentAdmissionUsesExactBudget#0" name="testConcurrentAdmissionUsesExactBudget"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testConcurrentAdmissionUsesExactBudget#1" name="testConcurrentAdmissionUsesExactBudget"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testConcurrentAdmissionUsesExactBudget#2" name="testConcurrentAdmissionUsesExactBudget"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testConcurrentFirstSessionWritesStoreOneCompletePayload" name="testConcurrentFirstSessionWritesStoreOneCompletePayload"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testStaleExpiredSessionReadCannotDeletePeerRenewal" name="testStaleExpiredSessionReadCannotDeletePeerRenewal"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testNonTransactionalRateTableIsRefusedBeforeWrite" name="testNonTransactionalRateTableIsRefusedBeforeWrite"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testMissingApiSchemaCannotInstallInsideRawCaller" name="testMissingApiSchemaCannotInstallInsideRawCaller"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testMissingUniqueHashIsRefusedBeforeAuthentication" name="testMissingUniqueHashIsRefusedBeforeAuthentication"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testInstalledSetupPreservesCallerAndExecutesNoDdl#0" name="testInstalledSetupPreservesCallerAndExecutesNoDdl"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testInstalledSetupPreservesCallerAndExecutesNoDdl#1" name="testInstalledSetupPreservesCallerAndExecutesNoDdl"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testInstalledSetupPreservesCallerAndExecutesNoDdl#2" name="testInstalledSetupPreservesCallerAndExecutesNoDdl"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testInstalledSetupPreservesCallerAndExecutesNoDdl#3" name="testInstalledSetupPreservesCallerAndExecutesNoDdl"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testInvalidSessionJsonPreservesPreviousPayload" name="testInvalidSessionJsonPreservesPreviousPayload"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testSessionUpdatePreservesMetadataAndCallerRollback" name="testSessionUpdatePreservesMetadataAndCallerRollback"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testMalformedPersistedScopesCannotAuthenticateWithoutRequiredScope#0" name="testMalformedPersistedScopesCannotAuthenticateWithoutRequiredScope"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testMalformedPersistedScopesCannotAuthenticateWithoutRequiredScope#1" name="testMalformedPersistedScopesCannotAuthenticateWithoutRequiredScope"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testMalformedPersistedScopesCannotAuthenticateWithoutRequiredScope#2" name="testMalformedPersistedScopesCannotAuthenticateWithoutRequiredScope"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testMalformedPersistedScopesCannotAuthenticateWithoutRequiredScope#3" name="testMalformedPersistedScopesCannotAuthenticateWithoutRequiredScope"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testMalformedPersistedScopesCannotAuthenticateWithoutRequiredScope#4" name="testMalformedPersistedScopesCannotAuthenticateWithoutRequiredScope"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testInvalidRatePolicyDoesNotConsumeQuota" name="testInvalidRatePolicyDoesNotConsumeQuota"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testRateAdmissionRejectsCallerBeforeBudgetWrite" name="testRateAdmissionRejectsCallerBeforeBudgetWrite"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testExpiredWindowResetsInPlaceAndRejectedAttemptIsPersisted" name="testExpiredWindowResetsInPlaceAndRejectedAttemptIsPersisted"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testPartialInstalledSchemaIsNotSilentlyAccepted#0" name="testPartialInstalledSchemaIsNotSilentlyAccepted"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testPartialInstalledSchemaIsNotSilentlyAccepted#1" name="testPartialInstalledSchemaIsNotSilentlyAccepted"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testPartialInstalledSchemaIsNotSilentlyAccepted#2" name="testPartialInstalledSchemaIsNotSilentlyAccepted"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testPartialInstalledSchemaIsNotSilentlyAccepted#3" name="testPartialInstalledSchemaIsNotSilentlyAccepted"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testUnexpectedUniqueSessionOwnerCannotOverwriteAnotherSession" name="testUnexpectedUniqueSessionOwnerCannotOverwriteAnotherSession"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testSessionStatementFailurePreservesPayloadAndMetadata" name="testSessionStatementFailurePreservesPayloadAndMetadata"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testExpiryAndGarbageCollectionKeepActiveSessions" name="testExpiryAndGarbageCollectionKeepActiveSessions"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testKeyAndLogWritesRemainInsideCallerRollback" name="testKeyAndLogWritesRemainInsideCallerRollback"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testFailedWindowResetPreservesPreviousCounter" name="testFailedWindowResetPreservesPreviousCounter"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testApiKeyExpiresAtBoundaryAndBadScopeInputDoesNotCreateKey" name="testApiKeyExpiresAtBoundaryAndBadScopeInputDoesNotCreateKey"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testLostManagedCallerRefusesBeforeAnyQuery#0" name="testLostManagedCallerRefusesBeforeAnyQuery"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testLostManagedCallerRefusesBeforeAnyQuery#1" name="testLostManagedCallerRefusesBeforeAnyQuery"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testLostManagedCallerRefusesBeforeAnyQuery#2" name="testLostManagedCallerRefusesBeforeAnyQuery"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testLostManagedCallerRefusesBeforeAnyQuery#3" name="testLostManagedCallerRefusesBeforeAnyQuery"/>
+   <testMethod id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testMissingSessionSchemaInCallerRefusesBeforeDdl" name="testMissingSessionSchemaInCallerRefusesBeforeDdl"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\DatabaseFoundationTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\DatabaseFoundationTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testInvoiceNumbersUseMariaDbAndAdvance" name="testInvoiceNumbersUseMariaDbAndAdvance"/>
+   <testMethod id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testFreshInstallerAdminHasRbacPermissions" name="testFreshInstallerAdminHasRbacPermissions"/>
+   <testMethod id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testRbacCanAssignGlobalAndOrganizationRoles" name="testRbacCanAssignGlobalAndOrganizationRoles"/>
+   <testMethod id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testProductionIdentityMigrationAppliesOnce" name="testProductionIdentityMigrationAppliesOnce"/>
+   <testMethod id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testEveryFinancialSequenceRunsOnMariaDb#0" name="testEveryFinancialSequenceRunsOnMariaDb"/>
+   <testMethod id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testEveryFinancialSequenceRunsOnMariaDb#1" name="testEveryFinancialSequenceRunsOnMariaDb"/>
+   <testMethod id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testEveryFinancialSequenceRunsOnMariaDb#2" name="testEveryFinancialSequenceRunsOnMariaDb"/>
+   <testMethod id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testEveryFinancialSequenceRunsOnMariaDb#3" name="testEveryFinancialSequenceRunsOnMariaDb"/>
+   <testMethod id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testEveryFinancialSequenceRunsOnMariaDb#4" name="testEveryFinancialSequenceRunsOnMariaDb"/>
+   <testMethod id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testEveryFinancialSequenceRunsOnMariaDb#5" name="testEveryFinancialSequenceRunsOnMariaDb"/>
+   <testMethod id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testEveryFinancialSequenceRunsOnMariaDb#6" name="testEveryFinancialSequenceRunsOnMariaDb"/>
+   <testMethod id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testEveryFinancialSequenceRunsOnMariaDb#7" name="testEveryFinancialSequenceRunsOnMariaDb"/>
+   <testMethod id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testFourParallelConnectionsAllocateUniqueInvoiceNumbers" name="testFourParallelConnectionsAllocateUniqueInvoiceNumbers"/>
+   <testMethod id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testLegacyInstallerRolesAndPermissionsSurviveMigration" name="testLegacyInstallerRolesAndPermissionsSurviveMigration"/>
+   <testMethod id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testPartialDdlFailureIsNotRecordedAsSuccessfulAndCanResume" name="testPartialDdlFailureIsNotRecordedAsSuccessfulAndCanResume"/>
+   <testMethod id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testPrefixedInstallerSchemaUsesTheSameRbacContract" name="testPrefixedInstallerSchemaUsesTheSameRbacContract"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\ModuleSchemaInstallTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\ModuleSchemaInstallTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#0" name="testFreshInstallerPreparesModuleTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#1" name="testFreshInstallerPreparesModuleTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#2" name="testFreshInstallerPreparesModuleTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#3" name="testFreshInstallerPreparesModuleTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#4" name="testFreshInstallerPreparesModuleTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#5" name="testFreshInstallerPreparesModuleTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#6" name="testFreshInstallerPreparesModuleTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#7" name="testFreshInstallerPreparesModuleTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#8" name="testFreshInstallerPreparesModuleTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#9" name="testFreshInstallerPreparesModuleTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#10" name="testFreshInstallerPreparesModuleTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#11" name="testFreshInstallerPreparesModuleTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#12" name="testFreshInstallerPreparesModuleTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#13" name="testFreshInstallerPreparesModuleTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#14" name="testFreshInstallerPreparesModuleTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#15" name="testFreshInstallerPreparesModuleTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#16" name="testFreshInstallerPreparesModuleTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#17" name="testFreshInstallerPreparesModuleTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#18" name="testFreshInstallerPreparesModuleTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#19" name="testFreshInstallerPreparesModuleTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#20" name="testFreshInstallerPreparesModuleTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#21" name="testFreshInstallerPreparesModuleTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#22" name="testFreshInstallerPreparesModuleTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#23" name="testFreshInstallerPreparesModuleTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testContractCanBePersistedForDifferentOrganizations" name="testContractCanBePersistedForDifferentOrganizations"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testSupportTicketAndMessageSurviveRepeatedInstallation" name="testSupportTicketAndMessageSurviveRepeatedInstallation"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testLegacyTicketLinksAreAddedWithoutLosingMessages" name="testLegacyTicketLinksAreAddedWithoutLosingMessages"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testApiKeyScopeAndRateCounterUseInstalledSchemas" name="testApiKeyScopeAndRateCounterUseInstalledSchemas"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testImportedContractNumberUpperBoundIsPreserved" name="testImportedContractNumberUpperBoundIsPreserved"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testSnapshotPayloadAndChecksumPersistInActualDatabase" name="testSnapshotPayloadAndChecksumPersistInActualDatabase"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\LegacyIdentitySchemaTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\LegacyIdentitySchemaTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\LegacyIdentitySchemaTest::testCoreSchemaInitializationCannotCommitAnApplicationTransaction" name="testCoreSchemaInitializationCannotCommitAnApplicationTransaction"/>
+   <testMethod id="Coleza\Tests\MariaDb\LegacyIdentitySchemaTest::testLegacyUsersOrganizationsAndMembershipsSurviveRepeatedUpgrade" name="testLegacyUsersOrganizationsAndMembershipsSurviveRepeatedUpgrade"/>
+   <testMethod id="Coleza\Tests\MariaDb\LegacyIdentitySchemaTest::testStatusOnlyLegacySchemaDoesNotReactivateDisabledUsers" name="testStatusOnlyLegacySchemaDoesNotReactivateDisabledUsers"/>
+   <testMethod id="Coleza\Tests\MariaDb\LegacyIdentitySchemaTest::testUnknownAccessSchemaStopsBeforeAnyMutation" name="testUnknownAccessSchemaStopsBeforeAnyMutation"/>
+   <testMethod id="Coleza\Tests\MariaDb\LegacyIdentitySchemaTest::testConflictingAccessFlagsAreTightenedAndOriginalStatusIsPreserved" name="testConflictingAccessFlagsAreTightenedAndOriginalStatusIsPreserved"/>
+   <testMethod id="Coleza\Tests\MariaDb\LegacyIdentitySchemaTest::testPartialUpgradeCanResumeWithoutActivatingAnInactiveAccount" name="testPartialUpgradeCanResumeWithoutActivatingAnInactiveAccount"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\RuntimeSchemaSafetyTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testCacheDoesNotCommitCallerTransaction" name="testCacheDoesNotCommitCallerTransaction"/>
+   <testMethod id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testLockDoesNotCommitCallerTransaction" name="testLockDoesNotCommitCallerTransaction"/>
+   <testMethod id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testIdempotencyDoesNotCommitCallerTransaction" name="testIdempotencyDoesNotCommitCallerTransaction"/>
+   <testMethod id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testSchedulerDoesNotCommitCallerTransaction" name="testSchedulerDoesNotCommitCallerTransaction"/>
+   <testMethod id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testMigrationMetadataReadDoesNotCommitCallerTransaction" name="testMigrationMetadataReadDoesNotCommitCallerTransaction"/>
+   <testMethod id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testProductionMigrationsInstallAllFourRuntimeTables" name="testProductionMigrationsInstallAllFourRuntimeTables"/>
+   <testMethod id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testInstalledRuntimeOperationsIssueNoDdlInsideOrOutsideTransactions" name="testInstalledRuntimeOperationsIssueNoDdlInsideOrOutsideTransactions"/>
+   <testMethod id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testMissingTablesInRawPdoTransactionFailWithoutDdlOrCommitting" name="testMissingTablesInRawPdoTransactionFailWithoutDdlOrCommitting"/>
+   <testMethod id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testIncompleteExistingTableRequiresExplicitRepairWithoutChangingData" name="testIncompleteExistingTableRequiresExplicitRepairWithoutChangingData"/>
+   <testMethod id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testMigrationReplayPreservesCacheLocksReplayResultsAndHeartbeat" name="testMigrationReplayPreservesCacheLocksReplayResultsAndHeartbeat"/>
+   <testMethod id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testFailedMigrationIsNotRecordedAndCanResumeAfterExplicitEmptyTableRepair" name="testFailedMigrationIsNotRecordedAndCanResumeAfterExplicitEmptyTableRepair"/>
+   <testMethod id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testMissingSchemaRefusesIdempotencyAndSchedulerCallbacksBeforeTheyRun" name="testMissingSchemaRefusesIdempotencyAndSchedulerCallbacksBeforeTheyRun"/>
+   <testMethod id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testExplicitSchemaInstallationUsesOnlySqliteTransactionalDdl" name="testExplicitSchemaInstallationUsesOnlySqliteTransactionalDdl"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\ModuleSchemaSafetyTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\ModuleSchemaSafetyTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testMyisamWritesRefuseBeforeChangingInventory" name="testMyisamWritesRefuseBeforeChangingInventory"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testLostManagedCallerRefusesBeforeReadOrWrite" name="testLostManagedCallerRefusesBeforeReadOrWrite"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testCompatibilityReadPreservesRawCallerRollback" name="testCompatibilityReadPreservesRawCallerRollback"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testLifecycleWritePreservesManagedCallerRollback" name="testLifecycleWritePreservesManagedCallerRollback"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testCompatibilityDoesNotInventEmptyModuleInventory" name="testCompatibilityDoesNotInventEmptyModuleInventory"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testMissingModuleSchemaInsideRawCallerRefusesBeforeDdl" name="testMissingModuleSchemaInsideRawCallerRefusesBeforeDdl"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testPartialInventoryRefusesReadWithoutAlteringHistoricalData" name="testPartialInventoryRefusesReadWithoutAlteringHistoricalData"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testInstallInRawCallerRollsBackAndPreservesOriginalModule" name="testInstallInRawCallerRollsBackAndPreservesOriginalModule"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testSchemaReplayPreservesDisabledModulesManifestAndTimestamps" name="testSchemaReplayPreservesDisabledModulesManifestAndTimestamps"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testProductionMigrationInstallsCanonicalInventoryAndReplaysWithoutChangingIt" name="testProductionMigrationInstallsCanonicalInventoryAndReplaysWithoutChangingIt"/>
+   <testMethod id="Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testDatabaseRejectsDuplicateModuleIdentity" name="testDatabaseRejectsDuplicateModuleIdentity"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\InstallationAcceptanceTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\InstallationAcceptanceTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testConcurrentDocumentsFromFourOrganizationsAreUnique#0" name="testConcurrentDocumentsFromFourOrganizationsAreUnique"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testConcurrentDocumentsFromFourOrganizationsAreUnique#1" name="testConcurrentDocumentsFromFourOrganizationsAreUnique"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testDifferentOrganizationsCanCreateDocumentsWithUnambiguousNumbers" name="testDifferentOrganizationsCanCreateDocumentsWithUnambiguousNumbers"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testDoctorDoesNotCreateTablesOrCommitAnApplicationTransaction" name="testDoctorDoesNotCreateTablesOrCommitAnApplicationTransaction"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testDoctorReadsInstalledCronAndActualQueue" name="testDoctorReadsInstalledCronAndActualQueue"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testApplicationSchemaInstallsMigrationsAndRepeatsWithoutDataLoss" name="testApplicationSchemaInstallsMigrationsAndRepeatsWithoutDataLoss"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testLegacyDocumentAndCounterSurviveGlobalNumberMigration" name="testLegacyDocumentAndCounterSurviveGlobalNumberMigration"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testUnsupportedPrefixIsRejectedBeforeAnyTableIsCreated" name="testUnsupportedPrefixIsRejectedBeforeAnyTableIsCreated"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testLegacyDoctorCronHistoryIsPreservedWithoutInventingSuccess" name="testLegacyDoctorCronHistoryIsPreservedWithoutInventingSuccess"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testFailedCronIsNotHealthyEvenWhenRecent" name="testFailedCronIsNotHealthyEvenWhenRecent"/>
+  </testClass>
+ </tests>
+ <groups>
+  <group name="default">
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testConcurrentAdmissionUsesExactBudget#0"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testConcurrentAdmissionUsesExactBudget#1"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testConcurrentAdmissionUsesExactBudget#2"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testConcurrentFirstSessionWritesStoreOneCompletePayload"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testStaleExpiredSessionReadCannotDeletePeerRenewal"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testNonTransactionalRateTableIsRefusedBeforeWrite"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testMissingApiSchemaCannotInstallInsideRawCaller"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testMissingUniqueHashIsRefusedBeforeAuthentication"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testInstalledSetupPreservesCallerAndExecutesNoDdl#0"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testInstalledSetupPreservesCallerAndExecutesNoDdl#1"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testInstalledSetupPreservesCallerAndExecutesNoDdl#2"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testInstalledSetupPreservesCallerAndExecutesNoDdl#3"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testInvalidSessionJsonPreservesPreviousPayload"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testSessionUpdatePreservesMetadataAndCallerRollback"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testMalformedPersistedScopesCannotAuthenticateWithoutRequiredScope#0"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testMalformedPersistedScopesCannotAuthenticateWithoutRequiredScope#1"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testMalformedPersistedScopesCannotAuthenticateWithoutRequiredScope#2"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testMalformedPersistedScopesCannotAuthenticateWithoutRequiredScope#3"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testMalformedPersistedScopesCannotAuthenticateWithoutRequiredScope#4"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testInvalidRatePolicyDoesNotConsumeQuota"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testRateAdmissionRejectsCallerBeforeBudgetWrite"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testExpiredWindowResetsInPlaceAndRejectedAttemptIsPersisted"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testPartialInstalledSchemaIsNotSilentlyAccepted#0"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testPartialInstalledSchemaIsNotSilentlyAccepted#1"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testPartialInstalledSchemaIsNotSilentlyAccepted#2"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testPartialInstalledSchemaIsNotSilentlyAccepted#3"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testUnexpectedUniqueSessionOwnerCannotOverwriteAnotherSession"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testSessionStatementFailurePreservesPayloadAndMetadata"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testExpiryAndGarbageCollectionKeepActiveSessions"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testKeyAndLogWritesRemainInsideCallerRollback"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testFailedWindowResetPreservesPreviousCounter"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testApiKeyExpiresAtBoundaryAndBadScopeInputDoesNotCreateKey"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testLostManagedCallerRefusesBeforeAnyQuery#0"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testLostManagedCallerRefusesBeforeAnyQuery#1"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testLostManagedCallerRefusesBeforeAnyQuery#2"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testLostManagedCallerRefusesBeforeAnyQuery#3"/>
+   <test id="Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testMissingSessionSchemaInCallerRefusesBeforeDdl"/>
+   <test id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testInvoiceNumbersUseMariaDbAndAdvance"/>
+   <test id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testFreshInstallerAdminHasRbacPermissions"/>
+   <test id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testRbacCanAssignGlobalAndOrganizationRoles"/>
+   <test id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testProductionIdentityMigrationAppliesOnce"/>
+   <test id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testEveryFinancialSequenceRunsOnMariaDb#0"/>
+   <test id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testEveryFinancialSequenceRunsOnMariaDb#1"/>
+   <test id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testEveryFinancialSequenceRunsOnMariaDb#2"/>
+   <test id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testEveryFinancialSequenceRunsOnMariaDb#3"/>
+   <test id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testEveryFinancialSequenceRunsOnMariaDb#4"/>
+   <test id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testEveryFinancialSequenceRunsOnMariaDb#5"/>
+   <test id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testEveryFinancialSequenceRunsOnMariaDb#6"/>
+   <test id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testEveryFinancialSequenceRunsOnMariaDb#7"/>
+   <test id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testFourParallelConnectionsAllocateUniqueInvoiceNumbers"/>
+   <test id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testLegacyInstallerRolesAndPermissionsSurviveMigration"/>
+   <test id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testPartialDdlFailureIsNotRecordedAsSuccessfulAndCanResume"/>
+   <test id="Coleza\Tests\MariaDb\DatabaseFoundationTest::testPrefixedInstallerSchemaUsesTheSameRbacContract"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#0"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#1"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#2"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#3"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#4"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#5"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#6"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#7"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#8"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#9"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#10"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#11"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#12"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#13"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#14"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#15"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#16"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#17"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#18"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#19"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#20"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#21"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#22"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testFreshInstallerPreparesModuleTable#23"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testContractCanBePersistedForDifferentOrganizations"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testSupportTicketAndMessageSurviveRepeatedInstallation"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testLegacyTicketLinksAreAddedWithoutLosingMessages"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testApiKeyScopeAndRateCounterUseInstalledSchemas"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testImportedContractNumberUpperBoundIsPreserved"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaInstallTest::testSnapshotPayloadAndChecksumPersistInActualDatabase"/>
+   <test id="Coleza\Tests\MariaDb\LegacyIdentitySchemaTest::testCoreSchemaInitializationCannotCommitAnApplicationTransaction"/>
+   <test id="Coleza\Tests\MariaDb\LegacyIdentitySchemaTest::testLegacyUsersOrganizationsAndMembershipsSurviveRepeatedUpgrade"/>
+   <test id="Coleza\Tests\MariaDb\LegacyIdentitySchemaTest::testStatusOnlyLegacySchemaDoesNotReactivateDisabledUsers"/>
+   <test id="Coleza\Tests\MariaDb\LegacyIdentitySchemaTest::testUnknownAccessSchemaStopsBeforeAnyMutation"/>
+   <test id="Coleza\Tests\MariaDb\LegacyIdentitySchemaTest::testConflictingAccessFlagsAreTightenedAndOriginalStatusIsPreserved"/>
+   <test id="Coleza\Tests\MariaDb\LegacyIdentitySchemaTest::testPartialUpgradeCanResumeWithoutActivatingAnInactiveAccount"/>
+   <test id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testCacheDoesNotCommitCallerTransaction"/>
+   <test id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testLockDoesNotCommitCallerTransaction"/>
+   <test id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testIdempotencyDoesNotCommitCallerTransaction"/>
+   <test id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testSchedulerDoesNotCommitCallerTransaction"/>
+   <test id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testMigrationMetadataReadDoesNotCommitCallerTransaction"/>
+   <test id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testProductionMigrationsInstallAllFourRuntimeTables"/>
+   <test id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testInstalledRuntimeOperationsIssueNoDdlInsideOrOutsideTransactions"/>
+   <test id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testMissingTablesInRawPdoTransactionFailWithoutDdlOrCommitting"/>
+   <test id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testIncompleteExistingTableRequiresExplicitRepairWithoutChangingData"/>
+   <test id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testMigrationReplayPreservesCacheLocksReplayResultsAndHeartbeat"/>
+   <test id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testFailedMigrationIsNotRecordedAndCanResumeAfterExplicitEmptyTableRepair"/>
+   <test id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testMissingSchemaRefusesIdempotencyAndSchedulerCallbacksBeforeTheyRun"/>
+   <test id="Coleza\Tests\MariaDb\RuntimeSchemaSafetyTest::testExplicitSchemaInstallationUsesOnlySqliteTransactionalDdl"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testMyisamWritesRefuseBeforeChangingInventory"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testLostManagedCallerRefusesBeforeReadOrWrite"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testCompatibilityReadPreservesRawCallerRollback"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testLifecycleWritePreservesManagedCallerRollback"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testCompatibilityDoesNotInventEmptyModuleInventory"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testMissingModuleSchemaInsideRawCallerRefusesBeforeDdl"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testPartialInventoryRefusesReadWithoutAlteringHistoricalData"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testInstallInRawCallerRollsBackAndPreservesOriginalModule"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testSchemaReplayPreservesDisabledModulesManifestAndTimestamps"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testProductionMigrationInstallsCanonicalInventoryAndReplaysWithoutChangingIt"/>
+   <test id="Coleza\Tests\MariaDb\ModuleSchemaSafetyTest::testDatabaseRejectsDuplicateModuleIdentity"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testConcurrentDocumentsFromFourOrganizationsAreUnique#0"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testConcurrentDocumentsFromFourOrganizationsAreUnique#1"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testDifferentOrganizationsCanCreateDocumentsWithUnambiguousNumbers"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testDoctorDoesNotCreateTablesOrCommitAnApplicationTransaction"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testDoctorReadsInstalledCronAndActualQueue"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testApplicationSchemaInstallsMigrationsAndRepeatsWithoutDataLoss"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testLegacyDocumentAndCounterSurviveGlobalNumberMigration"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testUnsupportedPrefixIsRejectedBeforeAnyTableIsCreated"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testLegacyDoctorCronHistoryIsPreservedWithoutInventingSuccess"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testFailedCronIsNotHealthyEvenWhenRecent"/>
+  </group>
+ </groups>
+</testSuite>

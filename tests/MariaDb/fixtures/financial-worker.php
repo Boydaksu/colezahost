@@ -47,6 +47,16 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'apiRateAdmission':
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            try { $result['admission'] = (new Coleza\Api\RateLimit\RateLimiter($db))->hit('parallel', $id, 60); }
+            catch (Coleza\Foundation\Exceptions\ValidationException $error) { $result = ['status' => 'rejected', 'class' => $error::class]; }
+            break;
+        case 'apiSessionWrite':
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $worker = (int) $argv[2] + 1;
+            (new Coleza\Domain\Identity\Session\DatabaseSessionHandler($db))->write('parallel', ['worker' => $worker], $worker, null, 'Worker ' . $worker);
+            break;
         case 'supportRoundRobin':
         case 'supportLeastLoaded':
         case 'supportManualSame':

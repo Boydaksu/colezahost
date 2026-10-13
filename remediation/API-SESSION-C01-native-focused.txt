@@ -1,0 +1,46 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[41;37mF[0m[41;37mF[0m[41;37mF[0m......................                                         25 / 25 (100%)
+
+Time: 00:03.676, Memory: 20.00 MB
+
+There were 3 failures:
+
+1) Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testConcurrentAdmissionUsesExactBudget#0 with data ('new', 2, 2)
+Failed asserting that null is identical to 'Coleza\Foundation\Exceptions\ValidationException'.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\ApiSessionPersistenceTest.php:16
+
+2) Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testConcurrentAdmissionUsesExactBudget#1 with data ('last', 3, 1)
+Failed asserting that null is identical to 'Coleza\Foundation\Exceptions\ValidationException'.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\ApiSessionPersistenceTest.php:16
+
+3) Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testConcurrentAdmissionUsesExactBudget#2 with data ('expired', 2, 2)
+Failed asserting that null is identical to 'Coleza\Foundation\Exceptions\ValidationException'.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\ApiSessionPersistenceTest.php:16
+
+--
+
+3 tests triggered 1 PHP warning:
+
+1) C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\ApiSessionPersistenceTest.php:16
+Undefined array key "class"
+
+Triggered by:
+
+* Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testConcurrentAdmissionUsesExactBudget#0
+  C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\ApiSessionPersistenceTest.php:9
+
+* Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testConcurrentAdmissionUsesExactBudget#1
+  C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\ApiSessionPersistenceTest.php:9
+
+* Coleza\Tests\MariaDb\ApiSessionPersistenceTest::testConcurrentAdmissionUsesExactBudget#2
+  C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\ApiSessionPersistenceTest.php:9
+
+[37;41mFAILURES![0m
+[37;41mTests: 25[0m[37;41m, Assertions: 152[0m[37;41m, Failures: 3[0m[37;41m, Warnings: 1[0m[37;41m.[0m

@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='utf-8'?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../vendor/phpunit/phpunit/phpunit.xsd" bootstrap="../vendor/autoload.php" colors="true" cacheDirectory="../.phpunit.cache/api-session" failOnRisky="true" failOnWarning="true" beStrictAboutOutputDuringTests="true">
+  <testsuites>
+    <testsuite name="API-SESSION-C01 affected native schema and persistence">
+      <file>../tests/MariaDb/ApiSessionPersistenceTest.php</file>
+      <file>../tests/MariaDb/DatabaseFoundationTest.php</file>
+      <file>../tests/MariaDb/ModuleSchemaInstallTest.php</file>
+      <file>../tests/MariaDb/LegacyIdentitySchemaTest.php</file>
+      <file>../tests/MariaDb/RuntimeSchemaSafetyTest.php</file>
+      <file>../tests/MariaDb/ModuleSchemaSafetyTest.php</file>
+      <file>../tests/MariaDb/InstallationAcceptanceTest.php</file>
+    </testsuite>
+  </testsuites>
+</phpunit>

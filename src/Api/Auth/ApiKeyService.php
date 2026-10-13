@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Coleza\Api\Auth;
 
 use Coleza\Foundation\Database\Connection;
+use Coleza\Foundation\Database\ApiSessionSchema;
 use Coleza\Foundation\Exceptions\ValidationException;
 
 final class ApiKeyService
@@ -15,8 +16,9 @@ final class ApiKeyService
     {
     }
 
-    public function ensureTable(): void
+    public function ensureTable(bool $installation = true): void
     {
+        if (ApiSessionSchema::installed($this->db, $this->table, $installation)) { return; }
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -40,7 +42,7 @@ final class ApiKeyService
             $autoInc
         );
 
-        $this->db->statement($sql);
+        $this->db->statement($sql . ($this->db->getDriverName() === 'mysql' ? ' ENGINE=InnoDB' : ''));
     }
 
     /**
@@ -51,7 +53,9 @@ final class ApiKeyService
      */
     public function createKey(int $userId, string $name, array $scopes = ['*'], ?int $expiresAt = null): array
     {
-        $this->ensureTable();
+        $this->validateScopes($scopes);
+        $encodedScopes = json_encode($scopes, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+        $this->ensureTable(installation: false);
 
         $prefix = 'col_' . bin2hex(random_bytes(4));
         $secret = bin2hex(random_bytes(24));
@@ -63,7 +67,7 @@ final class ApiKeyService
             'name' => trim($name),
             'key_prefix' => $prefix,
             'key_hash' => $hash,
-            'scopes' => json_encode($scopes, JSON_UNESCAPED_SLASHES),
+            'scopes' => $encodedScopes,
             'is_active' => 1,
             'expires_at' => $expiresAt,
         ]);
@@ -82,7 +86,7 @@ final class ApiKeyService
      */
     public function authenticate(string $plainKey, ?string $requiredScope = null): array
     {
-        $this->ensureTable();
+        $this->ensureTable(installation: false);
         $hash = hash('sha256', trim($plainKey));
 
         $record = $this->db->selectOne(
@@ -94,11 +98,13 @@ final class ApiKeyService
             throw new ValidationException(['auth' => ['Invalid API key.']], 'Unauthenticated API request.');
         }
 
-        if ($record['expires_at'] !== null && (int) $record['expires_at'] < time()) {
+        if ($record['expires_at'] !== null && (int) $record['expires_at'] <= time()) {
             throw new ValidationException(['auth' => ['API key has expired.']], 'Expired API key.');
         }
 
-        $scopes = json_decode((string) $record['scopes'], true) ?: [];
+        try { $scopes = json_decode((string) $record['scopes'], false, 512, JSON_THROW_ON_ERROR); }
+        catch (\JsonException $error) { throw new ValidationException(['scope' => ['Invalid persisted API scopes.']], 'Invalid API key scope configuration.'); }
+        $this->validateScopes($scopes);
 
         // Verify scope
         if ($requiredScope !== null && !in_array('*', $scopes, true) && !in_array($requiredScope, $scopes, true)) {
@@ -118,4 +124,12 @@ final class ApiKeyService
             'scopes' => $scopes,
         ];
     }
+    private function validateScopes(mixed $scopes): void
+    {
+        if (!is_array($scopes) || !array_is_list($scopes)) { throw new ValidationException(['scope' => ['API scopes must be a list of strings.']], 'Invalid API scopes.'); }
+        foreach ($scopes as $scope) {
+            if (!is_string($scope) || trim($scope) === '' || $scope !== trim($scope)) { throw new ValidationException(['scope' => ['API scopes must contain nonempty strings.']], 'Invalid API scopes.'); }
+        }
+    }
+
 }
