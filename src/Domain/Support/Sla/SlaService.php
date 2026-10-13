@@ -10,6 +10,7 @@ use Coleza\Domain\Support\Tickets\TicketStatus;
 use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Exceptions\ValidationException;
 use DateTimeImmutable;
+use Coleza\Domain\Support\SupportPersistence;
 
 final class SlaService
 {
@@ -22,8 +23,17 @@ final class SlaService
     ) {
     }
 
+    public static function schemaRequirements(): array
+    {
+        return [
+            'support_sla_policies' => ['id', 'name', 'description', 'department_id', 'critical_first_response_minutes', 'critical_resolution_minutes', 'high_first_response_minutes', 'high_resolution_minutes', 'medium_first_response_minutes', 'medium_resolution_minutes', 'low_first_response_minutes', 'low_resolution_minutes', 'is_default', 'is_active', 'metadata_json', 'created_at', 'updated_at'],
+            'support_ticket_sla' => ['id', 'ticket_id', 'policy_id', 'first_response_due_at', 'resolution_due_at', 'first_responded_at', 'is_first_response_breached', 'resolved_at', 'is_resolution_breached', 'status', 'paused_at', 'total_paused_seconds', 'created_at', 'updated_at'],
+        ];
+    }
+
     public function ensureTables(): void
     {
+        if (SupportPersistence::installed($this->db, self::schemaRequirements())) { return; }
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -53,7 +63,7 @@ final class SlaService
             $this->policiesTable,
             $autoInc
         );
-        $this->db->statement($sqlPolicies);
+        $this->db->statement($sqlPolicies . ($driver === 'mysql' ? ' ENGINE=InnoDB' : ''));
 
         $sqlSla = sprintf(
             'CREATE TABLE IF NOT EXISTS %s (
@@ -75,7 +85,7 @@ final class SlaService
             $this->slaTable,
             $autoInc
         );
-        $this->db->statement($sqlSla);
+        $this->db->statement($sqlSla . ($driver === 'mysql' ? ' ENGINE=InnoDB' : ''));
     }
 
     /**

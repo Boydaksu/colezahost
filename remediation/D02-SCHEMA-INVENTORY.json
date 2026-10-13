@@ -296,7 +296,9 @@
       ],
       "literal_table_names": [],
       "direct_migration_reference": true,
-      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN",
+      "schema_contract": "PUBLIC_SCHEMA_REQUIREMENTS_SUPPORT_C01",
+      "runtime_schema_status": "SUPPORT_C01_LOCAL_FULL_MAIN_NATIVE_TESTS_PASS_PENDING_INDEPENDENT_REVIEW"
     },
     {
       "file": "src/Domain/Analytics/ReadModels/ReadModelAggregationService.php",
@@ -368,7 +370,9 @@
       ],
       "literal_table_names": [],
       "direct_migration_reference": true,
-      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN",
+      "schema_contract": "PUBLIC_SCHEMA_REQUIREMENTS_SUPPORT_C01",
+      "runtime_schema_status": "SUPPORT_C01_LOCAL_FULL_MAIN_NATIVE_TESTS_PASS_PENDING_INDEPENDENT_REVIEW"
     },
     {
       "file": "src/Domain/Identity/Rbac/RbacSchema.php",
@@ -508,7 +512,9 @@
       ],
       "literal_table_names": [],
       "direct_migration_reference": true,
-      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN",
+      "schema_contract": "PUBLIC_SCHEMA_REQUIREMENTS_SUPPORT_C01",
+      "runtime_schema_status": "SUPPORT_C01_LOCAL_FULL_MAIN_NATIVE_TESTS_PASS_PENDING_INDEPENDENT_REVIEW"
     },
     {
       "file": "src/Domain/Finance/Currency/CurrencyService.php",
@@ -579,7 +585,9 @@
       ],
       "literal_table_names": [],
       "direct_migration_reference": true,
-      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN",
+      "schema_contract": "PUBLIC_SCHEMA_REQUIREMENTS_SUPPORT_C01",
+      "runtime_schema_status": "SUPPORT_C01_LOCAL_FULL_MAIN_NATIVE_TESTS_PASS_PENDING_INDEPENDENT_REVIEW"
     },
     {
       "file": "src/Domain/Fraud/Lists/FraudListService.php",
@@ -601,7 +609,9 @@
       ],
       "literal_table_names": [],
       "direct_migration_reference": true,
-      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN",
+      "schema_contract": "PUBLIC_SCHEMA_REQUIREMENTS_SUPPORT_C01",
+      "runtime_schema_status": "SUPPORT_C01_LOCAL_FULL_MAIN_NATIVE_TESTS_PASS_PENDING_INDEPENDENT_REVIEW"
     },
     {
       "file": "src/Domain/Fraud/Review/RiskReviewService.php",
@@ -633,7 +643,9 @@
       ],
       "literal_table_names": [],
       "direct_migration_reference": true,
-      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN",
+      "schema_contract": "PUBLIC_SCHEMA_REQUIREMENTS_SUPPORT_C01",
+      "runtime_schema_status": "SUPPORT_C01_LOCAL_FULL_MAIN_NATIVE_TESTS_PASS_PENDING_INDEPENDENT_REVIEW"
     },
     {
       "file": "src/Domain/Migration/Whmcs/Support/WhmcsSupportMigrator.php",
@@ -678,7 +690,9 @@
       ],
       "literal_table_names": [],
       "direct_migration_reference": true,
-      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN",
+      "schema_contract": "PUBLIC_SCHEMA_REQUIREMENTS_SUPPORT_C01",
+      "runtime_schema_status": "SUPPORT_C01_LOCAL_FULL_MAIN_NATIVE_TESTS_PASS_PENDING_INDEPENDENT_REVIEW"
     },
     {
       "file": "src/Domain/Domains/Registrar/Vault/VaultRegistrarSettingsManager.php",
@@ -698,7 +712,9 @@
       ],
       "literal_table_names": [],
       "direct_migration_reference": true,
-      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN",
+      "schema_contract": "PUBLIC_SCHEMA_REQUIREMENTS_SUPPORT_C01",
+      "runtime_schema_status": "SUPPORT_C01_LOCAL_FULL_MAIN_NATIVE_TESTS_PASS_PENDING_INDEPENDENT_REVIEW"
     },
     {
       "file": "src/Domain/Servers/Services/ServerService.php",
@@ -977,6 +993,13 @@
       "literal_table_names": [],
       "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    }
+  ],
+  "non_create_schema_helpers": [
+    {
+      "file": "src/Domain/Support/SupportPersistence.php",
+      "scope": "Installed column/engine validation, existing legacy nullable invoice/order link repair (ALTER), caller savepoints; no new table or schema format",
+      "acceptance": "SUPPORT_C01_LOCAL_FULL_MAIN_NATIVE_TESTS_PASS_PENDING_INDEPENDENT_REVIEW"
     }
   ]
 }

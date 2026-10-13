@@ -7,6 +7,7 @@ namespace Coleza\Domain\Support\Departments;
 use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Exceptions\ValidationException;
 use DateTimeImmutable;
+use Coleza\Domain\Support\SupportPersistence;
 
 final class DepartmentService
 {
@@ -18,8 +19,17 @@ final class DepartmentService
     ) {
     }
 
+    public static function schemaRequirements(): array
+    {
+        return [
+            'support_departments' => ['id', 'name', 'description', 'email', 'is_public', 'is_active', 'sort_order', 'metadata_json', 'created_at', 'updated_at'],
+            'support_department_agents' => ['id', 'department_id', 'user_id', 'role', 'can_assign', 'receives_notifications', 'is_active', 'metadata_json', 'created_at', 'updated_at'],
+        ];
+    }
+
     public function ensureTables(): void
     {
+        if (SupportPersistence::installed($this->db, self::schemaRequirements())) { return; }
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -42,7 +52,7 @@ final class DepartmentService
             $this->departmentsTable,
             $autoInc
         );
-        $this->db->statement($sqlDepartments);
+        $this->db->statement($sqlDepartments . ($driver === 'mysql' ? ' ENGINE=InnoDB' : ''));
 
         $sqlAgents = sprintf(
             'CREATE TABLE IF NOT EXISTS %s (
@@ -61,7 +71,7 @@ final class DepartmentService
             $this->departmentAgentsTable,
             $autoInc
         );
-        $this->db->statement($sqlAgents);
+        $this->db->statement($sqlAgents . ($driver === 'mysql' ? ' ENGINE=InnoDB' : ''));
     }
 
     /**

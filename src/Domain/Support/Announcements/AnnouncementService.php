@@ -7,6 +7,7 @@ namespace Coleza\Domain\Support\Announcements;
 use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Exceptions\ValidationException;
 use DateTimeImmutable;
+use Coleza\Domain\Support\SupportPersistence;
 
 final class AnnouncementService
 {
@@ -17,8 +18,16 @@ final class AnnouncementService
     ) {
     }
 
+    public static function schemaRequirements(): array
+    {
+        return [
+            'support_announcements' => ['id', 'title', 'slug', 'content', 'type', 'is_public', 'is_active', 'is_pinned', 'published_at', 'expires_at', 'metadata_json', 'created_at', 'updated_at'],
+        ];
+    }
+
     public function ensureTables(): void
     {
+        if (SupportPersistence::installed($this->db, self::schemaRequirements())) { return; }
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -44,7 +53,7 @@ final class AnnouncementService
             $this->table,
             $autoInc
         );
-        $this->db->statement($sql);
+        $this->db->statement($sql . ($driver === 'mysql' ? ' ENGINE=InnoDB' : ''));
     }
 
     /**

@@ -1,0 +1,1 @@
+Default suite discovery produced no output and was interrupted before source changes. Direct-file baseline: SUPPORT-C01-before-direct.txt and SUPPORT-C01-before.xml; 13 tests, 12 failures and 1 error.

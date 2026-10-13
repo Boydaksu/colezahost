@@ -8,6 +8,7 @@ use Coleza\Domain\Support\Departments\DepartmentService;
 use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Exceptions\ValidationException;
 use DateTimeImmutable;
+use Coleza\Domain\Support\SupportPersistence;
 
 final class CannedResponseService
 {
@@ -19,8 +20,16 @@ final class CannedResponseService
     ) {
     }
 
+    public static function schemaRequirements(): array
+    {
+        return [
+            'support_canned_responses' => ['id', 'title', 'content', 'shortcut', 'department_id', 'is_active', 'metadata_json', 'created_at', 'updated_at'],
+        ];
+    }
+
     public function ensureTables(): void
     {
+        if (SupportPersistence::installed($this->db, self::schemaRequirements())) { return; }
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -42,7 +51,7 @@ final class CannedResponseService
             $this->table,
             $autoInc
         );
-        $this->db->statement($sql);
+        $this->db->statement($sql . ($driver === 'mysql' ? ' ENGINE=InnoDB' : ''));
     }
 
     /**

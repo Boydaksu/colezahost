@@ -8,6 +8,7 @@ use Coleza\Domain\Support\Departments\DepartmentService;
 use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Exceptions\ValidationException;
 use DateTimeImmutable;
+use Coleza\Domain\Support\SupportPersistence;
 
 final class TicketService
 {
@@ -20,8 +21,17 @@ final class TicketService
     ) {
     }
 
+    public static function schemaRequirements(): array
+    {
+        return [
+            'support_tickets' => ['id', 'ticket_number', 'organization_id', 'user_id', 'department_id', 'assigned_to', 'status', 'priority', 'subject', 'service_id', 'domain_id', 'invoice_id', 'order_id', 'last_reply_at', 'last_reply_user_id', 'last_reply_by_staff', 'closed_at', 'metadata_json', 'created_at', 'updated_at'],
+            'support_ticket_messages' => ['id', 'ticket_id', 'user_id', 'is_staff', 'is_internal_note', 'message', 'metadata_json', 'created_at', 'updated_at'],
+        ];
+    }
+
     public function ensureTables(): void
     {
+        if (SupportPersistence::installed($this->db, self::schemaRequirements(), legacyTicketColumns: true)) { return; }
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -54,7 +64,7 @@ final class TicketService
             $this->ticketsTable,
             $autoInc
         );
-        $this->db->statement($sqlTickets);
+        $this->db->statement($sqlTickets . ($driver === 'mysql' ? ' ENGINE=InnoDB' : ''));
 
         $columns = $this->db->getDriverName() === 'sqlite'
             ? array_column($this->db->select(sprintf('PRAGMA table_info(%s)', $this->ticketsTable)), 'name')
@@ -80,7 +90,7 @@ final class TicketService
             $this->messagesTable,
             $autoInc
         );
-        $this->db->statement($sqlMessages);
+        $this->db->statement($sqlMessages . ($driver === 'mysql' ? ' ENGINE=InnoDB' : ''));
     }
 
     /**
@@ -169,7 +179,8 @@ final class TicketService
         $now = new DateTimeImmutable();
         $nowStr = $now->format('Y-m-d H:i:s');
 
-        return $this->db->transaction(function () use (
+        SupportPersistence::requireSchema($this->db, array_merge(self::schemaRequirements(), DepartmentService::schemaRequirements()));
+        return SupportPersistence::run($this->db, function () use (
             $ticketNumber,
             $organizationId,
             $userId,
@@ -314,7 +325,8 @@ final class TicketService
         $now = new DateTimeImmutable();
         $nowStr = $now->format('Y-m-d H:i:s');
 
-        return $this->db->transaction(function () use (
+        SupportPersistence::requireSchema($this->db, array_merge(self::schemaRequirements(), DepartmentService::schemaRequirements()));
+        return SupportPersistence::run($this->db, function () use (
             $ticketId,
             $userId,
             $trimmedMessage,
@@ -398,7 +410,8 @@ final class TicketService
         $now = new DateTimeImmutable();
         $nowStr = $now->format('Y-m-d H:i:s');
 
-        return $this->db->transaction(function () use (
+        SupportPersistence::requireSchema($this->db, array_merge(self::schemaRequirements(), DepartmentService::schemaRequirements()));
+        return SupportPersistence::run($this->db, function () use (
             $ticketId,
             $staffUserId,
             $trimmedMessage,

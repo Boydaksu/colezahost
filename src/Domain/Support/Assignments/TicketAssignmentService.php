@@ -9,6 +9,9 @@ use Coleza\Domain\Support\Tickets\TicketService;
 use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Exceptions\ValidationException;
 use DateTimeImmutable;
+use Coleza\Domain\Support\Tickets\Ticket;
+use LogicException;
+use Coleza\Domain\Support\SupportPersistence;
 
 final class TicketAssignmentService
 {
@@ -28,8 +31,17 @@ final class TicketAssignmentService
     ) {
     }
 
+    public static function schemaRequirements(): array
+    {
+        return [
+            'support_ticket_assignments_log' => ['id', 'ticket_id', 'previous_assigned_to', 'new_assigned_to', 'assigned_by_user_id', 'strategy', 'reason', 'created_at'],
+            'support_department_assignment_state' => ['department_id', 'last_assigned_user_id', 'updated_at'],
+        ];
+    }
+
     public function ensureTables(): void
     {
+        if (SupportPersistence::installed($this->db, self::schemaRequirements())) { return; }
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -50,7 +62,7 @@ final class TicketAssignmentService
             $this->logsTable,
             $autoInc
         );
-        $this->db->statement($sqlLogs);
+        $this->db->statement($sqlLogs . ($driver === 'mysql' ? ' ENGINE=InnoDB' : ''));
 
         $sqlState = sprintf(
             'CREATE TABLE IF NOT EXISTS %s (
@@ -60,19 +72,25 @@ final class TicketAssignmentService
             )',
             $this->stateTable
         );
-        $this->db->statement($sqlState);
+        $this->db->statement($sqlState . ($driver === 'mysql' ? ' ENGINE=InnoDB' : ''));
     }
 
     /**
      * Manually assign a ticket to a designated department agent.
      */
-    public function assignManual(
+    public function assignManual(int $ticketId, int $agentUserId, ?int $actorUserId = null, ?string $reason = null): TicketAssignmentLog
+    {
+        SupportPersistence::requireSchema($this->db, array_merge(self::schemaRequirements(), DepartmentService::schemaRequirements(), TicketService::schemaRequirements()));
+        return SupportPersistence::run($this->db, fn(): TicketAssignmentLog => $this->assignManualLocked($ticketId, $agentUserId, $actorUserId, $reason));
+    }
+
+    private function assignManualLocked(
         int $ticketId,
         int $agentUserId,
         ?int $actorUserId = null,
         ?string $reason = null
     ): TicketAssignmentLog {
-        $ticket = $this->ticketService->requireTicket($ticketId);
+        $ticket = $this->lockTicket($ticketId);
 
         if ($agentUserId <= 0) {
             throw new ValidationException(
@@ -81,7 +99,7 @@ final class TicketAssignmentService
             );
         }
 
-        if (!$this->departmentService->isAgentInDepartment($ticket->getDepartmentId(), $agentUserId)) {
+        if ($this->db->selectOne('SELECT id FROM support_department_agents WHERE department_id = ? AND user_id = ? AND is_active = 1' . $this->lockSuffix(), [$ticket->getDepartmentId(), $agentUserId]) === null) {
             throw new ValidationException(
                 ['agent_user_id' => "Agent {$agentUserId} is not an active member of department {$ticket->getDepartmentId()}."],
                 'Agent not in department'
@@ -91,10 +109,8 @@ final class TicketAssignmentService
         $previousAssignedTo = $ticket->getAssignedTo();
         if ($previousAssignedTo === $agentUserId) {
             // Already assigned to this agent
-            $history = $this->getAssignmentHistory($ticketId);
-            if (count($history) > 0) {
-                return end($history);
-            }
+            $row = $this->db->selectOne('SELECT * FROM support_ticket_assignments_log WHERE ticket_id = ? AND new_assigned_to = ? ORDER BY id DESC LIMIT 1' . $this->lockSuffix(), [$ticketId, $agentUserId]);
+            if ($row !== null) { return TicketAssignmentLog::fromArray($row); }
         }
 
         $this->ticketService->assignTicket($ticketId, $agentUserId);
@@ -112,12 +128,18 @@ final class TicketAssignmentService
     /**
      * Unassign a ticket.
      */
-    public function unassign(
+    public function unassign(int $ticketId, ?int $actorUserId = null, ?string $reason = null): TicketAssignmentLog
+    {
+        SupportPersistence::requireSchema($this->db, array_merge(self::schemaRequirements(), DepartmentService::schemaRequirements(), TicketService::schemaRequirements()));
+        return SupportPersistence::run($this->db, fn(): TicketAssignmentLog => $this->unassignLocked($ticketId, $actorUserId, $reason));
+    }
+
+    private function unassignLocked(
         int $ticketId,
         ?int $actorUserId = null,
         ?string $reason = null
     ): TicketAssignmentLog {
-        $ticket = $this->ticketService->requireTicket($ticketId);
+        $ticket = $this->lockTicket($ticketId);
         $previousAssignedTo = $ticket->getAssignedTo();
 
         $this->ticketService->assignTicket($ticketId, null);
@@ -135,15 +157,21 @@ final class TicketAssignmentService
     /**
      * Automatically assign a ticket using round-robin rotation among active assignable agents.
      */
-    public function assignRoundRobin(
+    public function assignRoundRobin(int $ticketId, ?int $actorUserId = null, ?string $reason = null): ?TicketAssignmentLog
+    {
+        SupportPersistence::requireSchema($this->db, array_merge(self::schemaRequirements(), DepartmentService::schemaRequirements(), TicketService::schemaRequirements()));
+        return SupportPersistence::run($this->db, fn(): ?TicketAssignmentLog => $this->assignRoundRobinLocked($ticketId, $actorUserId, $reason));
+    }
+
+    private function assignRoundRobinLocked(
         int $ticketId,
         ?int $actorUserId = null,
         ?string $reason = null
     ): ?TicketAssignmentLog {
-        $ticket = $this->ticketService->requireTicket($ticketId);
+        $ticket = $this->lockTicket($ticketId);
         $departmentId = $ticket->getDepartmentId();
 
-        $assignableAgents = $this->departmentService->getAssignableAgents($departmentId);
+        $assignableAgents = $this->currentAssignableAgents($departmentId);
         if (count($assignableAgents) === 0) {
             // No assignable agents currently in department
             return null;
@@ -155,7 +183,7 @@ final class TicketAssignmentService
 
         // Fetch last assigned agent for this department
         $stateRow = $this->db->selectOne(
-            sprintf('SELECT last_assigned_user_id FROM %s WHERE department_id = :dep_id', $this->stateTable),
+            sprintf('SELECT last_assigned_user_id FROM %s WHERE department_id = :dep_id', $this->stateTable) . $this->lockSuffix(),
             ['dep_id' => $departmentId]
         );
 
@@ -212,15 +240,21 @@ final class TicketAssignmentService
     /**
      * Automatically assign a ticket to the agent with the lowest number of active tickets.
      */
-    public function assignLeastLoaded(
+    public function assignLeastLoaded(int $ticketId, ?int $actorUserId = null, ?string $reason = null): ?TicketAssignmentLog
+    {
+        SupportPersistence::requireSchema($this->db, array_merge(self::schemaRequirements(), DepartmentService::schemaRequirements(), TicketService::schemaRequirements()));
+        return SupportPersistence::run($this->db, fn(): ?TicketAssignmentLog => $this->assignLeastLoadedLocked($ticketId, $actorUserId, $reason));
+    }
+
+    private function assignLeastLoadedLocked(
         int $ticketId,
         ?int $actorUserId = null,
         ?string $reason = null
     ): ?TicketAssignmentLog {
-        $ticket = $this->ticketService->requireTicket($ticketId);
+        $ticket = $this->lockTicket($ticketId);
         $departmentId = $ticket->getDepartmentId();
 
-        $assignableAgents = $this->departmentService->getAssignableAgents($departmentId);
+        $assignableAgents = $this->currentAssignableAgents($departmentId);
         if (count($assignableAgents) === 0) {
             return null;
         }
@@ -236,27 +270,9 @@ final class TicketAssignmentService
             $bindings[$paramKey] = $uid;
         }
 
-        $sql = sprintf(
-            'SELECT assigned_to, COUNT(*) as active_count
-             FROM %s
-             WHERE department_id = :dep_id
-               AND assigned_to IN (%s)
-               AND status NOT IN (\'resolved\', \'closed\')
-             GROUP BY assigned_to',
-            $this->ticketsTable,
-            implode(', ', $placeholders)
-        );
-
-        $counts = $this->db->select($sql, $bindings);
-        $loadMap = [];
-        foreach ($agentUserIds as $uid) {
-            $loadMap[$uid] = 0;
-        }
-        foreach ($counts as $r) {
-            if ($r['assigned_to'] !== null) {
-                $loadMap[(int) $r['assigned_to']] = (int) $r['active_count'];
-            }
-        }
+        $rows = $this->db->select('SELECT assigned_to FROM support_tickets WHERE department_id = :dep_id AND assigned_to IN (' . implode(', ', $placeholders) . ") AND status NOT IN ('resolved', 'closed')" . $this->lockSuffix(), $bindings);
+        $loadMap = array_fill_keys($agentUserIds, 0);
+        foreach ($rows as $row) { $loadMap[(int) $row['assigned_to']]++; }
 
         // Find minimum load
         asort($loadMap); // preserves keys, sorts ascending by count
@@ -285,7 +301,8 @@ final class TicketAssignmentService
     ): ?TicketAssignmentLog {
         return match ($strategy) {
             self::STRATEGY_LEAST_LOADED => $this->assignLeastLoaded($ticketId, $actorUserId),
-            default => $this->assignRoundRobin($ticketId, $actorUserId),
+            self::STRATEGY_ROUND_ROBIN => $this->assignRoundRobin($ticketId, $actorUserId),
+            default => throw new ValidationException(['strategy' => ['Unknown assignment strategy.']], 'Unknown assignment strategy.'),
         };
     }
 
@@ -300,6 +317,27 @@ final class TicketAssignmentService
         );
 
         return array_map(fn (array $r) => TicketAssignmentLog::fromArray($r), $rows);
+    }
+
+    private function lockSuffix(): string { return $this->db->getDriverName() === 'mysql' ? ' FOR UPDATE' : ''; }
+
+    /** Department-before-ticket ordering serializes rotation and load selection without cross-ticket deadlocks. */
+    private function lockTicket(int $ticketId): Ticket
+    {
+        $probe = $this->db->selectOne('SELECT department_id FROM support_tickets WHERE id = ?', [$ticketId]);
+        if ($probe === null) { return $this->ticketService->requireTicket($ticketId); }
+        $department = $this->db->selectOne('SELECT id, is_active FROM support_departments WHERE id = ?' . $this->lockSuffix(), [$probe['department_id']]);
+        if ($department === null || !(bool) $department['is_active']) { throw new ValidationException(['department_id' => ['Assignment requires an active department.']], 'Department inactive.'); }
+        $row = $this->db->selectOne('SELECT * FROM support_tickets WHERE id = ?' . $this->lockSuffix(), [$ticketId]);
+        if ($row === null) { return $this->ticketService->requireTicket($ticketId); }
+        if ((int) $row['department_id'] !== (int) $probe['department_id']) { throw new LogicException('Ticket department changed; refresh the caller transaction before assignment.'); }
+        return Ticket::fromArray($row);
+    }
+
+    private function currentAssignableAgents(int $departmentId): array
+    {
+        $rows = $this->db->select('SELECT * FROM support_department_agents WHERE department_id = ? AND is_active = 1 AND can_assign = 1 ORDER BY user_id' . $this->lockSuffix(), [$departmentId]);
+        return array_map(static fn(array $row) => \Coleza\Domain\Support\Departments\DepartmentAgent::fromArray($row), $rows);
     }
 
     private function recordLog(

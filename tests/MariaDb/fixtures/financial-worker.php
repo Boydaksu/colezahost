@@ -47,6 +47,21 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'supportRoundRobin':
+        case 'supportLeastLoaded':
+        case 'supportManualSame':
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $departments = new Coleza\Domain\Support\Departments\DepartmentService($db);
+            $tickets = new Coleza\Domain\Support\Tickets\TicketService($db, $departments);
+            $assignments = new Coleza\Domain\Support\Assignments\TicketAssignmentService($db, $departments, $tickets);
+            $ticketId = $action === 'supportManualSame' ? $id : $id + (int) $argv[2];
+            $log = match ($action) {
+                'supportRoundRobin' => $assignments->assignRoundRobin($ticketId, 99),
+                'supportLeastLoaded' => $assignments->assignLeastLoaded($ticketId, 99),
+                'supportManualSame' => $assignments->assignManual($ticketId, 10, 99),
+            };
+            $result['log_id'] = $log->getId(); $result['assigned_to'] = $log->getNewAssignedTo();
+            break;
         case 'analyticsDay':
             $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $result['aggregation_id'] = (new Coleza\Domain\Analytics\ReadModels\ReadModelAggregationService($db))->aggregateDay('2026-10-13')->getId();

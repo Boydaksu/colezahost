@@ -1,0 +1,3 @@
+Full MariaDB10.11.18 suite: 593 tests/4737 assertions; errors/failures/skipped0.
+Partitions 291/2421 + 302/2316; all36 classes and exact discovery id set.
+Summary of raw partition TXT/XML, not a separately executed suite.

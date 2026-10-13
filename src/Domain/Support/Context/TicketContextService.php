@@ -8,6 +8,7 @@ use Coleza\Domain\Support\Tickets\TicketService;
 use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Exceptions\ValidationException;
 use DateTimeImmutable;
+use Coleza\Domain\Support\SupportPersistence;
 
 final class TicketContextService
 {
@@ -23,6 +24,13 @@ final class TicketContextService
     ) {
     }
 
+    public static function schemaRequirements(): array
+    {
+        return [
+            'support_context_command_logs' => ['id', 'ticket_id', 'actor_staff_user_id', 'action', 'resource_type', 'resource_id', 'success', 'message', 'payload_json', 'executed_at'],
+        ];
+    }
+
     public function ensureTables(): void
     {
         self::installSchema($this->db);
@@ -30,6 +38,7 @@ final class TicketContextService
 
     public static function installSchema(Connection $db): void
     {
+        if (SupportPersistence::installed($db, self::schemaRequirements())) { return; }
         \Coleza\Foundation\Database\PdoSchema::autoIncrement($db->getPdo());
         $driver = $db->getDriverName();
         $autoInc = match ($driver) {
@@ -53,7 +62,7 @@ final class TicketContextService
             'support_context_command_logs',
             $autoInc
         );
-        $db->statement($sql);
+        $db->statement($sql . ($driver === 'mysql' ? ' ENGINE=InnoDB' : ''));
     }
 
     public function registerCommandHandler(TicketContextCommandHandlerInterface $handler): void
@@ -101,6 +110,7 @@ final class TicketContextService
         string $action,
         array $parameters = []
     ): CommandExecutionResult {
+        SupportPersistence::requireSchema($this->db, array_merge(self::schemaRequirements(), TicketService::schemaRequirements()));
         $ticket = $this->ticketService->requireTicket($ticketId);
 
         if ($actorStaffUserId <= 0) {

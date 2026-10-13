@@ -7,6 +7,7 @@ namespace Coleza\Domain\Support\Attachments;
 use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Exceptions\ValidationException;
 use DateTimeImmutable;
+use Coleza\Domain\Support\SupportPersistence;
 use RuntimeException;
 
 final class AttachmentService
@@ -25,6 +26,13 @@ final class AttachmentService
         return $this->policy ?? new AttachmentSecurityPolicy();
     }
 
+    public static function schemaRequirements(): array
+    {
+        return [
+            'support_ticket_attachments' => ['id', 'ticket_id', 'message_id', 'user_id', 'original_filename', 'storage_key', 'file_size_bytes', 'mime_type', 'sha256_hash', 'is_private', 'metadata_json', 'created_at'],
+        ];
+    }
+
     public function ensureTables(): void
     {
         self::installSchema($this->db);
@@ -32,6 +40,7 @@ final class AttachmentService
 
     public static function installSchema(Connection $db): void
     {
+        if (SupportPersistence::installed($db, self::schemaRequirements())) { return; }
         \Coleza\Foundation\Database\PdoSchema::autoIncrement($db->getPdo());
         $driver = $db->getDriverName();
         $autoInc = match ($driver) {
@@ -57,7 +66,7 @@ final class AttachmentService
             'support_ticket_attachments',
             $autoInc
         );
-        $db->statement($sql);
+        $db->statement($sql . ($driver === 'mysql' ? ' ENGINE=InnoDB' : ''));
     }
 
     /**
@@ -105,6 +114,7 @@ final class AttachmentService
             $sanitizedFilename
         );
 
+        SupportPersistence::requireSchema($this->db, self::schemaRequirements());
         $stored = $this->storage->put($storageKey, $content);
         if (!$stored) {
             throw new RuntimeException("Failed to persist attachment to storage key '{$storageKey}'.");

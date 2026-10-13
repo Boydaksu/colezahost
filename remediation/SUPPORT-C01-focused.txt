@@ -1,0 +1,8 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+Time: 00:01.672, Memory: 28.00 MB
+
+[30;42mOK (80 tests, 551 assertions)[0m
