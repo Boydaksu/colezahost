@@ -18,7 +18,7 @@ final class ApiSessionPersistenceTest extends \Coleza\Tests\Support\MariaDbTestC
     }
     public function testConcurrentFirstSessionWritesStoreOneCompletePayload(): void
     {
-        (new \Coleza\Domain\Identity\Session\DatabaseSessionHandler($this->db))->ensureTable();
+        (new \Coleza\Domain\Identity\Session\DatabaseSessionHandler($this->db))->prepareLifecycle();
         $results = $this->runParallel('apiSessionWrite', 1);
         foreach ($results as $result) { self::assertSame('ok', $result['status']); }
         $rows = $this->db->select('SELECT * FROM sessions'); self::assertCount(1, $rows);

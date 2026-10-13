@@ -1,0 +1,10 @@
+{
+  "reference_commit": "29b71c0da1358689f596d175f06e8a48b50c0d97",
+  "source": "Git original blobs; before7-case test ran before source changes",
+  "files": {
+    "src/Domain/Identity/Auth/AuthService.php": "efc56be9efe7b854a8048f1fae7cd4486362b12e113823c0a2dd0b1dae96eb7b",
+    "src/Domain/Identity/TwoFactor/TwoFactorService.php": "f8e41767be28927ffe9750d066fcfddd0237b1b798c7da74365a74ab2e3bbe0b",
+    "src/Domain/Identity/TwoFactor/TotpEngine.php": "7748042d30134df0e5946bbf50da27f485cd9bb4deb5112c8b005316cffc6307",
+    "src/Domain/Identity/Session/DatabaseSessionHandler.php": "3cc5d3643b889d1c1664009a5234fc7b31fa353e6508404c17041821183e00ab"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "classes": 38,
+  "partitions": {
+    "a": [
+      "AnalyticsSchemaTest",
+      "AutomationActionJournalTest",
+      "AutomationLifecycleBoundaryTest",
+      "AutomationPersistenceTest",
+      "AutomationRecoveryIntegrityTest",
+      "AutomationVersionTest",
+      "BrandCurrencySchemaTest",
+      "CapacityAndNotificationTest",
+      "ConfigurationSingletonTest",
+      "FinancialConcurrencyTest",
+      "IdentityLifecycleTest",
+      "InstallationAcceptanceTest",
+      "ModuleSchemaInstallTest",
+      "MonthlySourceTest",
+      "PrivacyMigrationInstallTest",
+      "ProvisioningProbeSafetyTest",
+      "RuntimeSchemaSafetyTest",
+      "WhmcsContactPersistenceTest"
+    ],
+    "b": [
+      "AbuseSchemaTest",
+      "AdoptionPersistenceTest",
+      "AnalyticsReportingTest",
+      "ApiSessionPersistenceTest",
+      "ApprovalDelayTest",
+      "BlastRadiusTest",
+      "DailyEvidenceTest",
+      "DailySourceTest",
+      "DatabaseFoundationTest",
+      "DocumentPersistenceTest",
+      "FraudAtomicWriteTest",
+      "FraudSchemaTest",
+      "LegacyAdoptionUpgradeTest",
+      "LegacyIdentitySchemaTest",
+      "ModuleSchemaSafetyTest",
+      "OperationalModePersistenceTest",
+      "ProviderBrandSetupTest",
+      "ProviderVaultSchemaTest",
+      "SubscriptionSourceTest",
+      "SupportPersistenceTest"
+    ]
+  },
+  "prior_time_estimates_seconds": [
+    1180.529581,
+    1181.16814
+  ],
+  "rule": "disjoint file partitions; final discovery identity union required"
+}

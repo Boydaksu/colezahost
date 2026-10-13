@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='utf-8'?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../vendor/phpunit/phpunit/phpunit.xsd" bootstrap="../vendor/autoload.php" colors="true" cacheDirectory="../.phpunit.cache/identity-c01-a" failOnRisky="true" failOnWarning="true" beStrictAboutOutputDuringTests="true">
+  <testsuites>
+    <testsuite name="Complete native Identity C01 partition a">
+      <file>../tests/MariaDb/AnalyticsSchemaTest.php</file>
+      <file>../tests/MariaDb/AutomationActionJournalTest.php</file>
+      <file>../tests/MariaDb/AutomationLifecycleBoundaryTest.php</file>
+      <file>../tests/MariaDb/AutomationPersistenceTest.php</file>
+      <file>../tests/MariaDb/AutomationRecoveryIntegrityTest.php</file>
+      <file>../tests/MariaDb/AutomationVersionTest.php</file>
+      <file>../tests/MariaDb/BrandCurrencySchemaTest.php</file>
+      <file>../tests/MariaDb/CapacityAndNotificationTest.php</file>
+      <file>../tests/MariaDb/ConfigurationSingletonTest.php</file>
+      <file>../tests/MariaDb/FinancialConcurrencyTest.php</file>
+      <file>../tests/MariaDb/IdentityLifecycleTest.php</file>
+      <file>../tests/MariaDb/InstallationAcceptanceTest.php</file>
+      <file>../tests/MariaDb/ModuleSchemaInstallTest.php</file>
+      <file>../tests/MariaDb/MonthlySourceTest.php</file>
+      <file>../tests/MariaDb/PrivacyMigrationInstallTest.php</file>
+      <file>../tests/MariaDb/ProvisioningProbeSafetyTest.php</file>
+      <file>../tests/MariaDb/RuntimeSchemaSafetyTest.php</file>
+      <file>../tests/MariaDb/WhmcsContactPersistenceTest.php</file>
+    </testsuite>
+  </testsuites>
+</phpunit>

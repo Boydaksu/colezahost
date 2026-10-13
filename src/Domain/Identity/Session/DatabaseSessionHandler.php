@@ -6,6 +6,8 @@ namespace Coleza\Domain\Identity\Session;
 
 use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Database\ApiSessionSchema;
+use Coleza\Domain\Identity\IdentityPersistence;
+use Coleza\Foundation\Exceptions\ValidationException;
 
 final class DatabaseSessionHandler
 {
@@ -43,14 +45,16 @@ final class DatabaseSessionHandler
      */
     public function read(string $sessionId): array
     {
-        $this->validateId($sessionId); $this->ensureTable(installation: false);
-        $cutoff = time() - $this->lifetimeSeconds;
-        // Delete only rows that are still expired when the write lock is acquired.
-        $this->db->delete($this->table, 'id = :id AND last_activity < :cutoff', ['id' => $sessionId, 'cutoff' => $cutoff]);
-        $row = $this->db->selectOne('SELECT payload FROM sessions WHERE id = ? AND last_activity >= ?', [$sessionId, $cutoff]);
-        if ($row === null) { return []; }
-        $decoded = json_decode((string) $row['payload'], true);
-        return is_array($decoded) ? $decoded : [];
+        $this->validateId($sessionId); $this->prepareLifecycle();
+        return SessionRevocationSchema::run($this->db, function () use ($sessionId): array {
+            if ($this->db->selectOne('SELECT session_id FROM session_revocations WHERE session_id = ?' . IdentityPersistence::lock($this->db), [$sessionId]) !== null) { return []; }
+            $cutoff = time() - $this->lifetimeSeconds;
+            $this->db->delete($this->table, 'id = :id AND last_activity < :cutoff', ['id' => $sessionId, 'cutoff' => $cutoff]);
+            $row = $this->db->selectOne('SELECT payload FROM sessions WHERE id = ? AND last_activity >= ?' . IdentityPersistence::lock($this->db), [$sessionId, $cutoff]);
+            if ($row === null) { return []; }
+            $decoded = json_decode((string) $row['payload'], true);
+            return is_array($decoded) ? $decoded : [];
+        });
     }
 
     /**
@@ -67,7 +71,11 @@ final class DatabaseSessionHandler
     ): void {
         $this->validateId($sessionId);
         $encoded = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
-        $this->ensureTable(installation: false);
+        $this->prepareLifecycle();
+        SessionRevocationSchema::run($this->db, function () use ($sessionId, $userId, $ipAddress, $userAgent, $encoded): void {
+            if ($this->db->selectOne('SELECT session_id FROM session_revocations WHERE session_id = ?' . IdentityPersistence::lock($this->db), [$sessionId]) !== null) {
+                throw new ValidationException(['session' => ['Session ID has been revoked.']], 'Revoked session cannot be reused.');
+            }
         $bindings = [$sessionId, $userId, $ipAddress, $userAgent, $encoded, time()];
         $sql = 'INSERT INTO sessions (id, user_id, ip_address, user_agent, payload, last_activity) VALUES (?, ?, ?, ?, ?, ?)';
         if ($this->db->getDriverName() === 'mysql') {
@@ -80,6 +88,7 @@ final class DatabaseSessionHandler
                 payload = excluded.payload, last_activity = excluded.last_activity';
         }
         $this->db->statement($sql, $bindings);
+        });
     }
 
     /**
@@ -87,9 +96,11 @@ final class DatabaseSessionHandler
      */
     public function destroy(string $sessionId): void
     {
-        $this->validateId($sessionId);
-        $this->ensureTable(installation: false);
-        $this->db->delete($this->table, 'id = :id', ['id' => $sessionId]);
+        $this->validateId($sessionId); $this->prepareLifecycle();
+        SessionRevocationSchema::run($this->db, function () use ($sessionId): void {
+            SessionRevocationSchema::revoke($this->db, $sessionId);
+            $this->db->delete($this->table, 'id = :id', ['id' => $sessionId]);
+        });
     }
 
     /**
@@ -97,8 +108,12 @@ final class DatabaseSessionHandler
      */
     public function destroyForUser(int $userId): void
     {
-        $this->ensureTable(installation: false);
-        $this->db->delete($this->table, 'user_id = :user_id', ['user_id' => $userId]);
+        $this->prepareLifecycle();
+        SessionRevocationSchema::run($this->db, function () use ($userId): void {
+            $rows = $this->db->select('SELECT id FROM sessions WHERE user_id = ?' . IdentityPersistence::lock($this->db), [$userId]);
+            foreach ($rows as $row) { SessionRevocationSchema::revoke($this->db, (string) $row['id']); }
+            $this->db->delete($this->table, 'user_id = :user_id', ['user_id' => $userId]);
+        });
     }
 
     /**
@@ -106,9 +121,13 @@ final class DatabaseSessionHandler
      */
     public function gc(): int
     {
+        $this->prepareLifecycle();
+        return SessionRevocationSchema::run($this->db, fn(): int => $this->db->delete($this->table, 'last_activity < :cutoff', ['cutoff' => time() - $this->lifetimeSeconds]));
+    }
+    public function prepareLifecycle(): void
+    {
         $this->ensureTable(installation: false);
-        $cutoff = time() - $this->lifetimeSeconds;
-        return $this->db->delete($this->table, 'last_activity < :cutoff', ['cutoff' => $cutoff]);
+        SessionRevocationSchema::prepare($this->db);
     }
     private function validateId(string $id): void
     {

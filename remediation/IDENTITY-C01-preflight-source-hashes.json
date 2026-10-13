@@ -1,0 +1,31 @@
+{
+  "reference_commit": "29b71c0da1358689f596d175f06e8a48b50c0d97",
+  "capture_phase": "full suites running; no PHP edits after final execution launch",
+  "files": {
+    "database/migrations/2026_10_13_000026_identity_lifecycle.php": "d44140abe2a5d16e35633f06a096416b3332aba9ade4d76f4ed4a0f482169b02",
+    "src/Domain/Identity/Auth/AuthService.php": "17c3cfbc8cb2dfe73f1c4dd8ac60b6e04051d4e5cee268d6c4216c8324ce889c",
+    "src/Domain/Identity/IdentityPersistence.php": "ba395a405490e55ac42dda82a684e6df676e45065c052da1b4e50b1e30923160",
+    "src/Domain/Identity/Session/DatabaseSessionHandler.php": "677e1015bff57d34db04cc188de46e5ac44a4eb7fc1d1e2687a82bfc37d7ec12",
+    "src/Domain/Identity/Session/SessionRevocationSchema.php": "9dd724da5c57712fa96e7a12883f85d5d829c1d3e6548d481a1b46a040ecba94",
+    "src/Domain/Identity/TwoFactor/TotpEngine.php": "b0694a671b4dd1c1e35d31a19ce399b15bd6fd93b45a4e9159ce1290868719c4",
+    "src/Domain/Identity/TwoFactor/TwoFactorLoginSchema.php": "0141b9c8f6999905f7de7fdc56bfc90a5e7302cb600eb12975d8c154d2915ad8",
+    "src/Domain/Identity/TwoFactor/TwoFactorService.php": "1bd98c28659380ee06e5acbcc9f1b8bf7ccfe080d05c26a877d44ca356515e7b",
+    "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php": "18af84627b0fe04dba64c448c441aebb4d7708fcb0839632f9103f114bb3d4fe",
+    "tests/MariaDb/ApiSessionPersistenceTest.php": "6d2b348cec71c7e0dc1f8fdda682dcf6156f9597a566c70aa4e5b61e2461b25e",
+    "tests/MariaDb/DatabaseFoundationTest.php": "1622d7efd568178de612f5beb41c989590e93a46af22183a87871991c1193492",
+    "tests/MariaDb/IdentityLifecycleTest.php": "61e54dc6b8abd60744ca1c19a4e0390b91a5d8e18e000c2595e783ae23cd3ec3",
+    "tests/MariaDb/fixtures/financial-worker.php": "d7a7ce351a44493cb64cd75c2262931892b349ca978a02af7b681aef99d70851",
+    "tests/Support/AbuseSchemaCases.php": "6f6635c8b597c4ae4923f108ca2095c0ca910f2d43288abf3fb0539eea339599",
+    "tests/Support/AnalyticsSchemaCases.php": "f4dcad58ee97d9d236cc8a3eae05a8b284d46f75ff0608268b1470ebcaffb21d",
+    "tests/Support/BrandCurrencySchemaCases.php": "e7244a8f65cd8fd564987500c87a37d7e4e2773e54372ef095051735ac02e2f0",
+    "tests/Support/DailyEvidenceCases.php": "058a30cbf74dbdec5d052f5f3bc20ad317efc6a9f5079507c7b10baf97103b0d",
+    "tests/Support/FraudSchemaCases.php": "544dff301ee42aeb1602d178796bdf192876207352c12d423c07c61c26c72e52",
+    "tests/Support/IdentityLifecycleCases.php": "141da672cf1d63f2c70493fada02fa90c051765e8e865a71f9123642cb324233",
+    "tests/Support/ProviderVaultSchemaCases.php": "230af6bada22deceef26f63d70e8bd607e7a9fd82bbb3f921d3afd23e16a1482",
+    "tests/Support/RuntimeSchemaSafetyCases.php": "e0d058d02ddb4a28d4a9d20ced18cf1aa33500a66706913e8acddb0b04b2f11c",
+    "tests/Unit/Domain/Identity/IdentityLifecycleTest.php": "fb5263f23cfb5da1dcd9e1247a41340207aab87a9e18d67517d889ac68dd7f51",
+    "tests/Unit/Domain/Identity/TwoFactorServiceTest.php": "7b0e26161c69e9de5bebdfc523ed0c95fab24628ee01743c2d686e5587c73cf4",
+    "tests/Unit/Foundation/Database/IdentitySchemaMigrationRegressionTest.php": "e531870d4375d99710e50760353f5c8d6142cde1ae1746d4dacd2e1968e26813",
+    "tests/Unit/Installer/WebInstallerTest.php": "180a12bc5f5a3ddb3ff956692d824cbba2d2d52eb4c7d58cd5f1e5739019b795"
+  }
+}

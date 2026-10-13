@@ -764,7 +764,7 @@ final class GoldenMasterScenariosE2ETest extends TestCase
     public function testG06RecoveryAndHardeningScenario(): void
     {
         $db = $this->createDb();
-        $db->statement("CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, email TEXT, password_hash TEXT NOT NULL, status TEXT)");
+        $db->statement("CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, email TEXT UNIQUE, password_hash TEXT NOT NULL, status TEXT)");
         $db->statement("INSERT INTO users (id, name, email, password_hash, status) VALUES (1, 'Founder Admin', 'admin@colezahost.com', ?, 'active')", [password_hash('RecoveryFixturePassword123!', PASSWORD_BCRYPT)]);
 
         $appDir = $this->tempWorkDir . '/app';
@@ -815,6 +815,10 @@ final class GoldenMasterScenariosE2ETest extends TestCase
         $users = $db->select("SELECT * FROM users");
         $this->assertCount(1, $users);
         $this->assertSame('Founder Admin', $users[0]['name']);
+        try {
+            $db->insert('users', ['id' => 2, 'name' => 'Duplicate', 'email' => $users[0]['email'], 'password_hash' => $users[0]['password_hash'], 'status' => 'active']);
+            $this->fail('Restored email identity must remain unique.');
+        } catch (\PDOException $error) { $this->assertStringContainsString('UNIQUE', $error->getMessage()); }
 
         // Step 4: Return to NORMAL mode and run System Doctor Health checks
         $opManager->transitionTo(OperationalMode::NORMAL, 'Recovery completed successfully');

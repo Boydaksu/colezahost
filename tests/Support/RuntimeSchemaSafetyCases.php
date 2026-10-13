@@ -135,8 +135,8 @@ trait RuntimeSchemaSafetyCases
         self::assertSame([], $this->db->select('SELECT * FROM cache'));
         // Explicit maintenance repair of an empty fixture; no expiry is invented for historical records.
         $this->db->statement('ALTER TABLE cache ADD COLUMN expires_at INT NULL');
-        self::assertSame(['2026_10_12_000017_foundation_runtime_schema', '2026_10_12_000018_provider_vault_schema', '2026_10_12_000019_brand_currency_schema', '2026_10_12_000020_configuration_write_locks', '2026_10_12_000021_abuse_schema', '2026_10_12_000022_fraud_schema', '2026_10_12_000023_operational_mode_schema', '2026_10_13_000024_analytics_schema', '2026_10_13_000025_daily_aggregation_evidence'], $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'));
-        self::assertCount(25, $runner->getRanMigrations());
+        self::assertSame(['2026_10_12_000017_foundation_runtime_schema', '2026_10_12_000018_provider_vault_schema', '2026_10_12_000019_brand_currency_schema', '2026_10_12_000020_configuration_write_locks', '2026_10_12_000021_abuse_schema', '2026_10_12_000022_fraud_schema', '2026_10_12_000023_operational_mode_schema', '2026_10_13_000024_analytics_schema', '2026_10_13_000025_daily_aggregation_evidence', '2026_10_13_000026_identity_lifecycle'], $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'));
+        self::assertCount(26, $runner->getRanMigrations());
         self::assertSame([], $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'));
     }
     public function testMissingSchemaRefusesIdempotencyAndSchedulerCallbacksBeforeTheyRun(): void

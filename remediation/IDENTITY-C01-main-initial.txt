@@ -1,0 +1,77 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+.............................................................   61 / 1479 (  4%)
+.............[41;37mF[0m...............................................  122 / 1479 (  8%)
+.............................................................  183 / 1479 ( 12%)
+.............................................................  244 / 1479 ( 16%)
+.............................................................  305 / 1479 ( 20%)
+.............................................................  366 / 1479 ( 24%)
+.............................................................  427 / 1479 ( 28%)
+.............................................................  488 / 1479 ( 32%)
+.............................................................  549 / 1479 ( 37%)
+.............................................................  610 / 1479 ( 41%)
+.............................................................  671 / 1479 ( 45%)
+.............................................................  732 / 1479 ( 49%)
+.....................................................[41;37mF[0m.......  793 / 1479 ( 53%)
+...............................[41;37mF[0m.............................  854 / 1479 ( 57%)
+..........................................[41;37mF[0m..................  915 / 1479 ( 61%)
+.............................................................  976 / 1479 ( 65%)
+............................................................. 1037 / 1479 ( 70%)
+............................................................. 1098 / 1479 ( 74%)
+............................................................. 1159 / 1479 ( 78%)
+............................................................. 1220 / 1479 ( 82%)
+............................................................. 1281 / 1479 ( 86%)
+............................................................. 1342 / 1479 ( 90%)
+............................................................. 1403 / 1479 ( 94%)
+.................................[31;1mE[0m........................... 1464 / 1479 ( 98%)
+...............                                               1479 / 1479 (100%)
+
+Time: 00:22.890, Memory: 80.00 MB
+
+There was 1 error:
+
+1) Coleza\Tests\Integration\Golden\GoldenMasterScenariosE2ETest::testG06RecoveryAndHardeningScenario
+LogicException: Identity table requires its canonical unique identity.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Identity\IdentityPersistence.php:37
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Identity\Auth\AuthService.php:35
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_11_000009_support_api_identity_documents.php:24
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:237
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Golden\GoldenMasterScenariosE2ETest.php:823
+
+--
+
+There were 4 failures:
+
+1) Coleza\Tests\Unit\Analytics\DailyEvidenceTest::testFailedUpgradeResumesAfterExplicitFixtureRepairWithoutTrustingHistory
+Failed asserting that actual size 25 matches expected size 24.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\DailyEvidenceCases.php:162
+
+2) Coleza\Tests\Unit\Installer\BrandCurrencySchemaTest::testRollbackRefusalPreservesBrandCurrencyFxAndMigrationHistory
+Failed asserting that 'Session revocation rollback would reactivate revoked IDs; verified maintenance and backup required.' [ASCII](length: 99) contains "explicit maintenance plan" [ASCII](length: 25).
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\BrandCurrencySchemaCases.php:198
+
+3) Coleza\Tests\Unit\Installer\LegacyIdentitySchemaTest::testLegacyUsersOrganizationsAndMembershipsSurviveRepeatedUpgrade
+Failed asserting that 'The given data failed validation.' [ASCII](length: 33) contains "inactive" [ASCII](length: 8).
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\LegacyIdentityUpgradeCases.php:47
+
+4) Coleza\Tests\Unit\Installer\ProviderVaultSchemaTest::testRollbackRefusalPreservesSettingsCiphertextAndMigrationHistory
+Failed asserting that 'Session revocation rollback would reactivate revoked IDs; verified maintenance and backup required.' [ASCII](length: 99) contains "explicit maintenance plan" [ASCII](length: 25).
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ProviderVaultSchemaCases.php:187
+
+[37;41mERRORS![0m
+[37;41mTests: 1479[0m[37;41m, Assertions: 10864[0m[37;41m, Errors: 1[0m[37;41m, Failures: 4[0m[37;41m.[0m

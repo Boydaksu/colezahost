@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Domain\Identity\IdentityLifecycleTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Identity\IdentityLifecycleTest.php" tests="2" assertions="2" errors="0" failures="2" skipped="0" time="0.010359">
+    <testcase name="testUnexpectedRevocationUniqueRefusesBeforeDeletingSession" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\IdentityLifecycleCases.php" line="244" class="Coleza\Tests\Unit\Domain\Identity\IdentityLifecycleTest" classname="Coleza.Tests.Unit.Domain.Identity.IdentityLifecycleTest" assertions="1" time="0.007810">
+      <failure type="PHPUnit\Framework\AssertionFailedError">Coleza\Tests\Unit\Domain\Identity\IdentityLifecycleTest::testUnexpectedRevocationUniqueRefusesBeforeDeletingSession&#13;
+Unexpected revocation identity accepted
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\IdentityLifecycleCases.php:248</failure>
+    </testcase>
+    <testcase name="testUnexpectedLoginStepUniqueRefusesBeforeAcceptingChallenge" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\IdentityLifecycleCases.php" line="251" class="Coleza\Tests\Unit\Domain\Identity\IdentityLifecycleTest" classname="Coleza.Tests.Unit.Domain.Identity.IdentityLifecycleTest" assertions="1" time="0.002550">
+      <failure type="PHPUnit\Framework\AssertionFailedError">Coleza\Tests\Unit\Domain\Identity\IdentityLifecycleTest::testUnexpectedLoginStepUniqueRefusesBeforeAcceptingChallenge&#13;
+Unexpected login step identity accepted
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\IdentityLifecycleCases.php:255</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

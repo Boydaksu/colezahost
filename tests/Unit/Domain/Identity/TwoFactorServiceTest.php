@@ -97,6 +97,8 @@ final class TwoFactorServiceTest extends TestCase
     public function testTrustedDeviceLifecycle(): void
     {
         $userId = 4;
+        $setup = $this->twoFactor->beginSetup($userId, 'trusted@coleza.com');
+        $this->twoFactor->confirmSetup($userId, $this->totpEngine->generateCode($setup['secret']));
         $token = $this->twoFactor->trustDevice($userId, '192.168.1.1', 'Mozilla/5.0', ttlSeconds: 3600);
 
         $this->assertTrue($this->twoFactor->isDeviceTrusted($userId, $token));

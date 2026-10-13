@@ -159,12 +159,12 @@ trait DailyEvidenceCases
         $before = $this->db->select('SELECT * FROM analytics_daily_aggregations');
         $runner = new \Coleza\Foundation\Database\Migrator($this->db);
         try { $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'); self::fail('Conflicting upgrade succeeded'); }
-        catch (LogicException) { self::assertCount(24, $runner->getRanMigrations()); }
+        catch (LogicException) { self::assertCount(25, $runner->getRanMigrations()); }
         self::assertSame($before, $this->db->select('SELECT * FROM analytics_daily_aggregations'));
         // Preserve the test-owned conflicting column; never discard or certify historical content.
         $this->db->statement('ALTER TABLE analytics_daily_aggregations RENAME COLUMN calculation_evidence TO fixture_archived_evidence');
         self::assertSame(['2026_10_13_000025_daily_aggregation_evidence'], $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'));
-        self::assertCount(25, $runner->getRanMigrations());
+        self::assertCount(26, $runner->getRanMigrations());
         $row = $this->db->selectOne('SELECT * FROM analytics_daily_aggregations');
         self::assertNull($row['calculation_evidence']); self::assertSame('trusted', $row['fixture_archived_evidence']);
         self::assertSame((int) $before[0]['id'], (int) $row['id']); self::assertSame(77.45, (float) $row['gross_invoiced']);

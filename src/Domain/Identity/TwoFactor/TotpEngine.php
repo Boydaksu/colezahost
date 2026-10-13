@@ -48,17 +48,24 @@ final class TotpEngine
      */
     public function verifyCode(string $secret, string $code, ?int $timestamp = null, int $window = 1, int $period = 30): bool
     {
+        return $this->matchingStep($secret, $code, $timestamp, $window, $period) !== null;
+    }
+
+    /** Return the matching counter so a login challenge can persist one-time use. */
+    public function matchingStep(string $secret, string $code, ?int $timestamp = null, int $window = 1, int $period = 30): ?int
+    {
+        if ($period < 1 || $window < 0 || $window > 10) { throw new InvalidArgumentException('Invalid TOTP period/window.'); }
         $time = $timestamp ?? time();
         $cleanCode = trim($code);
-
-        for ($i = -$window; $i <= $window; $i++) {
+        if ($time < 0 || !preg_match('/^[0-9]{6}$/D', $cleanCode)) { return null; }
+        for ($i = $window; $i >= -$window; $i--) {
             $checkTime = $time + ($i * $period);
+            if ($checkTime < 0) { continue; }
             if (hash_equals($this->generateCode($secret, $checkTime, $period), $cleanCode)) {
-                return true;
+                return (int) floor($checkTime / $period);
             }
         }
-
-        return false;
+        return null;
     }
 
     /**

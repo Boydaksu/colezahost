@@ -120,8 +120,8 @@ trait AbuseSchemaCases
         $this->db->statement('DROP TABLE abuse_case_messages');
         $this->service()->ensureTables(); $case = $this->createFixture();
         $this->db->insert('abuse_case_messages', ['id' => 7, 'case_id' => $case->getId(), 'author_type' => 'staff', 'message' => $legacy[0]['message']]);
-        self::assertSame(['2026_10_12_000021_abuse_schema', '2026_10_12_000022_fraud_schema', '2026_10_12_000023_operational_mode_schema', '2026_10_13_000024_analytics_schema', '2026_10_13_000025_daily_aggregation_evidence'], $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'));
-        self::assertCount(25, $runner->getRanMigrations());
+        self::assertSame(['2026_10_12_000021_abuse_schema', '2026_10_12_000022_fraud_schema', '2026_10_12_000023_operational_mode_schema', '2026_10_13_000024_analytics_schema', '2026_10_13_000025_daily_aggregation_evidence', '2026_10_13_000026_identity_lifecycle'], $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'));
+        self::assertCount(26, $runner->getRanMigrations());
         self::assertSame('Preserve legacy evidence', $this->db->selectOne('SELECT message FROM abuse_case_messages WHERE id = 7')['message']);
     }
     public function testRollbackRequiresExplicitRetentionPlanAndPreservesRecords(): void

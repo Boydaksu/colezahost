@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Domain\Identity\IdentityLifecycleTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Identity\IdentityLifecycleTest.php" tests="7" assertions="7" errors="1" failures="6" skipped="0" time="0.020168">
+    <testcase name="testInstalledIdentitySetupDoesNotCommitCallerOrExecuteDdl" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\IdentityLifecycleCases.php" line="20" class="Coleza\Tests\Unit\Domain\Identity\IdentityLifecycleTest" classname="Coleza.Tests.Unit.Domain.Identity.IdentityLifecycleTest" assertions="2" time="0.007642">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Identity\IdentityLifecycleTest::testInstalledIdentitySetupDoesNotCommitCallerOrExecuteDdl&#13;
+Failed asserting that 'CREATE TABLE IF NOT EXISTS users (\n
+                id INTEGER PRIMARY KEY AUTOINCREMENT,\n
+                email VARCHAR(191) NOT NULL UNIQUE,\n
+                password_hash VARCHAR(255) NOT NULL,\n
+                name VARCHAR(100) NOT NULL,\n
+                is_active INT NOT NULL DEFAULT 1,\n
+                email_verified_at TIMESTAMP NULL,\n
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n
+            )' does not match PCRE pattern "/^\s*(CREATE|ALTER|DROP)\b/i".
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\IdentityLifecycleCases.php:26</failure>
+    </testcase>
+    <testcase name="testActiveTwoFactorCannotBeDisabledByRestartingSetup" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\IdentityLifecycleCases.php" line="29" class="Coleza\Tests\Unit\Domain\Identity\IdentityLifecycleTest" classname="Coleza.Tests.Unit.Domain.Identity.IdentityLifecycleTest" assertions="1" time="0.001855">
+      <failure type="PHPUnit\Framework\AssertionFailedError">Coleza\Tests\Unit\Domain\Identity\IdentityLifecycleTest::testActiveTwoFactorCannotBeDisabledByRestartingSetup&#13;
+Active 2FA disabled
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\IdentityLifecycleCases.php:33</failure>
+    </testcase>
+    <testcase name="testRepeatedConfirmationDoesNotReplaceRecoveryCodes" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\IdentityLifecycleCases.php" line="36" class="Coleza\Tests\Unit\Domain\Identity\IdentityLifecycleTest" classname="Coleza.Tests.Unit.Domain.Identity.IdentityLifecycleTest" assertions="1" time="0.001703">
+      <failure type="PHPUnit\Framework\AssertionFailedError">Coleza\Tests\Unit\Domain\Identity\IdentityLifecycleTest::testRepeatedConfirmationDoesNotReplaceRecoveryCodes&#13;
+Enabled setup reconfirmed
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\IdentityLifecycleCases.php:40</failure>
+    </testcase>
+    <testcase name="testRevokedSessionCannotBeResurrectedByOldWriterAfterGc" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\IdentityLifecycleCases.php" line="43" class="Coleza\Tests\Unit\Domain\Identity\IdentityLifecycleTest" classname="Coleza.Tests.Unit.Domain.Identity.IdentityLifecycleTest" assertions="1" time="0.002420">
+      <failure type="PHPUnit\Framework\AssertionFailedError">Coleza\Tests\Unit\Domain\Identity\IdentityLifecycleTest::testRevokedSessionCannotBeResurrectedByOldWriterAfterGc&#13;
+Revoked session resurrected
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\IdentityLifecycleCases.php:46</failure>
+    </testcase>
+    <testcase name="testResetInsideRawCallerPreservesRollbackBoundary" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\IdentityLifecycleCases.php" line="50" class="Coleza\Tests\Unit\Domain\Identity\IdentityLifecycleTest" classname="Coleza.Tests.Unit.Domain.Identity.IdentityLifecycleTest" assertions="0" time="0.002385">
+      <error type="PDOException">Coleza\Tests\Unit\Domain\Identity\IdentityLifecycleTest::testResetInsideRawCallerPreservesRollbackBoundary&#13;
+PDOException: There is already an active transaction
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:155
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:234
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Identity\Auth\AuthService.php:206
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\IdentityLifecycleCases.php:54</error>
+    </testcase>
+    <testcase name="testExpiredResetAtExactBoundaryCannotChangePassword" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\IdentityLifecycleCases.php" line="58" class="Coleza\Tests\Unit\Domain\Identity\IdentityLifecycleTest" classname="Coleza.Tests.Unit.Domain.Identity.IdentityLifecycleTest" assertions="1" time="0.002362">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Identity\IdentityLifecycleTest::testExpiredResetAtExactBoundaryCannotChangePassword&#13;
+Failed asserting that exception of type "Coleza\Foundation\Exceptions\ValidationException" is thrown.</failure>
+    </testcase>
+    <testcase name="testFailedResetTokenReplacementPreservesOldToken" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\IdentityLifecycleCases.php" line="63" class="Coleza\Tests\Unit\Domain\Identity\IdentityLifecycleTest" classname="Coleza.Tests.Unit.Domain.Identity.IdentityLifecycleTest" assertions="1" time="0.001801">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Identity\IdentityLifecycleTest::testFailedResetTokenReplacementPreservesOldToken&#13;
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+-Array &amp;0 [
+-    0 =&gt; Array &amp;1 [
+-        'id' =&gt; 1,
+-        'email' =&gt; 'fixture@example.test',
+-        'token_hash' =&gt; '0f899fa3fde62aee9af66cae04ca29013ba00342d926ebda69478b9e58e17952',
+-        'expires_at' =&gt; 1791900836,
+-        'created_at' =&gt; '2026-10-13 13:13:56',
+-    ],
+-]
++Array &amp;0 []
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\IdentityLifecycleCases.php:68</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

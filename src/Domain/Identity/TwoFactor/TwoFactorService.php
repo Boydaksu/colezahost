@@ -7,7 +7,7 @@ namespace Coleza\Domain\Identity\TwoFactor;
 use Coleza\Domain\Identity\Security\PasswordHasher;
 use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Exceptions\ValidationException;
-use RuntimeException;
+use Coleza\Domain\Identity\IdentityPersistence;
 
 final class TwoFactorService
 {
@@ -22,8 +22,15 @@ final class TwoFactorService
     ) {
     }
 
-    public function ensureTables(): void
+    public static function schemaRequirements(): array
     {
+        return ['user_two_factor' => ['id', 'user_id', 'secret', 'is_enabled', 'enabled_at', 'created_at'],
+            'user_recovery_codes' => ['id', 'user_id', 'code_hash', 'used_at', 'created_at'],
+            'user_trusted_devices' => ['id', 'user_id', 'device_token_hash', 'ip_address', 'user_agent', 'expires_at', 'created_at']];
+    }
+    public function ensureTables(bool $installation = true): void
+    {
+        if (IdentityPersistence::installed($this->db, self::schemaRequirements(), $installation, ['user_two_factor' => 'user_id'])) { return; }
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -43,7 +50,7 @@ final class TwoFactorService
             $this->twoFactorTable,
             $autoInc
         );
-        $this->db->statement($sql2FA);
+        $this->db->statement($sql2FA . ($driver === 'mysql' ? ' ENGINE=InnoDB' : ''));
 
         // Recovery codes table (stored hashed)
         $sqlRecovery = sprintf(
@@ -57,7 +64,7 @@ final class TwoFactorService
             $this->recoveryCodesTable,
             $autoInc
         );
-        $this->db->statement($sqlRecovery);
+        $this->db->statement($sqlRecovery . ($driver === 'mysql' ? ' ENGINE=InnoDB' : ''));
 
         // Trusted devices table
         $sqlTrusted = sprintf(
@@ -73,213 +80,98 @@ final class TwoFactorService
             $this->trustedDevicesTable,
             $autoInc
         );
-        $this->db->statement($sqlTrusted);
+        $this->db->statement($sqlTrusted . ($driver === 'mysql' ? ' ENGINE=InnoDB' : ''));
     }
 
-    /**
-     * Start 2FA setup for user: generates secret without activating yet.
-     *
-     * @return array{secret: string, qr_uri: string}
-     */
     public function beginSetup(int $userId, string $accountEmail, string $issuer = 'Coleza Host'): array
     {
-        $this->ensureTables();
-        $secret = $this->totpEngine->generateSecret();
-
-        $existing = $this->db->selectOne(
-            sprintf('SELECT id FROM %s WHERE user_id = :uid', $this->twoFactorTable),
-            ['uid' => $userId]
-        );
-
-        if ($existing === null) {
-            $this->db->insert($this->twoFactorTable, [
-                'user_id' => $userId,
-                'secret' => $secret,
-                'is_enabled' => 0,
-                'enabled_at' => null,
-            ]);
-        } else {
-            $this->db->update(
-                $this->twoFactorTable,
-                [
-                    'secret' => $secret,
-                    'is_enabled' => 0,
-                    'enabled_at' => null,
-                ],
-                'user_id = :uid',
-                ['uid' => $userId]
-            );
-        }
-
-        $uri = $this->totpEngine->getProvisioningUri($issuer, $accountEmail, $secret);
-
-        return [
-            'secret' => $secret,
-            'qr_uri' => $uri,
-        ];
+        if ($userId < 1) { throw new \InvalidArgumentException('Invalid user ID.'); }
+        $this->ensureTables(installation: false); TwoFactorLoginSchema::prepare($this->db); $secret = $this->totpEngine->generateSecret();
+        return IdentityPersistence::run($this->db, function () use ($userId, $accountEmail, $issuer, $secret): array {
+            $sql = 'INSERT INTO user_two_factor (user_id, secret, is_enabled, enabled_at) VALUES (?, ?, 0, NULL)' . ($this->db->getDriverName() === 'mysql' ? ' ON DUPLICATE KEY UPDATE user_id = user_id' : ' ON CONFLICT(user_id) DO NOTHING');
+            $this->db->statement($sql, [$userId, $secret]);
+            $record = $this->stateForUpdate($userId);
+            if ((int) $record['is_enabled'] === 1) { throw new ValidationException(['two_factor' => ['Active 2FA cannot be replaced by setup.']]); }
+            $this->db->update('user_two_factor', ['secret' => $secret, 'is_enabled' => 0, 'enabled_at' => null], 'user_id = :uid', ['uid' => $userId]);
+            $this->db->delete('user_recovery_codes', 'user_id = :uid', ['uid' => $userId]);
+            $this->db->delete('user_trusted_devices', 'user_id = :uid', ['uid' => $userId]);
+            $this->db->delete('two_factor_login_steps', 'user_id = :uid', ['uid' => $userId]);
+            return ['secret' => $secret, 'qr_uri' => $this->totpEngine->getProvisioningUri($issuer, $accountEmail, $secret)];
+        });
     }
 
-    /**
-     * Confirm 2FA setup with a valid TOTP code, enable 2FA, and generate recovery codes.
-     *
-     * @return array<int, string> List of plain recovery codes for user backup
-     */
     public function confirmSetup(int $userId, string $code): array
     {
-        $this->ensureTables();
-        $record = $this->db->selectOne(
-            sprintf('SELECT secret FROM %s WHERE user_id = :uid', $this->twoFactorTable),
-            ['uid' => $userId]
-        );
-
-        if ($record === null) {
-            throw new ValidationException(['two_factor' => ['2FA setup has not been initiated.']]);
-        }
-
-        $secret = (string) $record['secret'];
-        if (!$this->totpEngine->verifyCode($secret, $code)) {
-            throw new ValidationException(['code' => ['Invalid two-factor authentication code.']]);
-        }
-
-        // Enable 2FA and generate 8 fresh recovery codes
-        $recoveryCodes = [];
-        $hashedCodes = [];
-
-        for ($i = 0; $i < 8; $i++) {
-            $plain = strtoupper(bin2hex(random_bytes(4)) . '-' . bin2hex(random_bytes(4)));
-            $recoveryCodes[] = $plain;
-            $hashedCodes[] = hash('sha256', $plain);
-        }
-
-        $this->db->transaction(function (Connection $db) use ($userId, $hashedCodes): void {
-            $db->update(
-                $this->twoFactorTable,
-                [
-                    'is_enabled' => 1,
-                    'enabled_at' => date('Y-m-d H:i:s'),
-                ],
-                'user_id = :uid',
-                ['uid' => $userId]
-            );
-
-            // Clear old recovery codes and insert new ones
-            $db->delete($this->recoveryCodesTable, 'user_id = :uid', ['uid' => $userId]);
-            foreach ($hashedCodes as $hash) {
-                $db->insert($this->recoveryCodesTable, [
-                    'user_id' => $userId,
-                    'code_hash' => $hash,
-                    'used_at' => null,
-                ]);
+        $this->ensureTables(installation: false);
+        return IdentityPersistence::run($this->db, function () use ($userId, $code): array {
+            $record = $this->stateForUpdate($userId);
+            if ($record === null || (int) $record['is_enabled'] !== 0) { throw new ValidationException(['two_factor' => ['Pending 2FA setup required.']]); }
+            if (!$this->totpEngine->verifyCode((string) $record['secret'], $code)) { throw new ValidationException(['code' => ['Invalid two-factor authentication code.']]); }
+            $plainCodes = [];
+            $this->db->update('user_two_factor', ['is_enabled' => 1, 'enabled_at' => date('Y-m-d H:i:s')], 'user_id = :uid', ['uid' => $userId]);
+            $this->db->delete('user_recovery_codes', 'user_id = :uid', ['uid' => $userId]);
+            for ($i = 0; $i < 8; $i++) {
+                $plain = strtoupper(bin2hex(random_bytes(4)) . '-' . bin2hex(random_bytes(4))); $plainCodes[] = $plain;
+                $this->db->insert('user_recovery_codes', ['user_id' => $userId, 'code_hash' => hash('sha256', $plain), 'used_at' => null]);
             }
+            return $plainCodes;
         });
-
-        return $recoveryCodes;
     }
-
-    /**
-     * Check if 2FA is active for given user.
-     */
     public function isEnabled(int $userId): bool
     {
-        $this->ensureTables();
-        $record = $this->db->selectOne(
-            sprintf('SELECT is_enabled FROM %s WHERE user_id = :uid', $this->twoFactorTable),
-            ['uid' => $userId]
-        );
-
-        return $record !== null && (int) $record['is_enabled'] === 1;
+        $this->ensureTables(installation: false);
+        return IdentityPersistence::run($this->db, function () use ($userId): bool { $record = $this->stateForUpdate($userId); return $record !== null && (int) $record['is_enabled'] === 1; });
     }
-
-    /**
-     * Verify TOTP code during login challenge.
-     */
     public function verifyLoginCode(int $userId, string $code): bool
     {
-        $this->ensureTables();
-        $record = $this->db->selectOne(
-            sprintf('SELECT secret, is_enabled FROM %s WHERE user_id = :uid', $this->twoFactorTable),
-            ['uid' => $userId]
-        );
-
-        if ($record === null || (int) $record['is_enabled'] !== 1) {
-            return true; // Not enabled, no challenge needed
-        }
-
-        return $this->totpEngine->verifyCode((string) $record['secret'], $code);
+        $this->ensureTables(installation: false); TwoFactorLoginSchema::prepare($this->db);
+        return IdentityPersistence::run($this->db, function () use ($userId, $code): bool {
+            $record = $this->stateForUpdate($userId);
+            if ($record === null || (int) $record['is_enabled'] !== 1) { return true; }
+            $step = $this->totpEngine->matchingStep((string) $record['secret'], $code);
+            if ($step === null) { return false; }
+            $used = $this->db->selectOne('SELECT last_used_step FROM two_factor_login_steps WHERE user_id = ?' . IdentityPersistence::lock($this->db), [$userId]);
+            if ($used !== null && $step <= (int) $used['last_used_step']) { return false; }
+            $sql = 'INSERT INTO two_factor_login_steps (user_id, last_used_step) VALUES (?, ?)' . ($this->db->getDriverName() === 'mysql' ? ' ON DUPLICATE KEY UPDATE last_used_step = VALUES(last_used_step)' : ' ON CONFLICT(user_id) DO UPDATE SET last_used_step = excluded.last_used_step');
+            $this->db->statement($sql, [$userId, $step]); return true;
+        });
     }
-
-    /**
-     * Redeem a recovery code. Each code can only be used once.
-     */
     public function redeemRecoveryCode(int $userId, string $plainCode): bool
     {
-        $this->ensureTables();
-        $hash = hash('sha256', strtoupper(trim($plainCode)));
-
-        $record = $this->db->selectOne(
-            sprintf('SELECT id FROM %s WHERE user_id = :uid AND code_hash = :hash AND used_at IS NULL', $this->recoveryCodesTable),
-            ['uid' => $userId, 'hash' => $hash]
-        );
-
-        if ($record === null) {
-            return false;
-        }
-
-        $this->db->update(
-            $this->recoveryCodesTable,
-            ['used_at' => date('Y-m-d H:i:s')],
-            'id = :id',
-            ['id' => $record['id']]
-        );
-
-        return true;
+        $this->ensureTables(installation: false); $hash = hash('sha256', strtoupper(trim($plainCode)));
+        return IdentityPersistence::run($this->db, function () use ($userId, $hash): bool {
+            $state = $this->stateForUpdate($userId); if ($state === null || (int) $state['is_enabled'] !== 1) { return false; }
+            $records = $this->db->select('SELECT id, used_at FROM user_recovery_codes WHERE user_id = ? AND code_hash = ?' . IdentityPersistence::lock($this->db), [$userId, $hash]);
+            if (count($records) !== 1 || $records[0]['used_at'] !== null) { return false; }
+            return $this->db->update('user_recovery_codes', ['used_at' => date('Y-m-d H:i:s')], 'id = :id AND used_at IS NULL', ['id' => $records[0]['id']]) === 1;
+        });
     }
-
-    /**
-     * Trust current device/browser to skip 2FA challenge for TTL seconds (e.g. 30 days).
-     *
-     * @return string Device token for client cookie
-     */
     public function trustDevice(int $userId, ?string $ip = null, ?string $userAgent = null, int $ttlSeconds = 2592000): string
     {
-        $this->ensureTables();
-        $token = bin2hex(random_bytes(32));
-        $tokenHash = hash('sha256', $token);
-
-        $this->db->insert($this->trustedDevicesTable, [
-            'user_id' => $userId,
-            'device_token_hash' => $tokenHash,
-            'ip_address' => $ip,
-            'user_agent' => $userAgent,
-            'expires_at' => time() + $ttlSeconds,
-        ]);
-
-        return $token;
+        IdentityPersistence::expiresAt($ttlSeconds); $this->ensureTables(installation: false); $plain = bin2hex(random_bytes(32));
+        IdentityPersistence::run($this->db, function () use ($userId, $ip, $userAgent, $ttlSeconds, $plain): void {
+            $state = $this->stateForUpdate($userId);
+            if ($state === null || (int) $state['is_enabled'] !== 1) { throw new ValidationException(['two_factor' => ['Active 2FA required before trusting a device.']]); }
+            $this->db->insert('user_trusted_devices', ['user_id' => $userId, 'device_token_hash' => hash('sha256', $plain), 'ip_address' => $ip, 'user_agent' => $userAgent, 'expires_at' => IdentityPersistence::expiresAt($ttlSeconds)]);
+        });
+        return $plain;
     }
-
-    /**
-     * Verify if device token is trusted and active.
-     */
     public function isDeviceTrusted(int $userId, string $plainToken): bool
     {
-        $this->ensureTables();
-        $tokenHash = hash('sha256', $plainToken);
-
-        $record = $this->db->selectOne(
-            sprintf('SELECT id, expires_at FROM %s WHERE user_id = :uid AND device_token_hash = :hash', $this->trustedDevicesTable),
-            ['uid' => $userId, 'hash' => $tokenHash]
-        );
-
-        if ($record === null) {
-            return false;
-        }
-
-        if ((int) $record['expires_at'] < time()) {
-            $this->db->delete($this->trustedDevicesTable, 'id = :id', ['id' => $record['id']]);
-            return false;
-        }
-
-        return true;
+        $this->ensureTables(installation: false); $hash = hash('sha256', $plainToken);
+        return IdentityPersistence::run($this->db, function () use ($userId, $hash): bool {
+            $state = $this->stateForUpdate($userId); if ($state === null || (int) $state['is_enabled'] !== 1) { return false; }
+            $records = $this->db->select('SELECT id, expires_at FROM user_trusted_devices WHERE user_id = ? AND device_token_hash = ?' . IdentityPersistence::lock($this->db), [$userId, $hash]);
+            if (count($records) !== 1) { return false; }
+            if ((int) $records[0]['expires_at'] <= time()) { $this->db->delete('user_trusted_devices', 'id = :id', ['id' => $records[0]['id']]); return false; }
+            return true;
+        });
+    }
+    private function stateForUpdate(int $userId): ?array
+    {
+        $record = $this->db->selectOne('SELECT * FROM user_two_factor WHERE user_id = ?' . IdentityPersistence::lock($this->db), [$userId]);
+        if ($record !== null && (!in_array((string) $record['is_enabled'], ['0', '1'], true) || (string) $record['secret'] === '')) { throw new \LogicException('Invalid persisted 2FA state; explicit reconciliation required.'); }
+        return $record;
     }
 
     /**

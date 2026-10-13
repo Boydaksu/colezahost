@@ -1,7 +1,7 @@
 {
   "date": "2026-10-13",
   "purpose": "DDL source inventory; direct references are not execution coverage or schema compatibility. C01 removes copied golden-fixture DDL in favor of production migrations.",
-  "file_count": 91,
+  "file_count": 93,
   "files": [
     {
       "file": "src/Api/Auth/ApiKeyService.php",
@@ -993,6 +993,35 @@
       "literal_table_names": [],
       "direct_migration_reference": true,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
+    },
+    {
+      "file": "src/Domain/Identity/Session/SessionRevocationSchema.php",
+      "class": "Coleza\\Domain\\Identity\\Session\\SessionRevocationSchema",
+      "public_schema_methods": [
+        "install",
+        "prepare"
+      ],
+      "literal_table_names": [
+        "session_lifecycle_lock",
+        "session_revocations"
+      ],
+      "direct_migration_reference": true,
+      "schema_migration_path": "database/migrations/2026_10_13_000026_identity_lifecycle.php",
+      "acceptance": "IDENTITY_C01_LOCAL_FULL_MAIN_NATIVE_TESTS_PASS_PENDING_INDEPENDENT_REVIEW"
+    },
+    {
+      "file": "src/Domain/Identity/TwoFactor/TwoFactorLoginSchema.php",
+      "class": "Coleza\\Domain\\Identity\\TwoFactor\\TwoFactorLoginSchema",
+      "public_schema_methods": [
+        "install",
+        "prepare"
+      ],
+      "literal_table_names": [
+        "two_factor_login_steps"
+      ],
+      "direct_migration_reference": true,
+      "schema_migration_path": "database/migrations/2026_10_13_000026_identity_lifecycle.php",
+      "acceptance": "IDENTITY_C01_LOCAL_FULL_MAIN_NATIVE_TESTS_PASS_PENDING_INDEPENDENT_REVIEW"
     }
   ],
   "non_create_schema_helpers": [
@@ -1005,6 +1034,11 @@
       "file": "src/Foundation/Database/ApiSessionSchema.php",
       "scope": "Installed columns, full primary/unique identity and InnoDB checks, explicit installation vs business caller preflight; no CREATE/ALTER or schema format change",
       "acceptance": "API_SESSION_C01_LOCAL_FULL_MAIN_AFFECTED_NATIVE_TESTS_PASS_PENDING_INDEPENDENT_REVIEW"
+    },
+    {
+      "file": "src/Domain/Identity/IdentityPersistence.php",
+      "scope": "Complete installed schema/primary/unique/InnoDB preflight, random caller savepoints; no CREATE or ALTER",
+      "acceptance": "IDENTITY_C01_LOCAL_FULL_MAIN_NATIVE_TESTS_PASS_PENDING_INDEPENDENT_REVIEW"
     }
   ]
 }

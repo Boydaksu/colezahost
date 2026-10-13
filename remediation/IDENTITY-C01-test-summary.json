@@ -1,0 +1,22 @@
+{
+  "reference_commit": "29b71c0da1358689f596d175f06e8a48b50c0d97",
+  "main": {
+    "tests": 1517,
+    "assertions": 10989,
+    "scope": "full main"
+  },
+  "native": {
+    "tests": 688,
+    "assertions": 5314,
+    "classes": 38,
+    "scope": "full native; disjoint exact discovery coverage",
+    "full_suite": true
+  },
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "total": 2205,
+  "assertions": 16303,
+  "independent_acceptance": "PENDING",
+  "production_ready": false
+}

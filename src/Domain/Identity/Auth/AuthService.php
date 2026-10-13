@@ -8,7 +8,7 @@ use Coleza\Domain\Identity\Security\PasswordHasher;
 use Coleza\Domain\Identity\Session\DatabaseSessionHandler;
 use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Exceptions\ValidationException;
-use RuntimeException;
+use Coleza\Domain\Identity\IdentityPersistence;
 
 final class AuthService
 {
@@ -23,8 +23,16 @@ final class AuthService
     ) {
     }
 
-    public function ensureTables(): void
+    public static function schemaRequirements(): array
     {
+        return ['users' => ['id', 'email', 'password_hash', 'name', 'is_active', 'email_verified_at', 'created_at'],
+            'password_resets' => ['id', 'email', 'token_hash', 'expires_at', 'created_at'],
+            'email_verifications' => ['id', 'user_id', 'token_hash', 'expires_at', 'created_at']];
+    }
+
+    public function ensureTables(bool $installation = true): void
+    {
+        if (IdentityPersistence::installed($this->db, self::schemaRequirements(), $installation, ['users' => 'email'])) { return; }
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -45,7 +53,7 @@ final class AuthService
             $this->usersTable,
             $autoInc
         );
-        $this->db->statement($sqlUsers);
+        $this->db->statement($sqlUsers . ($driver === 'mysql' ? ' ENGINE=InnoDB' : ''));
 
         // Password resets table
         $sqlResets = sprintf(
@@ -59,7 +67,7 @@ final class AuthService
             $this->passwordResetsTable,
             $autoInc
         );
-        $this->db->statement($sqlResets);
+        $this->db->statement($sqlResets . ($driver === 'mysql' ? ' ENGINE=InnoDB' : ''));
 
         // Email verifications table
         $sqlVerifications = sprintf(
@@ -73,198 +81,96 @@ final class AuthService
             $this->emailVerificationsTable,
             $autoInc
         );
-        $this->db->statement($sqlVerifications);
+        $this->db->statement($sqlVerifications . ($driver === 'mysql' ? ' ENGINE=InnoDB' : ''));
     }
 
-    /**
-     * Register a new user.
-     *
-     * @return int Created User ID
-     */
     public function register(string $email, string $password, string $name): int
     {
-        $this->ensureTables();
         $email = strtolower(trim($email));
-
-        $existing = $this->db->selectOne(
-            sprintf('SELECT id FROM %s WHERE email = :email', $this->usersTable),
-            ['email' => $email]
-        );
-
-        if ($existing !== null) {
-            throw new ValidationException(['email' => ['Email is already registered.']], 'Email is already registered.');
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 191 || trim($name) === '') { throw new ValidationException(['email' => ['Valid email and name required.']]); }
+        $this->ensureTables(installation: false);
+        if ($this->db->selectOne('SELECT id FROM users WHERE email = ?', [$email]) !== null) { throw new ValidationException(['email' => ['Email is already registered.']]); }
+        try {
+            return (int) $this->db->insert('users', ['email' => $email, 'password_hash' => $this->hasher->hash($password), 'name' => trim($name), 'is_active' => 1, 'email_verified_at' => null]);
+        } catch (\PDOException $error) {
+            if ((string) $error->getCode() !== '23000') { throw $error; }
+            IdentityPersistence::assertCaller($this->db);
+            if ($this->db->selectOne('SELECT id FROM users WHERE email = ?' . IdentityPersistence::lock($this->db), [$email]) !== null) { throw new ValidationException(['email' => ['Email is already registered.']]); }
+            throw $error;
         }
-
-        $hash = $this->hasher->hash($password);
-
-        $id = $this->db->insert($this->usersTable, [
-            'email' => $email,
-            'password_hash' => $hash,
-            'name' => trim($name),
-            'is_active' => 1,
-            'email_verified_at' => null,
-        ]);
-
-        return (int) $id;
     }
 
-    /**
-     * Authenticate user with email and password.
-     *
-     * @return array<string, mixed> User record
-     */
     public function authenticate(string $email, string $password): array
     {
-        $this->ensureTables();
-        $email = strtolower(trim($email));
-
-        $user = $this->db->selectOne(
-            sprintf('SELECT * FROM %s WHERE email = :email', $this->usersTable),
-            ['email' => $email]
-        );
-
-        if ($user === null) {
-            throw new ValidationException(['credentials' => ['Invalid credentials.']], 'Invalid credentials.');
-        }
-
-        if ((int) $user['is_active'] !== 1) {
-            throw new ValidationException(['account' => ['Account is inactive.']], 'Account is inactive.');
-        }
-
-        if (!$this->hasher->verify($password, (string) $user['password_hash'])) {
-            throw new ValidationException(['credentials' => ['Invalid credentials.']], 'Invalid credentials.');
-        }
-
-        // Check and apply rehash if necessary
-        if ($this->hasher->needsRehash((string) $user['password_hash'])) {
-            $newHash = $this->hasher->hash($password);
-            $this->db->update(
-                $this->usersTable,
-                ['password_hash' => $newHash],
-                'id = :id',
-                ['id' => $user['id']]
-            );
-        }
-
-        return $user;
+        $this->ensureTables(installation: false); $email = strtolower(trim($email));
+        return IdentityPersistence::run($this->db, function () use ($email, $password): array {
+            $user = $this->db->selectOne('SELECT * FROM users WHERE email = ?' . IdentityPersistence::lock($this->db), [$email]);
+            if ($user === null || !$this->hasher->verify($password, (string) $user['password_hash'])) { throw new ValidationException(['credentials' => ['Invalid credentials.']], 'Invalid credentials.'); }
+            if ((int) $user['is_active'] !== 1 || (array_key_exists('status', $user) && $user['status'] !== 'active')) { throw new ValidationException(['account' => ['Account is inactive.']], 'Account is inactive.'); }
+            if ($this->hasher->needsRehash((string) $user['password_hash'])) {
+                $user['password_hash'] = $this->hasher->hash($password);
+                $this->db->update('users', ['password_hash' => $user['password_hash']], 'id = :id', ['id' => $user['id']]);
+            }
+            return $user;
+        });
     }
 
-    /**
-     * Generate password reset token.
-     *
-     * @return string Cleartext reset token to send via email
-     */
     public function createPasswordResetToken(string $email, int $ttlSeconds = 3600): string
     {
-        $this->ensureTables();
-        $email = strtolower(trim($email));
-
-        // Purge old tokens for this email
-        $this->db->delete($this->passwordResetsTable, 'email = :email', ['email' => $email]);
-
-        $plainToken = bin2hex(random_bytes(32));
-        $tokenHash = hash('sha256', $plainToken);
-
-        $this->db->insert($this->passwordResetsTable, [
-            'email' => $email,
-            'token_hash' => $tokenHash,
-            'expires_at' => time() + $ttlSeconds,
-        ]);
-
-        return $plainToken;
+        IdentityPersistence::expiresAt($ttlSeconds); $this->ensureTables(installation: false); $email = strtolower(trim($email));
+        $plain = bin2hex(random_bytes(32));
+        IdentityPersistence::run($this->db, function () use ($email, $ttlSeconds, $plain): void {
+            $user = $this->db->selectOne('SELECT id FROM users WHERE email = ?' . IdentityPersistence::lock($this->db), [$email]);
+            // Keep the opaque response shape for unknown accounts without creating usable orphan tokens.
+            if ($user === null) { return; }
+            $this->db->delete('password_resets', 'email = :email', ['email' => $email]);
+            $this->db->insert('password_resets', ['email' => $email, 'token_hash' => hash('sha256', $plain), 'expires_at' => IdentityPersistence::expiresAt($ttlSeconds)]);
+        });
+        return $plain;
     }
 
-    /**
-     * Reset password using token.
-     */
     public function resetPassword(string $email, string $plainToken, string $newPassword): void
     {
-        $this->ensureTables();
-        $email = strtolower(trim($email));
+        $this->ensureTables(installation: false); $this->sessionHandler->prepareLifecycle(); $email = strtolower(trim($email));
+        $twoFactorInstalled = IdentityPersistence::installed($this->db, \Coleza\Domain\Identity\TwoFactor\TwoFactorService::schemaRequirements(), installation: false, unique: ['user_two_factor' => 'user_id']);
         $tokenHash = hash('sha256', $plainToken);
-
-        $record = $this->db->selectOne(
-            sprintf('SELECT * FROM %s WHERE email = :email AND token_hash = :hash', $this->passwordResetsTable),
-            ['email' => $email, 'hash' => $tokenHash]
-        );
-
-        if ($record === null || (int) $record['expires_at'] < time()) {
-            throw new ValidationException(['token' => ['Invalid or expired password reset token.']], 'Invalid or expired password reset token.');
-        }
-
-        $user = $this->db->selectOne(
-            sprintf('SELECT id FROM %s WHERE email = :email', $this->usersTable),
-            ['email' => $email]
-        );
-
-        if ($user === null) {
-            throw new ValidationException(['user' => ['User not found.']], 'User not found.');
-        }
-
-        $newHash = $this->hasher->hash($newPassword);
-
-        $this->db->transaction(function (Connection $db) use ($user, $newHash, $email): void {
-            $db->update(
-                $this->usersTable,
-                ['password_hash' => $newHash],
-                'id = :id',
-                ['id' => $user['id']]
-            );
-
-            // Invalidate all tokens and sessions for user
-            $db->delete($this->passwordResetsTable, 'email = :email', ['email' => $email]);
+        IdentityPersistence::run($this->db, function () use ($email, $tokenHash, $newPassword, $twoFactorInstalled): void {
+            $user = $this->db->selectOne('SELECT id FROM users WHERE email = ?' . IdentityPersistence::lock($this->db), [$email]);
+            if ($user === null) { throw new ValidationException(['token' => ['Invalid or expired password reset token.']]); }
+            $records = $this->db->select('SELECT * FROM password_resets WHERE email = ? AND token_hash = ?' . IdentityPersistence::lock($this->db), [$email, $tokenHash]);
+            if (count($records) !== 1 || (int) $records[0]['expires_at'] <= time()) { throw new ValidationException(['token' => ['Invalid or expired password reset token.']]); }
+            $newHash = $this->hasher->hash($newPassword);
+            $this->db->update('users', ['password_hash' => $newHash], 'id = :id', ['id' => $user['id']]);
+            $this->db->delete('password_resets', 'email = :email', ['email' => $email]);
+            if ($twoFactorInstalled) {
+                $this->db->selectOne('SELECT id FROM user_two_factor WHERE user_id = ?' . IdentityPersistence::lock($this->db), [$user['id']]);
+                $this->db->delete('user_trusted_devices', 'user_id = :uid', ['uid' => $user['id']]);
+            }
             $this->sessionHandler->destroyForUser((int) $user['id']);
         });
     }
 
-    /**
-     * Generate email verification token.
-     */
     public function createEmailVerificationToken(int $userId, int $ttlSeconds = 86400): string
     {
-        $this->ensureTables();
-        $this->db->delete($this->emailVerificationsTable, 'user_id = :uid', ['uid' => $userId]);
-
-        $plainToken = bin2hex(random_bytes(32));
-        $tokenHash = hash('sha256', $plainToken);
-
-        $this->db->insert($this->emailVerificationsTable, [
-            'user_id' => $userId,
-            'token_hash' => $tokenHash,
-            'expires_at' => time() + $ttlSeconds,
-        ]);
-
-        return $plainToken;
+        IdentityPersistence::expiresAt($ttlSeconds); $this->ensureTables(installation: false); $plain = bin2hex(random_bytes(32));
+        IdentityPersistence::run($this->db, function () use ($userId, $ttlSeconds, $plain): void {
+            if ($this->db->selectOne('SELECT id FROM users WHERE id = ?' . IdentityPersistence::lock($this->db), [$userId]) === null) { throw new ValidationException(['user' => ['User not found.']]); }
+            $this->db->delete('email_verifications', 'user_id = :uid', ['uid' => $userId]);
+            $this->db->insert('email_verifications', ['user_id' => $userId, 'token_hash' => hash('sha256', $plain), 'expires_at' => IdentityPersistence::expiresAt($ttlSeconds)]);
+        });
+        return $plain;
     }
 
-    /**
-     * Verify email address using token.
-     */
     public function verifyEmail(int $userId, string $plainToken): bool
     {
-        $this->ensureTables();
-        $tokenHash = hash('sha256', $plainToken);
-
-        $record = $this->db->selectOne(
-            sprintf('SELECT * FROM %s WHERE user_id = :uid AND token_hash = :hash', $this->emailVerificationsTable),
-            ['uid' => $userId, 'hash' => $tokenHash]
-        );
-
-        if ($record === null || (int) $record['expires_at'] < time()) {
-            return false;
-        }
-
-        $this->db->transaction(function (Connection $db) use ($userId): void {
-            $db->update(
-                $this->usersTable,
-                ['email_verified_at' => date('Y-m-d H:i:s')],
-                'id = :id',
-                ['id' => $userId]
-            );
-
-            $db->delete($this->emailVerificationsTable, 'user_id = :uid', ['uid' => $userId]);
+        $this->ensureTables(installation: false); $hash = hash('sha256', $plainToken);
+        return IdentityPersistence::run($this->db, function () use ($userId, $hash): bool {
+            if ($this->db->selectOne('SELECT id FROM users WHERE id = ?' . IdentityPersistence::lock($this->db), [$userId]) === null) { return false; }
+            $records = $this->db->select('SELECT * FROM email_verifications WHERE user_id = ? AND token_hash = ?' . IdentityPersistence::lock($this->db), [$userId, $hash]);
+            if (count($records) !== 1 || (int) $records[0]['expires_at'] <= time()) { return false; }
+            $this->db->update('users', ['email_verified_at' => date('Y-m-d H:i:s')], 'id = :id', ['id' => $userId]);
+            $this->db->delete('email_verifications', 'user_id = :uid', ['uid' => $userId]);
+            return true;
         });
-
-        return true;
     }
 }

@@ -47,6 +47,35 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'identityReset':
+        case 'identityVerify':
+        case 'identityRecovery':
+        case 'identityLogin':
+        case 'identityConfirm':
+        case 'identityReplaceReset':
+        case 'identityRegister':
+        case 'identityResetAndSessionWrite':
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $sessions = new Coleza\Domain\Identity\Session\DatabaseSessionHandler($db);
+            $hasher = new Coleza\Domain\Identity\Security\PasswordHasher(PASSWORD_BCRYPT, ['cost' => 4]);
+            $auth = new Coleza\Domain\Identity\Auth\AuthService($db, $hasher, $sessions);
+            $two = new Coleza\Domain\Identity\TwoFactor\TwoFactorService($db, new Coleza\Domain\Identity\TwoFactor\TotpEngine(), $hasher);
+            $result['accepted'] = false;
+            if ($action === 'identityResetAndSessionWrite' && (int) $argv[2] % 2 === 1) {
+                $sessions->write('original-session', ['user_id' => $id, 'old_writer' => true], $id); $result['accepted'] = true; break;
+            }
+            switch ($action) {
+                case 'identityReset':
+                case 'identityResetAndSessionWrite':
+                    $auth->resetPassword('fixture@example.test', $argv[5], 'ConcurrentReplacement123!'); $result['accepted'] = true; break;
+                case 'identityVerify': $result['accepted'] = $auth->verifyEmail($id, $argv[5]); break;
+                case 'identityRecovery': $result['accepted'] = $two->redeemRecoveryCode($id, $argv[5]); break;
+                case 'identityLogin': $result['accepted'] = $two->verifyLoginCode($id, $argv[5]); break;
+                case 'identityConfirm': $result['codes'] = $two->confirmSetup($id, $argv[5]); $result['accepted'] = true; break;
+                case 'identityReplaceReset': $result['token'] = $auth->createPasswordResetToken('fixture@example.test'); $result['accepted'] = true; break;
+                case 'identityRegister': $result['user_id'] = $auth->register('parallel@example.test', 'Registration123!', 'Parallel'); $result['accepted'] = true; break;
+            }
+            break;
         case 'apiRateAdmission':
             $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             try { $result['admission'] = (new Coleza\Api\RateLimit\RateLimiter($db))->hit('parallel', $id, 60); }
