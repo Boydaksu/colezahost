@@ -25,6 +25,7 @@ final class RoleBasedDashboardsTest extends TestCase
         $this->db = new Connection($pdo, 'sqlite');
 
         $this->createAllTables();
+        \Coleza\Tests\Support\SubscriptionSourceFixture::install($this->db);
 
         $subService = new SubscriptionSnapshotService($this->db);
         $finService = new FinancialMetricsService($this->db);
@@ -137,6 +138,8 @@ final class RoleBasedDashboardsTest extends TestCase
 
     public function testOwnerDashboardAssembly(): void
     {
+        \Coleza\Tests\Support\SubscriptionSourceFixture::service($this->db, 3000, 1);
+        \Coleza\Tests\Support\SubscriptionSourceFixture::service($this->db, 2000, 2);
         // 2 active services ($30 and $20 = $50 MRR)
         $this->db->statement("INSERT INTO hosting_services (user_id, domain, package_name, billing_cycle, recurring_amount, status) VALUES (1, 'a.com', 'Basic', 'monthly', 30.00, 'active')");
         $this->db->statement("INSERT INTO hosting_services (user_id, domain, package_name, billing_cycle, recurring_amount, status) VALUES (2, 'b.com', 'Basic', 'monthly', 20.00, 'active')");

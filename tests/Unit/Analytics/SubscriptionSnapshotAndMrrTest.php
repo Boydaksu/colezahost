@@ -30,19 +30,7 @@ final class SubscriptionSnapshotAndMrrTest extends TestCase
 
     private function createServicesTable(): void
     {
-        $this->db->statement(
-            'CREATE TABLE IF NOT EXISTS hosting_services (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INT NOT NULL,
-                domain VARCHAR(255) NOT NULL,
-                package_name VARCHAR(64) NOT NULL,
-                billing_cycle VARCHAR(32) NOT NULL,
-                recurring_amount DECIMAL(10,2) NOT NULL,
-                currency VARCHAR(3) NOT NULL DEFAULT "USD",
-                status VARCHAR(32) NOT NULL DEFAULT "active",
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
+        \Coleza\Tests\Support\SubscriptionSourceFixture::install($this->db);
     }
 
     public function testMrrCalculatorNormalizationAcrossCycles(): void
@@ -79,23 +67,19 @@ final class SubscriptionSnapshotAndMrrTest extends TestCase
         // Seed active hosting services:
         // Service 1: User 1, Monthly $20 -> MRR $20
         $this->db->statement(
-            "INSERT INTO hosting_services (user_id, domain, package_name, billing_cycle, recurring_amount, currency, status)
-             VALUES (1, 'site1.com', 'Basic', 'monthly', 20.00, 'USD', 'active')"
+            "INSERT INTO services (user_id, domain, billing_cycle, status, recurring_amount_minor, currency_code, service_number, product_id, registration_date, next_due_date) VALUES (1, 'site1.com', 'monthly', 'active', 2000, 'USD', 'FIX-1', 1, '2026-01-01', '2026-11-01')"
         );
         // Service 2: User 1, Annually $120 -> MRR $10
         $this->db->statement(
-            "INSERT INTO hosting_services (user_id, domain, package_name, billing_cycle, recurring_amount, currency, status)
-             VALUES (1, 'site2.com', 'Pro', 'annually', 120.00, 'USD', 'active')"
+            "INSERT INTO services (user_id, domain, billing_cycle, status, recurring_amount_minor, currency_code, service_number, product_id, registration_date, next_due_date) VALUES (1, 'site2.com', 'annually', 'active', 12000, 'USD', 'FIX-2', 1, '2026-01-01', '2026-11-01')"
         );
         // Service 3: User 2, Quarterly $60 -> MRR $20
         $this->db->statement(
-            "INSERT INTO hosting_services (user_id, domain, package_name, billing_cycle, recurring_amount, currency, status)
-             VALUES (2, 'site3.com', 'Basic', 'quarterly', 60.00, 'USD', 'active')"
+            "INSERT INTO services (user_id, domain, billing_cycle, status, recurring_amount_minor, currency_code, service_number, product_id, registration_date, next_due_date) VALUES (2, 'site3.com', 'quarterly', 'active', 6000, 'USD', 'FIX-3', 1, '2026-01-01', '2026-11-01')"
         );
         // Service 4: Terminated service -> must NOT contribute to MRR
         $this->db->statement(
-            "INSERT INTO hosting_services (user_id, domain, package_name, billing_cycle, recurring_amount, currency, status)
-             VALUES (3, 'cancelled.com', 'Basic', 'monthly', 50.00, 'USD', 'terminated')"
+            "INSERT INTO services (user_id, domain, billing_cycle, status, recurring_amount_minor, currency_code, service_number, product_id, registration_date, next_due_date) VALUES (3, 'cancelled.com', 'monthly', 'terminated', 5000, 'USD', 'FIX-4', 1, '2026-01-01', '2026-11-01')"
         );
 
         $snapshot = $this->service->captureSnapshot('2026-10-01', 'USD');
@@ -113,8 +97,7 @@ final class SubscriptionSnapshotAndMrrTest extends TestCase
     {
         // Day 1: Single service, $50 MRR
         $this->db->statement(
-            "INSERT INTO hosting_services (id, user_id, domain, package_name, billing_cycle, recurring_amount, currency, status)
-             VALUES (1, 10, 'day1.com', 'VIP', 'monthly', 50.00, 'USD', 'active')"
+            "INSERT INTO services (id, user_id, domain, billing_cycle, status, recurring_amount_minor, currency_code, service_number, product_id, registration_date, next_due_date) VALUES (1, 10, 'day1.com', 'monthly', 'active', 5000, 'USD', 'FIX-5', 1, '2026-01-01', '2026-11-01')"
         );
         $snap1 = $this->service->captureSnapshot('2026-10-01', 'USD');
         $this->assertSame(50.00, $snap1->getTotalMrr());
@@ -122,8 +105,7 @@ final class SubscriptionSnapshotAndMrrTest extends TestCase
 
         // Day 2: Added second service, +$30 MRR (Total $80 MRR)
         $this->db->statement(
-            "INSERT INTO hosting_services (id, user_id, domain, package_name, billing_cycle, recurring_amount, currency, status)
-             VALUES (2, 20, 'day2.com', 'Cloud', 'monthly', 30.00, 'USD', 'active')"
+            "INSERT INTO services (id, user_id, domain, billing_cycle, status, recurring_amount_minor, currency_code, service_number, product_id, registration_date, next_due_date) VALUES (2, 20, 'day2.com', 'monthly', 'active', 3000, 'USD', 'FIX-6', 1, '2026-01-01', '2026-11-01')"
         );
         $snap2 = $this->service->captureSnapshot('2026-10-02', 'USD');
         $this->assertSame(80.00, $snap2->getTotalMrr());
@@ -132,7 +114,7 @@ final class SubscriptionSnapshotAndMrrTest extends TestCase
         $this->assertSame(30.00, $snap2->getNetMrrGrowth());
 
         // Day 3: First service terminates (-$50 MRR, Total $30 MRR)
-        $this->db->statement("UPDATE hosting_services SET status = 'terminated' WHERE id = 1");
+        $this->db->statement("UPDATE services SET status = 'terminated' WHERE id = 1");
         $snap3 = $this->service->captureSnapshot('2026-10-03', 'USD');
         $this->assertSame(30.00, $snap3->getTotalMrr());
         $this->assertSame(0.00, $snap3->getNewMrr());
@@ -144,15 +126,13 @@ final class SubscriptionSnapshotAndMrrTest extends TestCase
     {
         // Setup historical sequence
         $this->db->statement(
-            "INSERT INTO hosting_services (id, user_id, domain, package_name, billing_cycle, recurring_amount, currency, status)
-             VALUES (1, 1, 'alpha.com', 'A', 'monthly', 100.00, 'USD', 'active')"
+            "INSERT INTO services (id, user_id, domain, billing_cycle, status, recurring_amount_minor, currency_code, service_number, product_id, registration_date, next_due_date) VALUES (1, 1, 'alpha.com', 'monthly', 'active', 10000, 'USD', 'FIX-7', 1, '2026-01-01', '2026-11-01')"
         );
         $this->service->captureSnapshot('2026-10-01', 'USD');
 
         // Expansion on day 2
         $this->db->statement(
-            "INSERT INTO hosting_services (id, user_id, domain, package_name, billing_cycle, recurring_amount, currency, status)
-             VALUES (2, 2, 'beta.com', 'B', 'monthly', 25.00, 'USD', 'active')"
+            "INSERT INTO services (id, user_id, domain, billing_cycle, status, recurring_amount_minor, currency_code, service_number, product_id, registration_date, next_due_date) VALUES (2, 2, 'beta.com', 'monthly', 'active', 2500, 'USD', 'FIX-8', 1, '2026-01-01', '2026-11-01')"
         );
         $this->service->captureSnapshot('2026-10-02', 'USD');
 
@@ -175,8 +155,7 @@ final class SubscriptionSnapshotAndMrrTest extends TestCase
     public function testHistoricalSnapshotsRetrieval(): void
     {
         $this->db->statement(
-            "INSERT INTO hosting_services (id, user_id, domain, package_name, billing_cycle, recurring_amount, currency, status)
-             VALUES (1, 1, 'hist.com', 'H', 'monthly', 40.00, 'USD', 'active')"
+            "INSERT INTO services (id, user_id, domain, billing_cycle, status, recurring_amount_minor, currency_code, service_number, product_id, registration_date, next_due_date) VALUES (1, 1, 'hist.com', 'monthly', 'active', 4000, 'USD', 'FIX-9', 1, '2026-01-01', '2026-11-01')"
         );
 
         $this->service->captureSnapshot('2026-10-01', 'USD');

@@ -9,6 +9,7 @@ use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Database\PdoSchema;
 use Coleza\Domain\Analytics\AnalyticsSchema;
 use Coleza\Foundation\Exceptions\ValidationException;
+use Coleza\Domain\Pricing\Entities\PriceCycle;
 use DateTimeImmutable;
 
 final class SubscriptionSnapshotService
@@ -73,53 +74,50 @@ final class SubscriptionSnapshotService
      */
     public function captureSnapshot(string $date, string $currency = 'USD'): SubscriptionSnapshot
     {
-        $this->ensureTables();
-
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+        AnalyticsSchema::assertCaller($this->db);
+        $parsedDate = preg_match('/^\d{4}-\d{2}-\d{2}$/D', $date) ? DateTimeImmutable::createFromFormat('!Y-m-d', $date) : false;
+        if ($parsedDate === false || $parsedDate->format('Y-m-d') !== $date) {
             throw new ValidationException(['date' => ['Snapshot date must follow YYYY-MM-DD format.']], 'Snapshot date must follow YYYY-MM-DD format.');
         }
 
         $currency = strtoupper(trim($currency));
 
-        // 1. Query all active services from hosting_services
-        $services = [];
-        try {
-            $services = $this->db->select(
-                "SELECT id, user_id, billing_cycle, recurring_amount, currency, status, created_at
-                 FROM hosting_services
-                 WHERE status = 'active'"
-            );
-        } catch (\Throwable) {
-            // In tests where table has minimal schema
-        }
+        if (!preg_match('/^[A-Z]{3}$/D', $currency)) { throw new ValidationException(['currency' => ['Invalid currency code.']], 'Invalid currency code.'); }
+        $currencyRow = $this->db->selectOne('SELECT code, decimal_places FROM currencies WHERE code = ?', [$currency]);
+        if ($currencyRow === null) { throw new ValidationException(['currency' => ['Currency must exist in the installed currency registry.']], 'Unknown analytics currency.'); }
+        $places = filter_var($currencyRow['decimal_places'], FILTER_VALIDATE_INT);
+        // Derived tables and existing MRR contracts store two decimals; do not silently truncate higher precision.
+        if ($places === false || $places < 0 || $places > 2) { throw new \LogicException('Analytics currency precision above two decimals or invalid precision requires an explicit storage/metric upgrade.'); }
+        $divisor = 10 ** $places;
+
+        // Missing or incompatible canonical sources must fail before any snapshot or schema write.
+        $services = $this->db->select(
+            "SELECT id, user_id, billing_cycle, recurring_amount_minor FROM services WHERE status = 'active' AND currency_code = ?",
+            [$currency]
+        );
 
         $totalMrr = 0.0;
         $activeCount = 0;
         $uniqueUsers = [];
-        $serviceBreakdown = [];
 
         foreach ($services as $svc) {
-            $svcCurrency = strtoupper((string) ($svc['currency'] ?? $currency));
-            if ($svcCurrency !== $currency) {
-                continue;
+            $cycle = (string) $svc['billing_cycle'];
+            if (!PriceCycle::isValid($cycle)) { throw new ValidationException(['billing_cycle' => ['Unknown canonical service billing cycle.']], 'Unknown analytics billing cycle.'); }
+            $minor = filter_var($svc['recurring_amount_minor'], FILTER_VALIDATE_INT);
+            $userId = filter_var($svc['user_id'], FILTER_VALIDATE_INT);
+            if ($minor === false || $minor < 0 || $userId === false || $userId <= 0) {
+                throw new \LogicException('Invalid canonical subscription amount or customer identity; explicit reconciliation required.');
             }
-
-            $amount = (float) ($svc['recurring_amount'] ?? 0.0);
-            $cycle = (string) ($svc['billing_cycle'] ?? 'monthly');
+            if ($cycle === PriceCycle::ONE_TIME) { continue; }
+            $amount = $minor / $divisor;
             $mrr = MrrCalculator::normalizeToMonthly($amount, $cycle);
 
             $totalMrr += $mrr;
             $activeCount++;
-            if (isset($svc['user_id'])) {
-                $uniqueUsers[(int) $svc['user_id']] = true;
-            }
-
-            $serviceBreakdown[] = [
-                'service_id' => $svc['id'] ?? null,
-                'user_id' => $svc['user_id'] ?? null,
-                'mrr' => $mrr,
-            ];
+            $uniqueUsers[$userId] = true;
         }
+
+        $this->ensureTables();
 
         $totalMrr = round($totalMrr, 2);
         $totalArr = MrrCalculator::toArr($totalMrr);
@@ -135,6 +133,10 @@ final class SubscriptionSnapshotService
         $churnedMrr = 0.0;
 
         if ($prevSnapshot !== null) {
+            $previousMetadata = $prevSnapshot->getMetadata();
+            if (($previousMetadata['source'] ?? null) !== 'services:canonical_minor_units' || ($previousMetadata['currency_decimal_places'] ?? null) !== $places) {
+                throw new \LogicException('Historical subscription snapshot source or currency precision requires explicit reconciliation before calculating movements.');
+            }
             $startingMrr = $prevSnapshot->getTotalMrr();
             $netDelta = round($totalMrr - $startingMrr, 2);
 
@@ -155,6 +157,8 @@ final class SubscriptionSnapshotService
             'service_count' => $activeCount,
             'captured_at' => $now,
             'previous_snapshot_date' => $prevSnapshot?->getSnapshotDate(),
+            'source' => 'services:canonical_minor_units',
+            'currency_decimal_places' => $places,
         ];
 
         if ($existing !== null && $existing->getId() !== null) {
@@ -240,7 +244,7 @@ final class SubscriptionSnapshotService
         $this->ensureTables();
         $row = $this->db->selectOne(
             "SELECT * FROM {$this->tableName} WHERE snapshot_date = :dt AND currency = :curr LIMIT 1",
-            ['dt' => $date, 'curr' => strtoupper($currency)]
+            ['dt' => $date, 'curr' => strtoupper(trim($currency))]
         );
 
         return $row !== null ? SubscriptionSnapshot::fromArray($row) : null;
@@ -253,7 +257,7 @@ final class SubscriptionSnapshotService
             "SELECT * FROM {$this->tableName}
              WHERE snapshot_date < :dt AND currency = :curr
              ORDER BY snapshot_date DESC LIMIT 1",
-            ['dt' => $date, 'curr' => strtoupper($currency)]
+            ['dt' => $date, 'curr' => strtoupper(trim($currency))]
         );
 
         return $row !== null ? SubscriptionSnapshot::fromArray($row) : null;
@@ -269,7 +273,7 @@ final class SubscriptionSnapshotService
             "SELECT * FROM {$this->tableName}
              WHERE snapshot_date >= :s AND snapshot_date <= :e AND currency = :curr
              ORDER BY snapshot_date ASC",
-            ['s' => $startDate, 'e' => $endDate, 'curr' => strtoupper($currency)]
+            ['s' => $startDate, 'e' => $endDate, 'curr' => strtoupper(trim($currency))]
         );
 
         return array_map(fn(array $r) => SubscriptionSnapshot::fromArray($r), $rows);
@@ -281,7 +285,7 @@ final class SubscriptionSnapshotService
     public function getMrrWaterfall(string $startDate, string $endDate, string $currency = 'USD'): MrrWaterfallReport
     {
         $this->ensureTables();
-        $curr = strtoupper($currency);
+        $curr = strtoupper(trim($currency));
 
         $startSnapshot = $this->getSnapshot($startDate, $curr);
         $endSnapshot = $this->getSnapshot($endDate, $curr);

@@ -168,6 +168,9 @@ final class PerformanceAndReferenceBudgetRegressionTest extends TestCase
         $analyticsPdo = new PDO('sqlite::memory:');
         $analyticsPdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $analyticsDb = new Connection($analyticsPdo);
+        \Coleza\Tests\Support\SubscriptionSourceFixture::install($analyticsDb);
+        \Coleza\Tests\Support\SubscriptionSourceFixture::service($analyticsDb, 2500, 1);
+        \Coleza\Tests\Support\SubscriptionSourceFixture::service($analyticsDb, 30000, 2, 'annually');
 
         $analyticsDb->statement(
             'CREATE TABLE IF NOT EXISTS hosting_services (
@@ -296,6 +299,7 @@ final class PerformanceAndReferenceBudgetRegressionTest extends TestCase
 
         $start = microtime(true);
         $ownerDashboard = $dashboardService->buildOwnerDashboard('2026-10-31', 'USD');
+        self::assertSame(50.0, $ownerDashboard->getTotalMrr());
         $opsDashboard = $dashboardService->buildOperationsDashboard('2026-10-31');
         $durationMs = (microtime(true) - $start) * 1000.0;
 

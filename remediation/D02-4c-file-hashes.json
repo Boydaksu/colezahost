@@ -1,0 +1,22 @@
+{
+  "remediation/D02-4c-SONUC.md": "1ca3fe1cdd16434b90f535be8ee0214f26cd1488dc704a2e8348037c09c7528a",
+  "remediation/D02-4c-before.txt": "839eec820c102213c00b82d352a283b58d2002e73b6fff63b56e5d5d5f779b60",
+  "remediation/D02-4c-development-history.txt": "5d28b25fe423101ac9a6651373d045b23919f74407c89210639ff2f8e5f7784d",
+  "remediation/D02-4c-mariadb.txt": "c5fd3ac343e67b85bd82782a87a7b63f9532010683de484d0393c55a6df69994",
+  "remediation/D02-4c-mariadb.xml": "c45252744f23fa900444a18ee55a120d4dbbdb684ddc70ef418d00b75b1c1fbd",
+  "remediation/D02-4c-suite.txt": "515212ff04b300d1aeb0ca5831f24f662afad07c53cd72278f60d12092761301",
+  "remediation/D02-4c-suite.xml": "d8e8a415fd4936029f691982c07e42311050f27b7eb5518876e1a6b6ff195fac",
+  "tests/MariaDb/SubscriptionSourceTest.php": "647ba8f084b331e62a937a122554b3c6134135f216d5af84d66e891f431bb4af",
+  "tests/Support/SubscriptionSourceCases.php": "ad1947ac92fe59a7e4e73be334076d36541594946feaebf14012303875357787",
+  "tests/Support/SubscriptionSourceFixture.php": "c59a7a034fd5210422ded793fe3f9e88ce96f3df08c3e50bf14257be32815056",
+  "tests/Unit/Analytics/SubscriptionSourceTest.php": "0872b46ca9e3e22d46b7f8d867e2ca30e7ddd581777b3513be516a9f62152b0e",
+  "remediation/D02-INSTALL-MATRIX.md": "e0caa1eb10bde6564cd5ed5c95847b52c102e49f97d398d36a8fa64c29df7ea7",
+  "remediation/D02-SCHEMA-INVENTORY.json": "5c7175457d4a6a7ef1b2f4bab483d79363bdf1da099505db362acb5ea5397f77",
+  "remediation/PLAN.md": "02884df547b650266dd6c04b9980b2b3fde4d685fb01ebd8082867a97a5f3774",
+  "remediation/state.json": "9dc4ffb7aab6e9526159c89d614dea5aacc5e6c1ac8dfe774ee0f35b1cc8e06a",
+  "src/Domain/Analytics/Subscription/SubscriptionSnapshotService.php": "ae105c712de9b55b6cefdd09bcaa4faf8679462d23a0b19ad71c0739ab797f26",
+  "tests/Integration/Performance/PerformanceAndReferenceBudgetRegressionTest.php": "674be9c6fc7014fbbfbe9f3ff9fdbe793bcbe156410946f67ff39826a0915111",
+  "tests/Support/AnalyticsSchemaCases.php": "38b0a6088ea722d21d5d5a5bf389429600cc2050925c0fcaa932310041030b6f",
+  "tests/Unit/Analytics/RoleBasedDashboardsTest.php": "08f2760cc54eaef53059476bd3b18f74e9b43b83fa79feb61f5d1b4149a8b3ff",
+  "tests/Unit/Analytics/SubscriptionSnapshotAndMrrTest.php": "74eaa99abec27c2dd785735af758360965d562c6f25cb2f67568d35146e37dec"
+}

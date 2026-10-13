@@ -1,0 +1,53 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m.                                                           9 / 9 (100%)
+
+Time: 00:48.491, Memory: 26.00 MB
+
+There were 8 failures:
+
+1) Coleza\Tests\MariaDb\SubscriptionSourceTest::testProductionServicesUseMinorUnitsAndCurrencyIsolation
+Failed asserting that 0.0 is identical to 50.0.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SubscriptionSourceCases.php:27
+
+2) Coleza\Tests\MariaDb\SubscriptionSourceTest::testMissingSourceCannotOverwriteExistingSnapshotWithZero
+Missing source overwritten as zero
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SubscriptionSourceCases.php:36
+
+3) Coleza\Tests\MariaDb\SubscriptionSourceTest::testLegacyHostingTableIsNotAReplacementForCanonicalServices
+Legacy table silently adopted as current source
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SubscriptionSourceCases.php:45
+
+4) Coleza\Tests\MariaDb\SubscriptionSourceTest::testUnknownCurrencyRefusesBeforeSnapshotWrite
+Unknown currency guessed
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SubscriptionSourceCases.php:51
+
+5) Coleza\Tests\MariaDb\SubscriptionSourceTest::testUnknownCycleCannotBecomeMonthlyRevenue
+Unknown cycle assumed monthly
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SubscriptionSourceCases.php:57
+
+6) Coleza\Tests\MariaDb\SubscriptionSourceTest::testZeroDecimalCurrencyDoesNotDivideAmountByOneHundred
+Failed asserting that 0.0 is identical to 1500.0.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SubscriptionSourceCases.php:63
+
+7) Coleza\Tests\MariaDb\SubscriptionSourceTest::testUnsupportedPrecisionIsNotSilentlyRoundedIntoTwoDecimalStorage
+Unsupported precision rounded
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SubscriptionSourceCases.php:68
+
+8) Coleza\Tests\MariaDb\SubscriptionSourceTest::testInvalidCalendarDateRefusesBeforeSnapshotWrite
+Nonexistent date accepted
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SubscriptionSourceCases.php:74
+
+[37;41mFAILURES![0m
+[37;41mTests: 9[0m[37;41m, Assertions: 29[0m[37;41m, Failures: 8[0m[37;41m.[0m

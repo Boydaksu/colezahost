@@ -1,0 +1,23 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[41;37mF[0m[41;37mF[0m                                                                  2 / 2 (100%)
+
+Time: 00:09.978, Memory: 24.00 MB
+
+There were 2 failures:
+
+1) Coleza\Tests\MariaDb\SubscriptionSourceTest::testUnverifiedHistoricalSnapshotCannotBeUsedAsMovementBaseline
+Legacy zero became verified growth
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SubscriptionSourceCases.php:102
+
+2) Coleza\Tests\MariaDb\SubscriptionSourceTest::testChangedPrecisionHistoricalSnapshotCannotBeCompared
+Different precisions were compared
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SubscriptionSourceCases.php:110
+
+[37;41mFAILURES![0m
+[37;41mTests: 2[0m[37;41m, Assertions: 6[0m[37;41m, Failures: 2[0m[37;41m.[0m

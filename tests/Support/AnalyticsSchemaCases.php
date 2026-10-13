@@ -8,6 +8,7 @@ trait AnalyticsSchemaCases
 {
     private function installAnalytics(): void
     {
+        SubscriptionSourceFixture::install($this->db);
         (new SubscriptionSnapshotService($this->db))->ensureTables();
         (new ReadModelAggregationService($this->db))->ensureTables();
     }

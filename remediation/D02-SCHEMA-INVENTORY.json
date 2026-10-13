@@ -202,7 +202,7 @@
         "analytics_subscription_snapshots"
       ],
       "direct_migration_reference": true,
-      "acceptance": "D02-4b installation/replay/runtime caller rollback and unique period; canonical metric inputs/currency/source semantics and concurrency/audit acceptance open",
+      "acceptance": "D02-4b schema/caller rollback; D02-4c canonical services minor units/currency/source failures/history guard; tenant/as-of/movement classification/concurrent upsert/audit and full precision acceptance open",
       "schema_migration_path": "database/migrations/2026_10_13_000024_analytics_schema.php"
     },
     {
