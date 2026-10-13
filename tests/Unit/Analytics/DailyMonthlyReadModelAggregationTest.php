@@ -81,21 +81,14 @@ final class DailyMonthlyReadModelAggregationTest extends TestCase
 
     public function testMonthlyAggregationDerivationFromDailyAndSnapshots(): void
     {
-        // Populate pre-aggregated daily rows
-        $this->db->statement(
-            "INSERT INTO analytics_daily_aggregations (date, currency, gross_invoiced, net_invoiced, tax_billed, cash_collected, cash_refunded, net_cash_flow, gateway_fees)
-             VALUES ('2026-10-01', 'USD', 100.00, 80.00, 20.00, 100.00, 0.00, 100.00, 3.00)"
-        );
-        $this->db->statement(
-            "INSERT INTO analytics_daily_aggregations (date, currency, gross_invoiced, net_invoiced, tax_billed, cash_collected, cash_refunded, net_cash_flow, gateway_fees)
-             VALUES ('2026-10-02', 'USD', 200.00, 180.00, 20.00, 150.00, 10.00, 140.00, 4.50)"
-        );
-
-        // Subscription snapshot for end of month
-        $this->db->statement(
-            "INSERT INTO analytics_subscription_snapshots (snapshot_date, currency, total_mrr, total_arr, new_mrr, churned_mrr)
-             VALUES ('2026-10-31', 'USD', 2500.00, 30000.00, 300.00, 50.00)"
-        );
+        \Coleza\Tests\Support\DailySourceFixture::invoice($this->db, 10000, 8000, 2000, date: '2026-10-01');
+        \Coleza\Tests\Support\DailySourceFixture::invoice($this->db, 20000, 18000, 2000, date: '2026-10-02');
+        \Coleza\Tests\Support\DailySourceFixture::payment($this->db, 10000, 300, paidAt: '2026-10-01 12:00:00');
+        \Coleza\Tests\Support\DailySourceFixture::payment($this->db, 15000, 450, paidAt: '2026-10-02 12:00:00');
+        \Coleza\Tests\Support\DailySourceFixture::refund($this->db, 1000, refundedAt: '2026-10-02 12:00:00');
+        $this->service->rebuildDateRange('2026-10-01', '2026-10-31');
+        \Coleza\Tests\Support\SubscriptionSourceFixture::service($this->db, 250000);
+        (new \Coleza\Domain\Analytics\Subscription\SubscriptionSnapshotService($this->db))->captureSnapshot('2026-10-31');
 
         $monthly = $this->service->aggregateMonth('2026-10', 'USD');
 

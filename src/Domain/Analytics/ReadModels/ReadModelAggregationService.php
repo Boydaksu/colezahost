@@ -236,52 +236,65 @@ final class ReadModelAggregationService
      */
     public function aggregateMonth(string $yearMonth, string $currency = 'USD'): MonthlyAggregation
     {
-        $this->ensureTables();
-        if (!preg_match('/^\d{4}-\d{2}$/', $yearMonth)) {
+        AnalyticsSchema::assertCaller($this->db);
+        $parsed = preg_match('/^\d{4}-\d{2}$/D', $yearMonth) ? DateTimeImmutable::createFromFormat('!Y-m-d', $yearMonth . '-01') : false;
+        if ($parsed === false || $parsed->format('Y-m') !== $yearMonth) {
             throw new ValidationException(['year_month' => ['Month format must be YYYY-MM.']], 'Month format must be YYYY-MM.');
         }
-
         $curr = strtoupper(trim($currency));
-        $startDate = $yearMonth . '-01';
-        $endDate = date('Y-m-t', strtotime($startDate));
+        $divisor = $this->dailyCurrencyDivisor($curr);
+        $places = match ($divisor) { 1 => 0, 10 => 1, 100 => 2 };
+        $startDate = $parsed->format('Y-m-d');
+        $endDate = $parsed->format('Y-m-t');
 
-        // Sum pre-aggregated daily rows if present, or query operational tables
+        // A missing day is unknown, including on otherwise empty months. Do not manufacture zero.
+        // Coverage alone does not certify legacy daily provenance; explicit reconciliation remains necessary.
         $dailyRows = $this->db->select(
-            "SELECT SUM(gross_invoiced) as gross_inv, SUM(net_invoiced) as net_inv,
-                    SUM(tax_billed) as tax_bil, SUM(cash_collected) as cash_col,
-                    SUM(cash_refunded) as cash_ref, SUM(gateway_fees) as fees
-             FROM {$this->dailyTable}
-             WHERE date >= :s AND date <= :e AND currency = :c",
+            "SELECT date, gross_invoiced, net_invoiced, tax_billed, cash_collected, cash_refunded, gateway_fees
+             FROM {$this->dailyTable} WHERE date >= :s AND date <= :e AND currency = :c ORDER BY date",
             ['s' => $startDate, 'e' => $endDate, 'c' => $curr]
         );
-
-        $grossInvoiced = (float) ($dailyRows[0]['gross_inv'] ?? 0.0);
-        $netInvoiced = (float) ($dailyRows[0]['net_inv'] ?? 0.0);
-        $taxBilled = (float) ($dailyRows[0]['tax_bil'] ?? 0.0);
-        $cashCollected = (float) ($dailyRows[0]['cash_col'] ?? 0.0);
-        $cashRefunded = (float) ($dailyRows[0]['cash_ref'] ?? 0.0);
-        $gatewayFees = (float) ($dailyRows[0]['fees'] ?? 0.0);
+        if (count($dailyRows) !== (int) $parsed->format('t')) {
+            throw new LogicException('Complete daily coverage is required before building a monthly aggregation.');
+        }
+        $expected = $parsed;
+        $totals = array_fill_keys(['gross_invoiced', 'net_invoiced', 'tax_billed', 'cash_collected', 'cash_refunded', 'gateway_fees'], 0);
+        foreach ($dailyRows as $day) {
+            if ($day['date'] !== $expected->format('Y-m-d')) {
+                throw new LogicException('Complete daily coverage is required before building a monthly aggregation.');
+            }
+            foreach ($totals as $field => $total) {
+                $amount = $this->monthlyStorageCents($day[$field]);
+                if ($amount > 999999999999 - $total) { throw new LogicException('Monthly analytics amount exceeds storage capacity; explicit upgrade required.'); }
+                $totals[$field] = $total + $amount;
+            }
+            $expected = $expected->modify('+1 day');
+        }
+        $grossInvoiced = $totals['gross_invoiced'] / 100;
+        $netInvoiced = $totals['net_invoiced'] / 100;
+        $taxBilled = $totals['tax_billed'] / 100;
+        $cashCollected = $totals['cash_collected'] / 100;
+        $cashRefunded = $totals['cash_refunded'] / 100;
+        $gatewayFees = $totals['gateway_fees'] / 100;
         $netCashFlow = round($cashCollected - $cashRefunded, 2);
 
-        // Subscriptions end of month
-        $endMrr = 0.0;
-        $endArr = 0.0;
+        // Source failures propagate. A previous day/month's snapshot is not a month-end balance.
+        $snap = $this->db->selectOne(
+            "SELECT total_mrr, total_arr, metadata FROM analytics_subscription_snapshots
+             WHERE snapshot_date = :e AND currency = :c",
+            ['e' => $endDate, 'c' => $curr]
+        );
+        if ($snap === null) { throw new LogicException('Canonical month-end subscription snapshot is required before building a monthly aggregation.'); }
+        $metadata = json_decode((string) ($snap['metadata'] ?? ''), true);
+        if (!is_array($metadata) || ($metadata['source'] ?? null) !== 'services:canonical_minor_units' || ($metadata['currency_decimal_places'] ?? null) !== $places) {
+            throw new LogicException('Month-end subscription source or currency precision requires explicit reconciliation.');
+        }
+        $endMrr = $this->monthlyStorageCents($snap['total_mrr']) / 100;
+        $endArr = $this->monthlyStorageCents($snap['total_arr']) / 100;
+        // Subscription movement counts still require a separate event source; existing contract retained.
         $newSubs = 0;
         $churnedSubs = 0;
-
-        try {
-            $snap = $this->db->selectOne(
-                "SELECT total_mrr, total_arr, new_mrr, churned_mrr FROM analytics_subscription_snapshots
-                 WHERE snapshot_date <= :e AND currency = :c ORDER BY snapshot_date DESC LIMIT 1",
-                ['e' => $endDate, 'c' => $curr]
-            );
-            if ($snap !== null) {
-                $endMrr = (float) $snap['total_mrr'];
-                $endArr = (float) $snap['total_arr'];
-            }
-        } catch (\Throwable) {
-            // Ignore
-        }
+        $this->ensureTables();
 
         $now = date('Y-m-d H:i:s');
 
@@ -465,6 +478,15 @@ final class ReadModelAggregationService
         $places = filter_var($row['decimal_places'], FILTER_VALIDATE_INT);
         if ($places === false || $places < 0 || $places > 2) { throw new LogicException('Analytics currency precision requires an explicit storage/metric upgrade.'); }
         return 10 ** $places;
+    }
+
+    /** Aggregates are stored at two decimal places, independently of operational minor-unit scale. */
+    private function monthlyStorageCents(mixed $value): int
+    {
+        if ((!is_int($value) && !is_float($value) && !is_string($value)) || !preg_match('/^(\d{1,10})(?:\.(\d{1,2}))?$/D', (string) $value, $parts)) {
+            throw new LogicException('Invalid monthly analytics amount requires explicit reconciliation.');
+        }
+        return (int) $parts[1] * 100 + (int) str_pad($parts[2] ?? '', 2, '0');
     }
 
     private function dailyMinorTotal(array $rows, string $field): int

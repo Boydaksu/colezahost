@@ -1,0 +1,53 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+FFFFFFFF.                                                           9 / 9 (100%)
+
+Time: 00:00.238, Memory: 26.00 MB
+
+There were 8 failures:
+
+1) Coleza\Tests\Unit\Analytics\MonthlySourceTest::testMissingSnapshotTablePropagatesWithoutReplacingMonthly
+Missing source became zero
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\MonthlySourceCases.php:35
+
+2) Coleza\Tests\Unit\Analytics\MonthlySourceTest::testMissingSnapshotAmountColumnPreservesMonthly
+Missing column became zero
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\MonthlySourceCases.php:42
+
+3) Coleza\Tests\Unit\Analytics\MonthlySourceTest::testStaleSnapshotIsNotMonthEnd
+Stale snapshot accepted
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\MonthlySourceCases.php:49
+
+4) Coleza\Tests\Unit\Analytics\MonthlySourceTest::testUnverifiedAndMalformedSnapshotMetadataPreserveMonthly
+Unverified source accepted
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\MonthlySourceCases.php:57
+
+5) Coleza\Tests\Unit\Analytics\MonthlySourceTest::testChangedSnapshotPrecisionPreservesMonthly
+Different snapshot precision accepted
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\MonthlySourceCases.php:65
+
+6) Coleza\Tests\Unit\Analytics\MonthlySourceTest::testPartialDailyCoverageIsNotCompleteMonth
+Partial month accepted
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\MonthlySourceCases.php:72
+
+7) Coleza\Tests\Unit\Analytics\MonthlySourceTest::testInvalidMonthsRefuseBeforeSchemaOrWrites
+Invalid month accepted
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\MonthlySourceCases.php:79
+
+8) Coleza\Tests\Unit\Analytics\MonthlySourceTest::testUnknownAndUnsupportedCurrenciesPreserveMonthly
+Unknown currency accepted
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\MonthlySourceCases.php:86
+
+FAILURES!
+Tests: 9, Assertions: 14, Failures: 8.

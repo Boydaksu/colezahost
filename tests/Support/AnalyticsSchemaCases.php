@@ -46,12 +46,14 @@ trait AnalyticsSchemaCases
     {
         $this->installAnalytics(); $this->db->getPdo()->beginTransaction();
         try {
-            (new ReadModelAggregationService($this->db))->aggregateDay('2026-10-13');
+            (new ReadModelAggregationService($this->db))->rebuildDateRange('2026-10-01', '2026-10-31');
+            (new SubscriptionSnapshotService($this->db))->captureSnapshot('2026-10-31');
             (new ReadModelAggregationService($this->db))->aggregateMonth('2026-10');
             self::assertTrue($this->db->getPdo()->inTransaction());
         } finally { if ($this->db->getPdo()->inTransaction()) { $this->db->getPdo()->rollBack(); } }
         self::assertSame([], $this->db->select('SELECT * FROM analytics_daily_aggregations'));
         self::assertSame([], $this->db->select('SELECT * FROM analytics_monthly_aggregations'));
+        self::assertSame([], $this->db->select('SELECT * FROM analytics_subscription_snapshots'));
     }
     public function testMissingSchemaRefusesInsideRawCallerBeforeDdl(): void
     {

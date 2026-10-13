@@ -1,0 +1,23 @@
+{
+  "baseline_commit": "9465ae3cdf2b260c3d89469800c9c0a5f6133af1",
+  "algorithm": "SHA256",
+  "purpose": "Changed tracked artifacts integrity; not independent acceptance or provenance/security attestation",
+  "files": {
+    "remediation/D02-4e-SONUC.md": "f98f4a8b9189231902bdb931a3d2a2b210e9894d24e006ff0491b796b059bb13",
+    "remediation/D02-4e-before.txt": "47e9f369c4cb268c7ed50576f01be691d8431366b618272e0d1154f98d4d4d68",
+    "remediation/D02-4e-mariadb.txt": "652d1a66522738287af0b19b00c468fa88efcbc5c2fbe6285b33a491eb1f152b",
+    "remediation/D02-4e-mariadb.xml": "dc92e8e4f0555dde647b76c3124b3856cafd0c62f59d7137b9e58a7d49f23924",
+    "remediation/D02-4e-suite.txt": "1dfe8a7a85b80315ac6edca3ffe4772fa07f02e3891e406768f7c2ca08f9f317",
+    "remediation/D02-4e-suite.xml": "481df94407b74b13d0ddfbfdd91395319b37b1a0fd24faba8aa5f3d49aae734f",
+    "remediation/D02-INSTALL-MATRIX.md": "7082ff9e256c38d9836bf636cc096193e659b5fe8f6a5c58a1e1698e481513c5",
+    "remediation/D02-SCHEMA-INVENTORY.json": "7dbb42674558917c938e0e4c49c1c1c0e8f183a2ec0f77de52a10654ddb7110b",
+    "remediation/PLAN.md": "3139af5a73a71385c76e58d4aa601482536bb69b48e40e857c136f6c46966dfe",
+    "remediation/state.json": "b4cb5a38c28384cbab089d83a8fda643f73b06691356aa98345ed4fcd4c8e794",
+    "src/Domain/Analytics/ReadModels/ReadModelAggregationService.php": "53b4b27305af1253881a7e5db183e6a896ae0e13d83c619bc889e0e44592ade6",
+    "tests/MariaDb/MonthlySourceTest.php": "b972a045bbee6976939d405dfd4629bbe26a55630f16af428cf01de6581c5199",
+    "tests/Support/AnalyticsSchemaCases.php": "14d1f896210e1ee82ae922bf1713e616e7790252f9263ab1f29afda031bb2281",
+    "tests/Support/MonthlySourceCases.php": "7459911718bd9458149b757ec2b147f5669fb4c6544aec5525b2575a102895ad",
+    "tests/Unit/Analytics/DailyMonthlyReadModelAggregationTest.php": "63ae584de6ea88574cf63261d003c268f2a7af86ee9c654a20c3ebce0d162d56",
+    "tests/Unit/Analytics/MonthlySourceTest.php": "f2290a9b1a253936737133cf54a28783bbd4e82f05f191277d664f4329f36013"
+  }
+}
