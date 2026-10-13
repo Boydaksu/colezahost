@@ -1,0 +1,18 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[41;37mF[0m                                                                   1 / 1 (100%)
+
+Time: 00:05.087, Memory: 24.00 MB
+
+There was 1 failure:
+
+1) Coleza\Tests\MariaDb\DailySourceTest::testIssuedInvoiceWithoutDateCannotDisappearAsZero
+Undated issued invoice disappeared
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\DailySourceCases.php:137
+
+[37;41mFAILURES![0m
+[37;41mTests: 1[0m[37;41m, Assertions: 3[0m[37;41m, Failures: 1[0m[37;41m.[0m

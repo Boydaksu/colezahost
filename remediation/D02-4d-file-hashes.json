@@ -1,0 +1,20 @@
+{
+  "remediation/D02-4d-SONUC.md": "c68308c8a90ed212964ad8df9019fdcd4e92a77a6a1a7e5e2382da240b60df3d",
+  "remediation/D02-4d-before.txt": "4ae11e792a38a793722f24ebc2cb7580d736630fd5420c0377fb116c1bead833",
+  "remediation/D02-4d-development-invoice-date.txt": "bc5a9f1a62686e77b7fc16afff9df52bd364e6424d218c56a02f7a2f2a7c57ba",
+  "remediation/D02-4d-mariadb.txt": "2a0de91d220fbd168456f8416ecce07919de069be3b8b59757b06410c7ca39d8",
+  "remediation/D02-4d-mariadb.xml": "ee7cd4c4e006fbd9d3e26c39c5064f0ed52740d91f0d41d7106aca5fff60a502",
+  "remediation/D02-4d-suite.txt": "33b31e2c160d62c2ba75be9eb451c157db32039b3f41560e334465cc02bde038",
+  "remediation/D02-4d-suite.xml": "a9bb52b5d84eca14b755f9131fa9477533251ce9907bbaceec0ad5a6c0fae231",
+  "tests/MariaDb/DailySourceTest.php": "21ab9e880a20a2f211b208c825f56b84fecb03b28f20cbd8cf5cbf8046384d36",
+  "tests/Support/DailySourceCases.php": "8a73f468142045dfb4c640321b820c4f4f0db40f47d392310b8d0a63d33f56c5",
+  "tests/Support/DailySourceFixture.php": "5d73b3ce8a11e031011a8856f4ade8bee60d3b5a749373814ee256c214eefd52",
+  "tests/Unit/Analytics/DailySourceTest.php": "4a23b643c3ad580c8bb559a77235a0c0e520510637886f2eb4176337110efd94",
+  "remediation/D02-INSTALL-MATRIX.md": "f5fbace4143a8cb9d054619cde8f161a644488149d0858839b3929df9fa066f0",
+  "remediation/D02-SCHEMA-INVENTORY.json": "f7fea96b2cc3faec5f42fbd50a1c82efe9f16c775364a583407aa3759bfdeba9",
+  "remediation/PLAN.md": "f2f4ce0f0f9b4e8f55a28ec8b976232e1b6369e117a50e899fc68e0a86299fef",
+  "remediation/state.json": "a0c688f6173256810a948220674bb07134963c994a342f13e79eacd4dce82ac3",
+  "src/Domain/Analytics/ReadModels/ReadModelAggregationService.php": "10618b4aea245b6e344ef1ed4aac0b41473983070c2158bfdcacc0001f961d5d",
+  "tests/Support/AnalyticsSchemaCases.php": "54c0301aa2480b3ef249c712e6114acb2988719f486b71bf73a03842f8936006",
+  "tests/Unit/Analytics/DailyMonthlyReadModelAggregationTest.php": "3b7b27f856fd2ffa26e66e2547b0236fc93bef7095d443ef1e3c317a3ef42dc7"
+}

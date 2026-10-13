@@ -12,6 +12,7 @@ use Coleza\Foundation\Exceptions\ValidationException;
 use DateInterval;
 use DatePeriod;
 use DateTimeImmutable;
+use LogicException;
 
 final class ReadModelAggregationService
 {
@@ -103,100 +104,58 @@ final class ReadModelAggregationService
      */
     public function aggregateDay(string $date, string $currency = 'USD'): DailyAggregation
     {
-        $this->ensureTables();
+        AnalyticsSchema::assertCaller($this->db);
         $this->validateDateFormat($date);
         $curr = strtoupper(trim($currency));
 
-        // 1. Invoices
-        $grossInvoiced = 0.0;
-        $netInvoiced = 0.0;
-        $taxBilled = 0.0;
-        $invoicesCount = 0;
-        try {
-            $invoices = $this->db->select(
-                "SELECT total_amount, subtotal_amount, tax_amount FROM invoices
-                 WHERE date(created_at) = :d AND status != 'cancelled'",
-                ['d' => $date]
-            );
-            foreach ($invoices as $inv) {
-                $grossInvoiced += (float) ($inv['total_amount'] ?? 0.0);
-                $netInvoiced += (float) ($inv['subtotal_amount'] ?? $inv['total_amount'] ?? 0.0);
-                $taxBilled += (float) ($inv['tax_amount'] ?? 0.0);
-                $invoicesCount++;
-            }
-        } catch (\Throwable) {
-            // Ignore
+        $divisor = $this->dailyCurrencyDivisor($curr);
+        $startAt = $date . ' 00:00:00';
+        $endAt = (new DateTimeImmutable($date))->modify('+1 day')->format('Y-m-d') . ' 00:00:00';
+        $bindings = ['currency' => $curr, 'start' => $startAt, 'end' => $endAt];
+
+        // Issue date records invoicing; settlement/refund dates record cash. Creation is not payment.
+        if ($this->db->selectOne("SELECT id FROM invoices WHERE currency_code = ? AND status IN ('unpaid', 'paid', 'partially_paid', 'refunded') AND (issue_date IS NULL OR TRIM(issue_date) = '') LIMIT 1", [$curr]) !== null) {
+            throw new LogicException('Issued invoice without event date requires explicit reconciliation before analytics.');
+        }
+        $invoices = $this->db->select('SELECT total_minor, subtotal_minor, tax_total_minor, status FROM invoices WHERE issue_date = :date AND currency_code = :currency', ['date' => $date, 'currency' => $curr]);
+        $issued = [];
+        foreach ($invoices as $invoice) {
+            if (in_array($invoice['status'], ['draft', 'cancelled'], true)) { continue; }
+            if (!in_array($invoice['status'], ['unpaid', 'paid', 'partially_paid', 'refunded'], true)) { throw new LogicException('Unknown invoice state requires explicit reconciliation before analytics.'); }
+            $issued[] = $invoice;
         }
 
-        // 2. Payments & Gateway Fees
-        $cashCollected = 0.0;
-        $gatewayFees = 0.0;
-        try {
-            $payments = $this->db->select(
-                "SELECT amount, fee_amount FROM payments
-                 WHERE date(created_at) = :d AND status = 'captured'",
-                ['d' => $date]
-            );
-            foreach ($payments as $p) {
-                $cashCollected += (float) ($p['amount'] ?? 0.0);
-                $gatewayFees += (float) ($p['fee_amount'] ?? 0.0);
-            }
-        } catch (\Throwable) {
-            // Ignore
+        if ($this->db->selectOne("SELECT id FROM payments WHERE currency_code = ? AND status IN ('completed', 'partially_refunded', 'refunded') AND paid_at IS NULL LIMIT 1", [$curr]) !== null) {
+            throw new LogicException('Settled payment without event date requires explicit reconciliation before analytics.');
         }
-
-        // 3. Refunds
-        $cashRefunded = 0.0;
-        try {
-            $refunds = $this->db->select(
-                "SELECT amount FROM refunds
-                 WHERE date(created_at) = :d AND status = 'completed'",
-                ['d' => $date]
-            );
-            foreach ($refunds as $r) {
-                $cashRefunded += (float) ($r['amount'] ?? 0.0);
-            }
-        } catch (\Throwable) {
-            // Ignore
+        if ($this->db->selectOne('SELECT id FROM refunds WHERE currency_code = ? AND refunded_at IS NULL LIMIT 1', [$curr]) !== null) {
+            throw new LogicException('Refund without event date requires explicit reconciliation before analytics.');
         }
-
-        // 4. Orders
-        $newOrdersCount = 0;
-        try {
-            $orders = $this->db->select("SELECT id FROM orders WHERE date(created_at) = :d", ['d' => $date]);
-            $newOrdersCount = count($orders);
-        } catch (\Throwable) {
-            // Ignore
+        $payments = $this->db->select('SELECT amount_minor, fee_minor, status FROM payments WHERE currency_code = :currency AND paid_at >= :start AND paid_at < :end', $bindings);
+        $settled = [];
+        foreach ($payments as $payment) {
+            if (in_array($payment['status'], ['pending', 'failed'], true)) { continue; }
+            if (!in_array($payment['status'], ['completed', 'partially_refunded', 'refunded'], true)) { throw new LogicException('Unknown payment state requires explicit reconciliation before analytics.'); }
+            $settled[] = $payment;
         }
-
-        // 5. Customers
-        $newCustomersCount = 0;
-        try {
-            $customers = $this->db->select("SELECT id FROM users WHERE date(created_at) = :d", ['d' => $date]);
-            $newCustomersCount = count($customers);
-        } catch (\Throwable) {
-            // Ignore
-        }
-
-        // 6. Tickets
-        $ticketsOpened = 0;
-        $ticketsResolved = 0;
-        try {
-            $opened = $this->db->select("SELECT id FROM support_tickets WHERE date(created_at) = :d", ['d' => $date]);
-            $ticketsOpened = count($opened);
-            $resolved = $this->db->select("SELECT id FROM support_tickets WHERE date(updated_at) = :d AND status = 'resolved'", ['d' => $date]);
-            $ticketsResolved = count($resolved);
-        } catch (\Throwable) {
-            // Ignore
-        }
-
-        $grossInvoiced = round($grossInvoiced, 2);
-        $netInvoiced = round($netInvoiced, 2);
-        $taxBilled = round($taxBilled, 2);
-        $cashCollected = round($cashCollected, 2);
-        $cashRefunded = round($cashRefunded, 2);
+        // Persisted refunds are successful business records; attempts/reservations are separate tables.
+        $refunds = $this->db->select('SELECT amount_minor FROM refunds WHERE currency_code = :currency AND refunded_at >= :start AND refunded_at < :end', $bindings);
+        $grossInvoiced = round($this->dailyMinorTotal($issued, 'total_minor') / $divisor, 2);
+        $netInvoiced = round($this->dailyMinorTotal($issued, 'subtotal_minor') / $divisor, 2);
+        $taxBilled = round($this->dailyMinorTotal($issued, 'tax_total_minor') / $divisor, 2);
+        $invoicesCount = count($issued);
+        $cashCollected = round($this->dailyMinorTotal($settled, 'amount_minor') / $divisor, 2);
+        $gatewayFees = round($this->dailyMinorTotal($settled, 'fee_minor') / $divisor, 2);
+        $cashRefunded = round($this->dailyMinorTotal($refunds, 'amount_minor') / $divisor, 2);
         $netCashFlow = round($cashCollected - $cashRefunded, 2);
-        $gatewayFees = round($gatewayFees, 2);
+
+        // All source reads must succeed before replacing a daily record. User/ticket counters remain global.
+        $newOrdersCount = (int) $this->db->selectOne('SELECT COUNT(*) AS n FROM orders WHERE currency_code = :currency AND created_at >= :start AND created_at < :end', $bindings)['n'];
+        $timeBindings = ['start' => $startAt, 'end' => $endAt];
+        $newCustomersCount = (int) $this->db->selectOne('SELECT COUNT(*) AS n FROM users WHERE created_at >= :start AND created_at < :end', $timeBindings)['n'];
+        $ticketsOpened = (int) $this->db->selectOne('SELECT COUNT(*) AS n FROM support_tickets WHERE created_at >= :start AND created_at < :end', $timeBindings)['n'];
+        $ticketsResolved = (int) $this->db->selectOne("SELECT COUNT(*) AS n FROM support_tickets WHERE updated_at >= :start AND updated_at < :end AND status = 'resolved'", $timeBindings)['n'];
+        $this->ensureTables();
         $now = date('Y-m-d H:i:s');
 
         // Upsert into daily table
@@ -485,7 +444,8 @@ final class ReadModelAggregationService
 
     private function validateDateFormat(string $date): void
     {
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+        $parsed = preg_match('/^\d{4}-\d{2}-\d{2}$/D', $date) ? DateTimeImmutable::createFromFormat('!Y-m-d', $date) : false;
+        if ($parsed === false || $parsed->format('Y-m-d') !== $date) {
             throw new ValidationException(['date' => ['Date must follow YYYY-MM-DD format.']], 'Date must follow YYYY-MM-DD format.');
         }
     }
@@ -495,5 +455,28 @@ final class ReadModelAggregationService
     {
         $columns = array_keys($data);
         $this->db->statement('INSERT INTO ' . $this->monthlyTable . ' (' . implode(', ', array_map(static fn(string $column): string => "`{$column}`", $columns)) . ') VALUES (' . implode(', ', array_map(static fn(string $column): string => ':' . $column, $columns)) . ')', $data);
+    }
+
+    private function dailyCurrencyDivisor(string $currency): int
+    {
+        if (!preg_match('/^[A-Z]{3}$/D', $currency)) { throw new ValidationException(['currency' => ['Invalid currency code.']], 'Invalid currency code.'); }
+        $row = $this->db->selectOne('SELECT code, decimal_places FROM currencies WHERE code = ?', [$currency]);
+        if ($row === null) { throw new ValidationException(['currency' => ['Currency must exist in the installed registry.']], 'Unknown analytics currency.'); }
+        $places = filter_var($row['decimal_places'], FILTER_VALIDATE_INT);
+        if ($places === false || $places < 0 || $places > 2) { throw new LogicException('Analytics currency precision requires an explicit storage/metric upgrade.'); }
+        return 10 ** $places;
+    }
+
+    private function dailyMinorTotal(array $rows, string $field): int
+    {
+        $total = 0;
+        foreach ($rows as $row) {
+            $value = filter_var($row[$field], FILTER_VALIDATE_INT);
+            if ($value === false || $value < 0 || $value > PHP_INT_MAX - $total) {
+                throw new LogicException('Invalid or overflowing canonical analytics amount requires explicit reconciliation.');
+            }
+            $total += $value;
+        }
+        return $total;
     }
 }

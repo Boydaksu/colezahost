@@ -327,7 +327,7 @@
         "analytics_monthly_aggregations"
       ],
       "direct_migration_reference": true,
-      "acceptance": "D02-4b installation/replay/runtime caller rollback and unique period; canonical metric inputs/currency/source semantics and concurrency/audit acceptance open",
+      "acceptance": "D02-4b schema/caller rollback; D02-4d canonical daily minor-unit financial/event sources and fail-before-write; monthly provenance/ledger/tenant/timezone/source isolation/upsert/range atomicity open",
       "schema_migration_path": "database/migrations/2026_10_13_000024_analytics_schema.php"
     },
     {

@@ -1,0 +1,63 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[41;37mF[0m[41;37mF[0m[41;37mF[0m.[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m                                                       11 / 11 (100%)
+
+Time: 01:00.770, Memory: 26.00 MB
+
+There were 10 failures:
+
+1) Coleza\Tests\MariaDb\DailySourceTest::testCanonicalTotalsUseCurrencyStatusesAndFinancialEventDates
+Failed asserting that 0.0 is identical to 350.0.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\DailySourceCases.php:33
+
+2) Coleza\Tests\MariaDb\DailySourceTest::testMissingRefundSourceCannotReplaceExistingDailyWithZero
+Missing source became zero
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\DailySourceCases.php:41
+
+3) Coleza\Tests\MariaDb\DailySourceTest::testMissingCanonicalFeeColumnPreservesOriginalDaily
+Missing amount column became zero
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\DailySourceCases.php:48
+
+4) Coleza\Tests\MariaDb\DailySourceTest::testZeroDecimalCurrencyUsesConfiguredMinorUnitScale
+Failed asserting that 0.0 is identical to 1500.0.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\DailySourceCases.php:62
+
+5) Coleza\Tests\MariaDb\DailySourceTest::testUnknownCurrencyRefusesBeforeWrite
+Unknown currency guessed
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\DailySourceCases.php:67
+
+6) Coleza\Tests\MariaDb\DailySourceTest::testUnsupportedPrecisionRefusesBeforeWrite
+Precision silently rounded
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\DailySourceCases.php:73
+
+7) Coleza\Tests\MariaDb\DailySourceTest::testSettledPaymentWithoutEventDateCannotDisappearAsZero
+Undated settled money vanished
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\DailySourceCases.php:79
+
+8) Coleza\Tests\MariaDb\DailySourceTest::testNegativeInvoiceSourceIsNotSilentlyReportedAsZero
+Negative source accepted
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\DailySourceCases.php:85
+
+9) Coleza\Tests\MariaDb\DailySourceTest::testCalendarDateValidationPrecedesWrites
+Invalid date accepted
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\DailySourceCases.php:92
+
+10) Coleza\Tests\MariaDb\DailySourceTest::testMissingCountSourceDoesNotLeavePartlyValidDaily
+Missing count source ignored
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\DailySourceCases.php:99
+
+[37;41mFAILURES![0m
+[37;41mTests: 11[0m[37;41m, Assertions: 36[0m[37;41m, Failures: 10[0m[37;41m.[0m

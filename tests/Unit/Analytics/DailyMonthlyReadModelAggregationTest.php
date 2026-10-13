@@ -28,105 +28,20 @@ final class DailyMonthlyReadModelAggregationTest extends TestCase
 
     private function createSourceTables(): void
     {
-        $this->db->statement(
-            'CREATE TABLE IF NOT EXISTS invoices (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                total_amount DECIMAL(10,2) NOT NULL,
-                subtotal_amount DECIMAL(10,2) NOT NULL,
-                tax_amount DECIMAL(10,2) NOT NULL,
-                status VARCHAR(32) NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
-
-        $this->db->statement(
-            'CREATE TABLE IF NOT EXISTS payments (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                amount DECIMAL(10,2) NOT NULL,
-                fee_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-                status VARCHAR(32) NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
-
-        $this->db->statement(
-            'CREATE TABLE IF NOT EXISTS refunds (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                amount DECIMAL(10,2) NOT NULL,
-                status VARCHAR(32) NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
-
-        $this->db->statement(
-            'CREATE TABLE IF NOT EXISTS orders (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
-
-        $this->db->statement(
-            'CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
-
-        $this->db->statement(
-            'CREATE TABLE IF NOT EXISTS support_tickets (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                status VARCHAR(32) NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
-
-        $this->db->statement(
-            'CREATE TABLE IF NOT EXISTS analytics_subscription_snapshots (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                snapshot_date VARCHAR(10) NOT NULL,
-                currency VARCHAR(3) NOT NULL,
-                total_mrr DECIMAL(10,2) NOT NULL,
-                total_arr DECIMAL(10,2) NOT NULL,
-                new_mrr DECIMAL(10,2) NOT NULL,
-                churned_mrr DECIMAL(10,2) NOT NULL
-            )'
-        );
+        \Coleza\Tests\Support\DailySourceFixture::install($this->db);
     }
 
     public function testDailyAggregationComputationAndStorage(): void
     {
         $targetDate = '2026-10-15';
 
-        // 1. Invoices
-        $this->db->statement(
-            "INSERT INTO invoices (total_amount, subtotal_amount, tax_amount, status, created_at)
-             VALUES (150.00, 125.00, 25.00, 'paid', '2026-10-15 10:00:00')"
-        );
-        $this->db->statement(
-            "INSERT INTO invoices (total_amount, subtotal_amount, tax_amount, status, created_at)
-             VALUES (200.00, 180.00, 20.00, 'unpaid', '2026-10-15 14:00:00')"
-        );
-
-        // 2. Payments
-        $this->db->statement(
-            "INSERT INTO payments (amount, fee_amount, status, created_at)
-             VALUES (150.00, 4.50, 'captured', '2026-10-15 10:05:00')"
-        );
-
-        // 3. Refunds
-        $this->db->statement(
-            "INSERT INTO refunds (amount, status, created_at)
-             VALUES (20.00, 'completed', '2026-10-15 16:00:00')"
-        );
-
-        // 4. Orders & Customers
-        $this->db->statement("INSERT INTO orders (created_at) VALUES ('2026-10-15 09:00:00')");
-        $this->db->statement("INSERT INTO orders (created_at) VALUES ('2026-10-15 11:00:00')");
-        $this->db->statement("INSERT INTO users (created_at) VALUES ('2026-10-15 09:00:00')");
-
-        // 5. Support tickets
-        $this->db->statement("INSERT INTO support_tickets (status, created_at, updated_at) VALUES ('resolved', '2026-10-15 08:00:00', '2026-10-15 12:00:00')");
+        \Coleza\Tests\Support\DailySourceFixture::invoice($this->db, 15000, 12500, 2500, 'paid', date: $targetDate);
+        \Coleza\Tests\Support\DailySourceFixture::invoice($this->db, 20000, 18000, 2000, date: $targetDate);
+        \Coleza\Tests\Support\DailySourceFixture::payment($this->db, 15000, 450, paidAt: '2026-10-15 10:05:00');
+        \Coleza\Tests\Support\DailySourceFixture::refund($this->db, 2000, refundedAt: '2026-10-15 16:00:00');
+        $this->db->statement("INSERT INTO orders (order_number, user_id, currency_code, created_at) VALUES ('D1', 1, 'USD', '2026-10-15 09:00:00'), ('D2', 1, 'USD', '2026-10-15 11:00:00')");
+        $this->db->statement("INSERT INTO users (email, password_hash, name, created_at) VALUES ('daily@example.test', 'fixture', 'Daily fixture', '2026-10-15 09:00:00')");
+        $this->db->statement("INSERT INTO support_tickets (ticket_number, user_id, department_id, subject, status, created_at, updated_at) VALUES ('DT1', 1, 1, 'Daily fixture', 'resolved', '2026-10-15 08:00:00', '2026-10-15 12:00:00')");
 
         $daily = $this->service->aggregateDay($targetDate, 'USD');
 
