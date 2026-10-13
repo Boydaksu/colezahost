@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Coleza\Domain\Analytics\ReadModels;
 
-use Coleza\Domain\Audit\AuditLogger;
+use Coleza\Domain\Identity\Audit\AuditLogger;
 use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Database\PdoSchema;
 use Coleza\Domain\Analytics\AnalyticsSchema;
@@ -13,6 +13,9 @@ use DateInterval;
 use DatePeriod;
 use DateTimeImmutable;
 use LogicException;
+use Coleza\Domain\Analytics\AnalyticsInput;
+use Coleza\Domain\Analytics\AnalyticsTransaction;
+use Coleza\Domain\Analytics\Financial\FinancialSourceReader;
 
 final class ReadModelAggregationService
 {
@@ -104,6 +107,14 @@ final class ReadModelAggregationService
      */
     public function aggregateDay(string $date, string $currency = 'USD'): DailyAggregation
     {
+        $this->validateDateFormat($date);
+        $this->dailyCurrencyDivisor(strtoupper(trim($currency)));
+        $this->assertReadSchema();
+        return AnalyticsTransaction::run($this->db, fn(): DailyAggregation => $this->calculateDay($date, $currency));
+    }
+
+    private function calculateDay(string $date, string $currency): DailyAggregation
+    {
         AnalyticsSchema::assertCaller($this->db);
         $this->validateDateFormat($date);
         $curr = strtoupper(trim($currency));
@@ -113,41 +124,15 @@ final class ReadModelAggregationService
         $endAt = (new DateTimeImmutable($date))->modify('+1 day')->format('Y-m-d') . ' 00:00:00';
         $bindings = ['currency' => $curr, 'start' => $startAt, 'end' => $endAt];
 
-        // Issue date records invoicing; settlement/refund dates record cash. Creation is not payment.
-        if ($this->db->selectOne("SELECT id FROM invoices WHERE currency_code = ? AND status IN ('unpaid', 'paid', 'partially_paid', 'refunded') AND (issue_date IS NULL OR TRIM(issue_date) = '') LIMIT 1", [$curr]) !== null) {
-            throw new LogicException('Issued invoice without event date requires explicit reconciliation before analytics.');
-        }
-        $invoices = $this->db->select('SELECT total_minor, subtotal_minor, tax_total_minor, status FROM invoices WHERE issue_date = :date AND currency_code = :currency', ['date' => $date, 'currency' => $curr]);
-        $issued = [];
-        foreach ($invoices as $invoice) {
-            if (in_array($invoice['status'], ['draft', 'cancelled'], true)) { continue; }
-            if (!in_array($invoice['status'], ['unpaid', 'paid', 'partially_paid', 'refunded'], true)) { throw new LogicException('Unknown invoice state requires explicit reconciliation before analytics.'); }
-            $issued[] = $invoice;
-        }
-
-        if ($this->db->selectOne("SELECT id FROM payments WHERE currency_code = ? AND status IN ('completed', 'partially_refunded', 'refunded') AND paid_at IS NULL LIMIT 1", [$curr]) !== null) {
-            throw new LogicException('Settled payment without event date requires explicit reconciliation before analytics.');
-        }
-        if ($this->db->selectOne('SELECT id FROM refunds WHERE currency_code = ? AND refunded_at IS NULL LIMIT 1', [$curr]) !== null) {
-            throw new LogicException('Refund without event date requires explicit reconciliation before analytics.');
-        }
-        $payments = $this->db->select('SELECT amount_minor, fee_minor, status FROM payments WHERE currency_code = :currency AND paid_at >= :start AND paid_at < :end', $bindings);
-        $settled = [];
-        foreach ($payments as $payment) {
-            if (in_array($payment['status'], ['pending', 'failed'], true)) { continue; }
-            if (!in_array($payment['status'], ['completed', 'partially_refunded', 'refunded'], true)) { throw new LogicException('Unknown payment state requires explicit reconciliation before analytics.'); }
-            $settled[] = $payment;
-        }
-        // Persisted refunds are successful business records; attempts/reservations are separate tables.
-        $refunds = $this->db->select('SELECT amount_minor FROM refunds WHERE currency_code = :currency AND refunded_at >= :start AND refunded_at < :end', $bindings);
-        $grossInvoiced = round($this->dailyMinorTotal($issued, 'total_minor') / $divisor, 2);
-        $netInvoiced = round($this->dailyMinorTotal($issued, 'subtotal_minor') / $divisor, 2);
-        $taxBilled = round($this->dailyMinorTotal($issued, 'tax_total_minor') / $divisor, 2);
-        $invoicesCount = count($issued);
-        $cashCollected = round($this->dailyMinorTotal($settled, 'amount_minor') / $divisor, 2);
-        $gatewayFees = round($this->dailyMinorTotal($settled, 'fee_minor') / $divisor, 2);
-        $cashRefunded = round($this->dailyMinorTotal($refunds, 'amount_minor') / $divisor, 2);
-        $netCashFlow = round($cashCollected - $cashRefunded, 2);
+        $financial = (new FinancialSourceReader($this->db))->period($date, $date, $curr);
+        $grossInvoiced = $financial['gross_invoiced'];
+        $netInvoiced = $financial['net_invoiced'];
+        $taxBilled = $financial['tax_billed'];
+        $invoicesCount = $financial['invoices_count'];
+        $cashCollected = $financial['cash_collected'];
+        $gatewayFees = $financial['gateway_fees'];
+        $cashRefunded = $financial['cash_refunded'];
+        $netCashFlow = $financial['net_cash_flow'];
 
         // All source reads must succeed before replacing a daily record. User/ticket counters remain global.
         $newOrdersCount = (int) $this->db->selectOne('SELECT COUNT(*) AS n FROM orders WHERE currency_code = :currency AND created_at >= :start AND created_at < :end', $bindings)['n'];
@@ -169,17 +154,7 @@ final class ReadModelAggregationService
         ];
         $places = match ($divisor) { 1 => 0, 10 => 1, 100 => 2 };
         $data['calculation_evidence'] = DailyAggregationEvidence::create($data, $places);
-        $existing = $this->db->selectOne(
-            "SELECT id FROM {$this->dailyTable} WHERE date = :d AND currency = :c LIMIT 1",
-            ['d' => $date, 'c' => $curr]
-        );
-        // Contents and evidence are persisted by the same statement, including caller rollback.
-        if ($existing !== null) {
-            $id = (int) $existing['id'];
-            $this->db->update($this->dailyTable, $data, 'id = :id', ['id' => $id]);
-        } else {
-            $id = (int) $this->db->insert($this->dailyTable, $data);
-        }
+        $id = $this->upsert($this->dailyTable, $data, 'date');
 
         return new DailyAggregation(
             id: $id,
@@ -205,6 +180,21 @@ final class ReadModelAggregationService
      * Computes and persists monthly read model aggregation for a single year-month (YYYY-MM).
      */
     public function aggregateMonth(string $yearMonth, string $currency = 'USD'): MonthlyAggregation
+    {
+        $parsed = preg_match('/^\d{4}-\d{2}$/D', $yearMonth) ? DateTimeImmutable::createFromFormat('!Y-m-d', $yearMonth . '-01') : false;
+        if ($parsed === false || $parsed->format('Y-m') !== $yearMonth) { throw new ValidationException(['year_month' => ['Month format must be YYYY-MM.']], 'Month format must be YYYY-MM.'); }
+        $this->dailyCurrencyDivisor(strtoupper(trim($currency)));
+        $this->assertReadSchema();
+        return AnalyticsTransaction::run($this->db, function () use ($yearMonth, $currency): MonthlyAggregation {
+            $data = $this->deriveMonth($yearMonth, $currency);
+            $data['rebuilt_at'] = date('Y-m-d H:i:s');
+            $data['id'] = $this->upsert($this->monthlyTable, $data, 'year_month');
+            return MonthlyAggregation::fromArray($data);
+        });
+    }
+
+    /** Pure verification path: never creates tables or replaces stored rows. */
+    private function deriveMonth(string $yearMonth, string $currency): array
     {
         AnalyticsSchema::assertCaller($this->db);
         $parsed = preg_match('/^\d{4}-\d{2}$/D', $yearMonth) ? DateTimeImmutable::createFromFormat('!Y-m-d', $yearMonth . '-01') : false;
@@ -264,77 +254,14 @@ final class ReadModelAggregationService
         // Subscription movement counts still require a separate event source; existing contract retained.
         $newSubs = 0;
         $churnedSubs = 0;
-        $this->ensureTables();
-
-        $now = date('Y-m-d H:i:s');
-
-        $existing = $this->db->selectOne(
-            "SELECT id FROM {$this->monthlyTable} WHERE `year_month` = :ym AND currency = :c LIMIT 1",
-            ['ym' => $yearMonth, 'c' => $curr]
-        );
-
-        if ($existing !== null) {
-            $this->db->update(
-                $this->monthlyTable,
-                [
-                    'gross_invoiced' => $grossInvoiced,
-                    'net_invoiced' => $netInvoiced,
-                    'tax_billed' => $taxBilled,
-                    'cash_collected' => $cashCollected,
-                    'cash_refunded' => $cashRefunded,
-                    'net_cash_flow' => $netCashFlow,
-                    'gateway_fees' => $gatewayFees,
-                    'end_of_month_mrr' => $endMrr,
-                    'end_of_month_arr' => $endArr,
-                    'new_subscriptions_count' => $newSubs,
-                    'churned_subscriptions_count' => $churnedSubs,
-                    'rebuilt_at' => $now,
-                ],
-                'id = :id',
-                ['id' => $existing['id']]
-            );
-            $id = (int) $existing['id'];
-        } else {
-            $this->insertMonthly([
-                'year_month' => $yearMonth,
-                'currency' => $curr,
-                'gross_invoiced' => $grossInvoiced,
-                'net_invoiced' => $netInvoiced,
-                'tax_billed' => $taxBilled,
-                'cash_collected' => $cashCollected,
-                'cash_refunded' => $cashRefunded,
-                'net_cash_flow' => $netCashFlow,
-                'gateway_fees' => $gatewayFees,
-                'end_of_month_mrr' => $endMrr,
-                'end_of_month_arr' => $endArr,
-                'new_subscriptions_count' => $newSubs,
-                'churned_subscriptions_count' => $churnedSubs,
-                'rebuilt_at' => $now,
-            ]);
-            $row = $this->db->selectOne(
-                "SELECT id FROM {$this->monthlyTable} WHERE `year_month` = :ym AND currency = :c ORDER BY id DESC LIMIT 1",
-                ['ym' => $yearMonth, 'c' => $curr]
-            );
-            $id = $row !== null ? (int) $row['id'] : null;
-        }
-
-        return new MonthlyAggregation(
-            id: $id,
-            yearMonth: $yearMonth,
-            currency: $curr,
-            grossInvoiced: $grossInvoiced,
-            netInvoiced: $netInvoiced,
-            taxBilled: $taxBilled,
-            cashCollected: $cashCollected,
-            cashRefunded: $cashRefunded,
-            netCashFlow: $netCashFlow,
-            gatewayFees: $gatewayFees,
-            endOfMonthMrr: $endMrr,
-            endOfMonthArr: $endArr,
-            newSubscriptionsCount: $newSubs,
-            churnedSubscriptionsCount: $churnedSubs,
-            rebuiltAt: $now
-        );
+        return [
+            'year_month' => $yearMonth, 'currency' => $curr,
+            'gross_invoiced' => $grossInvoiced, 'net_invoiced' => $netInvoiced, 'tax_billed' => $taxBilled,
+            'cash_collected' => $cashCollected, 'cash_refunded' => $cashRefunded,
+            'net_cash_flow' => $netCashFlow, 'gateway_fees' => $gatewayFees,
+            'end_of_month_mrr' => $endMrr, 'end_of_month_arr' => $endArr,
+            'new_subscriptions_count' => $newSubs, 'churned_subscriptions_count' => $churnedSubs,
+        ];
     }
 
     /**
@@ -348,45 +275,55 @@ final class ReadModelAggregationService
             throw new ValidationException(['dates' => ['Start date cannot be after end date.']], 'Start date cannot be after end date.');
         }
 
-        $startTime = microtime(true);
-        $start = new DateTimeImmutable($startDate);
-        $end = (new DateTimeImmutable($endDate))->modify('+1 day');
-        $interval = new DateInterval('P1D');
-        $period = new DatePeriod($start, $interval, $end);
-
-        $count = 0;
-        foreach ($period as $dt) {
-            $this->aggregateDay($dt->format('Y-m-d'), $currency);
-            $count++;
+        $this->assertReadSchema();
+        [$currency] = AnalyticsInput::currency($this->db, $currency);
+        if ($this->auditLogger !== null && !PdoSchema::useInstalledSchema($this->db, ['security_audit_logs' => ['id', 'actor_user_id', 'impersonator_user_id', 'event_type', 'target_resource', 'ip_address', 'user_agent', 'payload', 'created_at']])) {
+            throw new LogicException('Install audit schema before analytics rebuild.');
         }
+        return AnalyticsTransaction::run($this->db, function () use ($startDate, $endDate, $currency): RebuildExecutionReport {
+            $startTime = microtime(true);
+            $start = new DateTimeImmutable($startDate);
+            $end = (new DateTimeImmutable($endDate))->modify('+1 day');
+            $interval = new DateInterval('P1D');
+            $period = new DatePeriod($start, $interval, $end);
 
-        $duration = round(microtime(true) - $startTime, 4);
-        $now = date('Y-m-d H:i:s');
-        $checksum = hash('sha256', sprintf('rebuild_daily:%s:%s:%d:%s', $startDate, $endDate, $count, $now));
+            $count = 0;
+            foreach ($period as $dt) {
+                $this->aggregateDay($dt->format('Y-m-d'), $currency);
+                $count++;
+            }
 
-        $this->auditLogger?->log(
-            actorUserId: 0,
-            eventType: 'ANALYTICS_READ_MODELS_REBUILT',
-            targetResource: 'analytics:daily_rebuild',
-            payload: [
-                'scope' => 'daily',
-                'count' => $count,
-                'start' => $startDate,
-                'end' => $endDate,
-                'duration' => $duration,
-            ]
-        );
+            $duration = round(microtime(true) - $startTime, 4);
+            $now = date('Y-m-d H:i:s');
+            $rebuiltRows = $this->db->select('SELECT date, currency, calculation_evidence FROM analytics_daily_aggregations WHERE date >= ? AND date <= ? AND currency = ? ORDER BY date', [$startDate, $endDate, $currency]);
+            $checksum = hash('sha256', json_encode($rebuiltRows, JSON_THROW_ON_ERROR));
 
-        return new RebuildExecutionReport(
-            scope: 'daily',
-            itemsRebuiltCount: $count,
-            startDate: $startDate,
-            endDate: $endDate,
-            currency: strtoupper($currency),
-            durationSeconds: $duration,
-            completedAt: $now,
-            rebuildChecksum: $checksum
-        );
+            $this->auditLogger?->log(
+                actorUserId: 0,
+                eventType: 'ANALYTICS_READ_MODELS_REBUILT',
+                targetResource: 'analytics:daily_rebuild',
+                payload: [
+                    'scope' => 'daily',
+                    'currency' => $currency,
+                    'checksum' => $checksum,
+                    'count' => $count,
+                    'start' => $startDate,
+                    'end' => $endDate,
+                    'duration' => $duration,
+                ]
+            );
+
+            return new RebuildExecutionReport(
+                scope: 'daily',
+                itemsRebuiltCount: $count,
+                startDate: $startDate,
+                endDate: $endDate,
+                currency: strtoupper($currency),
+                durationSeconds: $duration,
+                completedAt: $now,
+                rebuildChecksum: $checksum
+            );
+        });
     }
 
     /**
@@ -396,7 +333,9 @@ final class ReadModelAggregationService
      */
     public function getDailySeries(string $startDate, string $endDate, string $currency = 'USD'): array
     {
-        $this->ensureTables();
+        $this->assertReadSchema();
+        AnalyticsInput::range($startDate, $endDate);
+        [$currency, $places] = AnalyticsInput::currency($this->db, $currency);
         $rows = $this->db->select(
             "SELECT * FROM {$this->dailyTable}
              WHERE date >= :s AND date <= :e AND currency = :c
@@ -404,6 +343,7 @@ final class ReadModelAggregationService
             ['s' => $startDate, 'e' => $endDate, 'c' => strtoupper($currency)]
         );
 
+        foreach ($rows as $row) { DailyAggregationEvidence::verify($row, $places); }
         return array_map(fn(array $r) => DailyAggregation::fromArray($r), $rows);
     }
 
@@ -414,7 +354,9 @@ final class ReadModelAggregationService
      */
     public function getMonthlySeries(string $startYearMonth, string $endYearMonth, string $currency = 'USD'): array
     {
-        $this->ensureTables();
+        $this->assertReadSchema();
+        AnalyticsInput::range($startYearMonth . '-01', $endYearMonth . '-01');
+        [$currency] = AnalyticsInput::currency($this->db, $currency);
         $rows = $this->db->select(
             "SELECT * FROM {$this->monthlyTable}
              WHERE `year_month` >= :s AND `year_month` <= :e AND currency = :c
@@ -422,6 +364,16 @@ final class ReadModelAggregationService
             ['s' => $startYearMonth, 'e' => $endYearMonth, 'c' => strtoupper($currency)]
         );
 
+        foreach ($rows as $row) {
+            $expected = $this->deriveMonth($row['year_month'], $currency);
+            foreach ($expected as $field => $value) {
+                $stored = $row[$field];
+                if (is_numeric($value) && (!is_numeric($stored) || !is_finite((float) $stored))) { throw new LogicException('Invalid stored monthly amount; rebuild required.'); }
+                if ((string) $stored !== (string) $value && (!is_numeric($value) || (float) $stored !== (float) $value)) {
+                    throw new LogicException('Stored monthly aggregation differs from verified inputs; rebuild required.');
+                }
+            }
+        }
         return array_map(fn(array $r) => MonthlyAggregation::fromArray($r), $rows);
     }
 
@@ -433,11 +385,28 @@ final class ReadModelAggregationService
         }
     }
 
-    /** YEAR_MONTH is a MySQL interval keyword; quote identifiers while keeping parameter names plain. */
-    private function insertMonthly(array $data): void
+    private function assertReadSchema(): void
+    {
+        AnalyticsSchema::assertCaller($this->db);
+        if (!PdoSchema::useInstalledSchema($this->db, self::schemaRequirements())) { throw new LogicException('Installed analytics schema required; explicit installation needed.'); }
+        AnalyticsSchema::ensureIndexes($this->db, self::indexRequirements(), false);
+        DailyAggregationEvidence::assertInstalled($this->db);
+    }
+
+    /** Unique period/currency key arbitrates concurrent inserts, including evidence in one write. */
+    private function upsert(string $table, array $data, string $period): int
     {
         $columns = array_keys($data);
-        $this->db->statement('INSERT INTO ' . $this->monthlyTable . ' (' . implode(', ', array_map(static fn(string $column): string => "`{$column}`", $columns)) . ') VALUES (' . implode(', ', array_map(static fn(string $column): string => ':' . $column, $columns)) . ')', $data);
+        $quoted = array_map(static fn(string $column): string => "`{$column}`", $columns);
+        $mutable = array_diff($columns, [$period, 'currency']);
+        $sql = 'INSERT INTO ' . $table . ' (' . implode(', ', $quoted) . ') VALUES (' . implode(', ', array_map(static fn(string $column): string => ':' . $column, $columns)) . ')';
+        if ($this->db->getDriverName() === 'sqlite') {
+            $sql .= " ON CONFLICT (`{$period}`, currency) DO UPDATE SET " . implode(', ', array_map(static fn(string $column): string => "`{$column}` = excluded.`{$column}`", $mutable)) . ' RETURNING id';
+            return (int) $this->db->selectOne($sql, $data)['id'];
+        }
+        $sql .= ' ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id), ' . implode(', ', array_map(static fn(string $column): string => "`{$column}` = VALUES(`{$column}`)", $mutable));
+        $this->db->statement($sql, $data);
+        return (int) $this->db->getPdo()->lastInsertId();
     }
 
     private function dailyCurrencyDivisor(string $currency): int
@@ -459,16 +428,4 @@ final class ReadModelAggregationService
         return (int) $parts[1] * 100 + (int) str_pad($parts[2] ?? '', 2, '0');
     }
 
-    private function dailyMinorTotal(array $rows, string $field): int
-    {
-        $total = 0;
-        foreach ($rows as $row) {
-            $value = filter_var($row[$field], FILTER_VALIDATE_INT);
-            if ($value === false || $value < 0 || $value > PHP_INT_MAX - $total) {
-                throw new LogicException('Invalid or overflowing canonical analytics amount requires explicit reconciliation.');
-            }
-            $total += $value;
-        }
-        return $total;
-    }
 }

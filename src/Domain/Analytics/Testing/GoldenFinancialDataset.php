@@ -43,52 +43,13 @@ final class GoldenFinancialDataset
              VALUES (1, 'STRIPE-MAIN', 'Stripe Operating Account', 'gateway', 'USD', 1, 1)"
         );
 
-        // 2. Seed Invoices
-        // Inv 1: $500 ($450 net + $50 tax) - PAID
-        $db->statement(
-            "INSERT INTO invoices (id, invoice_number, total_amount, subtotal_amount, tax_amount, status, currency, created_at)
-             VALUES (1, 'INV-2026-001', 500.00, 450.00, 50.00, 'paid', 'USD', '2026-10-05 10:00:00')"
-        );
-
-        // Inv 2: $450 ($400 net + $50 tax) - PAID
-        $db->statement(
-            "INSERT INTO invoices (id, invoice_number, total_amount, subtotal_amount, tax_amount, status, currency, created_at)
-             VALUES (2, 'INV-2026-002', 450.00, 400.00, 50.00, 'paid', 'USD', '2026-10-12 11:30:00')"
-        );
-
-        // Inv 3: $300 ($250 net + $50 tax) - UNPAID (accounts receivable)
-        $db->statement(
-            "INSERT INTO invoices (id, invoice_number, total_amount, subtotal_amount, tax_amount, status, currency, created_at)
-             VALUES (3, 'INV-2026-003', 300.00, 250.00, 50.00, 'unpaid', 'USD', '2026-10-20 09:15:00')"
-        );
-
-        // Inv 4: $200 - CANCELLED (should NOT count towards gross invoiced)
-        $db->statement(
-            "INSERT INTO invoices (id, invoice_number, total_amount, subtotal_amount, tax_amount, status, currency, created_at)
-             VALUES (4, 'INV-2026-004', 200.00, 180.00, 20.00, 'cancelled', 'USD', '2026-10-22 14:00:00')"
-        );
-
-        // 3. Seed Payments
-        // Payment 1: $500 for INV-001
-        $db->statement(
-            "INSERT INTO payments (id, invoice_id, amount, currency, status, gateway, created_at)
-             VALUES (1, 1, 500.00, 'USD', 'completed', 'stripe', '2026-10-05 10:05:00')"
-        );
-
-        // Payment 2: $450 for INV-002
-        $db->statement(
-            "INSERT INTO payments (id, invoice_id, amount, currency, status, gateway, created_at)
-             VALUES (2, 2, 450.00, 'USD', 'completed', 'stripe', '2026-10-12 11:35:00')"
-        );
-
-        $db->statement(
-            "INSERT INTO payment_refunds (id, payment_id, amount, currency, status, reason, created_at)
-             VALUES (1, 1, 100.00, 'USD', 'completed', 'Customer service goodwill', '2026-10-18 16:00:00')"
-        );
-        $db->statement(
-            "INSERT INTO refunds (id, payment_id, amount, currency, status, reason, created_at)
-             VALUES (1, 1, 100.00, 'USD', 'completed', 'Customer service goodwill', '2026-10-18 16:00:00')"
-        );
+        foreach ([[1, 50000, 45000, 5000, 'paid', '2026-10-05'], [2, 45000, 40000, 5000, 'paid', '2026-10-12'], [3, 30000, 25000, 5000, 'unpaid', '2026-10-20'], [4, 20000, 18000, 2000, 'cancelled', '2026-10-22']] as [$id, $total, $net, $tax, $status, $date]) {
+            $db->insert('invoices', ['id' => $id, 'invoice_number' => 'INV-2026-' . $id, 'user_id' => 1, 'total_minor' => $total, 'subtotal_minor' => $net, 'tax_total_minor' => $tax, 'paid_amount_minor' => $status === 'paid' ? $total : 0, 'status' => $status, 'currency_code' => 'USD', 'issue_date' => $date, 'due_date' => '2026-11-01']);
+        }
+        foreach ([[1, 50000, 'partially_refunded', '2026-10-05'], [2, 45000, 'completed', '2026-10-12']] as [$id, $amount, $status, $date]) {
+            $db->insert('payments', ['id' => $id, 'payment_number' => 'PAY-2026-' . $id, 'invoice_id' => $id, 'user_id' => 1, 'amount_minor' => $amount, 'fee_minor' => 0, 'net_amount_minor' => $amount, 'currency_code' => 'USD', 'status' => $status, 'payment_method' => 'manual', 'paid_at' => $date . ' 10:00:00']);
+        }
+        $db->insert('refunds', ['id' => 1, 'refund_number' => 'REF-2026-1', 'payment_id' => 1, 'user_id' => 1, 'amount_minor' => 10000, 'currency_code' => 'USD', 'reason' => 'Customer service goodwill', 'refunded_at' => '2026-10-18 16:00:00']);
 
         // 5. Seed Authoritative Ledger Entries (financial_account_transactions)
         // Entry 1: Payment 1 deposit +$500.00 (50,000 cents)
@@ -115,16 +76,7 @@ final class GoldenFinancialDataset
             ['type' => AccountTransaction::TYPE_DEBIT, 'src' => AccountTransaction::SOURCE_REFUND]
         );
 
-        // 6. Seed Analytics Daily Aggregations (Precomputed read models)
-        $db->statement(
-            "INSERT INTO analytics_daily_aggregations
-             (date, currency, new_mrr, expansion_mrr, churned_mrr, invoiced_amount, cash_collected, refunds_issued, net_cash_flow, active_subscriptions, rebuilt_at)
-             VALUES
-             ('2026-10-05', 'USD', 50.00, 0.00, 0.00, 500.00, 500.00, 0.00, 500.00, 10, '2026-10-31 23:59:59'),
-             ('2026-10-12', 'USD', 40.00, 0.00, 0.00, 450.00, 450.00, 0.00, 450.00, 12, '2026-10-31 23:59:59'),
-             ('2026-10-18', 'USD', 0.00, 0.00, 0.00, 0.00, 0.00, 100.00, -100.00, 12, '2026-10-31 23:59:59'),
-             ('2026-10-20', 'USD', 0.00, 0.00, 0.00, 300.00, 0.00, 0.00, 0.00, 12, '2026-10-31 23:59:59')"
-        );
+        (new \Coleza\Domain\Analytics\ReadModels\ReadModelAggregationService($db))->rebuildDateRange(self::DEFAULT_START_DATE, self::DEFAULT_END_DATE);
     }
 
     /**
@@ -155,100 +107,9 @@ final class GoldenFinancialDataset
 
     public static function ensureSchema(Connection $db): void
     {
-        $db->statement(
-            'CREATE TABLE IF NOT EXISTS financial_accounts (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                code VARCHAR(50) NOT NULL UNIQUE,
-                name VARCHAR(100) NOT NULL,
-                account_type VARCHAR(30) NOT NULL,
-                currency_code VARCHAR(3) NOT NULL,
-                is_active TINYINT(1) NOT NULL DEFAULT 1,
-                is_default TINYINT(1) NOT NULL DEFAULT 0,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
-
-        $db->statement(
-            'CREATE TABLE IF NOT EXISTS financial_account_transactions (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                entry_number VARCHAR(50) NOT NULL UNIQUE,
-                account_id INT NOT NULL,
-                type VARCHAR(20) NOT NULL,
-                amount_minor INT NOT NULL,
-                balance_after_minor INT NOT NULL,
-                currency_code VARCHAR(3) NOT NULL,
-                source VARCHAR(50) NOT NULL,
-                description VARCHAR(255) NOT NULL,
-                reference_id INT NULL,
-                transaction_date VARCHAR(30) NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
-
-        $db->statement(
-            'CREATE TABLE IF NOT EXISTS invoices (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                invoice_number VARCHAR(50) NOT NULL,
-                total_amount DECIMAL(10,2) NOT NULL,
-                subtotal_amount DECIMAL(10,2) NOT NULL,
-                tax_amount DECIMAL(10,2) NOT NULL,
-                status VARCHAR(30) NOT NULL,
-                currency VARCHAR(3) NOT NULL DEFAULT "USD",
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
-
-        $db->statement(
-            'CREATE TABLE IF NOT EXISTS payments (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                invoice_id INT NULL,
-                amount DECIMAL(10,2) NOT NULL,
-                currency VARCHAR(3) NOT NULL DEFAULT "USD",
-                status VARCHAR(30) NOT NULL,
-                gateway VARCHAR(50) NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
-
-        $db->statement(
-            'CREATE TABLE IF NOT EXISTS payment_refunds (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                payment_id INT NOT NULL,
-                amount DECIMAL(10,2) NOT NULL,
-                currency VARCHAR(3) NOT NULL DEFAULT "USD",
-                status VARCHAR(30) NOT NULL,
-                reason VARCHAR(255) NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
-
-        $db->statement(
-            'CREATE TABLE IF NOT EXISTS refunds (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                payment_id INT NOT NULL,
-                amount DECIMAL(10,2) NOT NULL,
-                currency VARCHAR(3) NOT NULL DEFAULT "USD",
-                status VARCHAR(30) NOT NULL,
-                reason VARCHAR(255) NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
-
-        $db->statement(
-            'CREATE TABLE IF NOT EXISTS analytics_daily_aggregations (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                date VARCHAR(10) NOT NULL,
-                currency VARCHAR(3) NOT NULL,
-                new_mrr DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-                expansion_mrr DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-                churned_mrr DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-                invoiced_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-                cash_collected DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-                refunds_issued DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-                net_cash_flow DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-                active_subscriptions INT NOT NULL DEFAULT 0,
-                rebuilt_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
+        (new \Coleza\Foundation\Database\Migrator($db))->migrate(dirname(__DIR__, 4) . '/database/migrations');
+        if ($db->selectOne('SELECT code FROM currencies WHERE code = ?', ['USD']) === null) {
+            (new \Coleza\Domain\Finance\Currency\CurrencyService($db))->createCurrency(['code' => 'USD', 'name' => 'USD', 'symbol' => '$', 'decimal_places' => 2]);
+        }
     }
 }

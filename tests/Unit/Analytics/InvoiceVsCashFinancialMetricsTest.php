@@ -27,41 +27,7 @@ final class InvoiceVsCashFinancialMetricsTest extends TestCase
 
     private function createFinancialTables(): void
     {
-        $this->db->statement(
-            'CREATE TABLE IF NOT EXISTS invoices (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INT NOT NULL,
-                total_amount DECIMAL(10,2) NOT NULL,
-                subtotal_amount DECIMAL(10,2) NOT NULL,
-                tax_amount DECIMAL(10,2) NOT NULL,
-                amount_paid DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-                status VARCHAR(32) NOT NULL,
-                due_date VARCHAR(10) NOT NULL,
-                currency VARCHAR(3) NOT NULL DEFAULT "USD",
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
-
-        $this->db->statement(
-            'CREATE TABLE IF NOT EXISTS payments (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                amount DECIMAL(10,2) NOT NULL,
-                fee_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-                status VARCHAR(32) NOT NULL,
-                currency VARCHAR(3) NOT NULL DEFAULT "USD",
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
-
-        $this->db->statement(
-            'CREATE TABLE IF NOT EXISTS refunds (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                amount DECIMAL(10,2) NOT NULL,
-                status VARCHAR(32) NOT NULL,
-                currency VARCHAR(3) NOT NULL DEFAULT "USD",
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
+        \Coleza\Tests\Support\DailySourceFixture::install($this->db);
     }
 
     public function testPeriodFinancialMetricsCalculatesInvoiceClaimsAndCashSeparately(): void
@@ -69,30 +35,25 @@ final class InvoiceVsCashFinancialMetricsTest extends TestCase
         // 1. Invoices
         // Inv 1: $100 ($80 subtotal, $20 tax) - Paid
         $this->db->statement(
-            "INSERT INTO invoices (user_id, total_amount, subtotal_amount, tax_amount, amount_paid, status, due_date, created_at)
-             VALUES (1, 100.00, 80.00, 20.00, 100.00, 'paid', '2026-10-15', '2026-10-05 10:00:00')"
+            "INSERT INTO invoices (user_id, status, due_date, created_at, total_minor, subtotal_minor, tax_total_minor, paid_amount_minor, currency_code, invoice_number, issue_date) VALUES (1, 'paid', '2026-10-15', '2026-10-05 10:00:00', 10000, 8000, 2000, 10000, 'USD', 'AINV-1', '2026-10-05')"
         );
         // Inv 2: $200 ($180 subtotal, $20 tax) - Unpaid
         $this->db->statement(
-            "INSERT INTO invoices (user_id, total_amount, subtotal_amount, tax_amount, amount_paid, status, due_date, created_at)
-             VALUES (2, 200.00, 180.00, 20.00, 0.00, 'unpaid', '2026-10-20', '2026-10-06 12:00:00')"
+            "INSERT INTO invoices (user_id, status, due_date, created_at, total_minor, subtotal_minor, tax_total_minor, paid_amount_minor, currency_code, invoice_number, issue_date) VALUES (2, 'unpaid', '2026-10-20', '2026-10-06 12:00:00', 20000, 18000, 2000, 0, 'USD', 'AINV-2', '2026-10-06')"
         );
         // Inv 3: $50 - Cancelled (Must NOT be counted in invoiced gross)
         $this->db->statement(
-            "INSERT INTO invoices (user_id, total_amount, subtotal_amount, tax_amount, amount_paid, status, due_date, created_at)
-             VALUES (3, 50.00, 50.00, 0.00, 0.00, 'cancelled', '2026-10-20', '2026-10-07 14:00:00')"
+            "INSERT INTO invoices (user_id, status, due_date, created_at, total_minor, subtotal_minor, tax_total_minor, paid_amount_minor, currency_code, invoice_number, issue_date) VALUES (3, 'cancelled', '2026-10-20', '2026-10-07 14:00:00', 5000, 5000, 0, 0, 'USD', 'AINV-3', '2026-10-07')"
         );
 
         // 2. Payments (Real Cash)
         $this->db->statement(
-            "INSERT INTO payments (amount, fee_amount, status, created_at)
-             VALUES (100.00, 3.20, 'captured', '2026-10-05 10:05:00')"
+            "INSERT INTO payments (status, created_at, amount_minor, fee_minor, currency_code, payment_number, user_id, payment_method, paid_at, net_amount_minor) VALUES ('completed', '2026-10-05 10:05:00', 10000, 320, 'USD', 'APAY-4', 1, 'manual', '2026-10-05 10:05:00', 9680)"
         );
 
         // 3. Refunds
         $this->db->statement(
-            "INSERT INTO refunds (amount, status, created_at)
-             VALUES (15.00, 'completed', '2026-10-10 15:00:00')"
+            "INSERT INTO refunds (amount_minor, currency_code, refund_number, payment_id, user_id, reason, refunded_at) VALUES (1500, 'USD', 'AREF-5', 1, 1, 'Fixture', '2026-10-10 15:00:00')"
         );
 
         $summary = $this->service->calculatePeriodFinancialMetrics('2026-10-01', '2026-10-31', 'USD');
@@ -119,28 +80,23 @@ final class InvoiceVsCashFinancialMetricsTest extends TestCase
         // As of date: 2026-10-31
         // Inv 1: Due 2026-10-25 (6 days overdue) -> $50 unpaid -> current bucket
         $this->db->statement(
-            "INSERT INTO invoices (user_id, total_amount, subtotal_amount, tax_amount, amount_paid, status, due_date)
-             VALUES (1, 50.00, 50.00, 0.00, 0.00, 'unpaid', '2026-10-25')"
+            "INSERT INTO invoices (user_id, status, due_date, total_minor, subtotal_minor, tax_total_minor, paid_amount_minor, currency_code, invoice_number, issue_date) VALUES (1, 'unpaid', '2026-10-25', 5000, 5000, 0, 0, 'USD', 'AINV-6', '2026-06-01')"
         );
         // Inv 2: Due 2026-09-20 (41 days overdue) -> $80 unpaid -> 31-60 days bucket
         $this->db->statement(
-            "INSERT INTO invoices (user_id, total_amount, subtotal_amount, tax_amount, amount_paid, status, due_date)
-             VALUES (2, 80.00, 80.00, 0.00, 0.00, 'unpaid', '2026-09-20')"
+            "INSERT INTO invoices (user_id, status, due_date, total_minor, subtotal_minor, tax_total_minor, paid_amount_minor, currency_code, invoice_number, issue_date) VALUES (2, 'unpaid', '2026-09-20', 8000, 8000, 0, 0, 'USD', 'AINV-7', '2026-06-01')"
         );
         // Inv 3: Due 2026-08-10 (82 days overdue) -> $120 unpaid -> 61-90 days bucket
         $this->db->statement(
-            "INSERT INTO invoices (user_id, total_amount, subtotal_amount, tax_amount, amount_paid, status, due_date)
-             VALUES (3, 120.00, 120.00, 0.00, 0.00, 'unpaid', '2026-08-10')"
+            "INSERT INTO invoices (user_id, status, due_date, total_minor, subtotal_minor, tax_total_minor, paid_amount_minor, currency_code, invoice_number, issue_date) VALUES (3, 'unpaid', '2026-08-10', 12000, 12000, 0, 0, 'USD', 'AINV-8', '2026-06-01')"
         );
         // Inv 4: Due 2026-06-01 (152 days overdue) -> $200 unpaid -> 90+ days bucket
         $this->db->statement(
-            "INSERT INTO invoices (user_id, total_amount, subtotal_amount, tax_amount, amount_paid, status, due_date)
-             VALUES (4, 200.00, 200.00, 0.00, 0.00, 'unpaid', '2026-06-01')"
+            "INSERT INTO invoices (user_id, status, due_date, total_minor, subtotal_minor, tax_total_minor, paid_amount_minor, currency_code, invoice_number, issue_date) VALUES (4, 'unpaid', '2026-06-01', 20000, 20000, 0, 0, 'USD', 'AINV-9', '2026-06-01')"
         );
         // Inv 5: Fully paid -> must NOT appear in aging report
         $this->db->statement(
-            "INSERT INTO invoices (user_id, total_amount, subtotal_amount, tax_amount, amount_paid, status, due_date)
-             VALUES (5, 500.00, 500.00, 0.00, 500.00, 'paid', '2026-10-01')"
+            "INSERT INTO invoices (user_id, status, due_date, total_minor, subtotal_minor, tax_total_minor, paid_amount_minor, currency_code, invoice_number, issue_date) VALUES (5, 'paid', '2026-10-01', 50000, 50000, 0, 50000, 'USD', 'AINV-10', '2026-06-01')"
         );
 
         $aging = $this->service->calculateAgingReceivables('2026-10-31', 'USD');
@@ -157,13 +113,11 @@ final class InvoiceVsCashFinancialMetricsTest extends TestCase
     {
         // $1000 cash collected, $30 gateway fees
         $this->db->statement(
-            "INSERT INTO payments (amount, fee_amount, status, created_at)
-             VALUES (1000.00, 30.00, 'captured', '2026-10-02 10:00:00')"
+            "INSERT INTO payments (status, created_at, amount_minor, fee_minor, currency_code, payment_number, user_id, payment_method, paid_at, net_amount_minor) VALUES ('completed', '2026-10-02 10:00:00', 100000, 3000, 'USD', 'APAY-11', 1, 'manual', '2026-10-02 10:00:00', 97000)"
         );
         // $100 refunded
         $this->db->statement(
-            "INSERT INTO refunds (amount, status, created_at)
-             VALUES (100.00, 'completed', '2026-10-05 10:00:00')"
+            "INSERT INTO refunds (amount_minor, currency_code, refund_number, payment_id, user_id, reason, refunded_at) VALUES (10000, 'USD', 'AREF-12', 1, 1, 'Fixture', '2026-10-05 10:00:00')"
         );
 
         // Direct costs: $200 (servers, licenses)

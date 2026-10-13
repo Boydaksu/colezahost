@@ -1,0 +1,4 @@
+Complete MariaDB 10.11.18 native suite: 563 tests, 4531 assertions; failures/errors/skipped 0.
+Partitions: 271/2292 + 292/2239.
+All 35 classes and all discovered test identifiers are covered exactly once.
+See raw partition TXT/XML, expected list and coverage proof; this file is their summary, not a separately executed run.

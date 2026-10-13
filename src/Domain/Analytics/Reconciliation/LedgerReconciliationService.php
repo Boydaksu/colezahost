@@ -7,8 +7,11 @@ namespace Coleza\Domain\Analytics\Reconciliation;
 use Coleza\Domain\Analytics\Financial\FinancialPeriodSummary;
 use Coleza\Domain\Finance\Accounts\AccountTransaction;
 use Coleza\Foundation\Database\Connection;
-use Coleza\Foundation\Exceptions\ValidationException;
 use DateTimeImmutable;
+use Coleza\Domain\Analytics\AnalyticsInput;
+use Coleza\Domain\Analytics\Financial\FinancialSourceReader;
+use Coleza\Domain\Analytics\ReadModels\DailyAggregationEvidence;
+use LogicException;
 
 final class LedgerReconciliationService
 {
@@ -34,12 +37,12 @@ final class LedgerReconciliationService
         $aggData = $this->queryAnalyticsAggregations($startDate, $endDate, $curr);
         if ($aggData !== null) {
             $analyticsCashCollected = $aggData['cash_collected'];
-            $analyticsCashRefunded = $aggData['refunds_issued'];
+            $analyticsCashRefunded = $aggData['cash_refunded'];
         } else {
             // Fallback to payments/refunds tables
             $paymentData = $this->queryTransactionalPayments($startDate, $endDate, $curr);
             $analyticsCashCollected = $paymentData['cash_collected'];
-            $analyticsCashRefunded = $paymentData['refunds_issued'];
+            $analyticsCashRefunded = $paymentData['cash_refunded'];
         }
 
         $analyticsNetCash = $analyticsCashCollected - $analyticsCashRefunded;
@@ -89,6 +92,7 @@ final class LedgerReconciliationService
             );
         }
 
+        foreach (($aggData['issues'] ?? []) as $issue) { $discrepancies[] = $issue; }
         $status = count($discrepancies) === 0 ? ReconciliationStatus::MATCHED : ReconciliationStatus::DISCREPANCY_DETECTED;
 
         return new LedgerReconciliationReport(
@@ -118,7 +122,11 @@ final class LedgerReconciliationService
         string $endDate,
         string $currency = 'USD'
     ): LedgerReconciliationReport {
-        $curr = strtoupper(trim($currency));
+        $this->validateDates($startDate, $endDate);
+        [$curr] = AnalyticsInput::currency($this->db, $currency);
+        if ($summary->getStartDate() !== $startDate || $summary->getEndDate() !== $endDate || $summary->getCurrency() !== $curr) {
+            throw new LogicException('Financial summary period/currency differs from reconciliation scope.');
+        }
         $analyticsCashCollected = $summary->getGrossCashCollected();
         $analyticsCashRefunded = $summary->getCashRefunded();
         $analyticsNetCash = $summary->getNetCashFlow();
@@ -186,132 +194,43 @@ final class LedgerReconciliationService
         );
     }
 
-    /**
-     * @return array{cash_collected: float, refunds_issued: float}|null
-     */
     private function queryAnalyticsAggregations(string $startDate, string $endDate, string $currency): ?array
     {
-        try {
-            $rows = $this->db->select(
-                'SELECT COALESCE(SUM(cash_collected), 0) as cash, COALESCE(SUM(refunds_issued), 0) as refunds
-                 FROM analytics_daily_aggregations
-                 WHERE date >= :s AND date <= :e AND currency = :c',
-                ['s' => $startDate, 'e' => $endDate, 'c' => $currency]
-            );
-
-            if (!empty($rows)) {
-                return [
-                    'cash_collected' => (float) ($rows[0]['cash'] ?? 0.0),
-                    'refunds_issued' => (float) ($rows[0]['refunds'] ?? 0.0),
-                ];
-            }
-        } catch (\Throwable) {
-            // Table may not exist yet or query failed
+        [, $places] = AnalyticsInput::currency($this->db, $currency);
+        DailyAggregationEvidence::assertInstalled($this->db);
+        $rows = $this->db->select('SELECT * FROM analytics_daily_aggregations WHERE date >= ? AND date <= ? AND currency = ? ORDER BY date', [$startDate, $endDate, $currency]);
+        if ($rows === []) { return null; }
+        $date = new DateTimeImmutable($startDate); $cash = 0.0; $refunds = 0.0; $issues = [];
+        foreach ($rows as $row) {
+            if ($row['date'] !== $date->format('Y-m-d')) { throw new LogicException('Complete daily coverage required for reconciliation.'); }
+            try { DailyAggregationEvidence::verify($row, $places); }
+            catch (LogicException) { $issues[] = 'Unverified daily aggregation: ' . $row['date']; }
+            $cash += (float) $row['cash_collected']; $refunds += (float) $row['cash_refunded'];
+            $date = $date->modify('+1 day');
         }
-
-        return null;
+        if ($date->format('Y-m-d') !== (new DateTimeImmutable($endDate))->modify('+1 day')->format('Y-m-d')) { throw new LogicException('Complete daily coverage required for reconciliation.'); }
+        return ['cash_collected' => round($cash, 2), 'cash_refunded' => round($refunds, 2), 'issues' => $issues];
     }
 
-    /**
-     * @return array{cash_collected: float, refunds_issued: float}
-     */
     private function queryTransactionalPayments(string $startDate, string $endDate, string $currency): array
     {
-        $cash = 0.0;
-        $refunds = 0.0;
-
-        try {
-            $payRows = $this->db->select(
-                "SELECT COALESCE(SUM(amount), 0) as cash
-                 FROM payments
-                 WHERE date(created_at) >= :s AND date(created_at) <= :e
-                   AND status = 'completed' AND currency = :c",
-                ['s' => $startDate, 'e' => $endDate, 'c' => $currency]
-            );
-            $cash = (float) ($payRows[0]['cash'] ?? 0.0);
-        } catch (\Throwable) {
-        }
-
-        try {
-            $refRows = $this->db->select(
-                "SELECT COALESCE(SUM(amount), 0) as refunds
-                 FROM payment_refunds
-                 WHERE date(created_at) >= :s AND date(created_at) <= :e
-                   AND status = 'completed' AND currency = :c",
-                ['s' => $startDate, 'e' => $endDate, 'c' => $currency]
-            );
-            $refunds = (float) ($refRows[0]['refunds'] ?? 0.0);
-        } catch (\Throwable) {
-        }
-
-        return [
-            'cash_collected' => $cash,
-            'refunds_issued' => $refunds,
-        ];
+        return (new FinancialSourceReader($this->db))->period($startDate, $endDate, $currency);
     }
 
-    /**
-     * @return array{payments: float, refunds: float}
-     */
     private function queryLedgerTransactions(string $startDate, string $endDate, string $currency): array
     {
-        $payments = 0.0;
-        $refunds = 0.0;
-
-        try {
-            // Ledger credit entries where source is payment
-            $creditRows = $this->db->select(
-                "SELECT COALESCE(SUM(amount_minor), 0) as total_minor
-                 FROM financial_account_transactions
-                 WHERE substr(transaction_date, 1, 10) >= :s AND substr(transaction_date, 1, 10) <= :e
-                   AND currency_code = :c
-                   AND type = :type AND source = :src",
-                [
-                    's' => $startDate,
-                    'e' => $endDate,
-                    'c' => $currency,
-                    'type' => AccountTransaction::TYPE_CREDIT,
-                    'src' => AccountTransaction::SOURCE_PAYMENT,
-                ]
-            );
-            $payments = ((int) ($creditRows[0]['total_minor'] ?? 0)) / 100.0;
-
-            // Ledger debit entries where source is refund
-            $debitRows = $this->db->select(
-                "SELECT COALESCE(SUM(amount_minor), 0) as total_minor
-                 FROM financial_account_transactions
-                 WHERE substr(transaction_date, 1, 10) >= :s AND substr(transaction_date, 1, 10) <= :e
-                   AND currency_code = :c
-                   AND type = :type AND source = :src",
-                [
-                    's' => $startDate,
-                    'e' => $endDate,
-                    'c' => $currency,
-                    'type' => AccountTransaction::TYPE_DEBIT,
-                    'src' => AccountTransaction::SOURCE_REFUND,
-                ]
-            );
-            $refunds = ((int) ($debitRows[0]['total_minor'] ?? 0)) / 100.0;
-        } catch (\Throwable) {
+        [$start, $end] = AnalyticsInput::range($startDate, $endDate);
+        [$code, , $divisor] = AnalyticsInput::currency($this->db, $currency);
+        $values = [];
+        foreach (['payments' => [AccountTransaction::TYPE_CREDIT, AccountTransaction::SOURCE_PAYMENT], 'refunds' => [AccountTransaction::TYPE_DEBIT, AccountTransaction::SOURCE_REFUND]] as $key => [$type, $source]) {
+            $rows = $this->db->select('SELECT amount_minor FROM financial_account_transactions WHERE transaction_date >= ? AND transaction_date < ? AND currency_code = ? AND type = ? AND source = ?', [$startDate, substr($end, 0, 10), $code, $type, $source]);
+            $values[$key] = round(AnalyticsInput::total($rows, 'amount_minor') / $divisor, 2);
         }
-
-        return [
-            'payments' => $payments,
-            'refunds' => $refunds,
-        ];
+        return $values;
     }
 
     private function validateDates(string $startDate, string $endDate): void
     {
-        $start = DateTimeImmutable::createFromFormat('Y-m-d', $startDate);
-        $end = DateTimeImmutable::createFromFormat('Y-m-d', $endDate);
-
-        if ($start === false || $end === false) {
-            throw new ValidationException(['dates' => 'Invalid date format, YYYY-MM-DD required.'], 'Invalid date format');
-        }
-
-        if ($start > $end) {
-            throw new ValidationException(['dates' => 'Start date cannot be after end date.'], 'Start date cannot be after end date');
-        }
+        AnalyticsInput::range($startDate, $endDate);
     }
 }

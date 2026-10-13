@@ -28,22 +28,15 @@ final class CurrencyTimezoneFreshnessTest extends TestCase
 
     private function createTables(): void
     {
-        $this->db->statement(
-            'CREATE TABLE IF NOT EXISTS analytics_daily_aggregations (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                date VARCHAR(10) NOT NULL,
-                currency VARCHAR(3) NOT NULL,
-                rebuilt_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
+        \Coleza\Tests\Support\DailySourceFixture::install($this->db);
+    }
 
-        $this->db->statement(
-            'CREATE TABLE IF NOT EXISTS payments (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                amount DECIMAL(10,2) NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
+    private function setAggregationAge(int $seconds): void
+    {
+        $row = $this->db->selectOne('SELECT * FROM analytics_daily_aggregations LIMIT 1');
+        $row['rebuilt_at'] = date('Y-m-d H:i:s', time() - $seconds);
+        $evidence = \Coleza\Domain\Analytics\ReadModels\DailyAggregationEvidence::create($row, 2);
+        $this->db->update('analytics_daily_aggregations', ['rebuilt_at' => $row['rebuilt_at'], 'calculation_evidence' => $evidence], 'id = :id', ['id' => $row['id']]);
     }
 
     public function testCurrencyContextUsesHistoricalRatesWithoutSilentRecalculation(): void
@@ -104,37 +97,24 @@ final class CurrencyTimezoneFreshnessTest extends TestCase
     {
         $freshnessService = new AnalyticsFreshnessService($this->db, staleThresholdSeconds: 900);
 
-        // Case 1: Fresh 30 seconds ago
-        $now = date('Y-m-d H:i:s');
-        $this->db->statement(
-            "INSERT INTO analytics_daily_aggregations (date, currency, rebuilt_at) VALUES ('2026-10-15', 'USD', :r)",
-            ['r' => $now]
-        );
+        (new \Coleza\Domain\Analytics\ReadModels\ReadModelAggregationService($this->db))->aggregateDay(date('Y-m-d'));
 
         $fresh = $freshnessService->evaluateFreshness('USD');
         $this->assertSame(DataFreshnessStatus::REALTIME, $fresh->getStatus());
         $this->assertTrue($fresh->isConsistent());
 
         // Case 2: Near real-time (5 minutes ago = 300s)
-        $fiveMinAgo = date('Y-m-d H:i:s', time() - 300);
-        $this->db->statement(
-            "UPDATE analytics_daily_aggregations SET rebuilt_at = :r WHERE date = '2026-10-15'",
-            ['r' => $fiveMinAgo]
-        );
+        $this->setAggregationAge(300);
         $nearRealtime = $freshnessService->evaluateFreshness('USD');
         $this->assertSame(DataFreshnessStatus::NEAR_REALTIME, $nearRealtime->getStatus());
 
         // Case 3: Stale (2 hours ago = 7200s)
-        $twoHoursAgo = date('Y-m-d H:i:s', time() - 7200);
-        $this->db->statement(
-            "UPDATE analytics_daily_aggregations SET rebuilt_at = :r WHERE date = '2026-10-15'",
-            ['r' => $twoHoursAgo]
-        );
+        $this->setAggregationAge(7200);
         $stale = $freshnessService->evaluateFreshness('USD');
         $this->assertSame(DataFreshnessStatus::STALE, $stale->getStatus());
 
         // Case 4: Recent payment arrived after last rebuild -> inconsistent
-        $this->db->statement("INSERT INTO payments (amount, created_at) VALUES (50.0, :now)", ['now' => $now]);
+        \Coleza\Tests\Support\DailySourceFixture::payment($this->db, 5000, paidAt: date('Y-m-d H:i:s'));
         $inconsistent = $freshnessService->evaluateFreshness('USD');
         $this->assertFalse($inconsistent->isConsistent());
     }

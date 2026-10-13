@@ -1,0 +1,44 @@
+{
+  "classes": [
+    [
+      "Coleza\\Tests\\MariaDb\\ModuleSchemaInstallTest",
+      "Coleza\\Tests\\MariaDb\\DailySourceTest",
+      "Coleza\\Tests\\MariaDb\\MonthlySourceTest",
+      "Coleza\\Tests\\MariaDb\\AnalyticsSchemaTest",
+      "Coleza\\Tests\\MariaDb\\AdoptionPersistenceTest",
+      "Coleza\\Tests\\MariaDb\\ProviderVaultSchemaTest",
+      "Coleza\\Tests\\MariaDb\\AutomationRecoveryIntegrityTest",
+      "Coleza\\Tests\\MariaDb\\FraudSchemaTest",
+      "Coleza\\Tests\\MariaDb\\AutomationActionJournalTest",
+      "Coleza\\Tests\\MariaDb\\DatabaseFoundationTest",
+      "Coleza\\Tests\\MariaDb\\RuntimeSchemaSafetyTest",
+      "Coleza\\Tests\\MariaDb\\LegacyIdentitySchemaTest",
+      "Coleza\\Tests\\MariaDb\\AbuseSchemaTest",
+      "Coleza\\Tests\\MariaDb\\OperationalModePersistenceTest",
+      "Coleza\\Tests\\MariaDb\\ProviderBrandSetupTest",
+      "Coleza\\Tests\\MariaDb\\AutomationLifecycleBoundaryTest",
+      "Coleza\\Tests\\MariaDb\\DocumentPersistenceTest"
+    ],
+    [
+      "Coleza\\Tests\\MariaDb\\PrivacyMigrationInstallTest",
+      "Coleza\\Tests\\MariaDb\\DailyEvidenceTest",
+      "Coleza\\Tests\\MariaDb\\SubscriptionSourceTest",
+      "Coleza\\Tests\\MariaDb\\FinancialConcurrencyTest",
+      "Coleza\\Tests\\MariaDb\\LegacyAdoptionUpgradeTest",
+      "Coleza\\Tests\\MariaDb\\CapacityAndNotificationTest",
+      "Coleza\\Tests\\MariaDb\\BrandCurrencySchemaTest",
+      "Coleza\\Tests\\MariaDb\\BlastRadiusTest",
+      "Coleza\\Tests\\MariaDb\\ApprovalDelayTest",
+      "Coleza\\Tests\\MariaDb\\InstallationAcceptanceTest",
+      "Coleza\\Tests\\MariaDb\\ConfigurationSingletonTest",
+      "Coleza\\Tests\\MariaDb\\AutomationPersistenceTest",
+      "Coleza\\Tests\\MariaDb\\AutomationVersionTest",
+      "Coleza\\Tests\\MariaDb\\FraudAtomicWriteTest",
+      "Coleza\\Tests\\MariaDb\\ProvisioningProbeSafetyTest",
+      "Coleza\\Tests\\MariaDb\\ModuleSchemaSafetyTest",
+      "Coleza\\Tests\\MariaDb\\WhmcsContactPersistenceTest",
+      "Coleza\\Tests\\MariaDb\\AnalyticsReportingTest"
+    ]
+  ],
+  "reason": "All 35 native classes split into disjoint class partitions; each test owns a random isolated database; original PHPUnit flags unchanged."
+}

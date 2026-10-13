@@ -47,6 +47,14 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'analyticsDay':
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $result['aggregation_id'] = (new Coleza\Domain\Analytics\ReadModels\ReadModelAggregationService($db))->aggregateDay('2026-10-13')->getId();
+            break;
+        case 'analyticsMonth':
+            $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $result['aggregation_id'] = (new Coleza\Domain\Analytics\ReadModels\ReadModelAggregationService($db))->aggregateMonth('2026-10')->getId();
+            break;
         case 'operationalModeTransition':
             $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $modes = [Coleza\Domain\OperationalMode\OperationalMode::SAFE, Coleza\Domain\OperationalMode\OperationalMode::READ_ONLY, Coleza\Domain\OperationalMode\OperationalMode::RECOVERY, Coleza\Domain\OperationalMode\OperationalMode::FULL_MAINTENANCE];

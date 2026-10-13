@@ -1,7 +1,7 @@
 {
   "date": "2026-10-13",
-  "purpose": "DDL source inventory; direct references are not execution coverage or schema compatibility",
-  "file_count": 92,
+  "purpose": "DDL source inventory; direct references are not execution coverage or schema compatibility. C01 removes copied golden-fixture DDL in favor of production migrations.",
+  "file_count": 91,
   "files": [
     {
       "file": "src/Api/Auth/ApiKeyService.php",
@@ -148,24 +148,6 @@
         "contracts"
       ],
       "direct_migration_reference": true,
-      "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
-    },
-    {
-      "file": "src/Domain/Analytics/Testing/GoldenFinancialDataset.php",
-      "class": "Coleza\\Domain\\Analytics\\Testing\\GoldenFinancialDataset",
-      "public_schema_methods": [
-        "ensureSchema"
-      ],
-      "literal_table_names": [
-        "analytics_daily_aggregations",
-        "financial_account_transactions",
-        "financial_accounts",
-        "invoices",
-        "payment_refunds",
-        "payments",
-        "refunds"
-      ],
-      "direct_migration_reference": false,
       "acceptance": "NOT_INFERRED_FROM_TEXT_SCAN"
     },
     {

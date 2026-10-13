@@ -9,6 +9,11 @@ use Coleza\Domain\Analytics\ReadModels\ReadModelAggregationService;
 use Coleza\Domain\Analytics\Subscription\SubscriptionSnapshotService;
 use Coleza\Foundation\Database\Connection;
 use DateTimeImmutable;
+use Coleza\Domain\Analytics\AnalyticsInput;
+use Coleza\Domain\Analytics\Subscription\MrrCalculator;
+use Coleza\Domain\Analytics\Subscription\SubscriptionSnapshot;
+use Coleza\Domain\Pricing\Entities\PriceCycle;
+use LogicException;
 
 final class DashboardService
 {
@@ -25,16 +30,19 @@ final class DashboardService
      */
     public function buildOwnerDashboard(string $asOfDate, string $currency = 'USD'): OwnerDashboardData
     {
-        $curr = strtoupper(trim($currency));
+        AnalyticsInput::date($asOfDate);
+        [$curr, $places] = AnalyticsInput::currency($this->db, $currency);
 
         // 1. Subscription & MRR state
         $snapshot = $this->subscriptionService->getSnapshot($asOfDate, $curr);
         if ($snapshot === null) {
-            $snapshot = $this->subscriptionService->captureSnapshot($asOfDate, $curr);
+            throw new LogicException('Explicit canonical subscription snapshot required; dashboard cannot reconstruct history.');
         }
 
+        $this->verifySnapshot($snapshot, $places);
+
         // 2. Financial cash flow last 30 days
-        $start30d = (new DateTimeImmutable($asOfDate))->modify('-30 days')->format('Y-m-d');
+        $start30d = (new DateTimeImmutable($asOfDate))->modify('-29 days')->format('Y-m-d');
         $financialSummary = $this->financialService->calculatePeriodFinancialMetrics($start30d, $asOfDate, $curr);
 
         // 3. Aged outstanding receivables
@@ -44,9 +52,12 @@ final class DashboardService
         $mrrTrend = [];
         $trendSnapshots = $this->subscriptionService->getHistoricalSnapshots($start30d, $asOfDate, $curr);
         foreach ($trendSnapshots as $s) {
+            $this->verifySnapshot($s, $places);
             $mrrTrend[$s->getSnapshotDate()] = $s->getTotalMrr();
         }
 
+        $cashTrend = [];
+        foreach ($this->readModelService->getDailySeries($start30d, $asOfDate, $curr) as $day) { $cashTrend[$day->getDate()] = $day->getNetCashFlow(); }
         return new OwnerDashboardData(
             asOfDate: $asOfDate,
             currency: $curr,
@@ -59,7 +70,7 @@ final class DashboardService
             arpu: $snapshot->getArpu(),
             outstandingReceivables: $aging->getTotalOutstanding(),
             mrrTrend: $mrrTrend,
-            cashTrend: []
+            cashTrend: $cashTrend
         );
     }
 
@@ -87,63 +98,26 @@ final class DashboardService
      */
     public function buildSalesDashboard(string $startDate, string $endDate, string $currency = 'USD'): SalesDashboardData
     {
-        $curr = strtoupper(trim($currency));
-
-        $orderCount = 0;
-        $orderVolume = 0.0;
-        try {
-            $orders = $this->db->select(
-                "SELECT id, total_amount FROM orders
-                 WHERE date(created_at) >= :s AND date(created_at) <= :e",
-                ['s' => $startDate, 'e' => $endDate]
-            );
-            $orderCount = count($orders);
-            foreach ($orders as $o) {
-                $orderVolume += (float) ($o['total_amount'] ?? 0.0);
-            }
-        } catch (\Throwable) {
-            // Ignore
-        }
-
-        $newCustomers = 0;
-        try {
-            $users = $this->db->select(
-                "SELECT id FROM users WHERE date(created_at) >= :s AND date(created_at) <= :e",
-                ['s' => $startDate, 'e' => $endDate]
-            );
-            $newCustomers = count($users);
-        } catch (\Throwable) {
-            // Ignore
-        }
-
-        // Subscriptions growth in period
-        $newMrr = 0.0;
-        try {
-            $waterfall = $this->subscriptionService->getMrrWaterfall($startDate, $endDate, $curr);
-            $newMrr = $waterfall->getNewMrr();
-        } catch (\Throwable) {
-            // Ignore
-        }
-
-        // Top selling packages
+        [$start, $end] = AnalyticsInput::range($startDate, $endDate);
+        [$curr, , $divisor] = AnalyticsInput::currency($this->db, $currency);
+        $orders = $this->db->select('SELECT total_minor FROM orders WHERE created_at >= ? AND created_at < ? AND currency_code = ?', [$start, $end, $curr]);
+        $orderCount = count($orders);
+        $orderVolume = AnalyticsInput::total($orders, 'total_minor') / $divisor;
+        $newCustomers = (int) $this->db->selectOne('SELECT COUNT(*) AS n FROM users WHERE created_at >= ? AND created_at < ?', [$start, $end])['n'];
+        $newMrr = $this->subscriptionService->getMrrWaterfall($startDate, $endDate, $curr)->getNewMrr();
         $topProducts = [];
-        try {
-            $products = $this->db->select(
-                "SELECT package_name, COUNT(*) as count, SUM(recurring_amount) as revenue
-                 FROM hosting_services
-                 WHERE status = 'active'
-                 GROUP BY package_name
-                 ORDER BY count DESC LIMIT 5"
-            );
-            foreach ($products as $p) {
-                $topProducts[(string) $p['package_name']] = [
-                    'active_count' => (int) $p['count'],
-                    'revenue' => round((float) ($p['revenue'] ?? 0.0), 2),
-                ];
-            }
-        } catch (\Throwable) {
-            // Ignore
+        $products = $this->db->select("SELECT p.name, s.billing_cycle, s.recurring_amount_minor FROM services s LEFT JOIN products p ON p.id = s.product_id WHERE s.status = 'active' AND s.currency_code = ?", [$curr]);
+        foreach ($products as $product) {
+            $cycle = $product['billing_cycle'];
+            if (!PriceCycle::isValid($cycle)) { throw new LogicException('Unknown service billing cycle.'); }
+            $name = $product['name'];
+            if ($name === null) { throw new LogicException('Service product missing; explicit reconciliation required.'); }
+            $topProducts[$name] ??= ['active_count' => 0, 'revenue' => 0.0];
+            $topProducts[$name]['active_count']++;
+            $topProducts[$name]['revenue'] += MrrCalculator::normalizeToMonthly(AnalyticsInput::minor($product['recurring_amount_minor']) / $divisor, $cycle);
         }
+        uasort($topProducts, static fn($a, $b) => $b['active_count'] <=> $a['active_count']);
+        $topProducts = array_slice($topProducts, 0, 5, true);
 
         return new SalesDashboardData(
             startDate: $startDate,
@@ -162,47 +136,20 @@ final class DashboardService
      */
     public function buildOperationsDashboard(string $asOfDate): OperationsDashboardData
     {
-        $activeServices = 0;
-        $suspendedServices = 0;
-        $terminatedServices = 0;
-        try {
-            $services = $this->db->select("SELECT status, count(*) as cnt FROM hosting_services GROUP BY status");
-            foreach ($services as $s) {
-                $st = strtolower((string) $s['status']);
-                if ($st === 'active') {
-                    $activeServices = (int) $s['cnt'];
-                } elseif ($st === 'suspended') {
-                    $suspendedServices = (int) $s['cnt'];
-                } elseif ($st === 'terminated') {
-                    $terminatedServices = (int) $s['cnt'];
-                }
-            }
-        } catch (\Throwable) {
-            // Ignore
+        AnalyticsInput::date($asOfDate);
+        $counts = array_column($this->db->select('SELECT status, COUNT(*) AS n FROM services GROUP BY status'), 'n', 'status');
+        $activeServices = (int) ($counts['active'] ?? 0);
+        $suspendedServices = (int) ($counts['suspended'] ?? 0);
+        $terminatedServices = (int) ($counts['terminated'] ?? 0);
+        $domains = $this->db->select("SELECT expiry_date FROM domains WHERE status = 'active'");
+        $domainsCount = count($domains); $domainsExpiringSoon = 0;
+        $next30d = (new DateTimeImmutable($asOfDate))->modify('+30 days')->format('Y-m-d');
+        foreach ($domains as $domain) {
+            if ($domain['expiry_date'] === null) { continue; }
+            AnalyticsInput::date($domain['expiry_date']);
+            if ($domain['expiry_date'] >= $asOfDate && $domain['expiry_date'] <= $next30d) { $domainsExpiringSoon++; }
         }
-
-        $domainsCount = 0;
-        $domainsExpiringSoon = 0;
-        try {
-            $domains = $this->db->select("SELECT id, expires_at FROM domains WHERE status = 'active'");
-            $domainsCount = count($domains);
-            $next30d = (new DateTimeImmutable($asOfDate))->modify('+30 days')->format('Y-m-d');
-            foreach ($domains as $d) {
-                if (isset($d['expires_at']) && (string) $d['expires_at'] <= $next30d) {
-                    $domainsExpiringSoon++;
-                }
-            }
-        } catch (\Throwable) {
-            // Ignore
-        }
-
-        $openAbuseCases = 0;
-        try {
-            $cases = $this->db->select("SELECT id FROM abuse_cases WHERE status NOT IN ('resolved', 'closed')");
-            $openAbuseCases = count($cases);
-        } catch (\Throwable) {
-            // Ignore
-        }
+        $openAbuseCases = (int) $this->db->selectOne("SELECT COUNT(*) AS n FROM abuse_cases WHERE status NOT IN ('resolved', 'closed')")['n'];
 
         return new OperationsDashboardData(
             asOfDate: $asOfDate,
@@ -212,7 +159,7 @@ final class DashboardService
             domainsUnderManagement: $domainsCount,
             domainsExpiringNext30Days: $domainsExpiringSoon,
             openAbuseCasesCount: $openAbuseCases,
-            hypervisorCapacityUsedPercent: 42.5
+            hypervisorCapacityUsedPercent: null
         );
     }
 
@@ -221,53 +168,46 @@ final class DashboardService
      */
     public function buildSupportDashboard(string $startDate, string $endDate): SupportDashboardData
     {
-        $openedCount = 0;
-        $resolvedCount = 0;
-        $openBacklog = 0;
-        $deptBreakdown = [];
-        $priorityBreakdown = [];
-
-        try {
-            $tickets = $this->db->select(
-                "SELECT id, department_id, priority, status, created_at, updated_at
-                 FROM support_tickets
-                 WHERE date(created_at) >= :s AND date(created_at) <= :e",
-                ['s' => $startDate, 'e' => $endDate]
-            );
-            $openedCount = count($tickets);
-
-            foreach ($tickets as $t) {
-                $st = strtolower((string) ($t['status'] ?? ''));
-                if ($st === 'resolved' || $st === 'closed') {
-                    $resolvedCount++;
-                } else {
-                    $openBacklog++;
-                }
-
-                $dept = (string) ($t['department_id'] ?? 'general');
-                $deptBreakdown[$dept] = ($deptBreakdown[$dept] ?? 0) + 1;
-
-                $prio = (string) ($t['priority'] ?? 'normal');
-                $priorityBreakdown[$prio] = ($priorityBreakdown[$prio] ?? 0) + 1;
-            }
-        } catch (\Throwable) {
-            // Ignore
+        [$start, $end] = AnalyticsInput::range($startDate, $endDate);
+        $tickets = $this->db->select('SELECT t.department_id, d.name AS department_name, t.priority FROM support_tickets t LEFT JOIN support_departments d ON d.id = t.department_id WHERE t.created_at >= ? AND t.created_at < ?', [$start, $end]);
+        $openedCount = count($tickets); $deptBreakdown = []; $priorityBreakdown = [];
+        foreach ($tickets as $ticket) {
+            $department = $ticket['department_name'] ?? (string) $ticket['department_id'];
+            $deptBreakdown[$department] = ($deptBreakdown[$department] ?? 0) + 1;
+            $priorityBreakdown[$ticket['priority']] = ($priorityBreakdown[$ticket['priority']] ?? 0) + 1;
         }
+        // Current status/updated_at proxy; exact transition history remains an acceptance gate.
+        $resolvedCount = (int) $this->db->selectOne("SELECT COUNT(*) AS n FROM support_tickets WHERE status IN ('resolved', 'closed') AND updated_at >= ? AND updated_at < ?", [$start, $end])['n'];
+        $openBacklog = (int) $this->db->selectOne("SELECT COUNT(*) AS n FROM support_tickets WHERE status NOT IN ('resolved', 'closed')")['n'];
+        $responseMinutes = null; $compliance = null;
+        $slaExists = $this->db->getDriverName() === 'mysql'
+            ? $this->db->selectOne('SELECT 1 FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = ?', ['support_ticket_sla'])
+            : $this->db->selectOne("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?", ['support_ticket_sla']);
+        if ($slaExists !== null) {
+            $slaRows = $this->db->select('SELECT t.created_at, s.first_responded_at, s.resolved_at, s.is_first_response_breached, s.is_resolution_breached FROM support_ticket_sla s JOIN support_tickets t ON t.id = s.ticket_id WHERE t.created_at >= ? AND t.created_at < ?', [$start, $end]);
+            $responses = []; $evaluated = 0; $met = 0;
+            foreach ($slaRows as $sla) {
+                if ($sla['first_responded_at'] !== null) {
+                    $seconds = (new DateTimeImmutable($sla['first_responded_at']))->getTimestamp() - (new DateTimeImmutable($sla['created_at']))->getTimestamp();
+                    if ($seconds < 0) { throw new LogicException('Invalid support response timestamp.'); }
+                    $responses[] = $seconds / 60;
+                }
+                if ($sla['resolved_at'] !== null) {
+                    $evaluated++;
+                    if (!(bool) $sla['is_first_response_breached'] && !(bool) $sla['is_resolution_breached']) { $met++; }
+                }
+            }
+            if ($responses !== []) { $responseMinutes = round(array_sum($responses) / count($responses), 2); }
+            if ($evaluated > 0) { $compliance = round($met / $evaluated * 100, 2); }
+        }
+        return new SupportDashboardData($startDate, $endDate, $openedCount, $resolvedCount, $openBacklog, $responseMinutes, $compliance, $deptBreakdown, $priorityBreakdown);
+    }
 
-        $complianceRate = $openedCount > 0
-            ? round(($resolvedCount / $openedCount) * 100.0, 2)
-            : 100.0;
-
-        return new SupportDashboardData(
-            startDate: $startDate,
-            endDate: $endDate,
-            ticketsOpenedCount: $openedCount,
-            ticketsResolvedCount: $resolvedCount,
-            openTicketsBacklog: $openBacklog,
-            firstResponseTimeAvgMinutes: 24.5,
-            slaComplianceRatePercent: $complianceRate,
-            departmentBreakdown: $deptBreakdown,
-            priorityBreakdown: $priorityBreakdown
-        );
+    private function verifySnapshot(SubscriptionSnapshot $snapshot, int $places): void
+    {
+        $metadata = $snapshot->getMetadata();
+        if (($metadata['source'] ?? null) !== 'services:canonical_minor_units' || ($metadata['currency_decimal_places'] ?? null) !== $places) {
+            throw new LogicException('Subscription snapshot source/precision requires explicit reconciliation.');
+        }
     }
 }

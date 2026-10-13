@@ -1,0 +1,56 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+FFFFFF                                                              6 / 6 (100%)
+
+Time: 00:00.168, Memory: 26.00 MB
+
+There were 6 failures:
+
+1) Coleza\Tests\Unit\Analytics\AnalyticsReportingTest::testCanonicalPeriodMetricsAndDailyMetricsAgree
+Failed asserting that 0.0 is identical to 123.45.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AnalyticsReportingCases.php:29
+
+2) Coleza\Tests\Unit\Analytics\AnalyticsReportingTest::testMissingLedgerCannotBeReportedAsMatchedZero
+Failed asserting that exception of type "PDOException" is thrown.
+
+3) Coleza\Tests\Unit\Analytics\AnalyticsReportingTest::testLegacyDailySeriesCannotBeReadAsVerified
+Failed asserting that exception of type "LogicException" is thrown.
+
+4) Coleza\Tests\Unit\Analytics\AnalyticsReportingTest::testChangedMonthlySeriesCannotBeReadAsVerified
+Failed asserting that exception of type "LogicException" is thrown.
+
+5) Coleza\Tests\Unit\Analytics\AnalyticsReportingTest::testAbsentDataDoesNotProveRealtimeConsistency
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AnalyticsReportingCases.php:60
+
+6) Coleza\Tests\Unit\Analytics\AnalyticsReportingTest::testFailedSecondDayRollsBackWholeRebuild
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+         'id' => 1,
+         'date' => '2026-10-01',
+         'currency' => 'USD',
+-        'gross_invoiced' => 77,
++        'gross_invoiced' => 0,
+         'net_invoiced' => 0,
+         'tax_billed' => 0,
+         'invoices_count' => 0,
+@@ @@
+         'tickets_opened_count' => 0,
+         'tickets_resolved_count' => 0,
+         'rebuilt_at' => '2026-10-13 09:21:21',
+-        'calculation_evidence' => null,
++        'calculation_evidence' => '{"policy":"canonical_financial_events:v1","currency_decimal_places":2,"digest":"5ce0d4249aa10f97aafb29a60075eef3cf7eeb8132949109684bcdf9de8425bf"}',
+     ],
+ ]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AnalyticsReportingCases.php:71
+
+FAILURES!
+Tests: 6, Assertions: 6, Failures: 6.

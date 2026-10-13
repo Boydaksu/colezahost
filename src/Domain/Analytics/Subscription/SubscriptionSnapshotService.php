@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Coleza\Domain\Analytics\Subscription;
 
-use Coleza\Domain\Audit\AuditLogger;
+use Coleza\Domain\Identity\Audit\AuditLogger;
 use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Database\PdoSchema;
 use Coleza\Domain\Analytics\AnalyticsSchema;

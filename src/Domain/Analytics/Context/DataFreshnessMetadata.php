@@ -13,8 +13,8 @@ final class DataFreshnessMetadata implements JsonSerializable
 {
     public function __construct(
         private readonly string $asOfTimestamp,
-        private readonly string $lastAggregatedAt,
-        private readonly int $lagSeconds,
+        private readonly ?string $lastAggregatedAt,
+        private readonly ?int $lagSeconds,
         private readonly DataFreshnessStatus $status,
         private readonly bool $isConsistent,
         private readonly string $notice
@@ -26,12 +26,12 @@ final class DataFreshnessMetadata implements JsonSerializable
         return $this->asOfTimestamp;
     }
 
-    public function getLastAggregatedAt(): string
+    public function getLastAggregatedAt(): ?string
     {
         return $this->lastAggregatedAt;
     }
 
-    public function getLagSeconds(): int
+    public function getLagSeconds(): ?int
     {
         return $this->lagSeconds;
     }

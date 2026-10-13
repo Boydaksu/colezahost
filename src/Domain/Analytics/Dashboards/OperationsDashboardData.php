@@ -16,7 +16,7 @@ final class OperationsDashboardData implements JsonSerializable
         private readonly int $domainsUnderManagement,
         private readonly int $domainsExpiringNext30Days,
         private readonly int $openAbuseCasesCount,
-        private readonly float $hypervisorCapacityUsedPercent = 0.0
+        private readonly ?float $hypervisorCapacityUsedPercent = null
     ) {
     }
 
@@ -55,7 +55,7 @@ final class OperationsDashboardData implements JsonSerializable
         return $this->openAbuseCasesCount;
     }
 
-    public function getHypervisorCapacityUsedPercent(): float
+    public function getHypervisorCapacityUsedPercent(): ?float
     {
         return $this->hypervisorCapacityUsedPercent;
     }

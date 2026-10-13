@@ -168,103 +168,9 @@ final class PerformanceAndReferenceBudgetRegressionTest extends TestCase
         $analyticsPdo = new PDO('sqlite::memory:');
         $analyticsPdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $analyticsDb = new Connection($analyticsPdo);
-        \Coleza\Tests\Support\SubscriptionSourceFixture::install($analyticsDb);
+        \Coleza\Tests\Support\DailySourceFixture::install($analyticsDb);
         \Coleza\Tests\Support\SubscriptionSourceFixture::service($analyticsDb, 2500, 1);
         \Coleza\Tests\Support\SubscriptionSourceFixture::service($analyticsDb, 30000, 2, 'annually');
-
-        $analyticsDb->statement(
-            'CREATE TABLE IF NOT EXISTS hosting_services (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INT NOT NULL,
-                domain VARCHAR(255) NOT NULL,
-                package_name VARCHAR(64) NOT NULL,
-                billing_cycle VARCHAR(32) NOT NULL,
-                recurring_amount DECIMAL(10,2) NOT NULL,
-                currency VARCHAR(3) NOT NULL DEFAULT "USD",
-                status VARCHAR(32) NOT NULL DEFAULT "active",
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
-
-        $analyticsDb->statement(
-            'CREATE TABLE IF NOT EXISTS invoices (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INT NOT NULL,
-                total_amount DECIMAL(10,2) NOT NULL,
-                subtotal_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-                tax_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-                amount_paid DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-                status VARCHAR(32) NOT NULL DEFAULT "paid",
-                due_date VARCHAR(10) NOT NULL DEFAULT "2026-10-31",
-                currency VARCHAR(3) NOT NULL DEFAULT "USD",
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
-
-        $analyticsDb->statement(
-            'CREATE TABLE IF NOT EXISTS payments (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                amount DECIMAL(10,2) NOT NULL,
-                fee_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-                status VARCHAR(32) NOT NULL DEFAULT "completed",
-                currency VARCHAR(3) NOT NULL DEFAULT "USD",
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
-
-        $analyticsDb->statement(
-            'CREATE TABLE IF NOT EXISTS refunds (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                amount DECIMAL(10,2) NOT NULL,
-                status VARCHAR(32) NOT NULL DEFAULT "completed",
-                currency VARCHAR(3) NOT NULL DEFAULT "USD",
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
-
-        $analyticsDb->statement(
-            'CREATE TABLE IF NOT EXISTS orders (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INT NOT NULL DEFAULT 1,
-                status VARCHAR(32) NOT NULL DEFAULT "active",
-                total_amount DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-                currency VARCHAR(3) NOT NULL DEFAULT "USD",
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
-
-        $analyticsDb->statement(
-            'CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
-
-        $analyticsDb->statement(
-            'CREATE TABLE IF NOT EXISTS domains (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                status VARCHAR(32) NOT NULL DEFAULT "active",
-                expires_at VARCHAR(10) NOT NULL DEFAULT "2027-01-01"
-            )'
-        );
-
-        $analyticsDb->statement(
-            'CREATE TABLE IF NOT EXISTS abuse_cases (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                status VARCHAR(32) NOT NULL DEFAULT "open"
-            )'
-        );
-
-        $analyticsDb->statement(
-            'CREATE TABLE IF NOT EXISTS support_tickets (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                department VARCHAR(64) NOT NULL DEFAULT "support",
-                status VARCHAR(32) NOT NULL DEFAULT "open",
-                sla_met TINYINT NOT NULL DEFAULT 1,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )'
-        );
-
         $subService = new SubscriptionSnapshotService($analyticsDb);
         $finService = new FinancialMetricsService($analyticsDb);
         $readService = new ReadModelAggregationService($analyticsDb);
@@ -278,24 +184,12 @@ final class PerformanceAndReferenceBudgetRegressionTest extends TestCase
             readModelService: $readService
         );
 
-        // Seed sample metrics data
-        $analyticsDb->statement(
-            'INSERT INTO hosting_services (user_id, domain, package_name, billing_cycle, recurring_amount, currency, status)
-             VALUES (1, "site1.com", "cPanel Basic", "monthly", 25.00, "USD", "active"),
-                    (2, "site2.com", "cPanel Pro", "annual", 300.00, "USD", "active")'
-        );
-
-        $analyticsDb->statement(
-            'INSERT INTO invoices (user_id, total_amount, subtotal_amount, tax_amount, amount_paid, status, due_date, currency)
-             VALUES (1, 25.00, 20.00, 5.00, 25.00, "paid", "2026-10-15", "USD"),
-                    (2, 300.00, 250.00, 50.00, 300.00, "paid", "2026-10-20", "USD")'
-        );
-
-        $analyticsDb->statement(
-            'INSERT INTO domains (status, expires_at)
-             VALUES ("active", "2026-11-15"),
-                    ("active", "2027-01-10")'
-        );
+        \Coleza\Tests\Support\DailySourceFixture::invoice($analyticsDb, 2500, 2000, 500, 'paid', date: '2026-10-15');
+        \Coleza\Tests\Support\DailySourceFixture::invoice($analyticsDb, 30000, 25000, 5000, 'paid', date: '2026-10-20');
+        foreach (['2026-11-15', '2027-01-10'] as $i => $expiry) {
+            $analyticsDb->insert('domains', ['user_id' => 1, 'domain' => 'perf' . $i . '.test', 'sld' => 'perf' . $i, 'tld' => 'test', 'status' => 'active', 'expiry_date' => $expiry]);
+        }
+        $subService->captureSnapshot('2026-10-31', 'USD');
 
         $start = microtime(true);
         $ownerDashboard = $dashboardService->buildOwnerDashboard('2026-10-31', 'USD');

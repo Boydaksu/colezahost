@@ -18,8 +18,8 @@ final class SupportDashboardData implements JsonSerializable
         private readonly int $ticketsOpenedCount,
         private readonly int $ticketsResolvedCount,
         private readonly int $openTicketsBacklog,
-        private readonly float $firstResponseTimeAvgMinutes,
-        private readonly float $slaComplianceRatePercent,
+        private readonly ?float $firstResponseTimeAvgMinutes,
+        private readonly ?float $slaComplianceRatePercent,
         private readonly array $departmentBreakdown = [],
         private readonly array $priorityBreakdown = []
     ) {
@@ -50,12 +50,12 @@ final class SupportDashboardData implements JsonSerializable
         return $this->openTicketsBacklog;
     }
 
-    public function getFirstResponseTimeAvgMinutes(): float
+    public function getFirstResponseTimeAvgMinutes(): ?float
     {
         return $this->firstResponseTimeAvgMinutes;
     }
 
-    public function getSlaComplianceRatePercent(): float
+    public function getSlaComplianceRatePercent(): ?float
     {
         return $this->slaComplianceRatePercent;
     }

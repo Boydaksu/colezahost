@@ -1,6 +1,6 @@
 # D02 kurulum/geçiş kabul matrisi
 
-Güncelleme: 13.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f, D02-3g, D02-3h, D02-3i, D02-3j, D02-3k, D02-3l, D02-3m, D02-3n, D02-3o, D02-3p, D02-3q, D02-3r, D02-3s, D02-3t, D02-3u, D02-3v, D02-3w, D02-3x, D02-3y, D02-3z, D02-4a, D02-4b, D02-4c, D02-4d. Bu matris ürünün bağımsız kabulü değildir. D02 IN_PROGRESS.
+Güncelleme: 13.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f, D02-3g, D02-3h, D02-3i, D02-3j, D02-3k, D02-3l, D02-3m, D02-3n, D02-3o, D02-3p, D02-3q, D02-3r, D02-3s, D02-3t, D02-3u, D02-3v, D02-3w, D02-3x, D02-3y, D02-3z, D02-4a, D02-4b, D02-4c, D02-4d, D02-4e, D02-4f, ANALYTICS-C01. Bu matris ürünün bağımsız kabulü değildir. D02 IN_PROGRESS.
 
 | Senaryo | Durum | Kanıt / sınır |
 |---|---|---|
@@ -54,9 +54,11 @@ Güncelleme: 13.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f,
 | Monthly calendar coverage ve subscription source failure | Yerel SQLite/MariaDB kaynak ve kayıt koruma testleri geçti | D02-4e; exact day coverage, exact month-end canonical metadata/precision, no catch-zero, integer stored-cents totals/bounds; daily provenance ve gerçek historical as-of/freshness/movement/concurrency kabulü açık |
 | Daily producer policy/precision/content ve monthly legacy refusal | Yerel SQLite/MariaDB tam paketleri geçti | D02-4f; migration25 eski kayıtları NULL bırakır, content+marker same-row write, monthly checksum/policy/precision checks, id-preserving explicit rebuild; legacy read series/historical source/signature/ledger ve range/concurrency kabulü açık |
 | Diğer otomasyon ve operasyonel domainler; genel runtime DDL sınırları | Açık | Kurulum şeması bütün iş akışlarının ve kısıtların kabulü değildir |
-| GoldenFinancialDataset'in üretim şemasıyla eşleşmesi | Açık | Test fixture kanonik kurulum şeması sayılmaz; F17/F30 |
+| GoldenFinancialDataset'in üretim şemasıyla eşleşmesi | Yerel SQLite/MariaDB doğrulandı | C01 gerçek25 migrasyon ve canonical producer; bağımsız ledger/bozuk rollup testleri. Gerçek gateway/queue/provider E2E kabulü açık; F30 |
 | Provisioning cPanel readback ve kalıcı yerel uzlaştırma | Yerel transport/SQL testleri geçti; gerçek sunucu kabulü açık | D02-3o; UNKNOWN hesabın yokluğu değildir, kimlik/etkinlik doğrulanır; service/placement/operation/audit atomik; dört süreçte tek completion |
 | Gerçek sağlayıcı bağlantısı ve gerçek cron çalıştırıcısının geçmiş yazımı | D06 kabulü açık | Doctor provider envanterini uzaktan doğrulanmış HEALTHY diye sunmaz |
 | Üretim veri tabanında upgrade/rollback | Yapılmadı | Yedek, bakım penceresi ve eski worker'ların durdurulması gerekir; yerel test üretim onayı değildir |
 
-Sıradaki D02 işi: D02-SCHEMA-INVENTORY.json içindeki kalan domain şema kurucularını gerçek kurulum/upgrade akışına bağlamak ve kısıt uyumunu sınamak. Envanter 92 CREATE TABLE kaynak dosyasını listeler; compatibility checker ortak şemayı salt okunur kullanır ve artık DDL kaynağı değildir; metinde migration referansı olması tek başına çalıştırma ya da kabul kanıtı değildir. D02 çıkış ölçütleri tamamlanmadan D03'e geçilmez.
+Sıradaki D02 işi: D02-SCHEMA-INVENTORY.json içindeki kalan domain şema kurucularını gerçek kurulum/upgrade akışına bağlamak ve kısıt uyumunu sınamak. Envanter 91 CREATE TABLE kaynak dosyasını listeler; compatibility checker ortak şemayı salt okunur kullanır ve artık DDL kaynağı değildir; metinde migration referansı olması tek başına çalıştırma ya da kabul kanıtı değildir. D02 çıkış ölçütleri tamamlanmadan D03'e geçilmez.
+
+C01 güncel raporlama sınırı (önceki D02-4b–4f satırları önceki adımların kanıt sınırını tutar): FinancialMetricsService/daily/ledger ortak canonical kaynak; beş pano gerçek kolonlar; eksik kapasite/SLA/cevap süresi null; salt okunur verified series; financial currency-aware freshness; gün/ay atomic upsert ve aralık+audit savepoint/rollback artık yerel tam ana/native testlerle doğrulandı. F17 temel eski-alan/catch-zero hataları giderildi. Snapshot capture audit/concurrency, historical source/movement, immutable/reference ledger, role/tenant girişleri, full precision/timezone/FX, gerçek provider/SLA kaynak kabulü ve diğer domain kurulum/kısıt matrisi açık. Bkz. ANALYTICS-CLOSURE.md ve ANALYTICS-C01-SONUC.md; phase PASS değildir.
