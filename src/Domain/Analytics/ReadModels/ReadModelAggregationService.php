@@ -158,57 +158,27 @@ final class ReadModelAggregationService
         $this->ensureTables();
         $now = date('Y-m-d H:i:s');
 
-        // Upsert into daily table
+        DailyAggregationEvidence::assertInstalled($this->db);
+        $data = [
+            'date' => $date, 'currency' => $curr,
+            'gross_invoiced' => $grossInvoiced, 'net_invoiced' => $netInvoiced, 'tax_billed' => $taxBilled,
+            'invoices_count' => $invoicesCount, 'cash_collected' => $cashCollected, 'cash_refunded' => $cashRefunded,
+            'net_cash_flow' => $netCashFlow, 'gateway_fees' => $gatewayFees,
+            'new_orders_count' => $newOrdersCount, 'new_customers_count' => $newCustomersCount,
+            'tickets_opened_count' => $ticketsOpened, 'tickets_resolved_count' => $ticketsResolved, 'rebuilt_at' => $now,
+        ];
+        $places = match ($divisor) { 1 => 0, 10 => 1, 100 => 2 };
+        $data['calculation_evidence'] = DailyAggregationEvidence::create($data, $places);
         $existing = $this->db->selectOne(
             "SELECT id FROM {$this->dailyTable} WHERE date = :d AND currency = :c LIMIT 1",
             ['d' => $date, 'c' => $curr]
         );
-
+        // Contents and evidence are persisted by the same statement, including caller rollback.
         if ($existing !== null) {
-            $this->db->update(
-                $this->dailyTable,
-                [
-                    'gross_invoiced' => $grossInvoiced,
-                    'net_invoiced' => $netInvoiced,
-                    'tax_billed' => $taxBilled,
-                    'invoices_count' => $invoicesCount,
-                    'cash_collected' => $cashCollected,
-                    'cash_refunded' => $cashRefunded,
-                    'net_cash_flow' => $netCashFlow,
-                    'gateway_fees' => $gatewayFees,
-                    'new_orders_count' => $newOrdersCount,
-                    'new_customers_count' => $newCustomersCount,
-                    'tickets_opened_count' => $ticketsOpened,
-                    'tickets_resolved_count' => $ticketsResolved,
-                    'rebuilt_at' => $now,
-                ],
-                'id = :id',
-                ['id' => $existing['id']]
-            );
             $id = (int) $existing['id'];
+            $this->db->update($this->dailyTable, $data, 'id = :id', ['id' => $id]);
         } else {
-            $this->db->insert($this->dailyTable, [
-                'date' => $date,
-                'currency' => $curr,
-                'gross_invoiced' => $grossInvoiced,
-                'net_invoiced' => $netInvoiced,
-                'tax_billed' => $taxBilled,
-                'invoices_count' => $invoicesCount,
-                'cash_collected' => $cashCollected,
-                'cash_refunded' => $cashRefunded,
-                'net_cash_flow' => $netCashFlow,
-                'gateway_fees' => $gatewayFees,
-                'new_orders_count' => $newOrdersCount,
-                'new_customers_count' => $newCustomersCount,
-                'tickets_opened_count' => $ticketsOpened,
-                'tickets_resolved_count' => $ticketsResolved,
-                'rebuilt_at' => $now,
-            ]);
-            $row = $this->db->selectOne(
-                "SELECT id FROM {$this->dailyTable} WHERE date = :d AND currency = :c ORDER BY id DESC LIMIT 1",
-                ['d' => $date, 'c' => $curr]
-            );
-            $id = $row !== null ? (int) $row['id'] : null;
+            $id = (int) $this->db->insert($this->dailyTable, $data);
         }
 
         return new DailyAggregation(
@@ -248,10 +218,9 @@ final class ReadModelAggregationService
         $endDate = $parsed->format('Y-m-t');
 
         // A missing day is unknown, including on otherwise empty months. Do not manufacture zero.
-        // Coverage alone does not certify legacy daily provenance; explicit reconciliation remains necessary.
+        DailyAggregationEvidence::assertInstalled($this->db);
         $dailyRows = $this->db->select(
-            "SELECT date, gross_invoiced, net_invoiced, tax_billed, cash_collected, cash_refunded, gateway_fees
-             FROM {$this->dailyTable} WHERE date >= :s AND date <= :e AND currency = :c ORDER BY date",
+            "SELECT * FROM {$this->dailyTable} WHERE date >= :s AND date <= :e AND currency = :c ORDER BY date",
             ['s' => $startDate, 'e' => $endDate, 'c' => $curr]
         );
         if (count($dailyRows) !== (int) $parsed->format('t')) {
@@ -263,6 +232,7 @@ final class ReadModelAggregationService
             if ($day['date'] !== $expected->format('Y-m-d')) {
                 throw new LogicException('Complete daily coverage is required before building a monthly aggregation.');
             }
+            DailyAggregationEvidence::verify($day, $places);
             foreach ($totals as $field => $total) {
                 $amount = $this->monthlyStorageCents($day[$field]);
                 if ($amount > 999999999999 - $total) { throw new LogicException('Monthly analytics amount exceeds storage capacity; explicit upgrade required.'); }

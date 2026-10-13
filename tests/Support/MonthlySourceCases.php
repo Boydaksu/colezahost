@@ -104,7 +104,14 @@ trait MonthlySourceCases
     public function testMonthlyStorageOverflowCannotReplaceMonthly(): void
     {
         $service = $this->monthlyFixture(); $before = $this->savedMonthly();
-        $this->db->statement('UPDATE analytics_daily_aggregations SET gross_invoiced = 9999999999.99');
+        foreach (['2026-10-01', '2026-10-02'] as $date) {
+            // Each canonical invoice must fit its installed signed INT minor-unit columns.
+            // Multiple valid invoices can still overflow the monthly DECIMAL read model.
+            for ($invoice = 0; $invoice < 235; $invoice++) {
+                DailySourceFixture::invoice($this->db, 2147483647, 2147483647, 0, date: $date);
+            }
+            $service->aggregateDay($date);
+        }
         try { $service->aggregateMonth('2026-10'); self::fail('Monthly overflow accepted'); }
         catch (LogicException $error) { self::assertStringContainsString('capacity', $error->getMessage()); $this->assertMonthlyPreserved($before); }
     }

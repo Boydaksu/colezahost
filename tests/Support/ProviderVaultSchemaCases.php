@@ -155,8 +155,8 @@ trait ProviderVaultSchemaCases
         $before = $this->db->select('SELECT * FROM provider_module_settings');
         // Maintenance fixture repair leaves the unknown historical update time NULL.
         $this->db->statement('ALTER TABLE provider_module_settings ADD COLUMN updated_at TIMESTAMP NULL');
-        self::assertSame(['2026_10_12_000018_provider_vault_schema', '2026_10_12_000019_brand_currency_schema', '2026_10_12_000020_configuration_write_locks', '2026_10_12_000021_abuse_schema', '2026_10_12_000022_fraud_schema', '2026_10_12_000023_operational_mode_schema', '2026_10_13_000024_analytics_schema'], $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'));
-        self::assertCount(24, $runner->getRanMigrations());
+        self::assertSame(['2026_10_12_000018_provider_vault_schema', '2026_10_12_000019_brand_currency_schema', '2026_10_12_000020_configuration_write_locks', '2026_10_12_000021_abuse_schema', '2026_10_12_000022_fraud_schema', '2026_10_12_000023_operational_mode_schema', '2026_10_13_000024_analytics_schema', '2026_10_13_000025_daily_aggregation_evidence'], $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'));
+        self::assertCount(25, $runner->getRanMigrations());
         $after = $this->db->select('SELECT * FROM provider_module_settings');
         self::assertNull($after[0]['updated_at']); unset($after[0]['updated_at']); self::assertSame($before, $after);
         self::assertSame([], $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'));

@@ -151,7 +151,7 @@ trait AnalyticsSchemaCases
     public function testProductionMigrationsInstallAllThreeTables(): void
     {
         $runner = new \Coleza\Foundation\Database\Migrator($this->db);
-        self::assertCount(24, $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'));
+        self::assertCount(25, $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'));
         self::assertSame([[], [], []], array_values($this->analyticsRows()));
         self::assertSame([], $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'));
     }
@@ -164,7 +164,7 @@ trait AnalyticsSchemaCases
         // This fixture is empty and owned by the test; production data is never dropped or guessed.
         self::assertSame([], $this->db->select('SELECT * FROM analytics_monthly_aggregations'));
         $this->db->statement('DROP TABLE analytics_monthly_aggregations');
-        self::assertSame(['2026_10_13_000024_analytics_schema'], $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'));
-        self::assertCount(24, $runner->getRanMigrations());
+        self::assertSame(['2026_10_13_000024_analytics_schema', '2026_10_13_000025_daily_aggregation_evidence'], $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'));
+        self::assertCount(25, $runner->getRanMigrations());
     }
 }

@@ -1,0 +1,25 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+FF                                                                  2 / 2 (100%)
+
+Time: 00:00.090, Memory: 26.00 MB
+
+There were 2 failures:
+
+1) Coleza\Tests\Unit\Analytics\DailyEvidenceTest::testCompleteLegacyMonthIsNotAutomaticallyTrusted
+Unverified daily input accepted
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\DailyEvidenceCases.php:26
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\DailyEvidenceCases.php:37
+
+2) Coleza\Tests\Unit\Analytics\DailyEvidenceTest::testChangedStoredFinancialAmountInvalidatesEvidence
+Unverified daily input accepted
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\DailyEvidenceCases.php:26
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\DailyEvidenceCases.php:43
+
+FAILURES!
+Tests: 2, Assertions: 2, Failures: 2.

@@ -327,7 +327,7 @@
         "analytics_monthly_aggregations"
       ],
       "direct_migration_reference": true,
-      "acceptance": "D02-4b schema/caller rollback; D02-4d canonical daily financial sources; D02-4e monthly complete calendar coverage, month-end canonical subscription metadata/precision, failure-preserves-original, integer stored-cents sums/storage bounds; legacy daily provenance, ledger/tenant/timezone/source isolation/upsert/range atomicity and movement counts open",
+      "acceptance": "D02-4b schema/caller rollback; D02-4d canonical daily financial sources; D02-4e monthly coverage/month-end snapshot; D02-4f migration25 nullable calculation_evidence, same-row producer policy/precision/content digest, monthly legacy/modified-row refusal and id-preserving explicit rebuild; old read-series validation, signed source/ledger/as-of/tenant/timezone/source isolation/upsert/range atomicity/movement counts open",
       "schema_migration_path": "database/migrations/2026_10_13_000024_analytics_schema.php"
     },
     {

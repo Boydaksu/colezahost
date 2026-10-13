@@ -1,0 +1,29 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+...............................................................  63 / 537 ( 11%)
+............................................................... 126 / 537 ( 23%)
+............................................................... 189 / 537 ( 35%)
+............................................................... 252 / 537 ( 46%)
+............................................................... 315 / 537 ( 58%)
+............................................................... 378 / 537 ( 70%)
+.............................................E................. 441 / 537 ( 82%)
+............................................................... 504 / 537 ( 93%)
+.................................                               537 / 537 (100%)
+
+Time: 18:52.094, Memory: 54.00 MB
+
+There was 1 error:
+
+1) Coleza\Tests\MariaDb\MonthlySourceTest::testMonthlyStorageOverflowCannotReplaceMonthly
+PDOException: SQLSTATE[22003]: Numeric value out of range: 1264 Out of range value for column 'total_minor' at row 1
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:298
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:68
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\DailySourceFixture.php:18
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\MonthlySourceCases.php:108
+
+ERRORS!
+Tests: 537, Assertions: 4342, Errors: 1.
