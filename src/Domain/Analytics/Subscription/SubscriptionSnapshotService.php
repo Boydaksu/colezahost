@@ -6,6 +6,8 @@ namespace Coleza\Domain\Analytics\Subscription;
 
 use Coleza\Domain\Audit\AuditLogger;
 use Coleza\Foundation\Database\Connection;
+use Coleza\Foundation\Database\PdoSchema;
+use Coleza\Domain\Analytics\AnalyticsSchema;
 use Coleza\Foundation\Exceptions\ValidationException;
 use DateTimeImmutable;
 
@@ -19,8 +21,22 @@ final class SubscriptionSnapshotService
     ) {
     }
 
-    public function ensureTables(): void
+    public static function schemaRequirements(): array
     {
+        return ['analytics_subscription_snapshots' => ['id', 'snapshot_date', 'currency', 'active_subscriptions_count', 'active_customers_count', 'total_mrr', 'total_arr', 'new_mrr', 'expansion_mrr', 'contraction_mrr', 'churned_mrr', 'net_mrr_growth', 'arpu', 'metadata', 'created_at']];
+    }
+
+    public static function indexRequirements(): array
+    {
+        return ['analytics_subscription_snapshots' => ['snapshot_date', 'uq_snapshot_date_curr']];
+    }
+
+    public function ensureTables(bool $installSchema = false): void
+    {
+        AnalyticsSchema::assertCaller($this->db);
+        $installed = PdoSchema::useInstalledSchema($this->db, self::schemaRequirements(), $installSchema);
+        if ($installed) { AnalyticsSchema::ensureIndexes($this->db, self::indexRequirements(), $installSchema); return; }
+        AnalyticsSchema::preflightExisting($this->db, self::indexRequirements());
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -48,15 +64,8 @@ final class SubscriptionSnapshotService
             $this->tableName,
             $autoInc
         );
-        $this->db->statement($sql);
-
-        if ($driver !== 'sqlite') {
-            try {
-                $this->db->statement("CREATE UNIQUE INDEX uq_snapshot_date_curr ON {$this->tableName} (snapshot_date, currency)");
-            } catch (\Throwable) {
-                // Ignore if index exists
-            }
-        }
+        $this->db->statement($sql . ($driver === 'mysql' ? ' ENGINE=InnoDB' : ''));
+        AnalyticsSchema::ensureIndexes($this->db, self::indexRequirements(), true);
     }
 
     /**

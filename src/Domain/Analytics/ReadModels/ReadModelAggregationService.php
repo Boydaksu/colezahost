@@ -6,6 +6,8 @@ namespace Coleza\Domain\Analytics\ReadModels;
 
 use Coleza\Domain\Audit\AuditLogger;
 use Coleza\Foundation\Database\Connection;
+use Coleza\Foundation\Database\PdoSchema;
+use Coleza\Domain\Analytics\AnalyticsSchema;
 use Coleza\Foundation\Exceptions\ValidationException;
 use DateInterval;
 use DatePeriod;
@@ -22,8 +24,25 @@ final class ReadModelAggregationService
     ) {
     }
 
-    public function ensureTables(): void
+    public static function schemaRequirements(): array
     {
+        return [
+            'analytics_daily_aggregations' => ['id', 'date', 'currency', 'gross_invoiced', 'net_invoiced', 'tax_billed', 'invoices_count', 'cash_collected', 'cash_refunded', 'net_cash_flow', 'gateway_fees', 'new_orders_count', 'new_customers_count', 'tickets_opened_count', 'tickets_resolved_count', 'rebuilt_at'],
+            'analytics_monthly_aggregations' => ['id', 'year_month', 'currency', 'gross_invoiced', 'net_invoiced', 'tax_billed', 'cash_collected', 'cash_refunded', 'net_cash_flow', 'gateway_fees', 'end_of_month_mrr', 'end_of_month_arr', 'new_subscriptions_count', 'churned_subscriptions_count', 'rebuilt_at'],
+        ];
+    }
+
+    public static function indexRequirements(): array
+    {
+        return ['analytics_daily_aggregations' => ['date', 'uq_daily_agg'], 'analytics_monthly_aggregations' => ['year_month', 'uq_monthly_agg']];
+    }
+
+    public function ensureTables(bool $installSchema = false): void
+    {
+        AnalyticsSchema::assertCaller($this->db);
+        $installed = PdoSchema::useInstalledSchema($this->db, self::schemaRequirements(), $installSchema);
+        if ($installed) { AnalyticsSchema::ensureIndexes($this->db, self::indexRequirements(), $installSchema); return; }
+        AnalyticsSchema::preflightExisting($this->db, self::indexRequirements());
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -52,12 +71,12 @@ final class ReadModelAggregationService
             $this->dailyTable,
             $autoInc
         );
-        $this->db->statement($sqlDaily);
+        $this->db->statement($sqlDaily . ($driver === 'mysql' ? ' ENGINE=InnoDB' : ''));
 
         $sqlMonthly = sprintf(
             'CREATE TABLE IF NOT EXISTS %s (
                 id %s,
-                year_month VARCHAR(7) NOT NULL,
+                `year_month` VARCHAR(7) NOT NULL,
                 currency VARCHAR(3) NOT NULL,
                 gross_invoiced DECIMAL(12,2) NOT NULL DEFAULT 0.00,
                 net_invoiced DECIMAL(12,2) NOT NULL DEFAULT 0.00,
@@ -75,16 +94,8 @@ final class ReadModelAggregationService
             $this->monthlyTable,
             $autoInc
         );
-        $this->db->statement($sqlMonthly);
-
-        if ($driver !== 'sqlite') {
-            try {
-                $this->db->statement("CREATE UNIQUE INDEX uq_daily_agg ON {$this->dailyTable} (date, currency)");
-                $this->db->statement("CREATE UNIQUE INDEX uq_monthly_agg ON {$this->monthlyTable} (year_month, currency)");
-            } catch (\Throwable) {
-                // Ignore
-            }
-        }
+        $this->db->statement($sqlMonthly . ($driver === 'mysql' ? ' ENGINE=InnoDB' : ''));
+        AnalyticsSchema::ensureIndexes($this->db, self::indexRequirements(), true);
     }
 
     /**
@@ -316,7 +327,7 @@ final class ReadModelAggregationService
         $now = date('Y-m-d H:i:s');
 
         $existing = $this->db->selectOne(
-            "SELECT id FROM {$this->monthlyTable} WHERE year_month = :ym AND currency = :c LIMIT 1",
+            "SELECT id FROM {$this->monthlyTable} WHERE `year_month` = :ym AND currency = :c LIMIT 1",
             ['ym' => $yearMonth, 'c' => $curr]
         );
 
@@ -342,7 +353,7 @@ final class ReadModelAggregationService
             );
             $id = (int) $existing['id'];
         } else {
-            $this->db->insert($this->monthlyTable, [
+            $this->insertMonthly([
                 'year_month' => $yearMonth,
                 'currency' => $curr,
                 'gross_invoiced' => $grossInvoiced,
@@ -359,7 +370,7 @@ final class ReadModelAggregationService
                 'rebuilt_at' => $now,
             ]);
             $row = $this->db->selectOne(
-                "SELECT id FROM {$this->monthlyTable} WHERE year_month = :ym AND currency = :c ORDER BY id DESC LIMIT 1",
+                "SELECT id FROM {$this->monthlyTable} WHERE `year_month` = :ym AND currency = :c ORDER BY id DESC LIMIT 1",
                 ['ym' => $yearMonth, 'c' => $curr]
             );
             $id = $row !== null ? (int) $row['id'] : null;
@@ -464,8 +475,8 @@ final class ReadModelAggregationService
         $this->ensureTables();
         $rows = $this->db->select(
             "SELECT * FROM {$this->monthlyTable}
-             WHERE year_month >= :s AND year_month <= :e AND currency = :c
-             ORDER BY year_month ASC",
+             WHERE `year_month` >= :s AND `year_month` <= :e AND currency = :c
+             ORDER BY `year_month` ASC",
             ['s' => $startYearMonth, 'e' => $endYearMonth, 'c' => strtoupper($currency)]
         );
 
@@ -477,5 +488,12 @@ final class ReadModelAggregationService
         if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
             throw new ValidationException(['date' => ['Date must follow YYYY-MM-DD format.']], 'Date must follow YYYY-MM-DD format.');
         }
+    }
+
+    /** YEAR_MONTH is a MySQL interval keyword; quote identifiers while keeping parameter names plain. */
+    private function insertMonthly(array $data): void
+    {
+        $columns = array_keys($data);
+        $this->db->statement('INSERT INTO ' . $this->monthlyTable . ' (' . implode(', ', array_map(static fn(string $column): string => "`{$column}`", $columns)) . ') VALUES (' . implode(', ', array_map(static fn(string $column): string => ':' . $column, $columns)) . ')', $data);
     }
 }

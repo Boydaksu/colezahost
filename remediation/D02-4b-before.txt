@@ -1,0 +1,52 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[31;1mE[0m[31;1mE[0m[31;1mE[0m[41;37mF[0m                                                                4 / 4 (100%)
+
+Time: 00:00.671, Memory: 20.00 MB
+
+There were 3 errors:
+
+1) Coleza\Tests\MariaDb\AnalyticsSchemaTest::testInstalledReadsPreserveRawCallerRollback
+PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'year_month VARCHAR(7) NOT NULL,
+                currency VARCHAR(3) NOT NULL,...' at line 3
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:298
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:115
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Analytics\ReadModels\ReadModelAggregationService.php:78
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AnalyticsSchemaCases.php:12
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AnalyticsSchemaCases.php:22
+
+2) Coleza\Tests\MariaDb\AnalyticsSchemaTest::testInstalledSnapshotWritePreservesManagedCallerRollback
+PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'year_month VARCHAR(7) NOT NULL,
+                currency VARCHAR(3) NOT NULL,...' at line 3
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:298
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:115
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Analytics\ReadModels\ReadModelAggregationService.php:78
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AnalyticsSchemaCases.php:12
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AnalyticsSchemaCases.php:36
+
+3) Coleza\Tests\MariaDb\AnalyticsSchemaTest::testInstalledReadModelWritePreservesRawCallerRollback
+PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'year_month VARCHAR(7) NOT NULL,
+                currency VARCHAR(3) NOT NULL,...' at line 3
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:298
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:115
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Analytics\ReadModels\ReadModelAggregationService.php:78
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AnalyticsSchemaCases.php:12
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AnalyticsSchemaCases.php:45
+
+--
+
+There was 1 failure:
+
+1) Coleza\Tests\MariaDb\AnalyticsSchemaTest::testMissingSchemaRefusesInsideRawCallerBeforeDdl
+Missing schema created in caller transaction
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AnalyticsSchemaCases.php:59
+
+[37;41mERRORS![0m
+[37;41mTests: 4[0m[37;41m, Assertions: 9[0m[37;41m, Errors: 3[0m[37;41m, Failures: 1[0m[37;41m.[0m

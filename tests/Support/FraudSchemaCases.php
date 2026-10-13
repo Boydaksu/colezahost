@@ -127,8 +127,8 @@ trait FraudSchemaCases
         self::assertSame('Preserve 🧪', $this->db->selectOne('SELECT legacy_note FROM fraud_velocity_events')['legacy_note']);
         // Explicit test fixture repair; production must supply its own reviewed transformation.
         $this->db->statement('ALTER TABLE fraud_velocity_events RENAME TO fixture_archived_velocity');
-        self::assertSame(['2026_10_12_000022_fraud_schema', '2026_10_12_000023_operational_mode_schema'], $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'));
-        self::assertCount(23, $runner->getRanMigrations()); self::assertSame([], $this->db->select('SELECT * FROM fraud_velocity_events'));
+        self::assertSame(['2026_10_12_000022_fraud_schema', '2026_10_12_000023_operational_mode_schema', '2026_10_13_000024_analytics_schema'], $runner->migrate(dirname(__DIR__, 2) . '/database/migrations'));
+        self::assertCount(24, $runner->getRanMigrations()); self::assertSame([], $this->db->select('SELECT * FROM fraud_velocity_events'));
         self::assertSame('Preserve 🧪', $this->db->selectOne('SELECT legacy_note FROM fixture_archived_velocity')['legacy_note']);
     }
     public function testDownRefusesDestructionAndPreservesBusinessEvidence(): void

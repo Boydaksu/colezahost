@@ -19,7 +19,7 @@ final class PdoSchema
                     throw new \InvalidArgumentException('Invalid schema identifier.');
                 }
             }
-            try { $db->select('SELECT ' . ($columns === [] ? '*' : implode(', ', $columns)) . " FROM {$table} LIMIT 0"); }
+            try { $db->select('SELECT ' . ($columns === [] ? '*' : implode(', ', array_map(static fn(string $column): string => "`{$column}`", $columns))) . " FROM {$table} LIMIT 0"); }
             catch (\PDOException $error) {
                 if ($db->getPdo()->inTransaction() && !($installSchema && $db->getDriverName() === 'sqlite')) {
                     throw new \LogicException('Initialize complete schema before starting an application transaction.', 0, $error);
@@ -46,7 +46,7 @@ final class PdoSchema
                     throw new \InvalidArgumentException('Invalid schema identifier.');
                 }
             }
-            $projection = implode(', ', $columns);
+            $projection = implode(', ', array_map(static fn(string $column): string => "`{$column}`", $columns));
             try {
                 $db->select("SELECT {$projection} FROM {$table} LIMIT 0");
             } catch (\PDOException $error) {
