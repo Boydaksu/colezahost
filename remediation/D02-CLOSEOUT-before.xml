@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Foundation\Database\D02CloseoutTest.php" tests="10" assertions="14" errors="2" failures="6" skipped="0" time="0.022311">
+    <testsuite name="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest::testFailedSecondInvoiceItemRollsBackWholeOperation" tests="3" assertions="6" errors="0" failures="2" skipped="0" time="0.018334">
+      <testcase name="testFailedSecondInvoiceItemRollsBackWholeOperation with data set #0" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="32" class="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest" classname="Coleza.Tests.Unit.Foundation.Database.D02CloseoutTest" assertions="1" time="0.016448">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest::testFailedSecondInvoiceItemRollsBackWholeOperation with data set #0&#13;
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+ Array &amp;0 [
+-    0 =&gt; Array &amp;1 [],
+-    1 =&gt; Array &amp;2 [],
+-    2 =&gt; Array &amp;3 [],
++    0 =&gt; Array &amp;1 [
++        0 =&gt; Array &amp;2 [
++            'id' =&gt; 1,
++            'invoice_number' =&gt; 'INV-2026-000001',
++            'user_id' =&gt; 7,
++            'organization_id' =&gt; null,
++            'order_id' =&gt; null,
++            'status' =&gt; 'unpaid',
++            'currency_code' =&gt; 'TRY',
++            'subtotal_minor' =&gt; 3000,
++            'tax_total_minor' =&gt; 0,
++            'total_minor' =&gt; 3000,
++            'paid_amount_minor' =&gt; 0,
++            'issue_date' =&gt; '2026-10-14',
++            'due_date' =&gt; '2026-10-21',
++            'paid_at' =&gt; null,
++            'currency_snapshot_json' =&gt; '{"code":"TRY","captured_at":"2026-10-14 06:29:15"}',
++            'tax_snapshot_json' =&gt; '{"tax_total_minor":0,"captured_at":"2026-10-14 06:29:15"}',
++            'notes' =&gt; null,
++            'created_at' =&gt; '2026-10-14 06:29:15',
++        ],
++    ],
++    1 =&gt; Array &amp;3 [
++        0 =&gt; Array &amp;4 [
++            'id' =&gt; 1,
++            'invoice_id' =&gt; 1,
++            'description' =&gt; 'first',
++            'quantity' =&gt; 1,
++            'unit_amount_minor' =&gt; 1000,
++            'subtotal_minor' =&gt; 1000,
++            'tax_amount_minor' =&gt; 0,
++            'total_minor' =&gt; 1000,
++            'order_item_id' =&gt; null,
++            'service_id' =&gt; null,
++            'tax_snapshot_json' =&gt; '[]',
++            'metadata_json' =&gt; '[]',
++            'created_at' =&gt; '2026-10-14 06:29:15',
++        ],
++    ],
++    2 =&gt; Array &amp;5 [
++        0 =&gt; Array &amp;6 [
++            'year_prefix' =&gt; '2026',
++            'last_number' =&gt; 1,
++        ],
++    ],
+ ]
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php:42</failure>
+      </testcase>
+      <testcase name="testFailedSecondInvoiceItemRollsBackWholeOperation with data set #1" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="32" class="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest" classname="Coleza.Tests.Unit.Foundation.Database.D02CloseoutTest" assertions="4" time="0.000636"/>
+      <testcase name="testFailedSecondInvoiceItemRollsBackWholeOperation with data set #2" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="32" class="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest" classname="Coleza.Tests.Unit.Foundation.Database.D02CloseoutTest" assertions="1" time="0.001250">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest::testFailedSecondInvoiceItemRollsBackWholeOperation with data set #2&#13;
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+ Array &amp;0 [
+-    0 =&gt; Array &amp;1 [],
+-    1 =&gt; Array &amp;2 [],
+-    2 =&gt; Array &amp;3 [],
++    0 =&gt; Array &amp;1 [
++        0 =&gt; Array &amp;2 [
++            'id' =&gt; 1,
++            'invoice_number' =&gt; 'INV-2026-000001',
++            'user_id' =&gt; 7,
++            'organization_id' =&gt; null,
++            'order_id' =&gt; null,
++            'status' =&gt; 'unpaid',
++            'currency_code' =&gt; 'TRY',
++            'subtotal_minor' =&gt; 3000,
++            'tax_total_minor' =&gt; 0,
++            'total_minor' =&gt; 3000,
++            'paid_amount_minor' =&gt; 0,
++            'issue_date' =&gt; '2026-10-14',
++            'due_date' =&gt; '2026-10-21',
++            'paid_at' =&gt; null,
++            'currency_snapshot_json' =&gt; '{"code":"TRY","captured_at":"2026-10-14 06:29:15"}',
++            'tax_snapshot_json' =&gt; '{"tax_total_minor":0,"captured_at":"2026-10-14 06:29:15"}',
++            'notes' =&gt; null,
++            'created_at' =&gt; '2026-10-14 06:29:15',
++        ],
++    ],
++    1 =&gt; Array &amp;3 [
++        0 =&gt; Array &amp;4 [
++            'id' =&gt; 1,
++            'invoice_id' =&gt; 1,
++            'description' =&gt; 'first',
++            'quantity' =&gt; 1,
++            'unit_amount_minor' =&gt; 1000,
++            'subtotal_minor' =&gt; 1000,
++            'tax_amount_minor' =&gt; 0,
++            'total_minor' =&gt; 1000,
++            'order_item_id' =&gt; null,
++            'service_id' =&gt; null,
++            'tax_snapshot_json' =&gt; '[]',
++            'metadata_json' =&gt; '[]',
++            'created_at' =&gt; '2026-10-14 06:29:15',
++        ],
++    ],
++    2 =&gt; Array &amp;5 [
++        0 =&gt; Array &amp;6 [
++            'year_prefix' =&gt; '2026',
++            'last_number' =&gt; 1,
++        ],
++    ],
+ ]
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php:42</failure>
+      </testcase>
+    </testsuite>
+    <testsuite name="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest::testInvalidItemJsonLeavesNoInvoiceOrConsumedNumber" tests="3" assertions="2" errors="1" failures="2" skipped="0" time="0.001832">
+      <testcase name="testInvalidItemJsonLeavesNoInvoiceOrConsumedNumber with data set #0" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="50" class="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest" classname="Coleza.Tests.Unit.Foundation.Database.D02CloseoutTest" assertions="1" time="0.000621">
+        <failure type="PHPUnit\Framework\AssertionFailedError">Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest::testInvalidItemJsonLeavesNoInvoiceOrConsumedNumber with data set #0&#13;
+Invalid JSON persisted
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php:54</failure>
+      </testcase>
+      <testcase name="testInvalidItemJsonLeavesNoInvoiceOrConsumedNumber with data set #1" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="50" class="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest" classname="Coleza.Tests.Unit.Foundation.Database.D02CloseoutTest" assertions="0" time="0.000643">
+        <error type="PDOException">Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest::testInvalidItemJsonLeavesNoInvoiceOrConsumedNumber with data set #1&#13;
+PDOException: There is already an active transaction
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:155
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:234
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:143
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Commerce\Invoices\InvoiceService.php:417
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Commerce\Invoices\InvoiceService.php:177
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php:54</error>
+      </testcase>
+      <testcase name="testInvalidItemJsonLeavesNoInvoiceOrConsumedNumber with data set #2" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="50" class="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest" classname="Coleza.Tests.Unit.Foundation.Database.D02CloseoutTest" assertions="1" time="0.000567">
+        <failure type="PHPUnit\Framework\AssertionFailedError">Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest::testInvalidItemJsonLeavesNoInvoiceOrConsumedNumber with data set #2&#13;
+Invalid JSON persisted
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php:54</failure>
+      </testcase>
+    </testsuite>
+    <testsuite name="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest::testInvoiceSuccessRemainsInCallerRollback" tests="2" assertions="3" errors="1" failures="0" skipped="0" time="0.001004">
+      <testcase name="testInvoiceSuccessRemainsInCallerRollback with data set #0" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="60" class="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest" classname="Coleza.Tests.Unit.Foundation.Database.D02CloseoutTest" assertions="0" time="0.000560">
+        <error type="PDOException">Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest::testInvoiceSuccessRemainsInCallerRollback with data set #0&#13;
+PDOException: There is already an active transaction
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:155
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:234
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:143
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Commerce\Invoices\InvoiceService.php:417
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Commerce\Invoices\InvoiceService.php:177
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php:63</error>
+      </testcase>
+      <testcase name="testInvoiceSuccessRemainsInCallerRollback with data set #1" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="60" class="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest" classname="Coleza.Tests.Unit.Foundation.Database.D02CloseoutTest" assertions="3" time="0.000445"/>
+    </testsuite>
+    <testcase name="testGenericTransactionUsesSavepointInRawCaller" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="67" class="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest" classname="Coleza.Tests.Unit.Foundation.Database.D02CloseoutTest" assertions="1" time="0.000595">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest::testGenericTransactionUsesSavepointInRawCaller&#13;
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'fixture abort'
++'There is already an active transaction'
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php:73</failure>
+    </testcase>
+    <testcase name="testLostManagedTransactionCannotWriteAutocommittedData" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="79" class="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest" classname="Coleza.Tests.Unit.Foundation.Database.D02CloseoutTest" assertions="2" time="0.000546">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest::testLostManagedTransactionCannotWriteAutocommittedData&#13;
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+-Array &amp;0 []
++Array &amp;0 [
++    0 =&gt; Array &amp;1 [
++        'id' =&gt; 1,
++    ],
++]
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php:83</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

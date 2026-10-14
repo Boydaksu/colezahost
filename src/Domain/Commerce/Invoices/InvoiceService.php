@@ -8,6 +8,7 @@ use Coleza\Domain\Commerce\Orders\Order;
 use Coleza\Domain\Finance\Currency\CurrencyService;
 use Coleza\Domain\Tax\Services\TaxService;
 use Coleza\Foundation\Database\Connection;
+use Coleza\Foundation\Database\PdoSchema;
 use Coleza\Foundation\Exceptions\ValidationException;
 use RuntimeException;
 
@@ -174,93 +175,119 @@ final class InvoiceService
             'captured_at' => date('Y-m-d H:i:s'),
         ];
 
-        $invoiceNumber = $this->nextInvoiceNumber();
+        $this->assertCreationStorage();
+        return $this->db->transaction(function () use (
+            $userId, $orgId, $orderId, $currencyCode, $subtotalMinor, $taxTotalMinor,
+            $totalMinor, $issueDate, $dueDate, $currencySnapshot, $taxSnapshot, $notes, $processedItems
+        ): Invoice {
+            $invoiceNumber = $this->nextInvoiceNumber();
 
-        $sql = sprintf(
-            'INSERT INTO %s (invoice_number, user_id, organization_id, order_id, status, currency_code, subtotal_minor, tax_total_minor, total_minor, paid_amount_minor, issue_date, due_date, currency_snapshot_json, tax_snapshot_json, notes)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            $this->invoicesTable
-        );
-
-        $this->db->statement($sql, [
-            $invoiceNumber,
-            $userId,
-            $orgId,
-            $orderId,
-            Invoice::STATUS_UNPAID,
-            $currencyCode,
-            $subtotalMinor,
-            $taxTotalMinor,
-            $totalMinor,
-            0,
-            $issueDate,
-            $dueDate,
-            json_encode($currencySnapshot),
-            json_encode($taxSnapshot),
-            $notes,
-        ]);
-
-        $invoiceId = (int)$this->db->getPdo()->lastInsertId();
-
-        $items = [];
-        foreach ($processedItems as $pItem) {
-            $itemSql = sprintf(
-                'INSERT INTO %s (invoice_id, description, quantity, unit_amount_minor, subtotal_minor, tax_amount_minor, total_minor, order_item_id, service_id, tax_snapshot_json, metadata_json)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                $this->invoiceItemsTable
+            $sql = sprintf(
+                'INSERT INTO %s (invoice_number, user_id, organization_id, order_id, status, currency_code, subtotal_minor, tax_total_minor, total_minor, paid_amount_minor, issue_date, due_date, currency_snapshot_json, tax_snapshot_json, notes)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                $this->invoicesTable
             );
 
-            $this->db->statement($itemSql, [
-                $invoiceId,
-                $pItem['description'],
-                $pItem['quantity'],
-                $pItem['unit_amount_minor'],
-                $pItem['subtotal_minor'],
-                $pItem['tax_amount_minor'],
-                $pItem['total_minor'],
-                $pItem['order_item_id'],
-                $pItem['service_id'],
-                json_encode($pItem['tax_snapshot']),
-                json_encode($pItem['metadata']),
+            $this->db->statement($sql, [
+                $invoiceNumber,
+                $userId,
+                $orgId,
+                $orderId,
+                Invoice::STATUS_UNPAID,
+                $currencyCode,
+                $subtotalMinor,
+                $taxTotalMinor,
+                $totalMinor,
+                0,
+                $issueDate,
+                $dueDate,
+                json_encode($currencySnapshot, JSON_THROW_ON_ERROR),
+                json_encode($taxSnapshot, JSON_THROW_ON_ERROR),
+                $notes,
             ]);
 
-            $itemId = (int)$this->db->getPdo()->lastInsertId();
-            $items[] = new InvoiceItem(
-                id: $itemId,
-                invoiceId: $invoiceId,
-                description: $pItem['description'],
-                quantity: $pItem['quantity'],
-                unitAmountMinor: $pItem['unit_amount_minor'],
-                subtotalMinor: $pItem['subtotal_minor'],
-                taxAmountMinor: $pItem['tax_amount_minor'],
-                totalMinor: $pItem['total_minor'],
-                orderItemId: $pItem['order_item_id'],
-                serviceId: $pItem['service_id'],
-                taxSnapshot: $pItem['tax_snapshot'],
-                metadata: $pItem['metadata']
-            );
-        }
+            $invoiceId = (int)$this->db->getPdo()->lastInsertId();
 
-        return new Invoice(
-            id: $invoiceId,
-            invoiceNumber: $invoiceNumber,
-            userId: $userId,
-            organizationId: $orgId,
-            orderId: $orderId,
-            status: Invoice::STATUS_UNPAID,
-            currencyCode: $currencyCode,
-            subtotalMinor: $subtotalMinor,
-            taxTotalMinor: $taxTotalMinor,
-            totalMinor: $totalMinor,
-            paidAmountMinor: 0,
-            issueDate: $issueDate,
-            dueDate: $dueDate,
-            currencySnapshot: $currencySnapshot,
-            taxSnapshot: $taxSnapshot,
-            notes: $notes,
-            items: $items,
-            createdAt: date('Y-m-d H:i:s')
-        );
+            $items = [];
+            foreach ($processedItems as $pItem) {
+                $itemSql = sprintf(
+                    'INSERT INTO %s (invoice_id, description, quantity, unit_amount_minor, subtotal_minor, tax_amount_minor, total_minor, order_item_id, service_id, tax_snapshot_json, metadata_json)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                    $this->invoiceItemsTable
+                );
+
+                $this->db->statement($itemSql, [
+                    $invoiceId,
+                    $pItem['description'],
+                    $pItem['quantity'],
+                    $pItem['unit_amount_minor'],
+                    $pItem['subtotal_minor'],
+                    $pItem['tax_amount_minor'],
+                    $pItem['total_minor'],
+                    $pItem['order_item_id'],
+                    $pItem['service_id'],
+                    json_encode($pItem['tax_snapshot'], JSON_THROW_ON_ERROR),
+                    json_encode($pItem['metadata'], JSON_THROW_ON_ERROR),
+                ]);
+
+                $itemId = (int)$this->db->getPdo()->lastInsertId();
+                $items[] = new InvoiceItem(
+                    id: $itemId,
+                    invoiceId: $invoiceId,
+                    description: $pItem['description'],
+                    quantity: $pItem['quantity'],
+                    unitAmountMinor: $pItem['unit_amount_minor'],
+                    subtotalMinor: $pItem['subtotal_minor'],
+                    taxAmountMinor: $pItem['tax_amount_minor'],
+                    totalMinor: $pItem['total_minor'],
+                    orderItemId: $pItem['order_item_id'],
+                    serviceId: $pItem['service_id'],
+                    taxSnapshot: $pItem['tax_snapshot'],
+                    metadata: $pItem['metadata']
+                );
+            }
+
+            return new Invoice(
+                id: $invoiceId,
+                invoiceNumber: $invoiceNumber,
+                userId: $userId,
+                organizationId: $orgId,
+                orderId: $orderId,
+                status: Invoice::STATUS_UNPAID,
+                currencyCode: $currencyCode,
+                subtotalMinor: $subtotalMinor,
+                taxTotalMinor: $taxTotalMinor,
+                totalMinor: $totalMinor,
+                paidAmountMinor: 0,
+                issueDate: $issueDate,
+                dueDate: $dueDate,
+                currencySnapshot: $currencySnapshot,
+                taxSnapshot: $taxSnapshot,
+                notes: $notes,
+                items: $items,
+                createdAt: date('Y-m-d H:i:s')
+            );
+        });
+    }
+
+    private function assertCreationStorage(): void
+    {
+        $tables = [
+            $this->invoicesTable => ['id', 'invoice_number', 'user_id', 'organization_id', 'order_id', 'status', 'currency_code', 'subtotal_minor', 'tax_total_minor', 'total_minor', 'paid_amount_minor', 'issue_date', 'due_date', 'currency_snapshot_json', 'tax_snapshot_json', 'notes'],
+            $this->invoiceItemsTable => ['id', 'invoice_id', 'description', 'quantity', 'unit_amount_minor', 'subtotal_minor', 'tax_amount_minor', 'total_minor', 'order_item_id', 'service_id', 'tax_snapshot_json', 'metadata_json'],
+            $this->numberSequenceTable => ['year_prefix', 'last_number'],
+        ];
+        if (!PdoSchema::useInstalledSchema($this->db, $tables)) {
+            throw new RuntimeException('Install complete invoice schema before creating invoices.');
+        }
+        if ($this->db->getDriverName() === 'mysql') {
+            foreach (array_keys($tables) as $table) {
+                $row = $this->db->selectOne('SELECT ENGINE FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = ?', [$table]);
+                if (strtoupper((string) ($row['ENGINE'] ?? '')) !== 'INNODB') {
+                    throw new RuntimeException('Invoice creation requires InnoDB tables; explicit upgrade required.');
+                }
+            }
+        }
     }
 
     /**

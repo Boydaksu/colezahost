@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../vendor/phpunit/phpunit/phpunit.xsd" bootstrap="../vendor/autoload.php" colors="true" cacheDirectory="../.phpunit.cache/d02-closeout-b" failOnRisky="true" failOnWarning="true" beStrictAboutOutputDuringTests="true">
+  <testsuites>
+    <testsuite name="Full D02 closeout native partition b">
+      <file>../tests/MariaDb/AdoptionPersistenceTest.php</file>
+      <file>../tests/MariaDb/AnalyticsReportingTest.php</file>
+      <file>../tests/MariaDb/ApprovalDelayTest.php</file>
+      <file>../tests/MariaDb/AutomationVersionTest.php</file>
+      <file>../tests/MariaDb/BlastRadiusTest.php</file>
+      <file>../tests/MariaDb/BrandCurrencySchemaTest.php</file>
+      <file>../tests/MariaDb/CapacityAndNotificationTest.php</file>
+      <file>../tests/MariaDb/ConfigurationSingletonTest.php</file>
+      <file>../tests/MariaDb/D02CloseoutTest.php</file>
+      <file>../tests/MariaDb/DailyEvidenceTest.php</file>
+      <file>../tests/MariaDb/DatabaseFoundationTest.php</file>
+      <file>../tests/MariaDb/DocumentPersistenceTest.php</file>
+      <file>../tests/MariaDb/FinancialConcurrencyTest.php</file>
+      <file>../tests/MariaDb/InstallationAcceptanceTest.php</file>
+      <file>../tests/MariaDb/ModuleSchemaSafetyTest.php</file>
+      <file>../tests/MariaDb/OperationalModePersistenceTest.php</file>
+      <file>../tests/MariaDb/RuntimeSchemaSafetyTest.php</file>
+      <file>../tests/MariaDb/SubscriptionSourceTest.php</file>
+      <file>../tests/MariaDb/SupportPersistenceTest.php</file>
+      <file>../tests/MariaDb/WhmcsContactPersistenceTest.php</file>
+    </testsuite>
+  </testsuites>
+</phpunit>

@@ -1,0 +1,29 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+[31;1mE[0m[31;1mE[0m                                                                  2 / 2 (100%)
+
+Time: 00:24.055, Memory: 26.00 MB
+
+There were 2 errors:
+
+1) Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest::testDomainPricingUpdatesOnlyMatchingOperationYearAndCurrency
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_76eda21f58052ff5.domain_tlds' doesn't exist
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:308
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:49
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Domains\Catalog\DomainCatalogService.php:209
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Domains\Catalog\DomainCatalogService.php:83
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\SqlPortabilityCloseoutTest.php:25
+
+2) Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest::testDomainContactsRepeatWithoutReplacingOtherContacts
+Coleza\Foundation\Exceptions\ValidationException: Invalid phone
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Domains\DomainService.php:615
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\SqlPortabilityCloseoutTest.php:46
+
+[37;41mERRORS![0m
+[37;41mTests: 2[0m[37;41m, Assertions: 4[0m[37;41m, Errors: 2[0m[37;41m.[0m

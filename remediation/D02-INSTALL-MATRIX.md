@@ -1,10 +1,10 @@
 # D02 kurulum/geçiş kabul matrisi
 
-Güncelleme: 13.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f, D02-3g, D02-3h, D02-3i, D02-3j, D02-3k, D02-3l, D02-3m, D02-3n, D02-3o, D02-3p, D02-3q, D02-3r, D02-3s, D02-3t, D02-3u, D02-3v, D02-3w, D02-3x, D02-3y, D02-3z, D02-4a, D02-4b, D02-4c, D02-4d, D02-4e, D02-4f, ANALYTICS-C01. Bu matris ürünün bağımsız kabulü değildir. D02 IN_PROGRESS.
+Güncelleme: 14.10.2026. Kanıt: D02-3a, D02-3b, D02-3c, D02-3d, D02-3e, D02-3f, D02-3g, D02-3h, D02-3i, D02-3j, D02-3k, D02-3l, D02-3m, D02-3n, D02-3o, D02-3p, D02-3q, D02-3r, D02-3s, D02-3t, D02-3u, D02-3v, D02-3w, D02-3x, D02-3y, D02-3z, D02-4a, D02-4b, D02-4c, D02-4d, D02-4e, D02-4f, ANALYTICS-C01. Bu matris ürünün bağımsız kabulü değildir. D02 ilk dört yerel kapıyla IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED; aktif faz D03. Güncel kapanış D02-CLOSURE.md; eski paket satırları tarihsel uygulama kanıtını ve sınırlarını korur.
 
 | Senaryo | Durum | Kanıt / sınır |
 |---|---|---|
-| Gerçek MariaDB 10.11, temiz veri tabanı, production yirmi dört migration | Yerel test geçti | DatabaseFoundationTest; InstallationAcceptanceTest; yirmi dört migration |
+| Gerçek MariaDB 10.11, temiz veri tabanı, production yirmi altı migration | Yerel test geçti | DatabaseFoundationTest; InstallationAcceptanceTest; yirmi altı migration |
 | SQLite kurulum sihirbazı, migrationlardan sonra ADMIN adımı | Yerel test geçti | WebInstallerTest; gerçek DatabaseConfig bağlantısı |
 | Migration tekrarında eski RBAC rollerinin, izinlerin ve tarihlerinin korunması | Yerel test geçti | DatabaseFoundationTest; IdentitySchemaMigrationRegressionTest |
 | Belge/kalem/duyuru kayıtlarının tekrar migrationda korunması | Yerel test geçti | DocumentPersistenceTest; D02-3b |
@@ -69,3 +69,8 @@ SUPPORT-C01 — sekiz servis/12 tablo için installed no-DDL/complete column+Inn
 API-SESSION-C01 — dört API/session tablo installed no-DDL/full PK/key_hash unique/InnoDB guards; raw/managed caller ve eksik iş şemasında before-DDL refusal; tek statement session upsert/conditional expiry cleanup; own-transaction atomik rate admission/exact parallel budget/committed rejections, caller admission refusal. Yerel tam ana ve yedi etkilenen native sınıf geçti; full native bu adımda tekrar koşulmadı.25 migration/91 CREATE TABLE source değişmedi. Auth/2FA yaşam döngüsü, gerçek HTTP ordering/idempotency/429, binary identity/type/collation/full constraint matrix ve bağımsız kabul açıktır. Bkz. API-SESSION-CLOSURE.md ve API-SESSION-C01-SONUC.md; D02/P04 PASS değildir.
 
 IDENTITY-C01 — Auth/2FA installed column/PK/unique/InnoDB/no-DDL; current user/state-before-token locks; token replacement/consume, reset+trusted device+known session revocation ve pending 2FA+8 codes own/savepoint aggregate; durable known session IDs ve login TOTP step replay fence. Migration26 üç additive tablo/explicit replay/partial preflight/down refusal; önceki25 migration değişmedi. Tam ana/tam native38 sınıf exact discovery geçti. Gerçek auth proof/session issuance, actor/tenant/step-up/admin policy/encrypted TOTP/audit, organizational switching/impersonation ve bütün constraint matrix ayrıca açık; D02/P03 PASS değildir. Bkz. IDENTITY-CLOSURE.md ve IDENTITY-C01-SONUC.md.
+
+
+## D02-CLOSEOUT son çapraz kontrol
+
+D02CloseoutTest temiz26 migration → admin login → RBAC → customer invoice/payment → replay zincirini hem SQLite hem MariaDB üzerinde sınar. Fatura ikinci child/invalid JSON hatası bütün header/item/sequence yazımını geri alır; başarılı invoice raw/managed caller rollback'e katılır; kaybolmuş managed işlem autocommit mutasyon üretmez. Native MyISAM items yazımdan önce reddedilir. SqlPortabilityCloseoutTest domain pricing/contact insert/update'ını native prepared sorgularla sınar; catalog explicit setup gerektirir ve baseline26 migration içinde değildir. Tam native40 sınıf a/b/c ayrık birleşimi discovery ile birebir doğrulanır; sayılar D02-CLOSEOUT-summary.json içinde. Sonraki aktör, sağlayıcı, ekran ve recovery işleri D02-CLOSURE.md sahiplik tablosuna bağlıdır.

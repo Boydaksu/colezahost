@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-14",
+  "reference_commit": "577438873305ca987f58e954dace44c2227917de",
+  "main": {
+    "tests": 1529,
+    "assertions": 11030
+  },
+  "native": {
+    "tests": 703,
+    "assertions": 5399,
+    "classes": 40,
+    "partitions": {
+      "a": {
+        "tests": 396,
+        "assertions": 2993
+      },
+      "b": {
+        "tests": 305,
+        "assertions": 2390
+      },
+      "c": {
+        "tests": 2,
+        "assertions": 16
+      }
+    },
+    "full_discovery_exact": true
+  },
+  "total": 2232,
+  "assertions": 16429,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "migrations": 26,
+  "migration_files_unchanged": true,
+  "D02_status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
+  "independent_acceptance": "PENDING",
+  "production_ready": false
+}

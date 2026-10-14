@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\SqlPortabilityCloseoutTest.php" tests="2" assertions="16" errors="0" failures="0" skipped="0" time="23.818783">
+    <testcase name="testDomainPricingUpdatesOnlyMatchingOperationYearAndCurrency" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\SqlPortabilityCloseoutTest.php" line="24" class="Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest" classname="Coleza.Tests.MariaDb.SqlPortabilityCloseoutTest" assertions="9" time="12.204787"/>
+    <testcase name="testDomainContactsRepeatWithoutReplacingOtherContacts" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\SqlPortabilityCloseoutTest.php" line="44" class="Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest" classname="Coleza.Tests.MariaDb.SqlPortabilityCloseoutTest" assertions="7" time="11.613996"/>
+  </testsuite>
+</testsuites>

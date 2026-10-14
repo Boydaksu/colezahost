@@ -1,0 +1,11 @@
+{
+  "scope": "Production source frozen before main/native a/b; last native-only test class is disjoint partition c. No production changes after final execution began.",
+  "files": {
+    "src/Foundation/Database/Connection.php": "5790756f32b6e5b7181ae727015e369191f937944756fd3242df1a3f6d237466",
+    "src/Domain/Commerce/Invoices/InvoiceService.php": "49453d8c479f22b08a39f96adc3a3e27bffafae03821f6a4157fde8ecd60ba08",
+    "tests/Support/D02CloseoutCases.php": "8ec7616e885a296b4c9aede7c8105049dc28efa7e58d31ca02c958c20fcaeaa0",
+    "tests/Unit/Foundation/Database/D02CloseoutTest.php": "f4d7e7501604a76d6f0810adb89d98fe21ec562e9b5aac377da4dafdf5d6486f",
+    "tests/MariaDb/D02CloseoutTest.php": "b5461be5c3ee172c477ccd661aa04ed9eab1ac27e41f03073c18eed926fd49e9",
+    "tests/MariaDb/SqlPortabilityCloseoutTest.php": "33511abba7e50c21731583584067c12baf197ad79804adc91df6d63e1fa1bac4"
+  }
+}

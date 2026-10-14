@@ -1,0 +1,187 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+[41;37mF[0m.[41;37mF[0m[41;37mF[0m[31;1mE[0m[41;37mF[0m[31;1mE[0m.[41;37mF[0m[41;37mF[0m                                                        10 / 10 (100%)
+
+Time: 00:00.028, Memory: 20.00 MB
+
+There were 2 errors:
+
+1) Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest::testInvalidItemJsonLeavesNoInvoiceOrConsumedNumber#1 with data ('raw')
+PDOException: There is already an active transaction
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:155
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:234
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:143
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Commerce\Invoices\InvoiceService.php:417
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Commerce\Invoices\InvoiceService.php:177
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php:54
+
+2) Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest::testInvoiceSuccessRemainsInCallerRollback#0 with data ('raw')
+PDOException: There is already an active transaction
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:155
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:234
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:143
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Commerce\Invoices\InvoiceService.php:417
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Commerce\Invoices\InvoiceService.php:177
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php:63
+
+--
+
+There were 6 failures:
+
+1) Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest::testFailedSecondInvoiceItemRollsBackWholeOperation#0 with data ('standalone')
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+ Array &0 [
+-    0 => Array &1 [],
+-    1 => Array &2 [],
+-    2 => Array &3 [],
++    0 => Array &1 [
++        0 => Array &2 [
++            'id' => 1,
++            'invoice_number' => 'INV-2026-000001',
++            'user_id' => 7,
++            'organization_id' => null,
++            'order_id' => null,
++            'status' => 'unpaid',
++            'currency_code' => 'TRY',
++            'subtotal_minor' => 3000,
++            'tax_total_minor' => 0,
++            'total_minor' => 3000,
++            'paid_amount_minor' => 0,
++            'issue_date' => '2026-10-14',
++            'due_date' => '2026-10-21',
++            'paid_at' => null,
++            'currency_snapshot_json' => '{"code":"TRY","captured_at":"2026-10-14 06:29:15"}',
++            'tax_snapshot_json' => '{"tax_total_minor":0,"captured_at":"2026-10-14 06:29:15"}',
++            'notes' => null,
++            'created_at' => '2026-10-14 06:29:15',
++        ],
++    ],
++    1 => Array &3 [
++        0 => Array &4 [
++            'id' => 1,
++            'invoice_id' => 1,
++            'description' => 'first',
++            'quantity' => 1,
++            'unit_amount_minor' => 1000,
++            'subtotal_minor' => 1000,
++            'tax_amount_minor' => 0,
++            'total_minor' => 1000,
++            'order_item_id' => null,
++            'service_id' => null,
++            'tax_snapshot_json' => '[]',
++            'metadata_json' => '[]',
++            'created_at' => '2026-10-14 06:29:15',
++        ],
++    ],
++    2 => Array &5 [
++        0 => Array &6 [
++            'year_prefix' => '2026',
++            'last_number' => 1,
++        ],
++    ],
+ ]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php:42
+
+2) Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest::testFailedSecondInvoiceItemRollsBackWholeOperation#2 with data ('managed')
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+ Array &0 [
+-    0 => Array &1 [],
+-    1 => Array &2 [],
+-    2 => Array &3 [],
++    0 => Array &1 [
++        0 => Array &2 [
++            'id' => 1,
++            'invoice_number' => 'INV-2026-000001',
++            'user_id' => 7,
++            'organization_id' => null,
++            'order_id' => null,
++            'status' => 'unpaid',
++            'currency_code' => 'TRY',
++            'subtotal_minor' => 3000,
++            'tax_total_minor' => 0,
++            'total_minor' => 3000,
++            'paid_amount_minor' => 0,
++            'issue_date' => '2026-10-14',
++            'due_date' => '2026-10-21',
++            'paid_at' => null,
++            'currency_snapshot_json' => '{"code":"TRY","captured_at":"2026-10-14 06:29:15"}',
++            'tax_snapshot_json' => '{"tax_total_minor":0,"captured_at":"2026-10-14 06:29:15"}',
++            'notes' => null,
++            'created_at' => '2026-10-14 06:29:15',
++        ],
++    ],
++    1 => Array &3 [
++        0 => Array &4 [
++            'id' => 1,
++            'invoice_id' => 1,
++            'description' => 'first',
++            'quantity' => 1,
++            'unit_amount_minor' => 1000,
++            'subtotal_minor' => 1000,
++            'tax_amount_minor' => 0,
++            'total_minor' => 1000,
++            'order_item_id' => null,
++            'service_id' => null,
++            'tax_snapshot_json' => '[]',
++            'metadata_json' => '[]',
++            'created_at' => '2026-10-14 06:29:15',
++        ],
++    ],
++    2 => Array &5 [
++        0 => Array &6 [
++            'year_prefix' => '2026',
++            'last_number' => 1,
++        ],
++    ],
+ ]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php:42
+
+3) Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest::testInvalidItemJsonLeavesNoInvoiceOrConsumedNumber#0 with data ('standalone')
+Invalid JSON persisted
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php:54
+
+4) Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest::testInvalidItemJsonLeavesNoInvoiceOrConsumedNumber#2 with data ('managed')
+Invalid JSON persisted
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php:54
+
+5) Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest::testGenericTransactionUsesSavepointInRawCaller
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'fixture abort'
++'There is already an active transaction'
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php:73
+
+6) Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest::testLostManagedTransactionCannotWriteAutocommittedData
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+-Array &0 []
++Array &0 [
++    0 => Array &1 [
++        'id' => 1,
++    ],
++]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php:83
+
+[37;41mERRORS![0m
+[37;41mTests: 10[0m[37;41m, Assertions: 14[0m[37;41m, Errors: 2[0m[37;41m, Failures: 6[0m[37;41m.[0m

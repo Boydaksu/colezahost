@@ -36,7 +36,7 @@ final class Connection
      */
     public function select(string $query, array $bindings = []): array
     {
-        $statement = $this->executeStatement($query, $bindings);
+        $statement = $this->executeStatement($query, $bindings, requireTransactionIntegrity: false);
         return $statement->fetchAll(PDO::FETCH_ASSOC) ?: [];
     }
 
@@ -151,6 +151,7 @@ final class Connection
 
     public function beginTransaction(): void
     {
+        $this->assertTransactionActive();
         if ($this->transactionDepth === 0) {
             $this->pdo->beginTransaction();
         } else {
@@ -231,6 +232,26 @@ final class Connection
      */
     public function transaction(callable $callback): mixed
     {
+        $this->assertTransactionActive();
+        if ($this->transactionDepth === 0 && $this->pdo->inTransaction()) {
+            // The caller owns the transaction; only undo this callback's writes.
+            $savepoint = 'callback_' . bin2hex(random_bytes(12));
+            $this->pdo->exec('SAVEPOINT ' . $savepoint);
+            try {
+                $result = $callback($this);
+                if (!$this->pdo->inTransaction()) {
+                    throw new \RuntimeException('Database transaction ended unexpectedly.');
+                }
+                $this->pdo->exec('RELEASE SAVEPOINT ' . $savepoint);
+                return $result;
+            } catch (Throwable $error) {
+                if ($this->pdo->inTransaction()) {
+                    $this->pdo->exec('ROLLBACK TO SAVEPOINT ' . $savepoint);
+                    $this->pdo->exec('RELEASE SAVEPOINT ' . $savepoint);
+                }
+                throw $error;
+            }
+        }
         $this->beginTransaction();
 
         try {
@@ -279,8 +300,10 @@ final class Connection
     /**
      * @param array<int|string, mixed> $bindings
      */
-    private function executeStatement(string $query, array $bindings = []): PDOStatement
+    private function executeStatement(string $query, array $bindings = [], bool $requireTransactionIntegrity = true): PDOStatement
     {
+        // Read-only inspection remains available after a caller transaction is lost.
+        if ($requireTransactionIntegrity) { $this->assertTransactionActive(); }
         $start = $this->loggingQueries ? microtime(true) : 0.0;
         $stmt = $this->pdo->prepare($query);
 
@@ -307,4 +330,11 @@ final class Connection
 
         return $stmt;
     }
+    private function assertTransactionActive(): void
+    {
+        if ($this->transactionDepth > 0 && !$this->pdo->inTransaction()) {
+            throw new \RuntimeException('Database transaction ended unexpectedly; rollback before continuing.');
+        }
+    }
+
 }

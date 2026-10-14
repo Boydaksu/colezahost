@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml" tests="12" assertions="41" errors="0" failures="0" skipped="0" time="0.611425">
+    <testsuite name="Unit" tests="12" assertions="41" errors="0" failures="0" skipped="0" time="0.611425">
+      <testsuite name="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Foundation\Database\D02CloseoutTest.php" tests="12" assertions="41" errors="0" failures="0" skipped="0" time="0.611425">
+        <testsuite name="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest::testFailedSecondInvoiceItemRollsBackWholeOperation" tests="3" assertions="11" errors="0" failures="0" skipped="0" time="0.005463">
+          <testcase name="testFailedSecondInvoiceItemRollsBackWholeOperation with data set #0" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="32" class="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest" classname="Coleza.Tests.Unit.Foundation.Database.D02CloseoutTest" assertions="3" time="0.003948"/>
+          <testcase name="testFailedSecondInvoiceItemRollsBackWholeOperation with data set #1" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="32" class="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest" classname="Coleza.Tests.Unit.Foundation.Database.D02CloseoutTest" assertions="4" time="0.000918"/>
+          <testcase name="testFailedSecondInvoiceItemRollsBackWholeOperation with data set #2" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="32" class="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest" classname="Coleza.Tests.Unit.Foundation.Database.D02CloseoutTest" assertions="4" time="0.000597"/>
+        </testsuite>
+        <testsuite name="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest::testInvalidItemJsonLeavesNoInvoiceOrConsumedNumber" tests="3" assertions="6" errors="0" failures="0" skipped="0" time="0.001501">
+          <testcase name="testInvalidItemJsonLeavesNoInvoiceOrConsumedNumber with data set #0" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="50" class="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest" classname="Coleza.Tests.Unit.Foundation.Database.D02CloseoutTest" assertions="2" time="0.000516"/>
+          <testcase name="testInvalidItemJsonLeavesNoInvoiceOrConsumedNumber with data set #1" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="50" class="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest" classname="Coleza.Tests.Unit.Foundation.Database.D02CloseoutTest" assertions="2" time="0.000484"/>
+          <testcase name="testInvalidItemJsonLeavesNoInvoiceOrConsumedNumber with data set #2" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="50" class="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest" classname="Coleza.Tests.Unit.Foundation.Database.D02CloseoutTest" assertions="2" time="0.000500"/>
+        </testsuite>
+        <testsuite name="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest::testInvoiceSuccessRemainsInCallerRollback" tests="2" assertions="6" errors="0" failures="0" skipped="0" time="0.000932">
+          <testcase name="testInvoiceSuccessRemainsInCallerRollback with data set #0" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="60" class="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest" classname="Coleza.Tests.Unit.Foundation.Database.D02CloseoutTest" assertions="3" time="0.000481"/>
+          <testcase name="testInvoiceSuccessRemainsInCallerRollback with data set #1" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="60" class="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest" classname="Coleza.Tests.Unit.Foundation.Database.D02CloseoutTest" assertions="3" time="0.000450"/>
+        </testsuite>
+        <testcase name="testGenericTransactionUsesSavepointInRawCaller" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="67" class="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest" classname="Coleza.Tests.Unit.Foundation.Database.D02CloseoutTest" assertions="4" time="0.000365"/>
+        <testcase name="testLostManagedTransactionCannotWriteAutocommittedData" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="79" class="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest" classname="Coleza.Tests.Unit.Foundation.Database.D02CloseoutTest" assertions="1" time="0.000293"/>
+        <testcase name="testFreshInstallLoginPermissionInvoicePaymentAndReplay" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="85" class="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest" classname="Coleza.Tests.Unit.Foundation.Database.D02CloseoutTest" assertions="11" time="0.602317"/>
+        <testcase name="testLostManagedTransactionRejectsDirectWrites" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="115" class="Coleza\Tests\Unit\Foundation\Database\D02CloseoutTest" classname="Coleza.Tests.Unit.Foundation.Database.D02CloseoutTest" assertions="2" time="0.000554"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

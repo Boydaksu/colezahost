@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\SqlPortabilityCloseoutTest.php" tests="2" assertions="4" errors="2" failures="0" skipped="0" time="24.032751">
+    <testcase name="testDomainPricingUpdatesOnlyMatchingOperationYearAndCurrency" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\SqlPortabilityCloseoutTest.php" line="22" class="Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest" classname="Coleza.Tests.MariaDb.SqlPortabilityCloseoutTest" assertions="2" time="12.528403">
+      <error type="PDOException">Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest::testDomainPricingUpdatesOnlyMatchingOperationYearAndCurrency&#13;
+PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'colezahost_d02_test_76eda21f58052ff5.domain_tlds' doesn't exist
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:308
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:49
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Domains\Catalog\DomainCatalogService.php:209
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Domains\Catalog\DomainCatalogService.php:83
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\SqlPortabilityCloseoutTest.php:25</error>
+    </testcase>
+    <testcase name="testDomainContactsRepeatWithoutReplacingOtherContacts" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\SqlPortabilityCloseoutTest.php" line="42" class="Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest" classname="Coleza.Tests.MariaDb.SqlPortabilityCloseoutTest" assertions="2" time="11.504348">
+      <error type="Coleza\Foundation\Exceptions\ValidationException">Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest::testDomainContactsRepeatWithoutReplacingOtherContacts&#13;
+Coleza\Foundation\Exceptions\ValidationException: Invalid phone
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Domains\DomainService.php:615
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\SqlPortabilityCloseoutTest.php:46</error>
+    </testcase>
+  </testsuite>
+</testsuites>

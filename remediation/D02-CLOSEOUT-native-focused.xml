@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml" tests="13" assertions="69" errors="0" failures="0" skipped="0" time="7.815555">
+    <testsuite name="MariaDB" tests="13" assertions="69" errors="0" failures="0" skipped="0" time="7.815555">
+      <testsuite name="Coleza\Tests\MariaDb\D02CloseoutTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\D02CloseoutTest.php" tests="13" assertions="69" errors="0" failures="0" skipped="0" time="7.815555">
+        <testcase name="testNonTransactionalInvoiceItemsRejectedBeforeAnyWrite" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\D02CloseoutTest.php" line="7" class="Coleza\Tests\MariaDb\D02CloseoutTest" classname="Coleza.Tests.MariaDb.D02CloseoutTest" assertions="4" time="0.188332"/>
+        <testsuite name="Coleza\Tests\MariaDb\D02CloseoutTest::testFailedSecondInvoiceItemRollsBackWholeOperation" tests="3" assertions="17" errors="0" failures="0" skipped="0" time="0.418762">
+          <testcase name="testFailedSecondInvoiceItemRollsBackWholeOperation with data set #0" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="32" class="Coleza\Tests\MariaDb\D02CloseoutTest" classname="Coleza.Tests.MariaDb.D02CloseoutTest" assertions="5" time="0.134046"/>
+          <testcase name="testFailedSecondInvoiceItemRollsBackWholeOperation with data set #1" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="32" class="Coleza\Tests\MariaDb\D02CloseoutTest" classname="Coleza.Tests.MariaDb.D02CloseoutTest" assertions="6" time="0.151486"/>
+          <testcase name="testFailedSecondInvoiceItemRollsBackWholeOperation with data set #2" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="32" class="Coleza\Tests\MariaDb\D02CloseoutTest" classname="Coleza.Tests.MariaDb.D02CloseoutTest" assertions="6" time="0.133230"/>
+        </testsuite>
+        <testsuite name="Coleza\Tests\MariaDb\D02CloseoutTest::testInvalidItemJsonLeavesNoInvoiceOrConsumedNumber" tests="3" assertions="12" errors="0" failures="0" skipped="0" time="0.420714">
+          <testcase name="testInvalidItemJsonLeavesNoInvoiceOrConsumedNumber with data set #0" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="50" class="Coleza\Tests\MariaDb\D02CloseoutTest" classname="Coleza.Tests.MariaDb.D02CloseoutTest" assertions="4" time="0.137241"/>
+          <testcase name="testInvalidItemJsonLeavesNoInvoiceOrConsumedNumber with data set #1" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="50" class="Coleza\Tests\MariaDb\D02CloseoutTest" classname="Coleza.Tests.MariaDb.D02CloseoutTest" assertions="4" time="0.135288"/>
+          <testcase name="testInvalidItemJsonLeavesNoInvoiceOrConsumedNumber with data set #2" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="50" class="Coleza\Tests\MariaDb\D02CloseoutTest" classname="Coleza.Tests.MariaDb.D02CloseoutTest" assertions="4" time="0.148185"/>
+        </testsuite>
+        <testsuite name="Coleza\Tests\MariaDb\D02CloseoutTest::testInvoiceSuccessRemainsInCallerRollback" tests="2" assertions="10" errors="0" failures="0" skipped="0" time="0.298446">
+          <testcase name="testInvoiceSuccessRemainsInCallerRollback with data set #0" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="60" class="Coleza\Tests\MariaDb\D02CloseoutTest" classname="Coleza.Tests.MariaDb.D02CloseoutTest" assertions="5" time="0.147256"/>
+          <testcase name="testInvoiceSuccessRemainsInCallerRollback with data set #1" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="60" class="Coleza\Tests\MariaDb\D02CloseoutTest" classname="Coleza.Tests.MariaDb.D02CloseoutTest" assertions="5" time="0.151190"/>
+        </testsuite>
+        <testcase name="testGenericTransactionUsesSavepointInRawCaller" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="67" class="Coleza\Tests\MariaDb\D02CloseoutTest" classname="Coleza.Tests.MariaDb.D02CloseoutTest" assertions="6" time="0.143914"/>
+        <testcase name="testLostManagedTransactionCannotWriteAutocommittedData" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="79" class="Coleza\Tests\MariaDb\D02CloseoutTest" classname="Coleza.Tests.MariaDb.D02CloseoutTest" assertions="3" time="0.116704"/>
+        <testcase name="testFreshInstallLoginPermissionInvoicePaymentAndReplay" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="85" class="Coleza\Tests\MariaDb\D02CloseoutTest" classname="Coleza.Tests.MariaDb.D02CloseoutTest" assertions="13" time="6.099489"/>
+        <testcase name="testLostManagedTransactionRejectsDirectWrites" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\D02CloseoutCases.php" line="115" class="Coleza\Tests\MariaDb\D02CloseoutTest" classname="Coleza.Tests.MariaDb.D02CloseoutTest" assertions="4" time="0.129195"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>
