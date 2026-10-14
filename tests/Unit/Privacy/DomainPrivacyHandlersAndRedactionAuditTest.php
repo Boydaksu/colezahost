@@ -43,7 +43,7 @@ final class DomainPrivacyHandlersAndRedactionAuditTest extends TestCase
             $this->supportHandler,
         ]);
 
-        $this->auditService = new RedactionAuditService($this->db, secretKey: 'test_audit_key');
+        $this->auditService = new RedactionAuditService($this->db, secretKey: \Coleza\Tests\Support\PrivacyFixtureKeys::redaction());
         $this->auditService->ensureTables();
     }
 
@@ -239,10 +239,10 @@ final class DomainPrivacyHandlersAndRedactionAuditTest extends TestCase
             postChecksum: 'hash_post',
             verifiedClean: true,
             auditedBy: 1,
-            secretKey: 'test_audit_key'
+            secretKey: \Coleza\Tests\Support\PrivacyFixtureKeys::redaction()
         );
 
-        $this->assertTrue($audit->verifySignature('test_audit_key'));
+        $this->assertTrue($audit->verifySignature(\Coleza\Tests\Support\PrivacyFixtureKeys::redaction()));
         $this->assertFalse($audit->verifySignature('wrong_key'));
 
         $tampered = RedactionAuditRecord::create(
@@ -255,9 +255,9 @@ final class DomainPrivacyHandlersAndRedactionAuditTest extends TestCase
             postChecksum: 'hash_post',
             verifiedClean: true,
             auditedBy: 1,
-            secretKey: 'different_key'
+            secretKey: \Coleza\Tests\Support\PrivacyFixtureKeys::tombstone()
         );
-        $this->assertFalse($tampered->verifySignature('test_audit_key'));
+        $this->assertFalse($tampered->verifySignature(\Coleza\Tests\Support\PrivacyFixtureKeys::redaction()));
     }
 
     public function testEndToEndErasureWithCoordinatedHandlersAndRedactionAudit(): void

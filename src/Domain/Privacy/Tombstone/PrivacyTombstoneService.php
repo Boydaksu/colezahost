@@ -16,19 +16,35 @@ final class PrivacyTombstoneService
         private readonly Connection $db,
         private readonly ?TombstoneStoreInterface $persistentStore = null,
         private readonly ?AuditLogger $auditLogger = null,
-        private readonly string $secretKey = 'coleza_tombstone_key',
-        private readonly string $salt = 'coleza_privacy_salt'
+        #[\SensitiveParameter] private readonly ?string $secretKey = null,
+        #[\SensitiveParameter] private readonly ?string $salt = null
     ) {
     }
 
     public function getSalt(): string
     {
-        return $this->salt;
+        return \Coleza\Domain\Privacy\Integrity\PrivacySigningKey::resolve('email', $this->salt);
     }
 
     public function getSecretKey(): string
     {
-        return $this->secretKey;
+        return \Coleza\Domain\Privacy\Integrity\PrivacySigningKey::resolve('tombstone', $this->secretKey);
+    }
+
+    public function preflightSigningKeys(): void
+    {
+        if (hash_equals($this->getSecretKey(), $this->getSalt())) {
+            throw new \RuntimeException('Privacy email and integrity keys must differ.');
+        }
+    }
+
+    public function assertTrusted(PrivacyTombstone $record): void
+    {
+        $this->preflightSigningKeys();
+        if (!$record->verifyIntegrity($this->getSecretKey())
+            || ($record->getMetadata()['privacy_email_key_id'] ?? null) !== \Coleza\Domain\Privacy\Integrity\PrivacySigningKey::id($this->getSalt())) {
+            throw new \RuntimeException('Privacy tombstone integrity or email key verification failed; reconciliation refused.');
+        }
     }
 
     public function ensureTables(): void
@@ -44,6 +60,7 @@ final class PrivacyTombstoneService
         string $erasureChecksum = '',
         array $metadata = []
     ): PrivacyTombstone {
+        $this->preflightSigningKeys();
         $this->ensureTables();
 
         if ($userId <= 0) {
@@ -52,6 +69,7 @@ final class PrivacyTombstoneService
 
         $existing = $this->getTombstoneByUserId($userId);
         if ($existing !== null) {
+            $this->assertTrusted($existing);
             return $existing;
         }
 
@@ -67,8 +85,8 @@ final class PrivacyTombstoneService
             erasureChecksum: $erasureChecksum,
             metadata: $metadata,
             tombstonedAt: date('Y-m-d H:i:s'),
-            secretKey: $this->secretKey,
-            salt: $this->salt
+            secretKey: $this->getSecretKey(),
+            salt: $this->getSalt()
         );
 
         $this->db->insert($this->tableName, [
@@ -77,7 +95,7 @@ final class PrivacyTombstoneService
             'erasure_type' => $tombstone->getErasureType(),
             'reason' => $tombstone->getReason(),
             'erasure_checksum' => $tombstone->getErasureChecksum(),
-            'metadata' => json_encode($tombstone->getMetadata(), JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES),
+            'metadata' => json_encode($tombstone->getMetadata(), JSON_THROW_ON_ERROR | JSON_PRESERVE_ZERO_FRACTION | JSON_UNESCAPED_SLASHES),
             'tombstoned_at' => $tombstone->getTombstonedAt(),
             'integrity_signature' => $tombstone->getIntegritySignature(),
         ]);
@@ -120,27 +138,9 @@ final class PrivacyTombstoneService
 
     public function isEmailTombstoned(string $email): bool
     {
-        $this->ensureTables();
-        $hash = PrivacyTombstone::computeEmailHash($email, $this->salt);
-
-        $row = $this->db->selectOne(
-            sprintf('SELECT id FROM %s WHERE user_email_hash = :hash', $this->tableName),
-            ['hash' => $hash]
-        );
-
-        if ($row !== null) {
-            return true;
+        foreach ($this->getAllTombstones() as $record) {
+            if ($record->matchesEmail($email, $this->getSalt())) { return true; }
         }
-
-        // Check persistent store
-        if ($this->persistentStore !== null) {
-            foreach ($this->persistentStore->loadAll() as $tombstone) {
-                if (hash_equals($tombstone->getUserEmailHash(), $hash)) {
-                    return true;
-                }
-            }
-        }
-
         return false;
     }
 
@@ -202,12 +202,17 @@ final class PrivacyTombstoneService
         // Merge any out-of-band tombstones not yet in database
         if ($this->persistentStore !== null) {
             foreach ($this->persistentStore->loadAll() as $userId => $tombstone) {
+                if (isset($result[$userId]) && (\Coleza\Domain\Privacy\Integrity\PrivacySignature::encode($result[$userId]->integrityData()) !== \Coleza\Domain\Privacy\Integrity\PrivacySignature::encode($tombstone->integrityData())
+                    || !hash_equals($result[$userId]->getIntegritySignature(), $tombstone->getIntegritySignature()))) {
+                    throw new \RuntimeException('Conflicting database and persistent tombstones.');
+                }
                 if (!isset($result[$userId])) {
                     $result[$userId] = $tombstone;
                 }
             }
         }
 
+        foreach ($result as $record) { $this->assertTrusted($record); }
         return $result;
     }
 
@@ -222,7 +227,9 @@ final class PrivacyTombstoneService
             return 0;
         }
 
+        $this->getAllTombstones(); // Verify the entire database and file inventory before inserting anything.
         $all = $this->persistentStore->loadAll();
+        foreach ($all as $record) { $this->assertTrusted($record); }
         $synced = 0;
 
         foreach ($all as $tombstone) {
@@ -238,7 +245,7 @@ final class PrivacyTombstoneService
                     'erasure_type' => $tombstone->getErasureType(),
                     'reason' => $tombstone->getReason(),
                     'erasure_checksum' => $tombstone->getErasureChecksum(),
-                    'metadata' => json_encode($tombstone->getMetadata(), JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES),
+                    'metadata' => json_encode($tombstone->getMetadata(), JSON_THROW_ON_ERROR | JSON_PRESERVE_ZERO_FRACTION | JSON_UNESCAPED_SLASHES),
                     'tombstoned_at' => $tombstone->getTombstonedAt(),
                     'integrity_signature' => $tombstone->getIntegritySignature(),
                 ]);
@@ -259,6 +266,7 @@ final class PrivacyTombstoneService
             return 0;
         }
 
+        $this->getAllTombstones(); // Fail before writing a partial persistent inventory.
         $rows = $this->db->select(sprintf('SELECT * FROM %s', $this->tableName));
         $synced = 0;
 

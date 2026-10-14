@@ -203,6 +203,8 @@ final class PrivacyErasureService
 
     public function executeErasure(int $userId, int $executedBy, string $reason): ErasureExecutionResult
     {
+        $this->tombstoneService?->preflightSigningKeys();
+        $this->redactionAuditService?->getSecretKey();
         $plan = $this->executeDryRun($userId);
 
         if (!$plan->isEligible()) {

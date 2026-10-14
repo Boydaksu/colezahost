@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<testSuite xmlns="https://xml.phpunit.de/testSuite">
+ <tests>
+  <testClass name="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\PrivacyMigrationInstallTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstalledPrivacyAndCheckpointWritesRemainRollbackable" name="testInstalledPrivacyAndCheckpointWritesRemainRollbackable"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testMissingTransactionalSchemaIsRejectedWithoutImplicitCommit" name="testMissingTransactionalSchemaIsRejectedWithoutImplicitCommit"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#0" name="testInstallerPreparesPrivacyAndMigrationTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#1" name="testInstallerPreparesPrivacyAndMigrationTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#2" name="testInstallerPreparesPrivacyAndMigrationTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#3" name="testInstallerPreparesPrivacyAndMigrationTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#4" name="testInstallerPreparesPrivacyAndMigrationTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#5" name="testInstallerPreparesPrivacyAndMigrationTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#6" name="testInstallerPreparesPrivacyAndMigrationTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#7" name="testInstallerPreparesPrivacyAndMigrationTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#8" name="testInstallerPreparesPrivacyAndMigrationTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#9" name="testInstallerPreparesPrivacyAndMigrationTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#10" name="testInstallerPreparesPrivacyAndMigrationTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#11" name="testInstallerPreparesPrivacyAndMigrationTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#12" name="testInstallerPreparesPrivacyAndMigrationTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testConsentFirstAllowsSignedTombstoneAndRetainsSignatureOnReinstall" name="testConsentFirstAllowsSignedTombstoneAndRetainsSignatureOnReinstall"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testSignedSchemaFirstAllowsLegacyConsentApiWithoutInventingSignature" name="testSignedSchemaFirstAllowsLegacyConsentApiWithoutInventingSignature"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testOldConsentTombstoneIsPreservedAsUnverified" name="testOldConsentTombstoneIsPreservedAsUnverified"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testMigrationCheckpointAndCustomizedRetentionSurviveReinstall" name="testMigrationCheckpointAndCustomizedRetentionSurviveReinstall"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testOriginalSignedSchemaKeepsConstraintsAndRecords" name="testOriginalSignedSchemaKeepsConstraintsAndRecords"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\PrivacySigningTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\PrivacySigningTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\PrivacySigningTest::testTombstoneSignatureCoversReasonTypeAndMetadata" name="testTombstoneSignatureCoversReasonTypeAndMetadata"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacySigningTest::testRedactionSignatureCoversCleanFlagActorAndFields" name="testRedactionSignatureCoversCleanFlagActorAndFields"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacySigningTest::testPurposeSeparationWrongKeysAndSignatureSize" name="testPurposeSeparationWrongKeysAndSignatureSize"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacySigningTest::testKnownDefaultLegacySignatureNeverBecomesTrusted" name="testKnownDefaultLegacySignatureNeverBecomesTrusted"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacySigningTest::testWeakAndSamePurposeKeysFailBeforeDatabaseEffects" name="testWeakAndSamePurposeKeysFailBeforeDatabaseEffects"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacySigningTest::testDatabaseRoundTripPreservesAllSignedFieldsIncludingFloat" name="testDatabaseRoundTripPreservesAllSignedFieldsIncludingFloat"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacySigningTest::testEmailKeyReplacementRefusesRestoreBeforeUserChanges" name="testEmailKeyReplacementRefusesRestoreBeforeUserChanges"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacySigningTest::testTamperedDatabaseRecordCannotBeReusedAsExistingDeletion" name="testTamperedDatabaseRecordCannotBeReusedAsExistingDeletion"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacySigningTest::testInvalidFileAndConflictingManifestCannotOverwriteInventory" name="testInvalidFileAndConflictingManifestCannotOverwriteInventory"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacySigningTest::testWholeInventoryIsVerifiedBeforePersistentSync" name="testWholeInventoryIsVerifiedBeforePersistentSync"/>
+   <testMethod id="Coleza\Tests\MariaDb\PrivacySigningTest::testDatabaseAndFileDisagreementCannotBeSilentlyMerged" name="testDatabaseAndFileDisagreementCannotBeSilentlyMerged"/>
+  </testClass>
+ </tests>
+ <groups>
+  <group name="default">
+   <test id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstalledPrivacyAndCheckpointWritesRemainRollbackable"/>
+   <test id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testMissingTransactionalSchemaIsRejectedWithoutImplicitCommit"/>
+   <test id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#0"/>
+   <test id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#1"/>
+   <test id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#2"/>
+   <test id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#3"/>
+   <test id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#4"/>
+   <test id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#5"/>
+   <test id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#6"/>
+   <test id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#7"/>
+   <test id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#8"/>
+   <test id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#9"/>
+   <test id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#10"/>
+   <test id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#11"/>
+   <test id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testInstallerPreparesPrivacyAndMigrationTable#12"/>
+   <test id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testConsentFirstAllowsSignedTombstoneAndRetainsSignatureOnReinstall"/>
+   <test id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testSignedSchemaFirstAllowsLegacyConsentApiWithoutInventingSignature"/>
+   <test id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testOldConsentTombstoneIsPreservedAsUnverified"/>
+   <test id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testMigrationCheckpointAndCustomizedRetentionSurviveReinstall"/>
+   <test id="Coleza\Tests\MariaDb\PrivacyMigrationInstallTest::testOriginalSignedSchemaKeepsConstraintsAndRecords"/>
+   <test id="Coleza\Tests\MariaDb\PrivacySigningTest::testTombstoneSignatureCoversReasonTypeAndMetadata"/>
+   <test id="Coleza\Tests\MariaDb\PrivacySigningTest::testRedactionSignatureCoversCleanFlagActorAndFields"/>
+   <test id="Coleza\Tests\MariaDb\PrivacySigningTest::testPurposeSeparationWrongKeysAndSignatureSize"/>
+   <test id="Coleza\Tests\MariaDb\PrivacySigningTest::testKnownDefaultLegacySignatureNeverBecomesTrusted"/>
+   <test id="Coleza\Tests\MariaDb\PrivacySigningTest::testWeakAndSamePurposeKeysFailBeforeDatabaseEffects"/>
+   <test id="Coleza\Tests\MariaDb\PrivacySigningTest::testDatabaseRoundTripPreservesAllSignedFieldsIncludingFloat"/>
+   <test id="Coleza\Tests\MariaDb\PrivacySigningTest::testEmailKeyReplacementRefusesRestoreBeforeUserChanges"/>
+   <test id="Coleza\Tests\MariaDb\PrivacySigningTest::testTamperedDatabaseRecordCannotBeReusedAsExistingDeletion"/>
+   <test id="Coleza\Tests\MariaDb\PrivacySigningTest::testInvalidFileAndConflictingManifestCannotOverwriteInventory"/>
+   <test id="Coleza\Tests\MariaDb\PrivacySigningTest::testWholeInventoryIsVerifiedBeforePersistentSync"/>
+   <test id="Coleza\Tests\MariaDb\PrivacySigningTest::testDatabaseAndFileDisagreementCannotBeSilentlyMerged"/>
+  </group>
+ </groups>
+</testSuite>

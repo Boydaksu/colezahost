@@ -16,8 +16,13 @@ final class RedactionAuditService
     public function __construct(
         private readonly Connection $db,
         private readonly ?AuditLogger $auditLogger = null,
-        private readonly string $secretKey = 'coleza_redaction_secret'
+        #[\SensitiveParameter] private readonly ?string $secretKey = null
     ) {
+    }
+
+    public function getSecretKey(): string
+    {
+        return \Coleza\Domain\Privacy\Integrity\PrivacySigningKey::resolve('redaction', $this->secretKey);
     }
 
     public function ensureTables(): void
@@ -71,6 +76,7 @@ final class RedactionAuditService
         bool $verifiedClean = true,
         int $auditedBy = 1
     ): RedactionAuditRecord {
+        $key = $this->getSecretKey();
         $this->ensureTables();
 
         if ($userId <= 0) {
@@ -89,7 +95,7 @@ final class RedactionAuditService
             verifiedClean: $verifiedClean,
             auditedBy: $auditedBy,
             auditedAt: $now,
-            secretKey: $this->secretKey
+            secretKey: $key
         );
 
         $this->db->insert($this->tableName, [
@@ -97,7 +103,7 @@ final class RedactionAuditService
             'domain_name' => $record->getDomainName(),
             'action_type' => $record->getActionType(),
             'records_affected' => $record->getRecordsAffected(),
-            'redacted_fields' => json_encode($record->getRedactedFields(), JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES),
+            'redacted_fields' => json_encode($record->getRedactedFields(), JSON_THROW_ON_ERROR | JSON_PRESERVE_ZERO_FRACTION | JSON_UNESCAPED_SLASHES),
             'pre_checksum' => $record->getPreChecksum(),
             'post_checksum' => $record->getPostChecksum(),
             'verified_clean' => $record->isVerifiedClean() ? 1 : 0,
@@ -247,7 +253,7 @@ final class RedactionAuditService
         }
 
         foreach ($audits as $audit) {
-            if (!$audit->verifySignature($this->secretKey)) {
+            if (!$audit->verifySignature($this->getSecretKey())) {
                 return false;
             }
         }

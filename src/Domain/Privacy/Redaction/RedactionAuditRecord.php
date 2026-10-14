@@ -32,19 +32,14 @@ final class RedactionAuditRecord implements JsonSerializable
         string $preChecksum,
         string $postChecksum,
         string $auditedAt,
-        string $secretKey = 'coleza_redaction_secret'
+        #[\SensitiveParameter] ?string $secretKey = null,
+        array $redactedFields = [], bool $verifiedClean = false, int $auditedBy = 0
     ): string {
-        $payload = sprintf(
-            '%d|%s|%s|%d|%s|%s|%s',
-            $userId,
-            $domainName,
-            $actionType,
-            $recordsAffected,
-            $preChecksum,
-            $postChecksum,
-            $auditedAt
-        );
-        return hash_hmac('sha256', $payload, $secretKey);
+        return \Coleza\Domain\Privacy\Integrity\PrivacySignature::sign('redaction', [
+            'user_id' => $userId, 'domain_name' => $domainName, 'action_type' => $actionType, 'records_affected' => $recordsAffected,
+            'redacted_fields' => $redactedFields, 'pre_checksum' => $preChecksum, 'post_checksum' => $postChecksum,
+            'verified_clean' => $verifiedClean, 'audited_at' => $auditedAt, 'audited_by' => $auditedBy,
+        ], \Coleza\Domain\Privacy\Integrity\PrivacySigningKey::resolve('redaction', $secretKey));
     }
 
     public static function create(
@@ -59,7 +54,7 @@ final class RedactionAuditRecord implements JsonSerializable
         int $auditedBy,
         ?string $auditedAt = null,
         ?int $id = null,
-        string $secretKey = 'coleza_redaction_secret'
+        #[\SensitiveParameter] ?string $secretKey = null
     ): self {
         $timestamp = $auditedAt ?? date('Y-m-d H:i:s');
         $signature = self::computeSignature(
@@ -70,7 +65,7 @@ final class RedactionAuditRecord implements JsonSerializable
             $preChecksum,
             $postChecksum,
             $timestamp,
-            $secretKey
+            $secretKey, $redactedFields, $verifiedClean, $auditedBy
         );
 
         return new self(
@@ -149,20 +144,21 @@ final class RedactionAuditRecord implements JsonSerializable
         return $this->auditSignature;
     }
 
-    public function verifySignature(string $secretKey = 'coleza_redaction_secret'): bool
+    public function integrityData(): array
     {
-        $expected = self::computeSignature(
-            $this->userId,
-            $this->domainName,
-            $this->actionType,
-            $this->recordsAffected,
-            $this->preChecksum,
-            $this->postChecksum,
-            $this->auditedAt,
-            $secretKey
-        );
-
-        return hash_equals($expected, $this->auditSignature);
+        return ['user_id' => $this->userId, 'domain_name' => $this->domainName, 'action_type' => $this->actionType,
+            'records_affected' => $this->recordsAffected, 'redacted_fields' => $this->redactedFields, 'pre_checksum' => $this->preChecksum,
+            'post_checksum' => $this->postChecksum, 'verified_clean' => $this->verifiedClean, 'audited_at' => $this->auditedAt, 'audited_by' => $this->auditedBy];
+    }
+    public function verifySignature(#[\SensitiveParameter] ?string $secretKey = null): bool
+    {
+        try {
+            $key = \Coleza\Domain\Privacy\Integrity\PrivacySigningKey::resolve('redaction', $secretKey);
+            if (str_starts_with($this->auditSignature, \Coleza\Domain\Privacy\Integrity\PrivacySignature::PREFIX)) {
+                return \Coleza\Domain\Privacy\Integrity\PrivacySignature::verify('redaction', $this->integrityData(), $this->auditSignature, $key);
+            }
+            return false; // Public/default legacy signatures cannot establish authenticity.
+        } catch (\Throwable) { return false; }
     }
 
     public function toArray(): array
@@ -187,7 +183,7 @@ final class RedactionAuditRecord implements JsonSerializable
     {
         $fields = $data['redacted_fields'] ?? [];
         if (is_string($fields)) {
-            $decoded = json_decode($fields, true);
+            $decoded = json_decode($fields, true, 512, JSON_THROW_ON_ERROR);
             $fields = is_array($decoded) ? $decoded : [];
         }
 

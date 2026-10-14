@@ -25,10 +25,10 @@ final class PrivacyTombstone implements JsonSerializable
     ) {
     }
 
-    public static function computeEmailHash(string $email, string $salt = 'coleza_privacy_salt'): string
+    public static function computeEmailHash(string $email, #[\SensitiveParameter] ?string $salt = null): string
     {
         $normalized = strtolower(trim($email));
-        return hash_hmac('sha256', $normalized, $salt);
+        return hash_hmac('sha256', $normalized, \Coleza\Domain\Privacy\Integrity\PrivacySigningKey::resolve('email', $salt));
     }
 
     public static function computeIntegritySignature(
@@ -36,10 +36,13 @@ final class PrivacyTombstone implements JsonSerializable
         string $emailHash,
         string $erasureChecksum,
         string $tombstonedAt,
-        string $secretKey = 'coleza_tombstone_key'
+        #[\SensitiveParameter] ?string $secretKey = null,
+        string $erasureType = 'ANONYMIZE', string $reason = '', array $metadata = []
     ): string {
-        $payload = sprintf('%d|%s|%s|%s', $userId, $emailHash, $erasureChecksum, $tombstonedAt);
-        return hash_hmac('sha256', $payload, $secretKey);
+        return \Coleza\Domain\Privacy\Integrity\PrivacySignature::sign('tombstone', [
+            'user_id' => $userId, 'user_email_hash' => $emailHash, 'erasure_type' => $erasureType,
+            'reason' => $reason, 'erasure_checksum' => $erasureChecksum, 'metadata' => $metadata, 'tombstoned_at' => $tombstonedAt,
+        ], \Coleza\Domain\Privacy\Integrity\PrivacySigningKey::resolve('tombstone', $secretKey));
     }
 
     public static function create(
@@ -51,12 +54,20 @@ final class PrivacyTombstone implements JsonSerializable
         array $metadata = [],
         ?string $tombstonedAt = null,
         ?int $id = null,
-        string $secretKey = 'coleza_tombstone_key',
-        string $salt = 'coleza_privacy_salt'
+        #[\SensitiveParameter] ?string $secretKey = null,
+        #[\SensitiveParameter] ?string $salt = null
     ): self {
+        $salt = \Coleza\Domain\Privacy\Integrity\PrivacySigningKey::resolve('email', $salt);
+        $secretKey = \Coleza\Domain\Privacy\Integrity\PrivacySigningKey::resolve('tombstone', $secretKey);
+        if (hash_equals($salt, $secretKey)) { throw new \RuntimeException('Privacy email and integrity keys must differ.'); }
+        $emailKeyId = \Coleza\Domain\Privacy\Integrity\PrivacySigningKey::id($salt);
+        if (isset($metadata['privacy_email_key_id']) && $metadata['privacy_email_key_id'] !== $emailKeyId) {
+            throw new \InvalidArgumentException('Reserved privacy email key identifier conflicts with configuration.');
+        }
+        $metadata['privacy_email_key_id'] = $emailKeyId;
         $timestamp = $tombstonedAt ?? date('Y-m-d H:i:s');
         $emailHash = self::computeEmailHash($email, $salt);
-        $signature = self::computeIntegritySignature($userId, $emailHash, $erasureChecksum, $timestamp, $secretKey);
+        $signature = self::computeIntegritySignature($userId, $emailHash, $erasureChecksum, $timestamp, $secretKey, $erasureType, $reason, $metadata);
 
         return new self(
             id: $id,
@@ -116,22 +127,29 @@ final class PrivacyTombstone implements JsonSerializable
         return $this->integritySignature;
     }
 
-    public function verifyIntegrity(string $secretKey = 'coleza_tombstone_key'): bool
+    public function integrityData(): array
     {
-        $expected = self::computeIntegritySignature(
-            $this->userId,
-            $this->userEmailHash,
-            $this->erasureChecksum,
-            $this->tombstonedAt,
-            $secretKey
-        );
-
-        return hash_equals($expected, $this->integritySignature);
+        return ['user_id' => $this->userId, 'user_email_hash' => $this->userEmailHash, 'erasure_type' => $this->erasureType,
+            'reason' => $this->reason, 'erasure_checksum' => $this->erasureChecksum, 'metadata' => $this->metadata, 'tombstoned_at' => $this->tombstonedAt];
+    }
+    public function verifyIntegrity(#[\SensitiveParameter] ?string $secretKey = null): bool
+    {
+        try {
+            $key = \Coleza\Domain\Privacy\Integrity\PrivacySigningKey::resolve('tombstone', $secretKey);
+            if (str_starts_with($this->integritySignature, \Coleza\Domain\Privacy\Integrity\PrivacySignature::PREFIX)) {
+                return \Coleza\Domain\Privacy\Integrity\PrivacySignature::verify('tombstone', $this->integrityData(), $this->integritySignature, $key);
+            }
+            return false; // Public/default legacy signatures cannot establish authenticity.
+        } catch (\Throwable) { return false; }
     }
 
-    public function matchesEmail(string $email, string $salt = 'coleza_privacy_salt'): bool
+    public function matchesEmail(string $email, #[\SensitiveParameter] ?string $salt = null): bool
     {
-        $hash = self::computeEmailHash($email, $salt);
+        $key = \Coleza\Domain\Privacy\Integrity\PrivacySigningKey::resolve('email', $salt);
+        if (($this->metadata['privacy_email_key_id'] ?? null) !== \Coleza\Domain\Privacy\Integrity\PrivacySigningKey::id($key)) {
+            throw new \RuntimeException('Privacy email key changed; matching refused.');
+        }
+        $hash = self::computeEmailHash($email, $key);
         return hash_equals($this->userEmailHash, $hash);
     }
 
@@ -154,7 +172,7 @@ final class PrivacyTombstone implements JsonSerializable
     {
         $metadata = $data['metadata'] ?? [];
         if (is_string($metadata)) {
-            $decoded = json_decode($metadata, true);
+            $decoded = json_decode($metadata, true, 512, JSON_THROW_ON_ERROR);
             $metadata = is_array($decoded) ? $decoded : [];
         }
 

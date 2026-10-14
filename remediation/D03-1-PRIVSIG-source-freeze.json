@@ -1,0 +1,26 @@
+{
+  "reference_commit": "56ac2c15f65c7f4cbe622bce895f62ecc68b5838",
+  "files": {
+    "src/Domain/Privacy/Erasure/PrivacyErasureService.php": "dd6e694f3fadf2f6b821875a717b365c0af47fbb01880b010510ef450334cb45",
+    "src/Domain/Privacy/Integrity/PrivacySignature.php": "5f8eb600cbbd12780552f7b3d4a92ed542b1e0cdd46fffca29b5ab4c7438efb6",
+    "src/Domain/Privacy/Integrity/PrivacySigningKey.php": "e62cb76fe8632038ecf9b0e1e948dee95c7822ef841c7d95208b1dd800b954a5",
+    "src/Domain/Privacy/Redaction/RedactionAuditRecord.php": "e12713595d4fa02b75a38ee151debcec86e8dc6156ef188e4edd573dc192dcff",
+    "src/Domain/Privacy/Redaction/RedactionAuditService.php": "e2b5d6933d7f8c18c59c7eb0140e97133859b6f5416fe3adbba9c7391f9d8cab",
+    "src/Domain/Privacy/Tombstone/FileTombstoneStore.php": "72aeecc125d8decb74e66eaa81a17cc4a5834af59bff3006d1ce83a149ea557a",
+    "src/Domain/Privacy/Tombstone/PrivacyTombstone.php": "98f43bfd3a179580b3f90f66cd0b2807f07ab5fbf6559a804b29886221d5bd2a",
+    "src/Domain/Privacy/Tombstone/PrivacyTombstoneService.php": "a8e23baf32976b39c1c3922bd221379b9b1848838764e6eb99a5f9a2fb87b244",
+    "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php": "a869e0915feea73e6be4b9e8dd5cbc02ebc28c837e1923c099eb212a9bc08c18",
+    "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php": "d3cd350bba4c8d9f94de3b463d398851156582794032ab0af49592ac26a48b51",
+    "tests/MariaDb/PrivacyMigrationInstallTest.php": "14e39d85817bac355e4134a3751979e8088e70a431522647d11d9c04a7f07a6d",
+    "tests/MariaDb/PrivacySigningTest.php": "a38b91c1ea003248c7074a5f9bfd5bfdf21e9077354c61cb165a60c244adf73d",
+    "tests/Support/PrivacyFixtureKeys.php": "ca6806c2fef92e45650c0f4bacb23c9042ceaa1806244569e0577a6751f6a3bf",
+    "tests/Support/PrivacyMigrationInstallCases.php": "faa2686e8e6409c621a17ff3f37fdf0940fa30b65e57416866a463c67b41668f",
+    "tests/Support/PrivacySigningCases.php": "c32f6fa728b63c84392dc46e3ad093581c06126dbd843ec50fb784c4aee31b06",
+    "tests/Unit/Backup/RollbackAndPrivacyTombstoneRestoreTest.php": "0beebf08f23f324d502d9da18d9e71488e64353dde230c9dae7529b676ada30b",
+    "tests/Unit/Privacy/DomainPrivacyHandlersAndRedactionAuditTest.php": "307e7f918ae5f4c549f272b65c59417dce17636e48c5be1a27e80c72a12e81c8",
+    "tests/Unit/Privacy/PrivacyKeyFileTest.php": "492f46d453a575b6ee5ddee4f6073b667b08a1bdd3a9d4c223bf3a17b815292e",
+    "tests/Unit/Privacy/PrivacySigningTest.php": "ec098ddc303c71b0a2b52546fcf8268319c0cc51f346d4b6967dd3efd7f3491c",
+    "tests/Unit/Privacy/PrivacyTombstoneAndRestoreTest.php": "f0399bee5a34f47a8118cc363f6efb2741ab03a9ad0a3cd46eff1d6954ecbfbf",
+    "tools/provision-privacy-key.php": "c85466614bf14115b995cc2eb5b575b64ab35081b254967e620f21a3cab3f4b3"
+  }
+}

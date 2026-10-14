@@ -100,11 +100,12 @@ final class RollbackAndPrivacyTombstoneRestoreTest extends TestCase
         // 2. Time T1: John Doe submits GDPR Article 17 erasure request.
         // A Privacy Tombstone is recorded and persisted out-of-band.
         $tombstoneFile = $this->tempWorkDir . '/tombstones.json';
-        $outOfBandStore = new FileTombstoneStore($tombstoneFile);
+        $outOfBandStore = new FileTombstoneStore($tombstoneFile, secretKey: \Coleza\Tests\Support\PrivacyFixtureKeys::tombstone());
         $tombstoneService = new PrivacyTombstoneService(
             db: $this->db,
             persistentStore: $outOfBandStore,
-            salt: 'secret_salt_123'
+            secretKey: \Coleza\Tests\Support\PrivacyFixtureKeys::tombstone(),
+            salt: \Coleza\Tests\Support\PrivacyFixtureKeys::email()
         );
         $tombstoneService->ensureTables();
 

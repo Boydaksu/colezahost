@@ -899,12 +899,12 @@ final class GoldenMasterScenariosE2ETest extends TestCase
 
         // Time T1: User exercises GDPR erasure request
         $tombstoneStorePath = $this->tempWorkDir . '/tombstones.json';
-        $fileStore = new FileTombstoneStore($tombstoneStorePath);
+        $fileStore = new FileTombstoneStore($tombstoneStorePath, secretKey: \Coleza\Tests\Support\PrivacyFixtureKeys::tombstone());
         $tombstoneService = new PrivacyTombstoneService(
             db: $db,
             persistentStore: $fileStore,
-            secretKey: 'g08_tombstone_secret_key',
-            salt: 'g08_tombstone_salt'
+            secretKey: \Coleza\Tests\Support\PrivacyFixtureKeys::tombstone(),
+            salt: \Coleza\Tests\Support\PrivacyFixtureKeys::email()
         );
         $tombstoneService->ensureTables();
 

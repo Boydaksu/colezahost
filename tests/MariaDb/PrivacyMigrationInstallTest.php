@@ -13,7 +13,7 @@ final class PrivacyMigrationInstallTest extends \Coleza\Tests\Support\MariaDbTes
     {
         (new \Coleza\Domain\Installer\DatabaseSetupService())->initializeApplicationSchema($this->db);
         $consent = new \Coleza\Domain\Privacy\PrivacyConsentService($this->db);
-        $signed = new \Coleza\Domain\Privacy\Tombstone\PrivacyTombstoneService($this->db, secretKey: 'fixture-secret');
+        $signed = new \Coleza\Domain\Privacy\Tombstone\PrivacyTombstoneService($this->db, secretKey: \Coleza\Tests\Support\PrivacyFixtureKeys::tombstone(), salt: \Coleza\Tests\Support\PrivacyFixtureKeys::email());
         $checkpoints = new \Coleza\Domain\Migration\Execution\MigrationCheckpointRepository($this->db);
         $this->root->beginTransaction();
         try {

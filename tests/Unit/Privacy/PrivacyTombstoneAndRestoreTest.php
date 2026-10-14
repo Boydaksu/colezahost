@@ -28,13 +28,13 @@ final class PrivacyTombstoneAndRestoreTest extends TestCase
         $this->db = new Connection($pdo, 'sqlite');
 
         $this->tempTombstoneFile = sys_get_temp_dir() . '/tombstones_' . bin2hex(random_bytes(6)) . '.json';
-        $this->fileStore = new FileTombstoneStore($this->tempTombstoneFile);
+        $this->fileStore = new FileTombstoneStore($this->tempTombstoneFile, secretKey: \Coleza\Tests\Support\PrivacyFixtureKeys::tombstone());
 
         $this->tombstoneService = new PrivacyTombstoneService(
             db: $this->db,
             persistentStore: $this->fileStore,
-            secretKey: 'test_tombstone_secret',
-            salt: 'test_tombstone_salt'
+            secretKey: \Coleza\Tests\Support\PrivacyFixtureKeys::tombstone(),
+            salt: \Coleza\Tests\Support\PrivacyFixtureKeys::email()
         );
         $this->tombstoneService->ensureTables();
 
@@ -94,8 +94,8 @@ final class PrivacyTombstoneAndRestoreTest extends TestCase
         $this->assertSame('ANONYMIZE', $tombstone->getErasureType());
         $this->assertSame('GDPR Right to be Forgotten', $tombstone->getReason());
         $this->assertSame('abc123checksum', $tombstone->getErasureChecksum());
-        $this->assertTrue($tombstone->matchesEmail($email, 'test_tombstone_salt'));
-        $this->assertTrue($tombstone->verifyIntegrity('test_tombstone_secret'));
+        $this->assertTrue($tombstone->matchesEmail($email, \Coleza\Tests\Support\PrivacyFixtureKeys::email()));
+        $this->assertTrue($tombstone->verifyIntegrity(\Coleza\Tests\Support\PrivacyFixtureKeys::tombstone()));
 
         // Verify presence via service
         $this->assertTrue($this->tombstoneService->isTombstoned($userId));
@@ -118,11 +118,11 @@ final class PrivacyTombstoneAndRestoreTest extends TestCase
             erasureType: 'DELETE',
             reason: 'KVKK erasure',
             erasureChecksum: 'hash123',
-            secretKey: 'test_tombstone_secret',
-            salt: 'test_tombstone_salt'
+            secretKey: \Coleza\Tests\Support\PrivacyFixtureKeys::tombstone(),
+            salt: \Coleza\Tests\Support\PrivacyFixtureKeys::email()
         );
 
-        $this->assertTrue($tombstone->verifyIntegrity('test_tombstone_secret'));
+        $this->assertTrue($tombstone->verifyIntegrity(\Coleza\Tests\Support\PrivacyFixtureKeys::tombstone()));
         $this->assertFalse($tombstone->verifyIntegrity('wrong_secret'));
 
         // Tampered tombstone with altered checksum
@@ -130,7 +130,7 @@ final class PrivacyTombstoneAndRestoreTest extends TestCase
         $tamperedData['erasure_checksum'] = 'forged_checksum_xyz';
         $tampered = PrivacyTombstone::fromArray($tamperedData);
 
-        $this->assertFalse($tampered->verifyIntegrity('test_tombstone_secret'));
+        $this->assertFalse($tampered->verifyIntegrity(\Coleza\Tests\Support\PrivacyFixtureKeys::tombstone()));
     }
 
     public function testPrivacyErasureAutomaticallyRecordsTombstone(): void
@@ -336,7 +336,7 @@ final class PrivacyTombstoneAndRestoreTest extends TestCase
         $this->assertJson($manifestJson);
 
         $newTempFile = sys_get_temp_dir() . '/tombstones_imported_' . bin2hex(random_bytes(6)) . '.json';
-        $newStore = new FileTombstoneStore($newTempFile);
+        $newStore = new FileTombstoneStore($newTempFile, secretKey: \Coleza\Tests\Support\PrivacyFixtureKeys::tombstone());
 
         $importedCount = $newStore->importManifest($manifestJson);
         $this->assertSame(2, $importedCount);

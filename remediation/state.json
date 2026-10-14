@@ -5,17 +5,17 @@
   "phase": "D03",
   "step": "D03.1",
   "status": "IN_PROGRESS",
-  "step_status": "D03_1_INVENTORIED_OPERATIONAL_CARRIERS_VAULT_STORAGE_LOCAL_VERIFIED_PRIVACY_SIGNING_KEYS_AND_COMPREHENSIVE_ACCEPTANCE_OPEN",
+  "step_status": "D03_1_PRIVACY_NEW_RECORD_SIGNING_LOCAL_VERIFIED_LEGACY_KEY_LIFECYCLE_AND_COMPREHENSIVE_ACCEPTANCE_OPEN",
   "independent_acceptance": "PENDING",
   "production_ready": false,
   "next_step": "D03.1",
   "next_phase": "D04",
   "tests": {
-    "main_total": 1677,
-    "main_assertions": 11595,
-    "mariadb_total": 69,
-    "mariadb_assertions": 539,
-    "mariadb_scope": "D03.1 domain storage: DomainSecret/KeyLifecycle/SqlPortabilityCloseout/LegacyAdoptionUpgrade/AdoptionPersistence; five-class exact filtered discovery; full native not rerun",
+    "main_total": 1690,
+    "main_assertions": 11670,
+    "mariadb_total": 31,
+    "mariadb_assertions": 164,
+    "mariadb_scope": "D03.1 privacy signatures: PrivacySigning/PrivacyMigrationInstall; two-class exact filtered discovery; full native not rerun",
     "full_mariadb_current_source": false,
     "last_full_mariadb": {
       "reference_commit": "0d2e3e08d4c121a146f298f77b4bc6b008b6f66e",
@@ -23,8 +23,8 @@
       "assertions": 5399,
       "evidence": "remediation/D02-CLOSEOUT-summary.json"
     },
-    "total": 1746,
-    "assertions": 12134,
+    "total": 1721,
+    "assertions": 11834,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -42,7 +42,7 @@
     "F30": "PARTIAL_PRODUCTION_SCHEMA_ANALYTICS_GOLDEN_AND_EXISTING_ADMIN_PERFORMANCE_BUDGET_VERIFIED_REAL_PROVIDER_END_TO_END_ACCEPTANCE_OPEN",
     "F21": "PARTIAL_SUPPORT_SCHEMA_ASSIGNMENT_CONVERSATION_CALLER_AND_PRE_EFFECT_DEPENDENCY_CHECKS_IMPLEMENTED_REAL_CONTEXT_COMMAND_SCOPE_AND_STORAGE_RECOVERY_OPEN",
     "F08": "EXPLICIT_RUNTIME_KEY_PRIVATE_FILE_INSTALLER_BINDING_ATOMIC_ROTATION_OLD_WRITER_FENCING_AND_RESTORE_KEY_GATE_LOCAL_VERIFIED_PENDING_INDEPENDENT_REVIEW",
-    "F09": "SHARED_EGRESS_AND_INVENTORIED_PROVISIONING_AUTOMATION_DOMAIN_VAULT_STORAGE_LOCAL_VERIFIED_PRIVACY_SIGNING_KEYS_AND_COMPREHENSIVE_ACCEPTANCE_OPEN"
+    "F09": "SHARED_EGRESS_OPERATIONAL_CARRIERS_AND_NEW_PRIVACY_SIGNING_LOCAL_VERIFIED_LEGACY_KEY_LIFECYCLE_AND_COMPREHENSIVE_ACCEPTANCE_OPEN"
   },
   "remaining_steps": [
     "D03.1",
@@ -108,10 +108,18 @@
     "operational_carriers_remaining": [],
     "automation_storage": "IMPLEMENTED_LOCAL_VERIFIED",
     "domain_storage": "IMPLEMENTED_LOCAL_VERIFIED",
-    "operational_carriers": "INVENTORIED_PATHS_IMPLEMENTED_LOCAL_VERIFIED"
+    "operational_carriers": "INVENTORIED_PATHS_IMPLEMENTED_LOCAL_VERIFIED",
+    "privacy_signing_new_records": "IMPLEMENTED_LOCAL_VERIFIED",
+    "privacy_legacy_and_key_lifecycle": "PENDING",
+    "privacy_remaining_details": [
+      "Independently evidenced legacy DB/file attestation without rewriting original rows",
+      "Persistent key binding, old-writer fencing, independent privacy verification in recovery and key lifecycle",
+      "Full privacy recovery durability and interrupted cross-resource DB/file write acceptance in D05"
+    ]
   },
   "d03_egress_evidence": "remediation/D03-1-EGRESS-SONUC.md",
   "d03_provisioning_storage_evidence": "remediation/D03-1-PROVSTORE-SONUC.md",
   "d03_automation_storage_evidence": "remediation/D03-1-AUTOSTORE-SONUC.md",
-  "d03_domain_storage_evidence": "remediation/D03-1-DOMSTORE-SONUC.md"
+  "d03_domain_storage_evidence": "remediation/D03-1-DOMSTORE-SONUC.md",
+  "d03_privacy_signing_evidence": "remediation/D03-1-PRIVSIG-SONUC.md"
 }

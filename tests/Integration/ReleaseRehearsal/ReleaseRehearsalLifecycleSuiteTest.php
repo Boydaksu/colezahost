@@ -303,8 +303,8 @@ final class ReleaseRehearsalLifecycleSuiteTest extends TestCase
 
         // 3. User 2 requests GDPR erasure: tombstone is recorded out-of-band in persistent store
         $tombstoneFile = $this->tempDir . DIRECTORY_SEPARATOR . 'tombstones.json';
-        $tombstoneStore = new FileTombstoneStore($tombstoneFile);
-        $srcTombstoneService = new PrivacyTombstoneService($srcDb, $tombstoneStore);
+        $tombstoneStore = new FileTombstoneStore($tombstoneFile, secretKey: \Coleza\Tests\Support\PrivacyFixtureKeys::tombstone());
+        $srcTombstoneService = new PrivacyTombstoneService($srcDb, $tombstoneStore, secretKey: \Coleza\Tests\Support\PrivacyFixtureKeys::tombstone(), salt: \Coleza\Tests\Support\PrivacyFixtureKeys::email());
         $srcTombstoneService->recordTombstone(
             userId: 2,
             email: 'deleted@colezahost.test',
@@ -318,7 +318,7 @@ final class ReleaseRehearsalLifecycleSuiteTest extends TestCase
         $freshDb = new Connection($freshPdo, 'sqlite');
 
         // 5. Restore Wizard restores data and reconciles Privacy Tombstones
-        $freshTombstoneService = new PrivacyTombstoneService($freshDb, $tombstoneStore);
+        $freshTombstoneService = new PrivacyTombstoneService($freshDb, $tombstoneStore, secretKey: \Coleza\Tests\Support\PrivacyFixtureKeys::tombstone(), salt: \Coleza\Tests\Support\PrivacyFixtureKeys::email());
         $reconciliationService = new BackupRestoreReconciliationService($freshDb, $freshTombstoneService);
 
         $restoreWizard = new RestoreWizardService(

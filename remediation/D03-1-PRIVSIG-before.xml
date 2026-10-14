@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Privacy\PrivacySigningTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Privacy\PrivacySigningTest.php" tests="2" assertions="2" errors="0" failures="2" skipped="0" time="0.431936">
+    <testcase name="testTombstoneSignatureCoversReasonTypeAndMetadata" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacySigningCases.php" line="6" class="Coleza\Tests\Unit\Privacy\PrivacySigningTest" classname="Coleza.Tests.Unit.Privacy.PrivacySigningTest" assertions="1" time="0.431161">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Privacy\PrivacySigningTest::testTombstoneSignatureCoversReasonTypeAndMetadata&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacySigningCases.php:11</failure>
+    </testcase>
+    <testcase name="testRedactionSignatureCoversCleanFlagActorAndFields" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacySigningCases.php" line="14" class="Coleza\Tests\Unit\Privacy\PrivacySigningTest" classname="Coleza.Tests.Unit.Privacy.PrivacySigningTest" assertions="1" time="0.000775">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Privacy\PrivacySigningTest::testRedactionSignatureCoversCleanFlagActorAndFields&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacySigningCases.php:19</failure>
+    </testcase>
+  </testsuite>
+</testsuites>
