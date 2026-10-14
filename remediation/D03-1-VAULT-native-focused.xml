@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml" tests="14" assertions="74" errors="0" failures="0" skipped="0" time="77.402545">
+    <testsuite name="MariaDB" tests="14" assertions="74" errors="0" failures="0" skipped="0" time="77.402545">
+      <testsuite name="Coleza\Tests\MariaDb\VaultUnifiedTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\VaultUnifiedTest.php" tests="14" assertions="74" errors="0" failures="0" skipped="0" time="77.402545">
+        <testcase name="testFourWritersPreserveEveryVersionAndAudit" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\VaultUnifiedTest.php" line="7" class="Coleza\Tests\MariaDb\VaultUnifiedTest" classname="Coleza.Tests.MariaDb.VaultUnifiedTest" assertions="16" time="5.838725"/>
+        <testcase name="testVaultCipherCannotMoveBetweenNamespaces" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php" line="14" class="Coleza\Tests\MariaDb\VaultUnifiedTest" classname="Coleza.Tests.MariaDb.VaultUnifiedTest" assertions="3" time="5.206039"/>
+        <testcase name="testAuditFailureRollsBackSecretRotation" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php" line="21" class="Coleza\Tests\MariaDb\VaultUnifiedTest" classname="Coleza.Tests.MariaDb.VaultUnifiedTest" assertions="3" time="5.342729"/>
+        <testcase name="testServerSecretUsesVaultReference" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php" line="30" class="Coleza\Tests\MariaDb\VaultUnifiedTest" classname="Coleza.Tests.MariaDb.VaultUnifiedTest" assertions="5" time="5.252599"/>
+        <testcase name="testWebhookSecretUsesVaultReference" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php" line="38" class="Coleza\Tests\MariaDb\VaultUnifiedTest" classname="Coleza.Tests.MariaDb.VaultUnifiedTest" assertions="5" time="5.272901"/>
+        <testsuite name="Coleza\Tests\MariaDb\VaultUnifiedTest::testVaultWriteAndAuditStayInsideCallerRollback" tests="2" assertions="8" errors="0" failures="0" skipped="0" time="11.484223">
+          <testcase name="testVaultWriteAndAuditStayInsideCallerRollback with data set #0" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php" line="52" class="Coleza\Tests\MariaDb\VaultUnifiedTest" classname="Coleza.Tests.MariaDb.VaultUnifiedTest" assertions="4" time="6.230744"/>
+          <testcase name="testVaultWriteAndAuditStayInsideCallerRollback with data set #1" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php" line="52" class="Coleza\Tests\MariaDb\VaultUnifiedTest" classname="Coleza.Tests.MariaDb.VaultUnifiedTest" assertions="4" time="5.253479"/>
+        </testsuite>
+        <testcase name="testLegacyVaultCipherResealPreservesVersionAndReplays" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php" line="60" class="Coleza\Tests\MariaDb\VaultUnifiedTest" classname="Coleza.Tests.MariaDb.VaultUnifiedTest" assertions="8" time="5.066905"/>
+        <testcase name="testProviderMetadataFailureRollsBackVaultAndAudit" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php" line="70" class="Coleza\Tests\MariaDb\VaultUnifiedTest" classname="Coleza.Tests.MariaDb.VaultUnifiedTest" assertions="3" time="5.199522"/>
+        <testcase name="testServerOwnerFailureRollsBackVaultAndAudit" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php" line="79" class="Coleza\Tests\MariaDb\VaultUnifiedTest" classname="Coleza.Tests.MariaDb.VaultUnifiedTest" assertions="4" time="6.511272"/>
+        <testcase name="testWebhookCallerRollbackRemovesReferenceSecretAndAudit" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php" line="89" class="Coleza\Tests\MariaDb\VaultUnifiedTest" classname="Coleza.Tests.MariaDb.VaultUnifiedTest" assertions="5" time="5.637222"/>
+        <testcase name="testLegacyOwnerUpgradePreservesSecretsAndIsIdempotent" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php" line="107" class="Coleza\Tests\MariaDb\VaultUnifiedTest" classname="Coleza.Tests.MariaDb.VaultUnifiedTest" assertions="7" time="5.874696"/>
+        <testcase name="testUnconfirmedLegacyOwnerUpgradeChangesNothing" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php" line="116" class="Coleza\Tests\MariaDb\VaultUnifiedTest" classname="Coleza.Tests.MariaDb.VaultUnifiedTest" assertions="4" time="5.234120"/>
+        <testcase name="testExtraUniqueIdentityRefusesBeforeVaultMutation" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php" line="122" class="Coleza\Tests\MariaDb\VaultUnifiedTest" classname="Coleza.Tests.MariaDb.VaultUnifiedTest" assertions="3" time="5.481593"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

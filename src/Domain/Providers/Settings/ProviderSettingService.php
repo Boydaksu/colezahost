@@ -83,6 +83,11 @@ final class ProviderSettingService
     public function saveSettings(string $providerSlug, array $values, ?int $actorUserId = null): void
     {
         $this->ensureTables();
+        \Coleza\Domain\Vault\SecretStorageUpgrade::assertStorage($this->db, [$this->table => ['id']]);
+        $this->db->transaction(fn() => $this->saveSettingsInitialized($providerSlug, $values, $actorUserId));
+    }
+    private function saveSettingsInitialized(string $providerSlug, array $values, ?int $actorUserId = null): void
+    {
         $schema = $this->getSchema($providerSlug);
 
         // Validate values if schema exists
@@ -219,6 +224,11 @@ final class ProviderSettingService
     public function deleteSettings(string $providerSlug, ?int $actorUserId = null): void
     {
         $this->ensureTables();
+        \Coleza\Domain\Vault\SecretStorageUpgrade::assertStorage($this->db, [$this->table => ['id']]);
+        $this->db->transaction(fn() => $this->deleteSettingsInitialized($providerSlug, $actorUserId));
+    }
+    private function deleteSettingsInitialized(string $providerSlug, ?int $actorUserId = null): void
+    {
         $vaultNamespace = "provider:{$providerSlug}";
 
         $rows = $this->db->select(

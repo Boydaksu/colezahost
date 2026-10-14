@@ -127,7 +127,7 @@ final class IntegrationHealthHooksTest extends TestCase
     {
         $pdo = new PDO('sqlite::memory:');
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $webhookService = new WebhookService($pdo);
+        $webhookService = new WebhookService($pdo, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
 
         $check = new WebhookQueueHealthCheck($webhookService, $pdo, warningPendingThreshold: 10, unhealthyPendingThreshold: 50);
 

@@ -1,0 +1,873 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m.[31;1mE[0m..................                          40 / 40 (100%)
+
+Time: 00:00.441, Memory: 46.00 MB
+
+There were 21 errors:
+
+1) Coleza\Tests\Unit\Domain\Vault\VaultUnifiedTest::testVaultCipherCannotMoveBetweenNamespaces
+LogicException: Initialize complete schema before starting an application transaction.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:16
+
+Caused by
+PDOException: SQLSTATE[HY000]: General error: 1 no such table: vault_secrets
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:308
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:22
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:16
+
+2) Coleza\Tests\Unit\Domain\Vault\VaultUnifiedTest::testAuditFailureRollsBackSecretRotation
+LogicException: Initialize complete schema before starting an application transaction.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:23
+
+Caused by
+PDOException: SQLSTATE[HY000]: General error: 1 no such table: vault_secrets
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:308
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:22
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:23
+
+3) Coleza\Tests\Unit\Domain\Vault\VaultUnifiedTest::testServerSecretUsesVaultReference
+LogicException: Initialize complete schema before starting an application transaction.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:32
+
+Caused by
+PDOException: SQLSTATE[HY000]: General error: 1 no such table: vault_secrets
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:308
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:22
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:32
+
+4) Coleza\Tests\Unit\Domain\Vault\VaultUnifiedTest::testWebhookSecretUsesVaultReference
+LogicException: Initialize complete schema before starting an application transaction.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:40
+
+Caused by
+PDOException: SQLSTATE[HY000]: General error: 1 no such table: vault_secrets
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:308
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:22
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:40
+
+5) Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testSmtpPasswordStoredEncryptedAndNotReturned
+LogicException: Initialize complete schema before starting an application transaction.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:26
+
+Caused by
+PDOException: SQLSTATE[HY000]: General error: 1 no such table: vault_secrets
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:308
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:22
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:26
+
+6) Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testServerTokenStoredEncrypted
+LogicException: Initialize complete schema before starting an application transaction.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:33
+
+Caused by
+PDOException: SQLSTATE[HY000]: General error: 1 no such table: vault_secrets
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:308
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:22
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:33
+
+7) Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testTotpSecretStoredEncrypted
+LogicException: Initialize complete schema before starting an application transaction.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:39
+
+Caused by
+PDOException: SQLSTATE[HY000]: General error: 1 no such table: vault_secrets
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:308
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:22
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:39
+
+8) Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testLegacyUpgradeNeedsConfirmationAndPreservesRows
+LogicException: Initialize complete schema before starting an application transaction.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:61
+
+Caused by
+PDOException: SQLSTATE[HY000]: General error: 1 no such table: vault_secrets
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:308
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:22
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:61
+
+9) Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testUpgradeRestartReplayAndNoPlaintextInQueryLog
+LogicException: Initialize complete schema before starting an application transaction.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:67
+
+Caused by
+PDOException: SQLSTATE[HY000]: General error: 1 no such table: vault_secrets
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:308
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:22
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:67
+
+10) Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testUpgradeStaysInCallerRollback#0 with data ('raw')
+LogicException: Initialize complete schema before starting an application transaction.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:82
+
+Caused by
+PDOException: SQLSTATE[HY000]: General error: 1 no such table: vault_secrets
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:308
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:22
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:82
+
+11) Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testUpgradeStaysInCallerRollback#1 with data ('managed')
+LogicException: Initialize complete schema before starting an application transaction.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:82
+
+Caused by
+PDOException: SQLSTATE[HY000]: General error: 1 no such table: vault_secrets
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:308
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:22
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:82
+
+12) Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testLateUpgradeWriteFailureRollsBackEverySecret
+LogicException: Initialize complete schema before starting an application transaction.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:90
+
+Caused by
+PDOException: SQLSTATE[HY000]: General error: 1 no such table: vault_secrets
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:308
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:22
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:90
+
+13) Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testCipherCannotMoveBetweenServers
+LogicException: Initialize complete schema before starting an application transaction.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:99
+
+Caused by
+PDOException: SQLSTATE[HY000]: General error: 1 no such table: vault_secrets
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:308
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:22
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:99
+
+14) Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testCipherCannotMoveBetweenTotpUsers
+LogicException: Initialize complete schema before starting an application transaction.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:106
+
+Caused by
+PDOException: SQLSTATE[HY000]: General error: 1 no such table: vault_secrets
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:308
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:22
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:106
+
+15) Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testUnknownEnvelopeCannotBeUpgradedAsPlaintext
+LogicException: Initialize complete schema before starting an application transaction.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:113
+
+Caused by
+PDOException: SQLSTATE[HY000]: General error: 1 no such table: vault_secrets
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:308
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:22
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:113
+
+16) Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testSmtpLateFailureRollsBackAllSettings
+LogicException: Initialize complete schema before starting an application transaction.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:120
+
+Caused by
+PDOException: SQLSTATE[HY000]: General error: 1 no such table: vault_secrets
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:308
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:22
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:120
+
+17) Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testWrongKeyCannotReadOrRewriteExistingEnvelopes
+LogicException: Initialize complete schema before starting an application transaction.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:130
+
+Caused by
+PDOException: SQLSTATE[HY000]: General error: 1 no such table: vault_secrets
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:308
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:22
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:130
+
+18) Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testRuntimeNeverFallsBackToPlaintext#0 with data ('smtp')
+LogicException: Initialize complete schema before starting an application transaction.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:140
+
+Caused by
+PDOException: SQLSTATE[HY000]: General error: 1 no such table: vault_secrets
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:308
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:22
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:140
+
+19) Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testRuntimeNeverFallsBackToPlaintext#1 with data ('server')
+LogicException: Initialize complete schema before starting an application transaction.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:140
+
+Caused by
+PDOException: SQLSTATE[HY000]: General error: 1 no such table: vault_secrets
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:308
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:22
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:140
+
+20) Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testRuntimeNeverFallsBackToPlaintext#2 with data ('totp')
+LogicException: Initialize complete schema before starting an application transaction.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:140
+
+Caused by
+PDOException: SQLSTATE[HY000]: General error: 1 no such table: vault_secrets
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:308
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:22
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:140
+
+21) Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testOversizedLegacyTotpRefusesBeforeChangingAnySecret
+LogicException: Initialize complete schema before starting an application transaction.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:160
+
+Caused by
+PDOException: SQLSTATE[HY000]: General error: 1 no such table: vault_secrets
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:308
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:39
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:22
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:160
+
+[37;41mERRORS![0m
+[37;41mTests: 40[0m[37;41m, Assertions: 89[0m[37;41m, Errors: 21[0m[37;41m.[0m

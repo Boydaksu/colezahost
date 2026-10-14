@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml" tests="4" assertions="4" errors="0" failures="4" skipped="0" time="0.155834">
+    <testsuite name="Unit" tests="4" assertions="4" errors="0" failures="4" skipped="0" time="0.155834">
+      <testsuite name="Coleza\Tests\Unit\Domain\Vault\VaultUnifiedTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\VaultUnifiedTest.php" tests="4" assertions="4" errors="0" failures="4" skipped="0" time="0.155834">
+        <testcase name="testVaultCipherCannotMoveBetweenNamespaces" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php" line="14" class="Coleza\Tests\Unit\Domain\Vault\VaultUnifiedTest" classname="Coleza.Tests.Unit.Domain.Vault.VaultUnifiedTest" assertions="1" time="0.093864">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Vault\VaultUnifiedTest::testVaultCipherCannotMoveBetweenNamespaces&#13;
+Failed asserting that exception of type "RuntimeException" is thrown.</failure>
+        </testcase>
+        <testcase name="testAuditFailureRollsBackSecretRotation" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php" line="21" class="Coleza\Tests\Unit\Domain\Vault\VaultUnifiedTest" classname="Coleza.Tests.Unit.Domain.Vault.VaultUnifiedTest" assertions="1" time="0.021054">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Vault\VaultUnifiedTest::testAuditFailureRollsBackSecretRotation&#13;
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+         'id' =&gt; 1,
+         'namespace' =&gt; 'provider:first',
+         'secret_key' =&gt; 'api_token',
+-        'encrypted_value' =&gt; '0oOcuuHRRxgimcRp3bvKKpjK6sdBsjDIBj3AV4DBGTaLe6sH7h8i1QqdImIzVX+LNjVjdkE=',
+-        'version' =&gt; 1,
++        'encrypted_value' =&gt; 'nk4cI6rW9PxJYJz+QoMc1nnBVcOiUl+Y7ZA8jIFNEB7TEJK5ezkLUogXTzVuLaUL/POz8cv8GOs=',
++        'version' =&gt; 2,
+         'last_rotated_at' =&gt; '2026-10-14 07:35:01',
+         'created_at' =&gt; '2026-10-14 07:35:01',
+     ],
+ ]
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:28</failure>
+        </testcase>
+        <testcase name="testServerSecretUsesVaultReference" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php" line="30" class="Coleza\Tests\Unit\Domain\Vault\VaultUnifiedTest" classname="Coleza.Tests.Unit.Domain.Vault.VaultUnifiedTest" assertions="1" time="0.019529">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Vault\VaultUnifiedTest::testServerSecretUsesVaultReference&#13;
+Failed asserting that 0 is identical to 1.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:34</failure>
+        </testcase>
+        <testcase name="testWebhookSecretUsesVaultReference" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php" line="38" class="Coleza\Tests\Unit\Domain\Vault\VaultUnifiedTest" classname="Coleza.Tests.Unit.Domain.Vault.VaultUnifiedTest" assertions="1" time="0.021386">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Vault\VaultUnifiedTest::testWebhookSecretUsesVaultReference&#13;
+Failed asserting that 0 is identical to 1.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:42</failure>
+        </testcase>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

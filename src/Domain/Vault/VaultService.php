@@ -57,79 +57,83 @@ final class VaultService
             $autoInc
         );
 
-        $db->statement($sql);
+        $db->statement($sql . ($driver === 'mysql' ? ' ENGINE=InnoDB' : ''));
     }
 
     /**
      * Store or replace secret in Vault.
      */
-    public function setSecret(string $namespace, string $key, string $plainValue, ?int $actorUserId = null): void
+    private function prepare(): void
     {
-        $this->ensureTable();
-        $encrypted = $this->encryptor->encrypt($plainValue);
-
-        $existing = $this->db->selectOne(
-            sprintf('SELECT id, version FROM %s WHERE namespace = :ns AND secret_key = :k', $this->table),
-            ['ns' => $namespace, 'k' => $key]
-        );
-
-        if ($existing === null) {
-            $this->db->insert($this->table, [
-                'namespace' => $namespace,
-                'secret_key' => $key,
-                'encrypted_value' => $encrypted,
-                'version' => 1,
-            ]);
-
-            $this->auditLogger?->log(
-                actorUserId: $actorUserId ?? 0,
-                eventType: 'VAULT_SECRET_CREATED',
-                targetResource: $namespace . ':' . $key
-            );
-        } else {
-            $newVersion = (int) $existing['version'] + 1;
-            $this->db->update(
-                $this->table,
-                [
-                    'encrypted_value' => $encrypted,
-                    'version' => $newVersion,
-                    'last_rotated_at' => date('Y-m-d H:i:s'),
-                ],
-                'id = :id',
-                ['id' => $existing['id']]
-            );
-
-            $this->auditLogger?->log(
-                actorUserId: $actorUserId ?? 0,
-                eventType: 'VAULT_SECRET_ROTATED',
-                targetResource: $namespace . ':' . $key,
-                payload: ['version' => $newVersion]
-            );
+        $this->ensureTable(); VaultPersistence::prepare($this->db);
+        if ($this->auditLogger !== null) {
+            $this->auditLogger->ensureTable();
+            SecretStorageUpgrade::assertStorage($this->db, ['security_audit_logs' => ['id', 'actor_user_id', 'event_type', 'target_resource', 'payload']]);
         }
     }
-
-    /**
-     * Retrieve decrypted secret value.
-     */
+    private static function scope(array $row): string
+    {
+        return json_encode(['vault', $row['namespace'], $row['secret_key']], JSON_THROW_ON_ERROR);
+    }
+    private static function validateIdentity(string $namespace, string $key): void
+    {
+        if ($namespace === '' || $key === '' || strlen($namespace) > 50 || strlen($key) > 100) { throw new \InvalidArgumentException('Invalid Vault namespace/key length.'); }
+    }
+    private static function resource(array $row): string
+    {
+        $value = $row['namespace'] . ':' . $row['secret_key'];
+        return strlen($value) <= 100 ? $value : 'vault:' . hash('sha256', self::scope($row));
+    }
+    public function setSecret(string $namespace, string $key, #[\SensitiveParameter] string $plainValue, ?int $actorUserId = null): void
+    {
+        self::validateIdentity($namespace, $key); $this->prepare();
+        $this->db->transaction(function () use ($namespace, $key, $plainValue, $actorUserId): void {
+            $suffix = $this->db->getDriverName() === 'mysql'
+                ? ' ON DUPLICATE KEY UPDATE version = version + 1'
+                : ' ON CONFLICT(namespace, secret_key) DO UPDATE SET version = version + 1';
+            // Reserve the unique row under its write lock; no placeholder can commit independently.
+            $this->db->statement('INSERT INTO vault_secrets (namespace, secret_key, encrypted_value, version) VALUES (?, ?, ?, 1)' . $suffix, [$namespace, $key, '']);
+            $row = $this->db->selectOne('SELECT id, namespace, secret_key, version FROM vault_secrets WHERE namespace = ? AND secret_key = ?' . $this->db->forUpdate(), [$namespace, $key]);
+            if ($row === null) { throw new \LogicException('Vault reservation lost.'); }
+            $this->db->update($this->table, ['encrypted_value' => (new SecretCipher($this->encryptor))->seal($plainValue, self::scope($row)), 'last_rotated_at' => date('Y-m-d H:i:s')], 'id = :id', ['id' => $row['id']]);
+            $created = (int) $row['version'] === 1;
+            $this->auditLogger?->log(actorUserId: $actorUserId ?? 0, eventType: $created ? 'VAULT_SECRET_CREATED' : 'VAULT_SECRET_ROTATED', targetResource: self::resource($row), payload: $created ? [] : ['version' => (int) $row['version']]);
+        });
+    }
+    private function decode(array $row): string
+    {
+        $value = (string) $row['encrypted_value'];
+        if (str_starts_with($value, 'enc:')) { return (new SecretCipher($this->encryptor))->open($value, self::scope($row)); }
+        // Existing Vault records are authenticated legacy GCM ciphertext, never plaintext.
+        return $this->encryptor->decrypt($value);
+    }
     public function getSecret(string $namespace, string $key, ?int $actorUserId = null): ?string
     {
-        $this->ensureTable();
-        $row = $this->db->selectOne(
-            sprintf('SELECT encrypted_value FROM %s WHERE namespace = :ns AND secret_key = :k', $this->table),
-            ['ns' => $namespace, 'k' => $key]
-        );
-
-        if ($row === null) {
-            return null;
-        }
-
-        $this->auditLogger?->log(
-            actorUserId: $actorUserId ?? 0,
-            eventType: 'VAULT_SECRET_ACCESSED',
-            targetResource: $namespace . ':' . $key
-        );
-
-        return $this->encryptor->decrypt((string) $row['encrypted_value']);
+        self::validateIdentity($namespace, $key); $this->prepare();
+        return $this->db->transaction(function () use ($namespace, $key, $actorUserId): ?string {
+            $row = $this->db->selectOne('SELECT id, namespace, secret_key, encrypted_value FROM vault_secrets WHERE namespace = ? AND secret_key = ?' . $this->db->forUpdate(), [$namespace, $key]);
+            if ($row === null) { return null; }
+            $plain = $this->decode($row);
+            $this->auditLogger?->log(actorUserId: $actorUserId ?? 0, eventType: 'VAULT_SECRET_ACCESSED', targetResource: self::resource($row));
+            return $plain;
+        });
+    }
+    public function upgradeLegacyCiphertexts(?int $actorUserId = null): int
+    {
+        $this->prepare();
+        return $this->db->transaction(function () use ($actorUserId): int {
+            $changes = [];
+            foreach ($this->db->select('SELECT * FROM vault_secrets ORDER BY id' . $this->db->forUpdate()) as $row) {
+                $plain = $this->decode($row);
+                if (str_starts_with($row['encrypted_value'], SecretCipher::PREFIX)) { continue; }
+                $changes[] = [$row, (new SecretCipher($this->encryptor))->seal($plain, self::scope($row))];
+            }
+            foreach ($changes as [$row, $cipher]) {
+                $this->db->update($this->table, ['encrypted_value' => $cipher], 'id = :id', ['id' => $row['id']]);
+                $this->auditLogger?->log(actorUserId: $actorUserId ?? 0, eventType: 'VAULT_SECRET_RESEALED', targetResource: self::resource($row));
+            }
+            return count($changes);
+        });
     }
 
     /**
@@ -161,13 +165,10 @@ final class VaultService
      */
     public function deleteSecret(string $namespace, string $key, ?int $actorUserId = null): void
     {
-        $this->ensureTable();
-        $this->db->delete($this->table, 'namespace = :ns AND secret_key = :k', ['ns' => $namespace, 'k' => $key]);
-
-        $this->auditLogger?->log(
-            actorUserId: $actorUserId ?? 0,
-            eventType: 'VAULT_SECRET_DELETED',
-            targetResource: $namespace . ':' . $key
-        );
+        self::validateIdentity($namespace, $key); $this->prepare();
+        $this->db->transaction(function () use ($namespace, $key, $actorUserId): void {
+            $this->db->delete($this->table, 'namespace = :ns AND secret_key = :k', ['ns' => $namespace, 'k' => $key]);
+            $this->auditLogger?->log(actorUserId: $actorUserId ?? 0, eventType: 'VAULT_SECRET_DELETED', targetResource: strlen($namespace . ':' . $key) <= 100 ? $namespace . ':' . $key : 'vault:' . hash('sha256', json_encode(['vault', $namespace, $key], JSON_THROW_ON_ERROR)));
+        });
     }
 }

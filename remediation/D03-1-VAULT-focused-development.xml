@@ -1,0 +1,470 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml" tests="40" assertions="89" errors="21" failures="0" skipped="0" time="0.405731">
+    <testsuite name="Unit" tests="40" assertions="89" errors="21" failures="0" skipped="0" time="0.405731">
+      <testsuite name="Coleza\Tests\Unit\Domain\Vault\VaultUnifiedTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\VaultUnifiedTest.php" tests="4" assertions="0" errors="4" failures="0" skipped="0" time="0.208470">
+        <testcase name="testVaultCipherCannotMoveBetweenNamespaces" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php" line="14" class="Coleza\Tests\Unit\Domain\Vault\VaultUnifiedTest" classname="Coleza.Tests.Unit.Domain.Vault.VaultUnifiedTest" assertions="0" time="0.197800">
+          <error type="LogicException">Coleza\Tests\Unit\Domain\Vault\VaultUnifiedTest::testVaultCipherCannotMoveBetweenNamespaces&#13;
+LogicException: Initialize complete schema before starting an application transaction.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:16</error>
+        </testcase>
+        <testcase name="testAuditFailureRollsBackSecretRotation" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php" line="21" class="Coleza\Tests\Unit\Domain\Vault\VaultUnifiedTest" classname="Coleza.Tests.Unit.Domain.Vault.VaultUnifiedTest" assertions="0" time="0.003709">
+          <error type="LogicException">Coleza\Tests\Unit\Domain\Vault\VaultUnifiedTest::testAuditFailureRollsBackSecretRotation&#13;
+LogicException: Initialize complete schema before starting an application transaction.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:23</error>
+        </testcase>
+        <testcase name="testServerSecretUsesVaultReference" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php" line="30" class="Coleza\Tests\Unit\Domain\Vault\VaultUnifiedTest" classname="Coleza.Tests.Unit.Domain.Vault.VaultUnifiedTest" assertions="0" time="0.003499">
+          <error type="LogicException">Coleza\Tests\Unit\Domain\Vault\VaultUnifiedTest::testServerSecretUsesVaultReference&#13;
+LogicException: Initialize complete schema before starting an application transaction.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:32</error>
+        </testcase>
+        <testcase name="testWebhookSecretUsesVaultReference" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php" line="38" class="Coleza\Tests\Unit\Domain\Vault\VaultUnifiedTest" classname="Coleza.Tests.Unit.Domain.Vault.VaultUnifiedTest" assertions="0" time="0.003462">
+          <error type="LogicException">Coleza\Tests\Unit\Domain\Vault\VaultUnifiedTest::testWebhookSecretUsesVaultReference&#13;
+LogicException: Initialize complete schema before starting an application transaction.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\VaultUnifiedCases.php:40</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\SecretStorageTest.php" tests="18" assertions="1" errors="17" failures="0" skipped="0" time="0.063089">
+        <testcase name="testSmtpPasswordStoredEncryptedAndNotReturned" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="24" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="0" time="0.003498">
+          <error type="LogicException">Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testSmtpPasswordStoredEncryptedAndNotReturned&#13;
+LogicException: Initialize complete schema before starting an application transaction.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:26</error>
+        </testcase>
+        <testcase name="testServerTokenStoredEncrypted" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="31" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="0" time="0.003975">
+          <error type="LogicException">Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testServerTokenStoredEncrypted&#13;
+LogicException: Initialize complete schema before starting an application transaction.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:33</error>
+        </testcase>
+        <testcase name="testTotpSecretStoredEncrypted" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="37" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="0" time="0.003275">
+          <error type="LogicException">Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testTotpSecretStoredEncrypted&#13;
+LogicException: Initialize complete schema before starting an application transaction.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:39</error>
+        </testcase>
+        <testcase name="testLegacyUpgradeNeedsConfirmationAndPreservesRows" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="59" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="0" time="0.003482">
+          <error type="LogicException">Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testLegacyUpgradeNeedsConfirmationAndPreservesRows&#13;
+LogicException: Initialize complete schema before starting an application transaction.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:61</error>
+        </testcase>
+        <testcase name="testUpgradeRestartReplayAndNoPlaintextInQueryLog" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="65" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="0" time="0.003514">
+          <error type="LogicException">Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testUpgradeRestartReplayAndNoPlaintextInQueryLog&#13;
+LogicException: Initialize complete schema before starting an application transaction.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:67</error>
+        </testcase>
+        <testsuite name="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testUpgradeStaysInCallerRollback" tests="2" assertions="0" errors="2" failures="0" skipped="0" time="0.008025">
+          <testcase name="testUpgradeStaysInCallerRollback with data set #0" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="80" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="0" time="0.003743">
+            <error type="LogicException">Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testUpgradeStaysInCallerRollback with data set #0&#13;
+LogicException: Initialize complete schema before starting an application transaction.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:82</error>
+          </testcase>
+          <testcase name="testUpgradeStaysInCallerRollback with data set #1" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="80" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="0" time="0.004281">
+            <error type="LogicException">Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testUpgradeStaysInCallerRollback with data set #1&#13;
+LogicException: Initialize complete schema before starting an application transaction.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:82</error>
+          </testcase>
+        </testsuite>
+        <testcase name="testLateUpgradeWriteFailureRollsBackEverySecret" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="88" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="0" time="0.003797">
+          <error type="LogicException">Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testLateUpgradeWriteFailureRollsBackEverySecret&#13;
+LogicException: Initialize complete schema before starting an application transaction.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:90</error>
+        </testcase>
+        <testcase name="testCipherCannotMoveBetweenServers" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="97" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="0" time="0.003528">
+          <error type="LogicException">Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testCipherCannotMoveBetweenServers&#13;
+LogicException: Initialize complete schema before starting an application transaction.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:99</error>
+        </testcase>
+        <testcase name="testCipherCannotMoveBetweenTotpUsers" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="104" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="0" time="0.003522">
+          <error type="LogicException">Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testCipherCannotMoveBetweenTotpUsers&#13;
+LogicException: Initialize complete schema before starting an application transaction.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:106</error>
+        </testcase>
+        <testcase name="testUnknownEnvelopeCannotBeUpgradedAsPlaintext" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="111" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="0" time="0.003527">
+          <error type="LogicException">Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testUnknownEnvelopeCannotBeUpgradedAsPlaintext&#13;
+LogicException: Initialize complete schema before starting an application transaction.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:113</error>
+        </testcase>
+        <testcase name="testSmtpLateFailureRollsBackAllSettings" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="118" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="0" time="0.003539">
+          <error type="LogicException">Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testSmtpLateFailureRollsBackAllSettings&#13;
+LogicException: Initialize complete schema before starting an application transaction.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:120</error>
+        </testcase>
+        <testcase name="testWrongKeyCannotReadOrRewriteExistingEnvelopes" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="128" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="0" time="0.003531">
+          <error type="LogicException">Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testWrongKeyCannotReadOrRewriteExistingEnvelopes&#13;
+LogicException: Initialize complete schema before starting an application transaction.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:130</error>
+        </testcase>
+        <testsuite name="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testRuntimeNeverFallsBackToPlaintext" tests="3" assertions="0" errors="3" failures="0" skipped="0" time="0.010639">
+          <testcase name="testRuntimeNeverFallsBackToPlaintext with data set #0" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="138" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="0" time="0.003652">
+            <error type="LogicException">Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testRuntimeNeverFallsBackToPlaintext with data set #0&#13;
+LogicException: Initialize complete schema before starting an application transaction.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:140</error>
+          </testcase>
+          <testcase name="testRuntimeNeverFallsBackToPlaintext with data set #1" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="138" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="0" time="0.003432">
+            <error type="LogicException">Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testRuntimeNeverFallsBackToPlaintext with data set #1&#13;
+LogicException: Initialize complete schema before starting an application transaction.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:140</error>
+          </testcase>
+          <testcase name="testRuntimeNeverFallsBackToPlaintext with data set #2" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="138" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="0" time="0.003555">
+            <error type="LogicException">Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testRuntimeNeverFallsBackToPlaintext with data set #2&#13;
+LogicException: Initialize complete schema before starting an application transaction.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:140</error>
+          </testcase>
+        </testsuite>
+        <testcase name="testMissingKeyStopsTotpBeforeSchemaOrWrites" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="147" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="1" time="0.001750"/>
+        <testcase name="testOversizedLegacyTotpRefusesBeforeChangingAnySecret" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="158" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="0" time="0.003487">
+          <error type="LogicException">Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testOversizedLegacyTotpRefusesBeforeChangingAnySecret&#13;
+LogicException: Initialize complete schema before starting an application transaction.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\PdoSchema.php:25
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultService.php:36
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\VaultReferenceStore.php:13
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Servers\Services\ServerService.php:30
+C:\Users\alici\OneDrive\Desktop\colezahost\database\migrations\2026_10_09_000003_capacity_notifications.php:9
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:93
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:161
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:92
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:175
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Migrator.php:63
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\DatabaseSetupService.php:58
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:10
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:51
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:160</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="Coleza\Tests\Unit\Domain\Vault\VaultServiceTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\VaultServiceTest.php" tests="5" assertions="14" errors="0" failures="0" skipped="0" time="0.084238">
+        <testcase name="testEncryptorRoundtrip" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\VaultServiceTest.php" line="31" class="Coleza\Tests\Unit\Domain\Vault\VaultServiceTest" classname="Coleza.Tests.Unit.Domain.Vault.VaultServiceTest" assertions="2" time="0.001523"/>
+        <testcase name="testVaultSetGetAndAuditLog" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\VaultServiceTest.php" line="41" class="Coleza\Tests\Unit\Domain\Vault\VaultServiceTest" classname="Coleza.Tests.Unit.Domain.Vault.VaultServiceTest" assertions="4" time="0.080779"/>
+        <testcase name="testSecretRotationIncrementsVersion" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\VaultServiceTest.php" line="56" class="Coleza\Tests\Unit\Domain\Vault\VaultServiceTest" classname="Coleza.Tests.Unit.Domain.Vault.VaultServiceTest" assertions="2" time="0.000794"/>
+        <testcase name="testMaskedSecretDisplay" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\VaultServiceTest.php" line="70" class="Coleza\Tests\Unit\Domain\Vault\VaultServiceTest" classname="Coleza.Tests.Unit.Domain.Vault.VaultServiceTest" assertions="5" time="0.000558"/>
+        <testcase name="testDeleteSecret" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\VaultServiceTest.php" line="82" class="Coleza\Tests\Unit\Domain\Vault\VaultServiceTest" classname="Coleza.Tests.Unit.Domain.Vault.VaultServiceTest" assertions="1" time="0.000584"/>
+      </testsuite>
+      <testsuite name="Tests\Unit\Providers\ProviderSettingsAndVaultTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Providers\ProviderSettingsAndVaultTest.php" tests="7" assertions="35" errors="0" failures="0" skipped="0" time="0.008492">
+        <testcase name="testProviderSettingDefinitionValidation" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Providers\ProviderSettingsAndVaultTest.php" line="40" class="Tests\Unit\Providers\ProviderSettingsAndVaultTest" classname="Tests.Unit.Providers.ProviderSettingsAndVaultTest" assertions="2" time="0.002172"/>
+        <testcase name="testProviderSettingSchemaDefinitions" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Providers\ProviderSettingsAndVaultTest.php" line="58" class="Tests\Unit\Providers\ProviderSettingsAndVaultTest" classname="Tests.Unit.Providers.ProviderSettingsAndVaultTest" assertions="9" time="0.000525"/>
+        <testcase name="testSaveSettingsRoutesSecretsToVaultAndPlainToDatabase" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Providers\ProviderSettingsAndVaultTest.php" line="74" class="Tests\Unit\Providers\ProviderSettingsAndVaultTest" classname="Tests.Unit.Providers.ProviderSettingsAndVaultTest" assertions="6" time="0.001180"/>
+        <testcase name="testGetPublicSettingsStrictlyMasksSecrets" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Providers\ProviderSettingsAndVaultTest.php" line="104" class="Tests\Unit\Providers\ProviderSettingsAndVaultTest" classname="Tests.Unit.Providers.ProviderSettingsAndVaultTest" assertions="5" time="0.000662"/>
+        <testcase name="testResolveEffectiveConfigMergesDefaultsNonSecretsAndDecryptedVaultSecrets" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Providers\ProviderSettingsAndVaultTest.php" line="121" class="Tests\Unit\Providers\ProviderSettingsAndVaultTest" classname="Tests.Unit.Providers.ProviderSettingsAndVaultTest" assertions="8" time="0.001203"/>
+        <testcase name="testSecretRotationWithoutOverwritingWithMaskedValue" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Providers\ProviderSettingsAndVaultTest.php" line="146" class="Tests\Unit\Providers\ProviderSettingsAndVaultTest" classname="Tests.Unit.Providers.ProviderSettingsAndVaultTest" assertions="3" time="0.001928"/>
+        <testcase name="testDeleteSettingsPurgesDatabaseAndVault" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Providers\ProviderSettingsAndVaultTest.php" line="174" class="Tests\Unit\Providers\ProviderSettingsAndVaultTest" classname="Tests.Unit.Providers.ProviderSettingsAndVaultTest" assertions="2" time="0.000822"/>
+      </testsuite>
+      <testsuite name="Coleza\Tests\Unit\Webhooks\WebhookServiceTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Webhooks\WebhookServiceTest.php" tests="6" assertions="39" errors="0" failures="0" skipped="0" time="0.041442">
+        <testcase name="testRegisterEndpointGeneratesSecureSecret" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Webhooks\WebhookServiceTest.php" line="26" class="Coleza\Tests\Unit\Webhooks\WebhookServiceTest" classname="Coleza.Tests.Unit.Webhooks.WebhookServiceTest" assertions="8" time="0.034787"/>
+        <testcase name="testWebhookSignerHmacAndReplayProtection" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Webhooks\WebhookServiceTest.php" line="48" class="Coleza\Tests\Unit\Webhooks\WebhookServiceTest" classname="Coleza.Tests.Unit.Webhooks.WebhookServiceTest" assertions="5" time="0.000911"/>
+        <testcase name="testDispatchAndSuccessfulDelivery" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Webhooks\WebhookServiceTest.php" line="74" class="Coleza\Tests\Unit\Webhooks\WebhookServiceTest" classname="Coleza.Tests.Unit.Webhooks.WebhookServiceTest" assertions="7" time="0.001543"/>
+        <testcase name="testFailedDeliverySchedulesExponentialBackoffRetry" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Webhooks\WebhookServiceTest.php" line="104" class="Coleza\Tests\Unit\Webhooks\WebhookServiceTest" classname="Coleza.Tests.Unit.Webhooks.WebhookServiceTest" assertions="9" time="0.001154"/>
+        <testcase name="testManualRedeliveryAndWorkerRetry" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Webhooks\WebhookServiceTest.php" line="133" class="Coleza\Tests\Unit\Webhooks\WebhookServiceTest" classname="Coleza.Tests.Unit.Webhooks.WebhookServiceTest" assertions="6" time="0.001629"/>
+        <testcase name="testProcessPendingRetries" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Webhooks\WebhookServiceTest.php" line="159" class="Coleza\Tests\Unit\Webhooks\WebhookServiceTest" classname="Coleza.Tests.Unit.Webhooks.WebhookServiceTest" assertions="4" time="0.001419"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

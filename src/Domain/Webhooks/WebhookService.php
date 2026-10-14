@@ -15,6 +15,7 @@ final class WebhookService
      * @var array<int, WebhookEndpoint> In-memory cache when PDO is null
      */
     private array $memoryEndpoints = [];
+    private ?\Coleza\Foundation\Database\Connection $db = null;
 
     /**
      * @var array<int, WebhookDelivery>
@@ -22,9 +23,11 @@ final class WebhookService
     private array $memoryDeliveries = [];
 
     public function __construct(
-        private ?PDO $pdo = null
+        private ?PDO $pdo = null,
+        private ?\Coleza\Domain\Vault\Encryptor $encryptor = null
     ) {
         if ($this->pdo !== null) {
+            $this->db = new \Coleza\Foundation\Database\Connection($this->pdo);
             $this->ensureSchema();
         }
     }
@@ -357,40 +360,46 @@ final class WebhookService
             return $saved;
         }
 
-        $stmt = $this->pdo->prepare(
-            'INSERT INTO webhook_endpoints (
-                target_url, secret, events_json, is_active, organization_id, user_id, description, created_at, updated_at
-            ) VALUES (
-                :target_url, :secret, :events, :is_active, :org_id, :user_id, :description, :created_at, :updated_at
-            )'
-        );
+        \Coleza\Domain\Vault\SecretStorageUpgrade::assertStorage($this->db, ['webhook_endpoints' => ['id', 'secret']]);
+        return $this->db->transaction(function () use ($endpoint): WebhookEndpoint {
+            $stmt = $this->pdo->prepare(
+                'INSERT INTO webhook_endpoints (
+                    target_url, secret, events_json, is_active, organization_id, user_id, description, created_at, updated_at
+                ) VALUES (
+                    :target_url, :secret, :events, :is_active, :org_id, :user_id, :description, :created_at, :updated_at
+                )'
+            );
 
-        $stmt->execute([
-            ':target_url' => $endpoint->getTargetUrl(),
-            ':secret' => $endpoint->getSecret(),
-            ':events' => json_encode($endpoint->getEvents()),
-            ':is_active' => $endpoint->isActive() ? 1 : 0,
-            ':org_id' => $endpoint->getOrganizationId(),
-            ':user_id' => $endpoint->getUserId(),
-            ':description' => $endpoint->getDescription(),
-            ':created_at' => $endpoint->getCreatedAt(),
-            ':updated_at' => $endpoint->getUpdatedAt(),
-        ]);
+            $stmt->execute([
+                ':target_url' => $endpoint->getTargetUrl(),
+                ':secret' => '',
+                ':events' => json_encode($endpoint->getEvents(), JSON_THROW_ON_ERROR),
+                ':is_active' => $endpoint->isActive() ? 1 : 0,
+                ':org_id' => $endpoint->getOrganizationId(),
+                ':user_id' => $endpoint->getUserId(),
+                ':description' => $endpoint->getDescription(),
+                ':created_at' => $endpoint->getCreatedAt(),
+                ':updated_at' => $endpoint->getUpdatedAt(),
+            ]);
 
-        $id = (int) $this->pdo->lastInsertId();
+            $id = (int) $this->pdo->lastInsertId();
+            $reference = (new \Coleza\Domain\Vault\VaultReferenceStore($this->db, $this->encryptor))->write('webhook', (string) $id, $endpoint->getSecret());
+            $this->db->update('webhook_endpoints', ['secret' => $reference], 'id = :id', ['id' => $id]);
 
-        return new WebhookEndpoint(
-            id: $id,
-            targetUrl: $endpoint->getTargetUrl(),
-            secret: $endpoint->getSecret(),
-            events: $endpoint->getEvents(),
-            isActive: $endpoint->isActive(),
-            organizationId: $endpoint->getOrganizationId(),
-            userId: $endpoint->getUserId(),
-            description: $endpoint->getDescription(),
-            createdAt: $endpoint->getCreatedAt(),
-            updatedAt: $endpoint->getUpdatedAt()
-        );
+            return new WebhookEndpoint(
+                id: $id,
+                targetUrl: $endpoint->getTargetUrl(),
+                secret: $endpoint->getSecret(),
+                events: $endpoint->getEvents(),
+                isActive: $endpoint->isActive(),
+                organizationId: $endpoint->getOrganizationId(),
+                userId: $endpoint->getUserId(),
+                description: $endpoint->getDescription(),
+                createdAt: $endpoint->getCreatedAt(),
+                updatedAt: $endpoint->getUpdatedAt()
+            );
+
+        });
     }
 
     private function persistDelivery(WebhookDelivery $delivery): WebhookDelivery
@@ -508,7 +517,7 @@ final class WebhookService
         return new WebhookEndpoint(
             id: (int) $row['id'],
             targetUrl: (string) $row['target_url'],
-            secret: (string) $row['secret'],
+            secret: (new \Coleza\Domain\Vault\VaultReferenceStore($this->db, $this->encryptor))->read('webhook', (string) $row['id'], (string) $row['secret']),
             events: !empty($row['events_json']) ? json_decode((string) $row['events_json'], true) : ['*'],
             isActive: ((int) $row['is_active']) === 1,
             organizationId: $row['organization_id'] !== null ? (int) $row['organization_id'] : null,
@@ -548,35 +557,22 @@ final class WebhookService
             return;
         }
 
-        $this->pdo->exec(
-            'CREATE TABLE IF NOT EXISTS webhook_endpoints (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                target_url VARCHAR(255) NOT NULL,
-                secret VARCHAR(64) NOT NULL,
-                events_json TEXT NOT NULL,
-                is_active INTEGER NOT NULL DEFAULT 1,
-                organization_id INTEGER,
-                user_id INTEGER,
-                description TEXT,
-                created_at VARCHAR(64) NOT NULL,
-                updated_at VARCHAR(64) NOT NULL
-            );
-            CREATE TABLE IF NOT EXISTS webhook_deliveries (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                endpoint_id INTEGER NOT NULL,
-                event_id VARCHAR(64) NOT NULL,
-                event_type VARCHAR(64) NOT NULL,
-                payload TEXT NOT NULL,
-                attempt_number INTEGER NOT NULL DEFAULT 1,
-                status_code INTEGER,
-                response_body TEXT,
-                is_success INTEGER NOT NULL DEFAULT 0,
-                error TEXT,
-                next_retry_at VARCHAR(64),
-                max_attempts INTEGER NOT NULL DEFAULT 5,
-                created_at VARCHAR(64) NOT NULL,
-                completed_at VARCHAR(64)
-            );'
-        );
+        $requirements = ['webhook_endpoints' => ['id', 'target_url', 'secret', 'events_json', 'is_active', 'organization_id', 'user_id', 'description', 'created_at', 'updated_at'],
+            'webhook_deliveries' => ['id', 'endpoint_id', 'event_id', 'event_type', 'payload', 'attempt_number', 'status_code', 'response_body', 'is_success', 'error', 'next_retry_at', 'max_attempts', 'created_at', 'completed_at']];
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchema($this->db, $requirements)) {
+            \Coleza\Domain\Vault\VaultReferenceStore::ensureSchema($this->db); return;
+        }
+        $auto = \Coleza\Foundation\Database\PdoSchema::autoIncrement($this->pdo);
+        \Coleza\Domain\Vault\VaultReferenceStore::ensureSchema($this->db);
+        $engine = $this->db->getDriverName() === 'mysql' ? ' ENGINE=InnoDB' : '';
+        $this->db->statement("CREATE TABLE IF NOT EXISTS webhook_endpoints (
+            id {$auto}, target_url VARCHAR(255) NOT NULL, secret VARCHAR(64) NOT NULL, events_json TEXT NOT NULL,
+            is_active INT NOT NULL DEFAULT 1, organization_id INT NULL, user_id INT NULL, description TEXT NULL,
+            created_at VARCHAR(64) NOT NULL, updated_at VARCHAR(64) NOT NULL)" . $engine);
+        $this->db->statement("CREATE TABLE IF NOT EXISTS webhook_deliveries (
+            id {$auto}, endpoint_id INT NOT NULL, event_id VARCHAR(64) NOT NULL, event_type VARCHAR(64) NOT NULL,
+            payload TEXT NOT NULL, attempt_number INT NOT NULL DEFAULT 1, status_code INT NULL, response_body TEXT NULL,
+            is_success INT NOT NULL DEFAULT 0, error TEXT NULL, next_retry_at VARCHAR(64) NULL, max_attempts INT NOT NULL DEFAULT 5,
+            created_at VARCHAR(64) NOT NULL, completed_at VARCHAR(64) NULL)" . $engine);
     }
 }

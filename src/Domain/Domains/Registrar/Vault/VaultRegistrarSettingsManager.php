@@ -20,6 +20,9 @@ final class VaultRegistrarSettingsManager
 
     public function ensureTables(): void
     {
+        $requirements = VaultService::schemaRequirements() + [$this->table => ['id', 'registrar_id', 'reseller_id', 'endpoint', 'is_sandbox', 'custom_settings_json', 'created_at', 'updated_at']];
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchema($this->db, $requirements)) { return; }
+        \Coleza\Foundation\Database\PdoSchema::autoIncrement($this->db->getPdo());
         $this->vaultService->ensureTable();
 
         $driver = $this->db->getDriverName();
@@ -53,6 +56,11 @@ final class VaultRegistrarSettingsManager
     public function saveConfiguration(RegistrarConfiguration $config, ?int $actorUserId = null): void
     {
         $this->ensureTables();
+        \Coleza\Domain\Vault\SecretStorageUpgrade::assertStorage($this->db, [$this->table => ['id']]);
+        $this->db->transaction(fn() => $this->saveConfigurationInitialized($config, $actorUserId));
+    }
+    private function saveConfigurationInitialized(RegistrarConfiguration $config, ?int $actorUserId = null): void
+    {
 
         $registrarId = strtolower(trim($config->getRegistrarId()));
         if ($registrarId === '') {
@@ -170,6 +178,12 @@ final class VaultRegistrarSettingsManager
      * Delete registrar settings and purge all secrets from Vault.
      */
     public function deleteConfiguration(string $registrarId, ?int $actorUserId = null): bool
+    {
+        $this->ensureTables();
+        \Coleza\Domain\Vault\SecretStorageUpgrade::assertStorage($this->db, [$this->table => ['id']]);
+        return $this->db->transaction(fn() => $this->deleteConfigurationInitialized($registrarId, $actorUserId));
+    }
+    private function deleteConfigurationInitialized(string $registrarId, ?int $actorUserId = null): bool
     {
         $id = strtolower(trim($registrarId));
         $vaultNamespace = "registrar:{$id}";

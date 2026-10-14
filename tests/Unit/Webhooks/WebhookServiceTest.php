@@ -20,7 +20,7 @@ final class WebhookServiceTest extends TestCase
         $this->pdo = new PDO('sqlite::memory:');
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $this->service = new WebhookService($this->pdo);
+        $this->service = new WebhookService($this->pdo, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
     }
 
     public function testRegisterEndpointGeneratesSecureSecret(): void

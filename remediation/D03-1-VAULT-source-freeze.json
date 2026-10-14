@@ -1,0 +1,19 @@
+{
+  "files": {
+    "src/Domain/Domains/Registrar/Vault/VaultRegistrarSettingsManager.php": "9495bb4d2526d107680aea661a04a7fe128b7d18d58ce325b6855592a64c89d7",
+    "src/Domain/Providers/Settings/ProviderSettingService.php": "100d07baed6c438a39e84a2c3d7473c5c157723afd7d83231b8cfc8620249ced",
+    "src/Domain/Servers/Services/ServerService.php": "2569ebd844a24f9d0b707195f96097c6312cda2ec831f43a467fa04dec2866e9",
+    "src/Domain/Vault/SecretStorageUpgrade.php": "c4097104f16bdb17d46a0710d8a220d31ffdb6c73965b3b588264ef586b9c70a",
+    "src/Domain/Vault/VaultPersistence.php": "4024909b04660512099d9e9b2192aaffda3820ee355d603852f231d9a8f9d4f4",
+    "src/Domain/Vault/VaultReferenceStore.php": "2553e5d3110b126a0c380da4e4e154a7e49e8063303604acadf88a356d041d56",
+    "src/Domain/Vault/VaultReferenceUpgrade.php": "e0155e1c6225f9b79880e6a37683c74c0da146a7e94dd981df9120d674c06b73",
+    "src/Domain/Vault/VaultService.php": "4d4f0316d735a18024acc769f14c669eb9324b13b0908f5b90c0e4a279355583",
+    "src/Domain/Webhooks/WebhookService.php": "7a3a79ebdecb5713823bc5dbab5732608d9ce23bb671064a1f1ccfa0d70e3042",
+    "tests/MariaDb/VaultUnifiedTest.php": "0840dcc1641c58936be1f1faa6f997d04637435cc3144395a4ec7b0fe3aee3a6",
+    "tests/MariaDb/fixtures/financial-worker.php": "ba782650210aee8cce812d32220b92e332b251ef992cc2298c761f730c4dc0c9",
+    "tests/Support/VaultUnifiedCases.php": "33d3e38816420c7a48d6cdf7aea277f1fbcce0c17a43999b0d21a3c37a78be97",
+    "tests/Unit/Domain/Vault/VaultUnifiedTest.php": "8b413e7ff635402c19786295617caeabc8be42a02457688ffae93a18330abd22",
+    "tests/Unit/Foundation/Health/IntegrationHealthHooksTest.php": "a755079b89715f25a1b548730967616f27231bbbcc681f34661762964a162319",
+    "tests/Unit/Webhooks/WebhookServiceTest.php": "80009ef1a5556449ffb152708778698570fad59a0ae9a2d3a0de0bc73fc627a6"
+  }
+}

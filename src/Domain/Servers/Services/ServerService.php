@@ -322,6 +322,14 @@ final class ServerService
      */
     public function createServer(array $data): Server
     {
+        if (isset($data['auth_secret'])) {
+            $this->encryptor ??= \Coleza\Domain\Vault\ApplicationKey::encryptor(getenv('APP_KEY') ?: null);
+            \Coleza\Domain\Vault\VaultReferenceStore::ensureSchema($this->db);
+        }
+        return $this->db->transaction(fn() => $this->createServerLocked($data));
+    }
+    private function createServerLocked(array $data): Server
+    {
         $name = trim((string)($data['name'] ?? ''));
         if ($name === '') {
             throw new ValidationException(['name' => 'Server name is required.'], 'Invalid server name');
@@ -366,7 +374,7 @@ final class ServerService
         $secure = isset($data['secure']) ? ((bool)$data['secure'] ? 1 : 0) : 1;
         $authType = (string)($data['auth_type'] ?? 'api_token');
         $authSecret = isset($data['auth_secret']) ? (string)$data['auth_secret'] : null;
-        if ($authSecret !== null) { $authSecret = (new \Coleza\Domain\Vault\SecretCipher($this->encryptor))->seal($authSecret, 'server:' . $hostname); }
+        if ($authSecret !== null) { $authSecret = (new \Coleza\Domain\Vault\VaultReferenceStore($this->db, $this->encryptor))->write('server', hash('sha256', $hostname), $authSecret); }
         $ipPool = (array)($data['assigned_ip_pool'] ?? []);
         $metadata = (array)($data['metadata'] ?? []);
 
@@ -455,7 +463,14 @@ final class ServerService
         $secure = isset($data['secure']) ? ((bool)$data['secure'] ? 1 : 0) : ($existing->isSecure() ? 1 : 0);
         $authType = isset($data['auth_type']) ? (string)$data['auth_type'] : $existing->getAuthType();
         $authSecret = array_key_exists('auth_secret', $data) ? ($data['auth_secret'] === null ? null : (string)$data['auth_secret']) : $existing->getAuthSecret();
-        if ($authSecret !== null) { $authSecret = (new \Coleza\Domain\Vault\SecretCipher($this->encryptor))->seal($authSecret, 'server:' . $existing->getHostname()); }
+        $referenceStore = new \Coleza\Domain\Vault\VaultReferenceStore($this->db, $this->encryptor);
+        $vaultKey = hash('sha256', $existing->getHostname());
+        if (array_key_exists('auth_secret', $data)) {
+            if ($authSecret === null) { $referenceStore->delete('server', $vaultKey); }
+            else { $authSecret = $referenceStore->write('server', $vaultKey, $authSecret); }
+        } else {
+            $authSecret = $this->db->selectOne('SELECT auth_secret_encrypted FROM servers WHERE id = ?', [$id])['auth_secret_encrypted'];
+        }
         $ipPool = isset($data['assigned_ip_pool']) ? (array)$data['assigned_ip_pool'] : $existing->getAssignedIpPool();
         $metadata = isset($data['metadata']) ? (array)$data['metadata'] : $existing->getMetadata();
 
@@ -730,6 +745,14 @@ final class ServerService
     /**
      * @param array<string, mixed> $row
      */
+    private function readServerSecret(array $row): string
+    {
+        $stored = (string) $row['auth_secret_encrypted'];
+        if (str_starts_with($stored, 'vault:')) { return (new \Coleza\Domain\Vault\VaultReferenceStore($this->db, $this->encryptor))->read('server', hash('sha256', $row['hostname']), $stored); }
+        // Transitional ciphertext from the preceding explicit storage upgrade remains readable.
+        return (new \Coleza\Domain\Vault\SecretCipher($this->encryptor))->open($stored, 'server:' . $row['hostname']);
+    }
+
     private function hydrateServer(array $row): Server
     {
         $capacity = new ServerCapacity(
@@ -759,7 +782,7 @@ final class ServerService
             port: $row['port'] !== null ? (int)$row['port'] : null,
             secure: (bool)$row['secure'],
             authType: (string)$row['auth_type'],
-            authSecret: $row['auth_secret_encrypted'] !== null ? (new \Coleza\Domain\Vault\SecretCipher($this->encryptor))->open((string)$row['auth_secret_encrypted'], 'server:' . $row['hostname']) : null,
+            authSecret: $row['auth_secret_encrypted'] !== null ? $this->readServerSecret($row) : null,
             assignedIpPool: is_array($ipPool) ? $ipPool : [],
             metadata: is_array($meta) ? $meta : [],
             createdAt: (string)$row['created_at']

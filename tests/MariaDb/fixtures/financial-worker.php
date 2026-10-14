@@ -47,6 +47,11 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'vaultRotate':
+            $vault = new Coleza\Domain\Vault\VaultService($db, \Coleza\Tests\Support\SecretFixtureKey::encryptor(), new Coleza\Domain\Identity\Audit\AuditLogger($db));
+            $vault->setSecret('provider:parallel', 'api_token', 'worker-synthetic-' . $argv[2]);
+            $result['accepted'] = true;
+            break;
         case 'identityReset':
         case 'identityVerify':
         case 'identityRecovery':

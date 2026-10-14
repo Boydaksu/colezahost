@@ -35,6 +35,7 @@ final class SecretStorageUpgrade
                 foreach ($rows as $row) {
                     $value = $row[$column]; if ($value === null || $value === '') { continue; }
                     $scope = match ($table) { 'system_settings' => 'smtp:', 'servers' => 'server:' . $row['hostname'], 'user_two_factor' => 'totp:' . $row['user_id'] };
+                    if ($table === 'servers' && str_starts_with($value, 'vault:')) { (new VaultReferenceStore($this->db, $this->encryptor))->read('server', hash('sha256', $row['hostname']), $value); continue; }
                     if (str_starts_with($value, SecretCipher::PREFIX)) { $cipher->open($value, $scope); continue; }
                     if (str_starts_with($value, 'enc:')) { throw new \LogicException('Unknown secret envelope version; explicit reconciliation required.'); }
                     if (!$legacyPlaintextConfirmed) { throw new \LogicException('Legacy secret provenance must be explicitly confirmed before upgrading.'); }
