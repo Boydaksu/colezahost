@@ -17,7 +17,8 @@ final class PrivacyTombstoneService
         private readonly ?TombstoneStoreInterface $persistentStore = null,
         private readonly ?AuditLogger $auditLogger = null,
         #[\SensitiveParameter] private readonly ?string $secretKey = null,
-        #[\SensitiveParameter] private readonly ?string $salt = null
+        #[\SensitiveParameter] private readonly ?string $salt = null,
+        private readonly ?\Coleza\Domain\Privacy\Integrity\PrivacyLegacyEvidenceStore $legacyEvidence = null
     ) {
     }
 
@@ -38,11 +39,28 @@ final class PrivacyTombstoneService
         }
     }
 
+    private function evidence(PrivacyTombstone $record): PrivacyTombstone
+    {
+        $store = $this->legacyEvidence ?? \Coleza\Domain\Privacy\Integrity\PrivacyLegacyEvidenceStore::configured();
+        return $store?->tombstone($record) ?? $record;
+    }
+
+    public function matchesTombstoneEmail(PrivacyTombstone $record, string $email): bool
+    {
+        $this->assertTrusted($record);
+        if ($record->getLegacyEvidence() !== null && !str_starts_with($record->getIntegritySignature(), \Coleza\Domain\Privacy\Integrity\PrivacySignature::PREFIX)) {
+            if ($record->getLegacyEvidence()['email_hash_scheme'] === 'id-only') { return false; }
+            return hash_equals($record->getUserEmailHash(), hash_hmac('sha256', strtolower(trim($email)), 'coleza_privacy_salt'));
+        }
+        return $record->matchesEmail($email, $this->getSalt());
+    }
+
     public function assertTrusted(PrivacyTombstone $record): void
     {
         $this->preflightSigningKeys();
         if (!$record->verifyIntegrity($this->getSecretKey())
-            || ($record->getMetadata()['privacy_email_key_id'] ?? null) !== \Coleza\Domain\Privacy\Integrity\PrivacySigningKey::id($this->getSalt())) {
+            || (str_starts_with($record->getIntegritySignature(), \Coleza\Domain\Privacy\Integrity\PrivacySignature::PREFIX)
+                && ($record->getMetadata()['privacy_email_key_id'] ?? null) !== \Coleza\Domain\Privacy\Integrity\PrivacySigningKey::id($this->getSalt()))) {
             throw new \RuntimeException('Privacy tombstone integrity or email key verification failed; reconciliation refused.');
         }
     }
@@ -139,7 +157,7 @@ final class PrivacyTombstoneService
     public function isEmailTombstoned(string $email): bool
     {
         foreach ($this->getAllTombstones() as $record) {
-            if ($record->matchesEmail($email, $this->getSalt())) { return true; }
+            if ($this->matchesTombstoneEmail($record, $email)) { return true; }
         }
         return false;
     }
@@ -154,7 +172,7 @@ final class PrivacyTombstoneService
         );
 
         if ($row !== null) {
-            return PrivacyTombstone::fromArray($row);
+            return $this->evidence(PrivacyTombstone::fromArray($row));
         }
 
         return $this->persistentStore?->findByUserId($userId);
@@ -170,7 +188,7 @@ final class PrivacyTombstoneService
         );
 
         if ($row !== null) {
-            return PrivacyTombstone::fromArray($row);
+            return $this->evidence(PrivacyTombstone::fromArray($row));
         }
 
         if ($this->persistentStore !== null) {
@@ -195,7 +213,7 @@ final class PrivacyTombstoneService
         $result = [];
 
         foreach ($rows as $row) {
-            $tombstone = PrivacyTombstone::fromArray($row);
+            $tombstone = $this->evidence(PrivacyTombstone::fromArray($row));
             $result[$tombstone->getUserId()] = $tombstone;
         }
 
@@ -205,6 +223,11 @@ final class PrivacyTombstoneService
                 if (isset($result[$userId]) && (\Coleza\Domain\Privacy\Integrity\PrivacySignature::encode($result[$userId]->integrityData()) !== \Coleza\Domain\Privacy\Integrity\PrivacySignature::encode($tombstone->integrityData())
                     || !hash_equals($result[$userId]->getIntegritySignature(), $tombstone->getIntegritySignature()))) {
                     throw new \RuntimeException('Conflicting database and persistent tombstones.');
+                }
+                if (isset($result[$userId]) && $result[$userId]->getLegacyEvidence() === null && $tombstone->getLegacyEvidence() !== null) {
+                    // Identical semantic body and original signature were checked above; retain restored DB ID.
+                    $this->assertTrusted($tombstone);
+                    $result[$userId] = $result[$userId]->withLegacyEvidence($tombstone->getLegacyEvidence());
                 }
                 if (!isset($result[$userId])) {
                     $result[$userId] = $tombstone;
@@ -271,7 +294,7 @@ final class PrivacyTombstoneService
         $synced = 0;
 
         foreach ($rows as $row) {
-            $tombstone = PrivacyTombstone::fromArray($row);
+            $tombstone = $this->evidence(PrivacyTombstone::fromArray($row));
             if (!$this->persistentStore->hasUserId($tombstone->getUserId())) {
                 $this->persistentStore->persist($tombstone);
                 $synced++;

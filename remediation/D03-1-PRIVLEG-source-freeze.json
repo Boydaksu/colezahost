@@ -1,0 +1,18 @@
+{
+  "reference_commit": "c9f3c075d914c35196de01e0198ab1db23f3ce08",
+  "files": {
+    "src/Domain/Privacy/Integrity/PrivacyLegacyAttestation.php": "f5956c9d5d9460dc8523634583481eb55af24c9abcd7d70a35e7773b48c89ee1",
+    "src/Domain/Privacy/Integrity/PrivacyLegacyEvidenceStore.php": "d6e567e703a60d958fafffe59f3a6bdc99918aefee49154290cb5cfd7bf22d67",
+    "src/Domain/Privacy/Integrity/PrivacyLegacyMaintenance.php": "2f339e6f92a6bb090945e9ea4e68f430f9c64d77c1aef07ccbc036777708f6a7",
+    "src/Domain/Privacy/Redaction/RedactionAuditRecord.php": "2b3be4b4660b101bade8891d261f129651684be933170586480f71b1b412b7b0",
+    "src/Domain/Privacy/Redaction/RedactionAuditService.php": "bae88041d3d71d8440f4c8a5fa0700e5c28155864b2a714d1f437861cf934d6d",
+    "src/Domain/Privacy/Tombstone/BackupRestoreReconciliationService.php": "610f6778f8b54ad23fcdd9f15e4fa7cc370707a4c5172cc7ad59958f4d744620",
+    "src/Domain/Privacy/Tombstone/FileTombstoneStore.php": "e6eba8bc2fcf78642b432fd9d49b2c3221ec33062088b0fca33531b33db69aac",
+    "src/Domain/Privacy/Tombstone/PrivacyTombstone.php": "281b4daf0c3875ee5045ef837ec58c03186581942b16ebf6a9e595ca8c61ee75",
+    "src/Domain/Privacy/Tombstone/PrivacyTombstoneService.php": "76fa4555e959d7799cf36a05ceb25eea22e80c193ff3c0df65af8328b86244cf",
+    "tests/MariaDb/PrivacyLegacyTest.php": "502b4997e533707113acdc73c6ddd6c60126026b18a308d0b8f9f4bdfef631ce",
+    "tests/Support/PrivacyLegacyCases.php": "5a62c271719c5106e3ef627500a5ac46993561350fdee087824508c8f8af117b",
+    "tests/Unit/Privacy/PrivacyLegacyTest.php": "cbfd72911244af439daa53157bc11d199d839f90a6deaed946b135a6c77bf6ba",
+    "tools/privacy-legacy-maintenance.php": "676aab2b5ba810d33d29470dbf8b2343ea125ebe3cfb2b4e1edfdd2d0b7f1f65"
+  }
+}

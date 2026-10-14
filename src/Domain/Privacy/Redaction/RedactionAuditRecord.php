@@ -20,7 +20,8 @@ final class RedactionAuditRecord implements JsonSerializable
         private readonly bool $verifiedClean,
         private readonly string $auditedAt,
         private readonly int $auditedBy,
-        private readonly string $auditSignature
+        private readonly string $auditSignature,
+        private readonly ?array $legacyEvidence = null
     ) {
     }
 
@@ -150,6 +151,8 @@ final class RedactionAuditRecord implements JsonSerializable
             'records_affected' => $this->recordsAffected, 'redacted_fields' => $this->redactedFields, 'pre_checksum' => $this->preChecksum,
             'post_checksum' => $this->postChecksum, 'verified_clean' => $this->verifiedClean, 'audited_at' => $this->auditedAt, 'audited_by' => $this->auditedBy];
     }
+    public function getLegacyEvidence(): ?array { return $this->legacyEvidence; }
+    public function withLegacyEvidence(array $proof): self { return self::fromArray(array_replace($this->toArray(), ['legacy_evidence' => $proof])); }
     public function verifySignature(#[\SensitiveParameter] ?string $secretKey = null): bool
     {
         try {
@@ -157,7 +160,8 @@ final class RedactionAuditRecord implements JsonSerializable
             if (str_starts_with($this->auditSignature, \Coleza\Domain\Privacy\Integrity\PrivacySignature::PREFIX)) {
                 return \Coleza\Domain\Privacy\Integrity\PrivacySignature::verify('redaction', $this->integrityData(), $this->auditSignature, $key);
             }
-            return false; // Public/default legacy signatures cannot establish authenticity.
+            if ($this->auditSignature !== '' && preg_match('/^[a-f0-9]{64}$/D', $this->auditSignature) !== 1) { return false; }
+            return \Coleza\Domain\Privacy\Integrity\PrivacyLegacyAttestation::verify('redaction', $this, $this->legacyEvidence, $key);
         } catch (\Throwable) { return false; }
     }
 
@@ -176,6 +180,7 @@ final class RedactionAuditRecord implements JsonSerializable
             'audited_at' => $this->auditedAt,
             'audited_by' => $this->auditedBy,
             'audit_signature' => $this->auditSignature,
+            ...($this->legacyEvidence === null ? [] : ['legacy_evidence' => $this->legacyEvidence]),
         ];
     }
 
@@ -199,7 +204,8 @@ final class RedactionAuditRecord implements JsonSerializable
             verifiedClean: (bool) $data['verified_clean'],
             auditedAt: (string) $data['audited_at'],
             auditedBy: (int) $data['audited_by'],
-            auditSignature: (string) $data['audit_signature']
+            auditSignature: (string) $data['audit_signature'],
+            legacyEvidence: $data['legacy_evidence'] ?? null
         );
     }
 

@@ -57,7 +57,7 @@ final class BackupRestoreReconciliationService
                 try {
                     $allUsers = $this->db->select("SELECT id, email, status FROM users");
                     foreach ($allUsers as $u) {
-                        if (isset($u['email']) && $tombstone->matchesEmail((string) $u['email'], $this->tombstoneService->getSalt())) {
+                        if (isset($u['email']) && $this->tombstoneService->matchesTombstoneEmail($tombstone, (string) $u['email'])) {
                             $userRow = $this->db->selectOne("SELECT * FROM users WHERE id = :id", ['id' => $u['id']]);
                             break;
                         }

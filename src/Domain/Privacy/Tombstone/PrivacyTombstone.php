@@ -21,7 +21,8 @@ final class PrivacyTombstone implements JsonSerializable
         private readonly string $erasureChecksum,
         private readonly array $metadata,
         private readonly string $tombstonedAt,
-        private readonly string $integritySignature
+        private readonly string $integritySignature,
+        private readonly ?array $legacyEvidence = null
     ) {
     }
 
@@ -132,6 +133,8 @@ final class PrivacyTombstone implements JsonSerializable
         return ['user_id' => $this->userId, 'user_email_hash' => $this->userEmailHash, 'erasure_type' => $this->erasureType,
             'reason' => $this->reason, 'erasure_checksum' => $this->erasureChecksum, 'metadata' => $this->metadata, 'tombstoned_at' => $this->tombstonedAt];
     }
+    public function getLegacyEvidence(): ?array { return $this->legacyEvidence; }
+    public function withLegacyEvidence(array $proof): self { return self::fromArray(array_replace($this->toArray(), ['legacy_evidence' => $proof])); }
     public function verifyIntegrity(#[\SensitiveParameter] ?string $secretKey = null): bool
     {
         try {
@@ -139,7 +142,8 @@ final class PrivacyTombstone implements JsonSerializable
             if (str_starts_with($this->integritySignature, \Coleza\Domain\Privacy\Integrity\PrivacySignature::PREFIX)) {
                 return \Coleza\Domain\Privacy\Integrity\PrivacySignature::verify('tombstone', $this->integrityData(), $this->integritySignature, $key);
             }
-            return false; // Public/default legacy signatures cannot establish authenticity.
+            if ($this->integritySignature !== '' && preg_match('/^[a-f0-9]{64}$/D', $this->integritySignature) !== 1) { return false; }
+            return \Coleza\Domain\Privacy\Integrity\PrivacyLegacyAttestation::verify('tombstone', $this, $this->legacyEvidence, $key);
         } catch (\Throwable) { return false; }
     }
 
@@ -165,6 +169,7 @@ final class PrivacyTombstone implements JsonSerializable
             'metadata' => $this->metadata,
             'tombstoned_at' => $this->tombstonedAt,
             'integrity_signature' => $this->integritySignature,
+            ...($this->legacyEvidence === null ? [] : ['legacy_evidence' => $this->legacyEvidence]),
         ];
     }
 
@@ -185,7 +190,8 @@ final class PrivacyTombstone implements JsonSerializable
             erasureChecksum: (string) $data['erasure_checksum'],
             metadata: $metadata,
             tombstonedAt: (string) $data['tombstoned_at'],
-            integritySignature: (string) $data['integrity_signature']
+            integritySignature: (string) $data['integrity_signature'],
+            legacyEvidence: $data['legacy_evidence'] ?? null
         );
     }
 

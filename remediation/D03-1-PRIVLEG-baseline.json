@@ -1,0 +1,31 @@
+{
+  "reference_commit": "c9f3c075d914c35196de01e0198ab1db23f3ce08",
+  "migrations_unchanged": {
+    "database/migrations/2026_10_09_000001_normalize_identity_rbac.php": "8f5f8f038cc85774caab105132adaddaa77a7fa6f9d9fc7d4290159feb55219c",
+    "database/migrations/2026_10_09_000002_payment_concurrency.php": "6d85cde9e514901ae9b9d2c9089a03eaf65720af2b7a48aa88639c6fe5c7a572",
+    "database/migrations/2026_10_09_000003_capacity_notifications.php": "7ed4a033b7efa0ae2c38fa1bac30aa143c7a8a6083c9fdd424de663b0bef9dd9",
+    "database/migrations/2026_10_09_000004_documents_announcements.php": "7d847e3ed8220a5c3f234369edf3cf63b928b5ad71e0c19eabbec1d503c0d69e",
+    "database/migrations/2026_10_10_000005_global_document_counters.php": "18af3b2c766c23390fc1a89c02d4ecc1655c1f782882933434e3ef2240c247a5",
+    "database/migrations/2026_10_10_000006_core_domain_schemas.php": "784c7885be7d11caee073a23431661341a9dc3389de09a53c4673a5ce8df64dc",
+    "database/migrations/2026_10_11_000007_legacy_identity_columns.php": "1eb0c190fa17d8e5b6c5fff0481ebc2be5610f7dfe681dc63d10a319b1e1ec67",
+    "database/migrations/2026_10_11_000008_provider_identity.php": "e464af25a5f12b5a3be33fdc00b1f285c633027bb4b55aec2503988366de4fd8",
+    "database/migrations/2026_10_11_000009_support_api_identity_documents.php": "85bb607123e5e752d67c21aafa92a3b63929a55877784d1a5f0d340dc41d8774",
+    "database/migrations/2026_10_11_000010_privacy_migration_persistence.php": "52ab79f0bda083933f0a654927079ccd593ea28098c90c3dcb853fab98862b50",
+    "database/migrations/2026_10_11_000011_domain_application_schema.php": "073031e6497088e924ac8182751543809f096a436c282c64543ae7c153fb88af",
+    "database/migrations/2026_10_11_000012_legacy_adoption_upgrade.php": "a4088cde9828ccbb87c3d235d278e05bf03f7caedf41a1d0065677b6f6b78b7f",
+    "database/migrations/2026_10_11_000013_automation_persistence.php": "f624b894f62ab624a2eff9d3f0a317f123119be0ef021d5672cd2cdafdaea203",
+    "database/migrations/2026_10_12_000014_automation_rule_versions.php": "ba996f597ffec78a07012c4013d8eba99faeea90a9eb2e0fa215f38d7855e970",
+    "database/migrations/2026_10_12_000015_automation_destructive_budget.php": "8af3d27bc383753cae5de62fed66c9649093e6ee946165289eb2721a75a39e79",
+    "database/migrations/2026_10_12_000016_automation_action_attempts.php": "87558140e31744a7df6c05e8468cd16c9eab46611ff2193f0ea6ba7b12d3ea4c",
+    "database/migrations/2026_10_12_000017_foundation_runtime_schema.php": "bc5bf29a5736d9e829916fc7a3223aaa39e40d191b27a8560a1e8fbc7d3f8ace",
+    "database/migrations/2026_10_12_000018_provider_vault_schema.php": "66c9a97bc01054ab6c30578a12e7238772c0acacac28d0aa497f4df7827e8969",
+    "database/migrations/2026_10_12_000019_brand_currency_schema.php": "fd65ccb518fede5d572cd80881a658e3829cd7c5fed40b4134dbda731b4d1459",
+    "database/migrations/2026_10_12_000020_configuration_write_locks.php": "2f558e44f5235ebdea3341d539cb8d86489bfa99d52c9fc8501120c0990a527b",
+    "database/migrations/2026_10_12_000021_abuse_schema.php": "b6a334a59296405c19fdab213071f1babd43162658ec3da540f865ab64c1b492",
+    "database/migrations/2026_10_12_000022_fraud_schema.php": "2cbb3272592a903e97f1f89ce1ec9289ae5bc04ab405dc6c37e68b393e6f1f80",
+    "database/migrations/2026_10_12_000023_operational_mode_schema.php": "4f988c51c0bcd79a215fedbe9b4201649875a3911964abdae4b1e2a3cc03de3a",
+    "database/migrations/2026_10_13_000024_analytics_schema.php": "9f2a686cb9adcda06743af9c477cff85239e68a9b546ae9f3f2937c271e6eae8",
+    "database/migrations/2026_10_13_000025_daily_aggregation_evidence.php": "d66e439b51b1c34f7a4e53c1accdadefbd4f6f4f471d9d9cf8ce25901f263554",
+    "database/migrations/2026_10_13_000026_identity_lifecycle.php": "7f851fe55410fb1c2fb86d7ae3ca015bfd371f4cfdb82ebc1b87925e6a693867"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "reference_commit": "c9f3c075d914c35196de01e0198ab1db23f3ce08",
+  "files": {
+    "remediation/D03-1-PRIVLEG-SONUC.md": "44077413dad589ddc5c28461316515e445a48c1a383bc4e52a871adf43a0894a",
+    "remediation/D03-1-PRIVLEG-baseline.json": "3d290efa6ac18409ed7972df32fd8bcd957ae6ae6bc6e8fdd7b0c1c8f6109900",
+    "remediation/D03-1-PRIVLEG-before.txt": "503b490669fe663840a4e92fc2fe3edeb1efcfba9ec9e54927fc8666f35294d7",
+    "remediation/D03-1-PRIVLEG-before.xml": "8694d98bc5dd67096166e58faf48c666b6491bf5a62e3100d098885524ff3d5a",
+    "remediation/D03-1-PRIVLEG-main.txt": "4f0191085c7dc0db8e5d708cb8524ad55516bd2f547a14de2c7bd1be93cc6d32",
+    "remediation/D03-1-PRIVLEG-main.xml": "776a132bdff423cc9d1a50f8677b90114f5254696a8e87a543072f28c993b261",
+    "remediation/D03-1-PRIVLEG-native-expected.xml": "4c8863e9dfd8584105a76d9b22a1fc5f800a522c415cd95126f8e52c37e11a52",
+    "remediation/D03-1-PRIVLEG-native.txt": "30ffda87eb87fdf763a375eb789e079286ab9167efcca0eaf6833806c7f0bd73",
+    "remediation/D03-1-PRIVLEG-native.xml": "1a93e32145600e865f4993ab561d98769c29092d59bf349afd703140198f0179",
+    "remediation/D03-1-PRIVLEG-security-scan.txt": "8beb5f4334fa9bb776e5057553070585eb49874f244c49759e8b04df33101ce8",
+    "remediation/D03-1-PRIVLEG-source-freeze.json": "e3c68f369289155dc5266deddd8125126ffa62b81761ebb1f08c7eeb343f5dc5",
+    "remediation/D03-1-SECRET-INVENTORY.md": "958a69434f5fa2a9f6a24f9064d79674464017e5140621f6703778182c56cfe3",
+    "remediation/D03-PLAN.md": "26a2155a1a78591734dff1a0ec6e0b2434889482804650d9b3b1764a858bbb46",
+    "remediation/state.json": "4860fef8c4f18317232467e8aa64e61930e093b524cb12810e7371f4edc3283e",
+    "remediation/verify-d03-privacy-legacy.py": "14b7a41f0a47a585510b9e0054ccfe7d83c2efd838feef08991d866063e38dfe",
+    "src/Domain/Privacy/Integrity/PrivacyLegacyAttestation.php": "f5956c9d5d9460dc8523634583481eb55af24c9abcd7d70a35e7773b48c89ee1",
+    "src/Domain/Privacy/Integrity/PrivacyLegacyEvidenceStore.php": "d6e567e703a60d958fafffe59f3a6bdc99918aefee49154290cb5cfd7bf22d67",
+    "src/Domain/Privacy/Integrity/PrivacyLegacyMaintenance.php": "2f339e6f92a6bb090945e9ea4e68f430f9c64d77c1aef07ccbc036777708f6a7",
+    "src/Domain/Privacy/Redaction/RedactionAuditRecord.php": "2b3be4b4660b101bade8891d261f129651684be933170586480f71b1b412b7b0",
+    "src/Domain/Privacy/Redaction/RedactionAuditService.php": "bae88041d3d71d8440f4c8a5fa0700e5c28155864b2a714d1f437861cf934d6d",
+    "src/Domain/Privacy/Tombstone/BackupRestoreReconciliationService.php": "610f6778f8b54ad23fcdd9f15e4fa7cc370707a4c5172cc7ad59958f4d744620",
+    "src/Domain/Privacy/Tombstone/FileTombstoneStore.php": "e6eba8bc2fcf78642b432fd9d49b2c3221ec33062088b0fca33531b33db69aac",
+    "src/Domain/Privacy/Tombstone/PrivacyTombstone.php": "281b4daf0c3875ee5045ef837ec58c03186581942b16ebf6a9e595ca8c61ee75",
+    "src/Domain/Privacy/Tombstone/PrivacyTombstoneService.php": "76fa4555e959d7799cf36a05ceb25eea22e80c193ff3c0df65af8328b86244cf",
+    "tests/MariaDb/PrivacyLegacyTest.php": "502b4997e533707113acdc73c6ddd6c60126026b18a308d0b8f9f4bdfef631ce",
+    "tests/Support/PrivacyLegacyCases.php": "5a62c271719c5106e3ef627500a5ac46993561350fdee087824508c8f8af117b",
+    "tests/Unit/Privacy/PrivacyLegacyTest.php": "cbfd72911244af439daa53157bc11d199d839f90a6deaed946b135a6c77bf6ba",
+    "tools/privacy-legacy-maintenance.php": "676aab2b5ba810d33d29470dbf8b2343ea125ebe3cfb2b4e1edfdd2d0b7f1f65"
+  }
+}

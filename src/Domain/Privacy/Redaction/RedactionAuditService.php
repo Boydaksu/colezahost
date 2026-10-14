@@ -16,7 +16,8 @@ final class RedactionAuditService
     public function __construct(
         private readonly Connection $db,
         private readonly ?AuditLogger $auditLogger = null,
-        #[\SensitiveParameter] private readonly ?string $secretKey = null
+        #[\SensitiveParameter] private readonly ?string $secretKey = null,
+        private readonly ?\Coleza\Domain\Privacy\Integrity\PrivacyLegacyEvidenceStore $legacyEvidence = null
     ) {
     }
 
@@ -239,7 +240,9 @@ final class RedactionAuditService
 
         $results = [];
         foreach ($rows as $row) {
-            $results[] = RedactionAuditRecord::fromArray($row);
+            $record = RedactionAuditRecord::fromArray($row);
+            $store = $this->legacyEvidence ?? \Coleza\Domain\Privacy\Integrity\PrivacyLegacyEvidenceStore::configured();
+            $results[] = $store?->redaction($record) ?? $record;
         }
 
         return $results;

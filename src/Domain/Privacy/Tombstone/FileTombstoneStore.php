@@ -12,7 +12,8 @@ final class FileTombstoneStore implements TombstoneStoreInterface
 {
     public function __construct(
         private readonly string $filePath,
-        #[\SensitiveParameter] private readonly ?string $secretKey = null
+        #[\SensitiveParameter] private readonly ?string $secretKey = null,
+        private readonly ?\Coleza\Domain\Privacy\Integrity\PrivacyLegacyEvidenceStore $legacyEvidence = null
     ) {}
 
     private function decode(string $content, string $key): array
@@ -26,6 +27,8 @@ final class FileTombstoneStore implements TombstoneStoreInterface
         foreach ($data as $item) {
             if (!is_array($item)) { throw new RuntimeException('Invalid tombstone record.'); }
             $record = PrivacyTombstone::fromArray($item);
+            $store = $this->legacyEvidence ?? \Coleza\Domain\Privacy\Integrity\PrivacyLegacyEvidenceStore::configured();
+            $record = $store?->tombstone($record) ?? $record;
             if ($record->getUserId() <= 0 || !$record->verifyIntegrity($key) || isset($records[$record->getUserId()])) {
                 throw new RuntimeException('Unverified or duplicate tombstone; inventory refused.');
             }
