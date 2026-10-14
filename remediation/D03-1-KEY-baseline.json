@@ -1,0 +1,9 @@
+{
+  "reference_commit": "0d2e3e08d4c121a146f298f77b4bc6b008b6f66e",
+  "files": {
+    "config/app.php": "79945ffa1cb2eb60d97c40a6a392564d1ecbd43b0b9b397a65991ac48a40108e",
+    "src/Foundation/Bootstrap/CoreServiceProvider.php": "7c0101f6f46f623cc8af2f88ac0d2509a275d1f0daab6ad85fd48c871ff7c054",
+    "src/Domain/Vault/Encryptor.php": "158fdca7570126614697b7a016c470687d80f02a96108d802f7953ddfa90a9c3"
+  },
+  "before": "11 tests /13 assertions /4 failures; later missing-config/no-database-effects/message tests added separately"
+}

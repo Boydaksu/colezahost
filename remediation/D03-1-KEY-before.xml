@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml" tests="11" assertions="13" errors="0" failures="4" skipped="0" time="0.007284">
+    <testsuite name="Unit" tests="11" assertions="13" errors="0" failures="4" skipped="0" time="0.007284">
+      <testsuite name="Coleza\Tests\Unit\Domain\Vault\ApplicationKeyTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\ApplicationKeyTest.php" tests="11" assertions="13" errors="0" failures="4" skipped="0" time="0.007284">
+        <testsuite name="Coleza\Tests\Unit\Domain\Vault\ApplicationKeyTest::testRuntimeRejectsMissingMalformedAndPredictableKeys" tests="9" assertions="9" errors="0" failures="3" skipped="0" time="0.005752">
+          <testcase name="testRuntimeRejectsMissingMalformedAndPredictableKeys with data set #0" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\ApplicationKeyTest.php" line="32" class="Coleza\Tests\Unit\Domain\Vault\ApplicationKeyTest" classname="Coleza.Tests.Unit.Domain.Vault.ApplicationKeyTest" assertions="1" time="0.002304"/>
+          <testcase name="testRuntimeRejectsMissingMalformedAndPredictableKeys with data set #1" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\ApplicationKeyTest.php" line="32" class="Coleza\Tests\Unit\Domain\Vault\ApplicationKeyTest" classname="Coleza.Tests.Unit.Domain.Vault.ApplicationKeyTest" assertions="1" time="0.000143"/>
+          <testcase name="testRuntimeRejectsMissingMalformedAndPredictableKeys with data set #2" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\ApplicationKeyTest.php" line="32" class="Coleza\Tests\Unit\Domain\Vault\ApplicationKeyTest" classname="Coleza.Tests.Unit.Domain.Vault.ApplicationKeyTest" assertions="1" time="0.000112"/>
+          <testcase name="testRuntimeRejectsMissingMalformedAndPredictableKeys with data set #3" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\ApplicationKeyTest.php" line="32" class="Coleza\Tests\Unit\Domain\Vault\ApplicationKeyTest" classname="Coleza.Tests.Unit.Domain.Vault.ApplicationKeyTest" assertions="1" time="0.000105"/>
+          <testcase name="testRuntimeRejectsMissingMalformedAndPredictableKeys with data set #4" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\ApplicationKeyTest.php" line="32" class="Coleza\Tests\Unit\Domain\Vault\ApplicationKeyTest" classname="Coleza.Tests.Unit.Domain.Vault.ApplicationKeyTest" assertions="1" time="0.002482">
+            <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Vault\ApplicationKeyTest::testRuntimeRejectsMissingMalformedAndPredictableKeys with data set #4&#13;
+Failed asserting that exception of type "Coleza\Foundation\Container\ContainerException" is thrown.</failure>
+          </testcase>
+          <testcase name="testRuntimeRejectsMissingMalformedAndPredictableKeys with data set #5" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\ApplicationKeyTest.php" line="32" class="Coleza\Tests\Unit\Domain\Vault\ApplicationKeyTest" classname="Coleza.Tests.Unit.Domain.Vault.ApplicationKeyTest" assertions="1" time="0.000244">
+            <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Vault\ApplicationKeyTest::testRuntimeRejectsMissingMalformedAndPredictableKeys with data set #5&#13;
+Failed asserting that exception of type "Coleza\Foundation\Container\ContainerException" is thrown.</failure>
+          </testcase>
+          <testcase name="testRuntimeRejectsMissingMalformedAndPredictableKeys with data set #6" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\ApplicationKeyTest.php" line="32" class="Coleza\Tests\Unit\Domain\Vault\ApplicationKeyTest" classname="Coleza.Tests.Unit.Domain.Vault.ApplicationKeyTest" assertions="1" time="0.000159">
+            <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Vault\ApplicationKeyTest::testRuntimeRejectsMissingMalformedAndPredictableKeys with data set #6&#13;
+Failed asserting that exception of type "Coleza\Foundation\Container\ContainerException" is thrown.</failure>
+          </testcase>
+          <testcase name="testRuntimeRejectsMissingMalformedAndPredictableKeys with data set #7" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\ApplicationKeyTest.php" line="32" class="Coleza\Tests\Unit\Domain\Vault\ApplicationKeyTest" classname="Coleza.Tests.Unit.Domain.Vault.ApplicationKeyTest" assertions="1" time="0.000106"/>
+          <testcase name="testRuntimeRejectsMissingMalformedAndPredictableKeys with data set #8" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\ApplicationKeyTest.php" line="32" class="Coleza\Tests\Unit\Domain\Vault\ApplicationKeyTest" classname="Coleza.Tests.Unit.Domain.Vault.ApplicationKeyTest" assertions="1" time="0.000095"/>
+        </testsuite>
+        <testcase name="testExplicitKeySurvivesNewContainerAndWrongKeyCannotRead" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\ApplicationKeyTest.php" line="38" class="Coleza\Tests\Unit\Domain\Vault\ApplicationKeyTest" classname="Coleza.Tests.Unit.Domain.Vault.ApplicationKeyTest" assertions="2" time="0.000937"/>
+        <testcase name="testAppConfigurationReadsEnvironmentKeyWithoutDefault" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\ApplicationKeyTest.php" line="47" class="Coleza\Tests\Unit\Domain\Vault\ApplicationKeyTest" classname="Coleza.Tests.Unit.Domain.Vault.ApplicationKeyTest" assertions="2" time="0.000596">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Vault\ApplicationKeyTest::testAppConfigurationReadsEnvironmentKeyWithoutDefault&#13;
+Failed asserting that null is identical to 'base64:synthetic-environment-value'.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\ApplicationKeyTest.php:54</failure>
+        </testcase>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

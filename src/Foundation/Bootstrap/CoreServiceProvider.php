@@ -242,8 +242,8 @@ final class CoreServiceProvider implements ServiceProviderInterface
 
         // Bind Encryptor
         $container->singleton(\Coleza\Domain\Vault\Encryptor::class, static function (Container $c): \Coleza\Domain\Vault\Encryptor {
-            $key = (string) $c->get(\Coleza\Foundation\Config\ConfigRepository::class)->get('app.key', 'base64:' . base64_encode(str_repeat('c', 32)));
-            return new \Coleza\Domain\Vault\Encryptor($key);
+            $key = $c->get(\Coleza\Foundation\Config\ConfigRepository::class)->get('app.key');
+            return \Coleza\Domain\Vault\ApplicationKey::encryptor($key);
         });
 
         // Bind VaultService

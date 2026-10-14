@@ -1,0 +1,27 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+....[41;37mF[0m[41;37mF[0m[41;37mF[0m...[41;37mF[0m                                                       11 / 11 (100%)
+
+Time: 00:00.035, Memory: 44.00 MB
+
+There were 4 failures:
+
+1) Coleza\Tests\Unit\Domain\Vault\ApplicationKeyTest::testRuntimeRejectsMissingMalformedAndPredictableKeys#4 with data ('cccccccccccccccccccccccccccccccc')
+Failed asserting that exception of type "Coleza\Foundation\Container\ContainerException" is thrown.
+
+2) Coleza\Tests\Unit\Domain\Vault\ApplicationKeyTest::testRuntimeRejectsMissingMalformedAndPredictableKeys#5 with data ('base64:Y2NjY2NjY2NjY2NjY2NjY2...NjY2M=')
+Failed asserting that exception of type "Coleza\Foundation\Container\ContainerException" is thrown.
+
+3) Coleza\Tests\Unit\Domain\Vault\ApplicationKeyTest::testRuntimeRejectsMissingMalformedAndPredictableKeys#6 with data ('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+Failed asserting that exception of type "Coleza\Foundation\Container\ContainerException" is thrown.
+
+4) Coleza\Tests\Unit\Domain\Vault\ApplicationKeyTest::testAppConfigurationReadsEnvironmentKeyWithoutDefault
+Failed asserting that null is identical to 'base64:synthetic-environment-value'.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\ApplicationKeyTest.php:54
+
+[37;41mFAILURES![0m
+[37;41mTests: 11[0m[37;41m, Assertions: 13[0m[37;41m, Failures: 4[0m[37;41m.[0m

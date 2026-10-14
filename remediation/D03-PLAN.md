@@ -11,4 +11,4 @@ Kaynak: ilk remediation/PLAN.md D03 ve review/INCELEME.md F08, F09, F23. D02-CLO
 
 D02'de düzeltilen token/2FA/session kalıcılığı tekrar yazılmaz; D03 bunların yetki ve gerçek kullanım sınırlarını tamamlar. Her paket önce gerçek açığı gösteren regresyon, sonra düzeltme ve ilgili/tam test kanıtıyla ilerler. Yeni bulunan kusurlar ilgili dört paketin içinde kaydedilir; ayrı ve sürekli büyüyen D02 alt paketlerine dönüştürülmez. HTTP ekranları ve bütün composition root kurulumu D08 ile birlikte doğrulanır; D03'ün backend reddetme kuralları ekranlara bırakılmaz.
 
-Başlangıç durumu: plan hazır; D03 uygulaması bu kapanış commitinde yapılmadı. İlk iş D03.1 kaynak ve secret akışı denetimidir.
+14.10.2026: D03.1 runtime sabit anahtar kaldırma ve explicit key doğrulama uygulandı; D03-1-KEY-SONUC.md kanıtıdır. D03.1 henüz kapanmadı. Aynı paket içinde kalan işler: installer anahtar provisioning/recovery/rotation bağı; SMTP, sunucu ve TOTP sırlarının şifreli depolanması ve eski verinin güvenli geçişi; log/export redaction. D03.2–D03.4 başlamadı. D02 yerel kapanışı kendi Git commitinde korunur.

@@ -15,7 +15,7 @@ final class Encryptor
 
     private string $key;
 
-    public function __construct(string $key)
+    public function __construct(#[\SensitiveParameter] string $key)
     {
         if (str_starts_with($key, 'base64:')) {
             $key = (string) base64_decode(substr($key, 7), true);
@@ -32,7 +32,7 @@ final class Encryptor
      * Encrypt plaintext string using AES-256-GCM.
      * Returns base64 payload containing IV + Tag + Ciphertext.
      */
-    public function encrypt(string $plainText): string
+    public function encrypt(#[\SensitiveParameter] string $plainText): string
     {
         $iv = random_bytes(self::IV_LENGTH);
         $tag = '';

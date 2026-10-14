@@ -5,20 +5,26 @@
   "phase": "D03",
   "step": "D03.1",
   "status": "IN_PROGRESS",
-  "step_status": "D02_ORIGINAL_CORE_EXIT_GATES_LOCAL_VERIFIED_D03_SECRET_AND_AUTHORIZATION_PLAN_READY",
+  "step_status": "D03_1_RUNTIME_DEFAULT_KEY_REMOVED_EXPLICIT_KEY_POLICY_LOCAL_VERIFIED_SECRET_STORAGE_AND_LEGACY_ROTATION_OPEN",
   "independent_acceptance": "PENDING",
   "production_ready": false,
   "next_step": "D03.1",
   "next_phase": "D04",
   "tests": {
-    "main_total": 1529,
-    "main_assertions": 11030,
-    "mariadb_total": 703,
-    "mariadb_assertions": 5399,
-    "mariadb_scope": "D02-CLOSEOUT full native40 classes: three disjoint executions equal703 full discovery identifiers",
-    "full_mariadb_current_source": true,
-    "total": 2232,
-    "assertions": 16429,
+    "main_total": 1543,
+    "main_assertions": 11049,
+    "mariadb_total": 22,
+    "mariadb_assertions": 213,
+    "mariadb_scope": "D03.1 key guard: affected ProviderVaultSchemaTest and ProviderBrandSetupTest only; not full native suite",
+    "full_mariadb_current_source": false,
+    "last_full_mariadb": {
+      "reference_commit": "0d2e3e08d4c121a146f298f77b4bc6b008b6f66e",
+      "tests": 703,
+      "assertions": 5399,
+      "evidence": "remediation/D02-CLOSEOUT-summary.json"
+    },
+    "total": 1565,
+    "assertions": 11262,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -34,7 +40,9 @@
     "F14": "PARTIAL_DURABLE_AUTOMATION_EVIDENCE_AND_PROVIDER_LIFECYCLE_BOUNDARY_IMPLEMENTED_REAL_PROVIDER_COMMAND_BINDING_RECOVERY_AND_ENTRYPOINTS_OPEN",
     "F17": "CANONICAL_ANALYTICS_REPORTING_IMPLEMENTED_PENDING_REVIEW_HISTORICAL_SCOPE_AND_ENTRYPOINT_ACCEPTANCE_OPEN",
     "F30": "PARTIAL_PRODUCTION_SCHEMA_ANALYTICS_GOLDEN_AND_EXISTING_ADMIN_PERFORMANCE_BUDGET_VERIFIED_REAL_PROVIDER_END_TO_END_ACCEPTANCE_OPEN",
-    "F21": "PARTIAL_SUPPORT_SCHEMA_ASSIGNMENT_CONVERSATION_CALLER_AND_PRE_EFFECT_DEPENDENCY_CHECKS_IMPLEMENTED_REAL_CONTEXT_COMMAND_SCOPE_AND_STORAGE_RECOVERY_OPEN"
+    "F21": "PARTIAL_SUPPORT_SCHEMA_ASSIGNMENT_CONVERSATION_CALLER_AND_PRE_EFFECT_DEPENDENCY_CHECKS_IMPLEMENTED_REAL_CONTEXT_COMMAND_SCOPE_AND_STORAGE_RECOVERY_OPEN",
+    "F08": "RUNTIME_FALLBACK_REMOVED_EXPLICIT_KEY_POLICY_VERIFIED_INSTALL_PROVISIONING_ROTATION_AND_LEGACY_RECOVERY_OPEN",
+    "F09": "OPEN_SMTP_SERVER_AND_TOTP_PLAINTEXT_STORAGE_MIGRATION_REQUIRED"
   },
   "remaining_steps": [
     "D03.1",
@@ -74,5 +82,6 @@
       "scope": "original F02 SQL/F03 canonical baseline install-login-RBAC-commerce/F16 critical concurrency; whole product module startup, actors, providers and recovery acceptance remain in owning phases"
     }
   },
-  "d03_plan": "remediation/D03-PLAN.md"
+  "d03_plan": "remediation/D03-PLAN.md",
+  "d03_key_evidence": "remediation/D03-1-KEY-SONUC.md"
 }

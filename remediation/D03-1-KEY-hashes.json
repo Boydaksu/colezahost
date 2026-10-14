@@ -1,0 +1,32 @@
+{
+  "reference_commit": "0d2e3e08d4c121a146f298f77b4bc6b008b6f66e",
+  "main": {
+    "tests": 1543,
+    "assertions": 11049
+  },
+  "native_affected_only": {
+    "tests": 22,
+    "assertions": 213
+  },
+  "files": {
+    "config/app.php": "21695a7910d9f3f15d834d86cf003e555c5f2e8d74994cf23895ed9bf5756189",
+    "remediation/D03-1-KEY-baseline.json": "8ee4802a99c03960019c16924d1334647194c3018ace9e2fe721f8a96ef940b0",
+    "remediation/D03-1-KEY-before.txt": "160ba24e2ad3a780297f2e6f5c6bf372cfb6eafd04f81791710779fe903b4d3d",
+    "remediation/D03-1-KEY-before.xml": "921c4ee915cfbfd11e4abbde8e0e66e81af092de30a525804be19027bd045b1b",
+    "remediation/D03-1-KEY-focused.txt": "fafc0b63b3036de6bfd7459ca8bcccf3575b3a5f25718422b2e0906ca6fbe4e0",
+    "remediation/D03-1-KEY-focused.xml": "bd3487356164a4ed24e4b50d3129a671c7e8cd8c63d45f8345a16c1cf2782c3d",
+    "remediation/D03-1-KEY-main.txt": "831218f7a3f33ccc5eca2199883cf1a6c21a2da1e028c3816777dc5fcc4e61bc",
+    "remediation/D03-1-KEY-main.xml": "3f2a3620c95b8424a2a3f6fd14fb03640c0cde315e96fb2a4ef7faceba8f8e44",
+    "remediation/D03-1-KEY-native.txt": "c9cf9a895b0b7121cfe9bfa1c0946b5a84087fa654ab6f47ae4d44a70a0b19f5",
+    "remediation/D03-1-KEY-native.xml": "2a8ad92e589fda28193b28054b381eb510f39761655cf0836ea02bcf73c96917",
+    "remediation/D03-1-KEY-SONUC.md": "c6ef0a00af2470cc1c413cdff333f83db317a2aa8369a58db7e87b7a70addf16",
+    "remediation/D03-PLAN.md": "73e1e6d02085456d3492753ce9eef6bea5c77505f1a939d6736bb9ec2d3dfbe7",
+    "remediation/PLAN.md": "82ee9bbfbe0a8855633eb80e001ac4e1f2f2e3bdf5fd1f3f63d329981423eef8",
+    "remediation/state.json": "ffd555ad26ebfee3738904969623a1ef9258eb29b5a2442406b6d300b3481af2",
+    "src/Domain/Vault/ApplicationKey.php": "c7a8f150c4fcd486f7f81f5d106659b3b88844bf482206a7cd7619d3509a2ac6",
+    "src/Domain/Vault/Encryptor.php": "40ad7914cbddd7f6402d38c009904b5d4db73e31310f00c929483b8a1a94b78d",
+    "src/Foundation/Bootstrap/CoreServiceProvider.php": "f096ab052782e08242f610449643194db5b5f25be36c1f1fd7328385b7e47fa8",
+    "tests/Unit/Domain/Vault/ApplicationKeyTest.php": "601b76be2076eddfb30d1f3278e78465d707613e2621999202c9cf44d5aad29d",
+    "remediation/verify-d03-key.py": "73f86a1a1aaf0bdd77942016ad2733ec7cff218e6861ef0e700b1d486eccf641"
+  }
+}
