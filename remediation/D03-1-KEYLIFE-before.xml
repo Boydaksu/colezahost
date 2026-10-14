@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml" tests="2" assertions="3" errors="0" failures="2" skipped="0" time="0.133369">
+    <testsuite name="Unit" tests="2" assertions="3" errors="0" failures="2" skipped="0" time="0.133369">
+      <testsuite name="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\KeyLifecycleTest.php" tests="1" assertions="2" errors="0" failures="1" skipped="0" time="0.075783">
+        <testcase name="testBoundDatabaseRejectsWriterUsingAnotherKeyBeforeChanges" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="52" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="2" time="0.075783">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest::testBoundDatabaseRejectsWriterUsingAnotherKeyBeforeChanges&#13;
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+             'last_rotated_at' =&gt; '2026-10-14 08:52:32',
+             'created_at' =&gt; '2026-10-14 08:52:32',
+         ],
++        4 =&gt; Array &amp;16 [
++            'id' =&gt; 5,
++            'namespace' =&gt; 'provider:wrong',
++            'secret_key' =&gt; 'token',
++            'encrypted_value' =&gt; 'enc:v1:VHmSAcsyZdLGVzeq/AIN9glV3ajINipBRxu7jU4iJCvYX7sdWuh2PX5ji2lvgxY10nE=',
++            'version' =&gt; 1,
++            'last_rotated_at' =&gt; '2026-10-14 08:52:32',
++            'created_at' =&gt; '2026-10-14 08:52:32',
++        ],
+     ],
+-    'servers' =&gt; Array &amp;16 [
+-        0 =&gt; Array &amp;17 [
++    'servers' =&gt; Array &amp;17 [
++        0 =&gt; Array &amp;18 [
+             'id' =&gt; 1,
+             'name' =&gt; 'Fixture',
+             'hostname' =&gt; 'lifecycle.example.test',
+@@ @@
+             'metadata_json' =&gt; '[]',
+             'created_at' =&gt; '2026-10-14 08:52:32',
+         ],
+-        1 =&gt; Array &amp;18 [
++        1 =&gt; Array &amp;19 [
+             'id' =&gt; 2,
+             'name' =&gt; 'Fixture',
+             'hostname' =&gt; 'legacy.example.test',
+@@ @@
+             'created_at' =&gt; '2026-10-14 08:52:32',
+         ],
+     ],
+-    'user_two_factor' =&gt; Array &amp;19 [
+-        0 =&gt; Array &amp;20 [
++    'user_two_factor' =&gt; Array &amp;20 [
++        0 =&gt; Array &amp;21 [
+             'id' =&gt; 1,
+             'user_id' =&gt; 7,
+             'secret' =&gt; 'enc:v1:VR16F9aT/eAzXPZMY4PIMsbqvunoRt9FR+E1x4qWgoS5RqNck3h3WXlEKKF0j2ZMKo4SQmH+mUdmbeZO3bccK/kX1OlvEmceyovw0pRNgVg=',
+@@ @@
+             'created_at' =&gt; '2026-10-14 08:52:32',
+         ],
+     ],
+-    'webhook_endpoints' =&gt; Array &amp;21 [
+-        0 =&gt; Array &amp;22 [
++    'webhook_endpoints' =&gt; Array &amp;22 [
++        0 =&gt; Array &amp;23 [
+             'id' =&gt; 1,
+             'target_url' =&gt; 'https://example.test/key-lifecycle',
+             'secret' =&gt; 'vault:v1:1',
+@@ @@
+             'updated_at' =&gt; '2026-10-14T08:52:32+00:00',
+         ],
+     ],
+-    'security_audit_logs' =&gt; Array &amp;23 [
+-        0 =&gt; Array &amp;24 [
++    'security_audit_logs' =&gt; Array &amp;24 [
++        0 =&gt; Array &amp;25 [
+             'id' =&gt; 1,
+             'actor_user_id' =&gt; 0,
+             'impersonator_user_id' =&gt; null,
+@@ @@
+             'payload' =&gt; null,
+             'created_at' =&gt; '2026-10-14 08:52:32',
+         ],
+-        1 =&gt; Array &amp;25 [
++        1 =&gt; Array &amp;26 [
+             'id' =&gt; 2,
+             'actor_user_id' =&gt; 0,
+             'impersonator_user_id' =&gt; null,
+@@ @@
+             'payload' =&gt; null,
+             'created_at' =&gt; '2026-10-14 08:52:32',
+         ],
+-        2 =&gt; Array &amp;26 [
++        2 =&gt; Array &amp;27 [
+             'id' =&gt; 3,
+             'actor_user_id' =&gt; 0,
+             'impersonator_user_id' =&gt; null,
+@@ @@
+             'payload' =&gt; null,
+             'created_at' =&gt; '2026-10-14 08:52:32',
+         ],
+-        3 =&gt; Array &amp;27 [
++        3 =&gt; Array &amp;28 [
+             'id' =&gt; 4,
+             'actor_user_id' =&gt; 0,
+             'impersonator_user_id' =&gt; null,
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:58</failure>
+        </testcase>
+      </testsuite>
+      <testsuite name="Coleza\Tests\Unit\Installer\WebInstallerTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\WebInstallerTest.php" tests="1" assertions="1" errors="0" failures="1" skipped="0" time="0.057586">
+        <testcase name="testFinalizationRequiresVerifiedApplicationKeyBeforeWritingLock" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\WebInstallerTest.php" line="105" class="Coleza\Tests\Unit\Installer\WebInstallerTest" classname="Coleza.Tests.Unit.Installer.WebInstallerTest" assertions="1" time="0.057586">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Installer\WebInstallerTest::testFinalizationRequiresVerifiedApplicationKeyBeforeWritingLock&#13;
+Failed asserting that exception of type "RuntimeException" is thrown.</failure>
+        </testcase>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

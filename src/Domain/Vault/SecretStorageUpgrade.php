@@ -25,6 +25,7 @@ final class SecretStorageUpgrade
         self::assertStorage($this->db, ['system_settings' => ['id', 'setting_key', 'setting_value', 'is_encrypted'],
             'servers' => ['id', 'hostname', 'auth_secret_encrypted'], 'user_two_factor' => ['id', 'user_id', 'secret']]);
         return $this->db->transaction(function () use ($legacyPlaintextConfirmed): int {
+            KeyBinding::guard($this->db, $this->encryptor);
             $cipher = new SecretCipher($this->encryptor); $changes = [];
             $groups = [
                 ['system_settings', 'setting_value', $this->db->select("SELECT id, setting_value FROM system_settings WHERE setting_key = 'mail.password'" . $this->db->forUpdate())],

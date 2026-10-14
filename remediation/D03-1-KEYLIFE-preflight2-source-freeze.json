@@ -1,0 +1,27 @@
+{
+  "reference_commit": "5c904cbc7694ebcea617391a758941d9b2846e4c",
+  "files": {
+    "src/Domain/Backup/RestoreWizardService.php": "655cbf24e617b851fb99ff03aff53bd507fb9e0dd27809881e22c1c7a18d18dd",
+    "src/Domain/Identity/TwoFactor/TwoFactorService.php": "50956f3c06e13f14390b493357bf7d70669e280d1aa4ab39df83aef1ae845e6f",
+    "src/Domain/Installer/CronSetupService.php": "363aee61a430e88c0a6e3dedc0c7b9fb0750a6a6bd3ef33b08e8f318daf17ff3",
+    "src/Domain/Installer/EmailSetupService.php": "56293f57d89c9b99baf4b5740af8ae54184f299903806dca56b477417e4fa100",
+    "src/Domain/Installer/WebInstallerService.php": "9a1216e9770288237d8e1f4e8e335e9b029ee8164230dd1f772dcce50db33789",
+    "src/Domain/Servers/Services/ServerService.php": "aa24b52fcc71042421dfba6517510b28652074f07a205665848a58ae72d9cd2b",
+    "src/Domain/Vault/KeyBinding.php": "0f22ce1abe8c0502381523edf6d3eaa14d10df8817147f0f0de35d8362e2681d",
+    "src/Domain/Vault/KeyLifecycleService.php": "2a8ab08248ddbea43c8437d4788b80f0ba22d1c264e8369b714374497170c3b8",
+    "src/Domain/Vault/SecretStorageUpgrade.php": "bc7a952c1ab319e202ae0fd4e92e1b1439cc1802f2d255ec7dc4b1253ce186e7",
+    "src/Domain/Vault/VaultReferenceUpgrade.php": "28403adfc0379b646cc5522a998c0f1d669841f2b783e630ad9e41166a1ea5bc",
+    "src/Domain/Vault/VaultService.php": "01d91d980d7072e68754238e584a3bd43e2dc596b53800b413b24e7231309ac4",
+    "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php": "8f4e4e643cd2fba88031a1960341092c598717d3fecfaf99dc030b5f9aaab5cc",
+    "tests/MariaDb/KeyLifecycleTest.php": "8bfec01f5841c96498b7c1f968f9f89a9bf9ddc1ff15dedfe8baa2199c5bb98a",
+    "tests/MariaDb/fixtures/financial-worker.php": "4aa9178e6895b497c86169d49d8da9fe78aa222be190a36aa6ad16f0120f9b0e",
+    "tests/Support/InstallerKeyFixture.php": "e0f1720d37f61dcab370233a898153f2890b1c68af45b7c00622723854ef4c38",
+    "tests/Support/KeyLifecycleCases.php": "c73020858c3727afb63719c8900c7263070943f5ed67890c3d3586cc6a33c398",
+    "tests/Support/SecretFixtureKey.php": "2a6647d744bea0ad41541960f76e941969936d1f7bb309b43accb1eef2267e12",
+    "tests/Unit/Backup/RestoreWizardAndDisasterRecoveryTest.php": "bf73df1c7066a6f776cf0a654b3bb7a0351ec52e9bc1c680dc96e0f3347b8b7a",
+    "tests/Unit/Domain/Vault/KeyLifecycleTest.php": "dc43f786cbcedb9ea7c12a2abe800b0a1fb6252fcf520dd71ab965cf0a607739",
+    "tests/Unit/Installer/FreshInstallMigrationModeTest.php": "9fbae5910ea00724e586193567f4bbe557aa93d8704cda4d640f7737689a66d6",
+    "tests/Unit/Installer/WebInstallerTest.php": "b912a9494370426ffa387bd089c91731fac6e892bb5d0bdadbbfa4911c2063d4",
+    "tools/application-key-maintenance.php": "da894916f4cadc633aaf5aff9f48e899db20969237d40c291966ab4c935a109c"
+  }
+}

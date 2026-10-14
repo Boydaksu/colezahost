@@ -16,7 +16,7 @@ use ZipArchive;
  * 1. Archive retrieval from local or remote adapters (SFTP / S3).
  * 2. Pre-restore archive integrity and SHA-256 manifest verification.
  * 3. Transparent AES-256-GCM decryption if backup is encrypted.
- * 4. Atomic database dump execution against fresh or existing target connection.
+ * 4. Sequential dump execution; MySQL DDL is not rollback-atomic.
  * 5. Extraction of configuration and preserved asset files to target root.
  * 6. Health verification of restored core records.
  */
@@ -25,7 +25,8 @@ final class RestoreWizardService
     public function __construct(
         private string $temporaryExtractDir,
         private ?BackupEncryptionService $encryptionService = null,
-        private ?\Coleza\Domain\Privacy\Tombstone\BackupRestoreReconciliationService $reconciliationService = null
+        private ?\Coleza\Domain\Privacy\Tombstone\BackupRestoreReconciliationService $reconciliationService = null,
+        private ?\Coleza\Domain\Vault\Encryptor $applicationEncryptor = null
     ) {
         if (!is_dir($temporaryExtractDir)) {
             mkdir($temporaryExtractDir, 0755, true);
@@ -205,6 +206,12 @@ final class RestoreWizardService
                 }
             }
 
+            // A matching archive passphrase does not prove the restored application's data key.
+            if (\Coleza\Domain\Vault\KeyLifecycleService::requiresVerification($targetDb)) {
+                $key = $this->applicationEncryptor ?? \Coleza\Domain\Vault\ApplicationKey::encryptor(\Coleza\Domain\Vault\ApplicationKey::configured());
+                (new \Coleza\Domain\Vault\KeyLifecycleService($targetDb, $key))->verify();
+            }
+
             // 6. Restore Preserved Files
             $filesRestored = 0;
             $filesDir = $extractTarget . '/files';
@@ -248,9 +255,9 @@ final class RestoreWizardService
             return new RestoreResult(
                 backupId: $backupId,
                 isSuccess: false,
-                databaseStatementsExecuted: 0,
-                filesRestored: 0,
-                tablesRestored: [],
+                databaseStatementsExecuted: $statementsExecuted ?? 0,
+                filesRestored: $filesRestored ?? 0,
+                tablesRestored: array_values(array_unique($tablesRestored ?? [])),
                 metadata: [],
                 errorMessage: $e->getMessage()
             );

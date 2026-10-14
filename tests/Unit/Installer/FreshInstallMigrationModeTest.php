@@ -55,6 +55,7 @@ use PHPUnit\Framework\TestCase;
 
 final class FreshInstallMigrationModeTest extends TestCase
 {
+    use \Coleza\Tests\Support\InstallerKeyFixture;
     private string $tempLockFile;
     private Connection $freshTargetDb;
     private Connection $whmcsSourceDb;
@@ -184,6 +185,7 @@ final class FreshInstallMigrationModeTest extends TestCase
 
     protected function tearDown(): void
     {
+        $this->cleanupInstallerKeys();
         if (file_exists($this->tempLockFile)) {
             unlink($this->tempLockFile);
         }
@@ -254,6 +256,7 @@ final class FreshInstallMigrationModeTest extends TestCase
 
     public function testFreshInstallWithMigrationStepE2E(): void
     {
+        (new DatabaseSetupService())->initializeApplicationSchema($this->freshTargetDb);
         // 1. Run database initialization on target
         $dbSetup = new DatabaseSetupService();
         $dbSetup->initializeCoreSchema($this->freshTargetDb);
@@ -318,6 +321,7 @@ final class FreshInstallMigrationModeTest extends TestCase
         $this->assertSame(InstallationStep::COMPLETED, $this->installer->getCurrentStep());
 
         // 6. Finalize installation
+        $this->configureInstallerKey($this->installer);
         $summary = $this->installer->finalizeInstallation([
             'installation_mode' => InstallationMode::MIGRATION->value,
             'imported_records' => $migResult->getTotalMigrated(),

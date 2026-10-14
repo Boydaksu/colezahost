@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml" tests="32" assertions="186" errors="3" failures="0" skipped="0" time="16.164741">
+    <testsuite name="Unit" tests="28" assertions="138" errors="2" failures="0" skipped="0" time="13.922465">
+      <testsuite name="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\KeyLifecycleTest.php" tests="10" assertions="53" errors="0" failures="0" skipped="0" time="7.288570">
+        <testcase name="testRotationPreservesEverySecretAndFencesAllOldSecretWriters" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="70" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="14" time="2.274748"/>
+        <testcase name="testCorruptedCipherPreventsAllRotationWrites" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="117" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="1" time="2.237443"/>
+        <testcase name="testBoundDatabaseRejectsWriterUsingAnotherKeyBeforeChanges" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="52" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="1" time="0.020457"/>
+        <testcase name="testBindingIsIdempotentAndDeepVerificationIsReadOnly" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="60" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="28" time="0.018524"/>
+        <testcase name="testLateAuditFailureRollsBackAllCiphertextsProbeAndVersions" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="92" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="2" time="2.639027"/>
+        <testcase name="testWrongKeyCannotRebindAnExistingDatabase" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="104" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="1" time="0.022373"/>
+        <testcase name="testPlaintextOrUnknownSettingCannotBeSilentlyBound" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="110" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="1" time="0.019491"/>
+        <testsuite name="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest::testLifecycleRefusesCallerTransactions" tests="2" assertions="4" errors="0" failures="0" skipped="0" time="0.038343">
+          <testcase name="testLifecycleRefusesCallerTransactions with data set #0" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="126" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="2" time="0.019038"/>
+          <testcase name="testLifecycleRefusesCallerTransactions with data set #1" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="126" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="2" time="0.019305"/>
+        </testsuite>
+        <testcase name="testMaintenanceAdmissionIsRequired" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="134" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="1" time="0.018165"/>
+      </testsuite>
+      <testsuite name="Coleza\Tests\Unit\Installer\WebInstallerTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\WebInstallerTest.php" tests="14" assertions="70" errors="1" failures="0" skipped="0" time="4.546028">
+        <testcase name="testFinalizationRequiresVerifiedApplicationKeyBeforeWritingLock" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\WebInstallerTest.php" line="107" class="Coleza\Tests\Unit\Installer\WebInstallerTest" classname="Coleza.Tests.Unit.Installer.WebInstallerTest" assertions="1" time="0.020167"/>
+        <testcase name="testRequirementsCheckerPassesOnCurrentEnvironment" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\WebInstallerTest.php" line="89" class="Coleza\Tests\Unit\Installer\WebInstallerTest" classname="Coleza.Tests.Unit.Installer.WebInstallerTest" assertions="5" time="0.000276"/>
+        <testcase name="testDatabaseWizardAppliesDomainMigrationsBeforeProceedingToAdmin" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\WebInstallerTest.php" line="114" class="Coleza\Tests\Unit\Installer\WebInstallerTest" classname="Coleza.Tests.Unit.Installer.WebInstallerTest" assertions="3" time="0.018819"/>
+        <testcase name="testRequirementsCheckerFailsWhenRequiredExtensionMissing" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\WebInstallerTest.php" line="123" class="Coleza\Tests\Unit\Installer\WebInstallerTest" classname="Coleza.Tests.Unit.Installer.WebInstallerTest" assertions="4" time="0.000590"/>
+        <testcase name="testRequirementsCheckerFailsWhenPhpVersionTooLow" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\WebInstallerTest.php" line="138" class="Coleza\Tests\Unit\Installer\WebInstallerTest" classname="Coleza.Tests.Unit.Installer.WebInstallerTest" assertions="3" time="0.000392"/>
+        <testcase name="testDatabaseSetupTestConnectionFailure" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\WebInstallerTest.php" line="151" class="Coleza\Tests\Unit\Installer\WebInstallerTest" classname="Coleza.Tests.Unit.Installer.WebInstallerTest" assertions="2" time="2.048243"/>
+        <testcase name="testDatabaseSetupInitializesCoreTables" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\WebInstallerTest.php" line="170" class="Coleza\Tests\Unit\Installer\WebInstallerTest" classname="Coleza.Tests.Unit.Installer.WebInstallerTest" assertions="7" time="0.001125"/>
+        <testcase name="testAdminSetupDtoValidation" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\WebInstallerTest.php" line="187" class="Coleza\Tests\Unit\Installer\WebInstallerTest" classname="Coleza.Tests.Unit.Installer.WebInstallerTest" assertions="1" time="0.000579"/>
+        <testcase name="testAdminSetupDtoPasswordPolicy" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\WebInstallerTest.php" line="194" class="Coleza\Tests\Unit\Installer\WebInstallerTest" classname="Coleza.Tests.Unit.Installer.WebInstallerTest" assertions="1" time="0.000194"/>
+        <testcase name="testAdminBootstrapServiceCreatesSuperAdmin" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\WebInstallerTest.php" line="201" class="Coleza\Tests\Unit\Installer\WebInstallerTest" classname="Coleza.Tests.Unit.Installer.WebInstallerTest" assertions="6" time="0.351012"/>
+        <testcase name="testLocaleAndBrandSetup" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\WebInstallerTest.php" line="225" class="Coleza\Tests\Unit\Installer\WebInstallerTest" classname="Coleza.Tests.Unit.Installer.WebInstallerTest" assertions="7" time="0.182469"/>
+        <testcase name="testEmailSetupAndLiveTestDelivery" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\WebInstallerTest.php" line="268" class="Coleza\Tests\Unit\Installer\WebInstallerTest" classname="Coleza.Tests.Unit.Installer.WebInstallerTest" assertions="5" time="0.002501"/>
+        <testcase name="testCronSetupAndTokenValidation" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\WebInstallerTest.php" line="293" class="Coleza\Tests\Unit\Installer\WebInstallerTest" classname="Coleza.Tests.Unit.Installer.WebInstallerTest" assertions="8" time="0.001050"/>
+        <testcase name="testCompleteEndToEndInstallationWizardWorkflowAndLockProtection" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\WebInstallerTest.php" line="322" class="Coleza\Tests\Unit\Installer\WebInstallerTest" classname="Coleza.Tests.Unit.Installer.WebInstallerTest" assertions="17" time="1.918610">
+          <error type="LogicException">Coleza\Tests\Unit\Installer\WebInstallerTest::testCompleteEndToEndInstallationWizardWorkflowAndLockProtection&#13;
+LogicException: Unknown encrypted setting scope; reconcile before key lifecycle.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:94
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:42
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:35
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\WebInstallerService.php:70
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\InstallerKeyFixture.php:11
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\WebInstallerTest.php:377</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="Coleza\Tests\Unit\Installer\FreshInstallMigrationModeTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\FreshInstallMigrationModeTest.php" tests="4" assertions="15" errors="1" failures="0" skipped="0" time="2.087867">
+        <testcase name="testInstallationModeEnum" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\FreshInstallMigrationModeTest.php" line="235" class="Coleza\Tests\Unit\Installer\FreshInstallMigrationModeTest" classname="Coleza.Tests.Unit.Installer.FreshInstallMigrationModeTest" assertions="2" time="0.016073"/>
+        <testcase name="testTestSourceConnectionDetectsInvalidDatabase" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\FreshInstallMigrationModeTest.php" line="241" class="Coleza\Tests\Unit\Installer\FreshInstallMigrationModeTest" classname="Coleza.Tests.Unit.Installer.FreshInstallMigrationModeTest" assertions="2" time="0.003484"/>
+        <testcase name="testFreshInstallWithMigrationStepE2E" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\FreshInstallMigrationModeTest.php" line="257" class="Coleza\Tests\Unit\Installer\FreshInstallMigrationModeTest" classname="Coleza.Tests.Unit.Installer.FreshInstallMigrationModeTest" assertions="9" time="2.066617">
+          <error type="LogicException">Coleza\Tests\Unit\Installer\FreshInstallMigrationModeTest::testFreshInstallWithMigrationStepE2E&#13;
+LogicException: Install complete secret storage before writing.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\SecretStorageUpgrade.php:15
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:15
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:28
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:34
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\WebInstallerService.php:70
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\InstallerKeyFixture.php:11
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\FreshInstallMigrationModeTest.php:323</error>
+        </testcase>
+        <testcase name="testExecutionFailsWhenOrchestratorNotConfigured" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\FreshInstallMigrationModeTest.php" line="336" class="Coleza\Tests\Unit\Installer\FreshInstallMigrationModeTest" classname="Coleza.Tests.Unit.Installer.FreshInstallMigrationModeTest" assertions="2" time="0.001693"/>
+      </testsuite>
+    </testsuite>
+    <testsuite name="Integration" tests="4" assertions="48" errors="1" failures="0" skipped="0" time="2.242276">
+      <testsuite name="Tests\Integration\ReleaseRehearsal\ReleaseRehearsalLifecycleSuiteTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\ReleaseRehearsal\ReleaseRehearsalLifecycleSuiteTest.php" tests="4" assertions="48" errors="1" failures="0" skipped="0" time="2.242276">
+        <testcase name="testFreshInstallationLifecycleAndLockEnforcement" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\ReleaseRehearsal\ReleaseRehearsalLifecycleSuiteTest.php" line="112" class="Tests\Integration\ReleaseRehearsal\ReleaseRehearsalLifecycleSuiteTest" classname="Tests.Integration.ReleaseRehearsal.ReleaseRehearsalLifecycleSuiteTest" assertions="8" time="1.890883">
+          <error type="LogicException">Tests\Integration\ReleaseRehearsal\ReleaseRehearsalLifecycleSuiteTest::testFreshInstallationLifecycleAndLockEnforcement&#13;
+LogicException: Unknown encrypted setting scope; reconcile before key lifecycle.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:94
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:42
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:35
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\WebInstallerService.php:70
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\InstallerKeyFixture.php:11
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\ReleaseRehearsal\ReleaseRehearsalLifecycleSuiteTest.php:172</error>
+        </testcase>
+        <testcase name="testCryptographicallySignedUpgradeAndStagedUpdate" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\ReleaseRehearsal\ReleaseRehearsalLifecycleSuiteTest.php" line="186" class="Tests\Integration\ReleaseRehearsal\ReleaseRehearsalLifecycleSuiteTest" classname="Tests.Integration.ReleaseRehearsal.ReleaseRehearsalLifecycleSuiteTest" assertions="7" time="0.074691"/>
+        <testcase name="testDisasterRecoveryBackupRestoreAndPrivacyReconciliation" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\ReleaseRehearsal\ReleaseRehearsalLifecycleSuiteTest.php" line="269" class="Tests\Integration\ReleaseRehearsal\ReleaseRehearsalLifecycleSuiteTest" classname="Tests.Integration.ReleaseRehearsal.ReleaseRehearsalLifecycleSuiteTest" assertions="10" time="0.090640"/>
+        <testcase name="testCompleteWhmcsCutoverRehearsalAndAuditSeal" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\ReleaseRehearsal\ReleaseRehearsalLifecycleSuiteTest.php" line="364" class="Tests\Integration\ReleaseRehearsal\ReleaseRehearsalLifecycleSuiteTest" classname="Tests.Integration.ReleaseRehearsal.ReleaseRehearsalLifecycleSuiteTest" assertions="23" time="0.186063"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

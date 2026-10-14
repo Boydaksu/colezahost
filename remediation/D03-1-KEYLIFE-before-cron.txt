@@ -1,0 +1,2 @@
+Original cron source SHA256: b4b93ce559d6b7e1c19683c189a3c479a6bddec5dc54df5629e835a2d82812c8
+FAIL: original cron token is plaintext despite encrypted flag.

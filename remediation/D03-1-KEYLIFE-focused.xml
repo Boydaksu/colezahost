@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\KeyLifecycleTest.php" tests="10" assertions="0" errors="10" failures="0" skipped="0" time="0.227892">
+    <testcase name="testBoundDatabaseRejectsWriterUsingAnotherKeyBeforeChanges" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="52" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="0" time="0.073587">
+      <error type="InvalidArgumentException">Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest::testBoundDatabaseRejectsWriterUsingAnotherKeyBeforeChanges&#13;
+InvalidArgumentException: SMTP host is required when driver is smtp.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\EmailTransportConfig.php:49
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\EmailTransportConfig.php:31
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:18
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:54</error>
+    </testcase>
+    <testcase name="testBindingIsIdempotentAndDeepVerificationIsReadOnly" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="60" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="0" time="0.017215">
+      <error type="InvalidArgumentException">Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest::testBindingIsIdempotentAndDeepVerificationIsReadOnly&#13;
+InvalidArgumentException: SMTP host is required when driver is smtp.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\EmailTransportConfig.php:49
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\EmailTransportConfig.php:31
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:18
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:62</error>
+    </testcase>
+    <testcase name="testRotationPreservesEverySecretAndFencesAllOldSecretWriters" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="70" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="0" time="0.017700">
+      <error type="InvalidArgumentException">Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest::testRotationPreservesEverySecretAndFencesAllOldSecretWriters&#13;
+InvalidArgumentException: SMTP host is required when driver is smtp.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\EmailTransportConfig.php:49
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\EmailTransportConfig.php:31
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:18
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:72</error>
+    </testcase>
+    <testcase name="testLateAuditFailureRollsBackAllCiphertextsProbeAndVersions" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="92" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="0" time="0.016629">
+      <error type="InvalidArgumentException">Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest::testLateAuditFailureRollsBackAllCiphertextsProbeAndVersions&#13;
+InvalidArgumentException: SMTP host is required when driver is smtp.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\EmailTransportConfig.php:49
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\EmailTransportConfig.php:31
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:18
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:94</error>
+    </testcase>
+    <testcase name="testWrongKeyCannotRebindAnExistingDatabase" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="104" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="0" time="0.017050">
+      <error type="InvalidArgumentException">Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest::testWrongKeyCannotRebindAnExistingDatabase&#13;
+InvalidArgumentException: SMTP host is required when driver is smtp.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\EmailTransportConfig.php:49
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\EmailTransportConfig.php:31
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:18
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:106</error>
+    </testcase>
+    <testcase name="testPlaintextOrUnknownSettingCannotBeSilentlyBound" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="110" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="0" time="0.016674">
+      <error type="InvalidArgumentException">Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest::testPlaintextOrUnknownSettingCannotBeSilentlyBound&#13;
+InvalidArgumentException: SMTP host is required when driver is smtp.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\EmailTransportConfig.php:49
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\EmailTransportConfig.php:31
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:18
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:112</error>
+    </testcase>
+    <testcase name="testCorruptedCipherPreventsAllRotationWrites" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="117" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="0" time="0.016463">
+      <error type="InvalidArgumentException">Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest::testCorruptedCipherPreventsAllRotationWrites&#13;
+InvalidArgumentException: SMTP host is required when driver is smtp.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\EmailTransportConfig.php:49
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\EmailTransportConfig.php:31
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:18
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:119</error>
+    </testcase>
+    <testsuite name="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest::testLifecycleRefusesCallerTransactions" tests="2" assertions="0" errors="2" failures="0" skipped="0" time="0.032571">
+      <testcase name="testLifecycleRefusesCallerTransactions with data set #0" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="126" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="0" time="0.016350">
+        <error type="InvalidArgumentException">Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest::testLifecycleRefusesCallerTransactions with data set #0&#13;
+InvalidArgumentException: SMTP host is required when driver is smtp.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\EmailTransportConfig.php:49
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\EmailTransportConfig.php:31
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:18
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:128</error>
+      </testcase>
+      <testcase name="testLifecycleRefusesCallerTransactions with data set #1" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="126" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="0" time="0.016221">
+        <error type="InvalidArgumentException">Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest::testLifecycleRefusesCallerTransactions with data set #1&#13;
+InvalidArgumentException: SMTP host is required when driver is smtp.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\EmailTransportConfig.php:49
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\EmailTransportConfig.php:31
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:18
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:128</error>
+      </testcase>
+    </testsuite>
+    <testcase name="testMaintenanceAdmissionIsRequired" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="134" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="0" time="0.020003">
+      <error type="InvalidArgumentException">Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest::testMaintenanceAdmissionIsRequired&#13;
+InvalidArgumentException: SMTP host is required when driver is smtp.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\EmailTransportConfig.php:49
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\EmailTransportConfig.php:31
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:18
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:136</error>
+    </testcase>
+  </testsuite>
+</testsuites>

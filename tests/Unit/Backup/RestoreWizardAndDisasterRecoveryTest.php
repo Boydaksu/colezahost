@@ -134,6 +134,40 @@ final class RestoreWizardAndDisasterRecoveryTest extends TestCase
         $this->assertSame('DISASTER-RECOVERY-KEY-999', file_get_contents($this->tempFreshAppDir . '/app_license.txt'));
     }
 
+    public static function keyRestoreCases(): array { return [['correct'], ['wrong'], ['missing'], ['corrupt'], ['unbound'], ['encrypted-wrong']]; }
+    #[\PHPUnit\Framework\Attributes\DataProvider('keyRestoreCases')]
+    public function testBoundRestoreRequiresTheApplicationKeyAndDeepCipherVerification(string $case): void
+    {
+        $source = new Connection(new PDO('sqlite::memory:'));
+        (new \Coleza\Domain\Installer\DatabaseSetupService())->initializeApplicationSchema($source);
+        $key = \Coleza\Tests\Support\SecretFixtureKey::encryptor();
+        (new \Coleza\Domain\Vault\VaultService($source, $key))->setSecret('provider:restore', 'token', 'restore-synthetic-secret');
+        (new \Coleza\Domain\Vault\KeyLifecycleService($source, $key))->initialize(true);
+        if ($case === 'corrupt') { $source->statement("UPDATE vault_secrets SET encrypted_value = 'enc:v1:broken'"); }
+        if ($case === 'unbound') { $source->statement('DELETE FROM system_settings WHERE setting_key = ?', [\Coleza\Domain\Vault\KeyBinding::SETTING]); }
+        $file = $this->tempWorkDir . '/verified-asset.txt'; file_put_contents($file, 'asset');
+        $adapter = new LocalBackupStorageAdapter($this->tempStorageDir);
+        $archiveEncrypted = $case === 'encrypted-wrong';
+        $backup = (new EnterpriseBackupService($this->tempWorkDir, $source, encryptionService: new BackupEncryptionService('synthetic-archive-passphrase')))->createBackup(BackupScope::FULL, $adapter, [$file], $archiveEncrypted);
+        $oldKey = getenv('APP_KEY'); $oldFile = getenv('APP_KEY_FILE');
+        try {
+            putenv('APP_KEY'); putenv('APP_KEY_FILE');
+            $restoreKey = match ($case) { 'wrong', 'encrypted-wrong' => \Coleza\Domain\Vault\ApplicationKey::encryptor(\Coleza\Domain\Vault\ApplicationKey::generate()), 'missing' => null, default => $key };
+            $result = (new RestoreWizardService($this->tempWorkDir, applicationEncryptor: $restoreKey))->executeRestore($backup['manifest']->getBackupId(), $adapter, $this->freshHostingDb, $this->tempFreshAppDir, $archiveEncrypted ? 'synthetic-archive-passphrase' : null);
+            self::assertSame($case === 'correct', $result->isSuccess(), $result->getErrorMessage() ?? '');
+            if ($case === 'correct') {
+                self::assertSame('restore-synthetic-secret', (new \Coleza\Domain\Vault\VaultService($this->freshHostingDb, $key))->getSecret('provider:restore', 'token'));
+                self::assertFileExists($this->tempFreshAppDir . '/verified-asset.txt');
+            } else {
+                self::assertFileDoesNotExist($this->tempFreshAppDir . '/verified-asset.txt');
+                self::assertGreaterThan(0, $result->getDatabaseStatementsExecuted()); self::assertSame(0, $result->getFilesRestored());
+            }
+        } finally {
+            $oldKey === false ? putenv('APP_KEY') : putenv('APP_KEY=' . $oldKey);
+            $oldFile === false ? putenv('APP_KEY_FILE') : putenv('APP_KEY_FILE=' . $oldFile);
+        }
+    }
+
     public function testRestoreEncryptedBackupFromS3ObjectStorage(): void
     {
         $passphrase = 'enterprise-disaster-vault-passphrase';

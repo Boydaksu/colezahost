@@ -1,0 +1,12 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+...............................................................  63 / 167 ( 37%)
+............................................................... 126 / 167 ( 75%)
+.........................................                       167 / 167 (100%)
+
+Time: 07:11.238, Memory: 42.00 MB
+
+[30;42mOK (167 tests, 1213 assertions)[0m

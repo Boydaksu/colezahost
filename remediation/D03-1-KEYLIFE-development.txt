@@ -1,0 +1,46 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+.......................[31;1mE[0m..[31;1mE[0m.[31;1mE[0m...                                  32 / 32 (100%)
+
+Time: 00:16.201, Memory: 52.00 MB
+
+There were 3 errors:
+
+1) Coleza\Tests\Unit\Installer\WebInstallerTest::testCompleteEndToEndInstallationWizardWorkflowAndLockProtection
+LogicException: Unknown encrypted setting scope; reconcile before key lifecycle.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:94
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:42
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:35
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\WebInstallerService.php:70
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\InstallerKeyFixture.php:11
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\WebInstallerTest.php:377
+
+2) Coleza\Tests\Unit\Installer\FreshInstallMigrationModeTest::testFreshInstallWithMigrationStepE2E
+LogicException: Install complete secret storage before writing.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\SecretStorageUpgrade.php:15
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:15
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:28
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:34
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\WebInstallerService.php:70
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\InstallerKeyFixture.php:11
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\FreshInstallMigrationModeTest.php:323
+
+3) Tests\Integration\ReleaseRehearsal\ReleaseRehearsalLifecycleSuiteTest::testFreshInstallationLifecycleAndLockEnforcement
+LogicException: Unknown encrypted setting scope; reconcile before key lifecycle.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:94
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:42
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:35
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\WebInstallerService.php:70
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\InstallerKeyFixture.php:11
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\ReleaseRehearsal\ReleaseRehearsalLifecycleSuiteTest.php:172
+
+[37;41mERRORS![0m
+[37;41mTests: 32[0m[37;41m, Assertions: 186[0m[37;41m, Errors: 3[0m[37;41m.[0m

@@ -18,6 +18,7 @@ final class VaultReferenceUpgrade
         SecretStorageUpgrade::assertStorage($this->db, ['servers' => ['id', 'hostname', 'auth_secret_encrypted']] + ($hasHooks ? ['webhook_endpoints' => ['id', 'secret']] : []));
         $vault = new VaultService($this->db, $this->encryptor, new \Coleza\Domain\Identity\Audit\AuditLogger($this->db));
         return $this->db->transaction(function () use ($legacyPlaintextConfirmed, $hasHooks, $vault): int {
+            KeyBinding::guard($this->db, $this->encryptor);
             $plans = []; $store = new VaultReferenceStore($this->db, $this->encryptor);
             $groups = [['servers', 'auth_secret_encrypted', $this->db->select('SELECT id, hostname, auth_secret_encrypted FROM servers ORDER BY id' . $this->db->forUpdate())]];
             if ($hasHooks) { $groups[] = ['webhook_endpoints', 'secret', $this->db->select('SELECT id, secret FROM webhook_endpoints ORDER BY id' . $this->db->forUpdate())]; }

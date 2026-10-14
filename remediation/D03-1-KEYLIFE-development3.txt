@@ -1,0 +1,20 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+................[31;1mE[0m................                                 33 / 33 (100%)
+
+Time: 00:16.308, Memory: 54.00 MB
+
+There was 1 error:
+
+1) Coleza\Tests\Unit\Installer\WebInstallerTest::testCronTokenUsesOneWayHashAndLegacyUpgradeRequiresConfirmation
+LogicException: Install complete secret storage before writing.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\SecretStorageUpgrade.php:15
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\CronSetupService.php:37
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\WebInstallerTest.php:117
+
+[37;41mERRORS![0m
+[37;41mTests: 33[0m[37;41m, Assertions: 205[0m[37;41m, Errors: 1[0m[37;41m.[0m

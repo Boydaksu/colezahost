@@ -1,0 +1,359 @@
+<?xml version="1.0"?>
+<testSuite xmlns="https://xml.phpunit.de/testSuite">
+ <tests>
+  <testClass name="Coleza\Tests\MariaDb\CapacityAndNotificationTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\CapacityAndNotificationTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\CapacityAndNotificationTest::testParallelReservationsCannotOversubscribeOneAccount" name="testParallelReservationsCannotOversubscribeOneAccount"/>
+   <testMethod id="Coleza\Tests\MariaDb\CapacityAndNotificationTest::testParallelReservationsRespectDiskAndBandwidth" name="testParallelReservationsRespectDiskAndBandwidth"/>
+   <testMethod id="Coleza\Tests\MariaDb\CapacityAndNotificationTest::testParallelServiceRetriesReuseOneReservation" name="testParallelServiceRetriesReuseOneReservation"/>
+   <testMethod id="Coleza\Tests\MariaDb\CapacityAndNotificationTest::testParallelReleasesReturnOnlyTheirOwnQuotaOnce" name="testParallelReleasesReturnOnlyTheirOwnQuotaOnce"/>
+   <testMethod id="Coleza\Tests\MariaDb\CapacityAndNotificationTest::testCommitAndExpiryRacePreservesTerminalStatusAndQuota" name="testCommitAndExpiryRacePreservesTerminalStatusAndQuota"/>
+   <testMethod id="Coleza\Tests\MariaDb\CapacityAndNotificationTest::testNotificationPreferencesAndInboxPersistWithNativePreparedQueries" name="testNotificationPreferencesAndInboxPersistWithNativePreparedQueries"/>
+   <testMethod id="Coleza\Tests\MariaDb\CapacityAndNotificationTest::testDuplicateLegacyScopesBlockMigrationWithoutDroppingReservations" name="testDuplicateLegacyScopesBlockMigrationWithoutDroppingReservations"/>
+   <testMethod id="Coleza\Tests\MariaDb\CapacityAndNotificationTest::testCommitBindsScopeAndLaterRetryDoesNotAllocateAgain" name="testCommitBindsScopeAndLaterRetryDoesNotAllocateAgain"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\IdentityLifecycleTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\IdentityLifecycleTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testFourProcessesConsumeExactlyOneChallenge#0" name="testFourProcessesConsumeExactlyOneChallenge"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testFourProcessesConsumeExactlyOneChallenge#1" name="testFourProcessesConsumeExactlyOneChallenge"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testFourProcessesConsumeExactlyOneChallenge#2" name="testFourProcessesConsumeExactlyOneChallenge"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testFourProcessesConsumeExactlyOneChallenge#3" name="testFourProcessesConsumeExactlyOneChallenge"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testFourProcessesConsumeExactlyOneChallenge#4" name="testFourProcessesConsumeExactlyOneChallenge"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testParallelTokenReplacementLeavesOneCurrentToken" name="testParallelTokenReplacementLeavesOneCurrentToken"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testParallelResetAndOldSessionWriterEndRevoked" name="testParallelResetAndOldSessionWriterEndRevoked"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testStaleCallerCannotRehashOldPasswordOverPeerReset" name="testStaleCallerCannotRehashOldPasswordOverPeerReset"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testStaleCallerCannotRedeemPeerConsumedRecoveryCode" name="testStaleCallerCannotRedeemPeerConsumedRecoveryCode"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testNonTransactionalRevocationLedgerRefusesBeforeSessionDelete" name="testNonTransactionalRevocationLedgerRefusesBeforeSessionDelete"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testMissingEmailUniqueRefusesBeforeIdentityWrites" name="testMissingEmailUniqueRefusesBeforeIdentityWrites"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testMissingMigration26InRawCallerDoesNotCreateAnyTable" name="testMissingMigration26InRawCallerDoesNotCreateAnyTable"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testConcurrentRegistrationCreatesOneUserAndStructuredDuplicateRefusals" name="testConcurrentRegistrationCreatesOneUserAndStructuredDuplicateRefusals"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testInstalledIdentitySetupDoesNotCommitCallerOrExecuteDdl" name="testInstalledIdentitySetupDoesNotCommitCallerOrExecuteDdl"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testActiveTwoFactorCannotBeDisabledByRestartingSetup" name="testActiveTwoFactorCannotBeDisabledByRestartingSetup"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testRepeatedConfirmationDoesNotReplaceRecoveryCodes" name="testRepeatedConfirmationDoesNotReplaceRecoveryCodes"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testRevokedSessionCannotBeResurrectedByOldWriterAfterGc" name="testRevokedSessionCannotBeResurrectedByOldWriterAfterGc"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testResetInsideRawCallerPreservesRollbackBoundary" name="testResetInsideRawCallerPreservesRollbackBoundary"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testExpiredResetAtExactBoundaryCannotChangePassword" name="testExpiredResetAtExactBoundaryCannotChangePassword"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testFailedResetTokenReplacementPreservesOldToken" name="testFailedResetTokenReplacementPreservesOldToken"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testChildFailureKeepsAggregateAndUnrelatedCallerWrites#reset:standalone" name="testChildFailureKeepsAggregateAndUnrelatedCallerWrites"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testChildFailureKeepsAggregateAndUnrelatedCallerWrites#reset:raw" name="testChildFailureKeepsAggregateAndUnrelatedCallerWrites"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testChildFailureKeepsAggregateAndUnrelatedCallerWrites#reset:managed" name="testChildFailureKeepsAggregateAndUnrelatedCallerWrites"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testChildFailureKeepsAggregateAndUnrelatedCallerWrites#verify:standalone" name="testChildFailureKeepsAggregateAndUnrelatedCallerWrites"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testChildFailureKeepsAggregateAndUnrelatedCallerWrites#verify:raw" name="testChildFailureKeepsAggregateAndUnrelatedCallerWrites"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testChildFailureKeepsAggregateAndUnrelatedCallerWrites#verify:managed" name="testChildFailureKeepsAggregateAndUnrelatedCallerWrites"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testChildFailureKeepsAggregateAndUnrelatedCallerWrites#confirm:standalone" name="testChildFailureKeepsAggregateAndUnrelatedCallerWrites"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testChildFailureKeepsAggregateAndUnrelatedCallerWrites#confirm:raw" name="testChildFailureKeepsAggregateAndUnrelatedCallerWrites"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testChildFailureKeepsAggregateAndUnrelatedCallerWrites#confirm:managed" name="testChildFailureKeepsAggregateAndUnrelatedCallerWrites"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testChildFailureKeepsAggregateAndUnrelatedCallerWrites#replaceVerification:standalone" name="testChildFailureKeepsAggregateAndUnrelatedCallerWrites"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testChildFailureKeepsAggregateAndUnrelatedCallerWrites#replaceVerification:raw" name="testChildFailureKeepsAggregateAndUnrelatedCallerWrites"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testChildFailureKeepsAggregateAndUnrelatedCallerWrites#replaceVerification:managed" name="testChildFailureKeepsAggregateAndUnrelatedCallerWrites"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testSuccessfulAggregateStaysInsideCallerRollback#reset:raw" name="testSuccessfulAggregateStaysInsideCallerRollback"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testSuccessfulAggregateStaysInsideCallerRollback#reset:managed" name="testSuccessfulAggregateStaysInsideCallerRollback"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testSuccessfulAggregateStaysInsideCallerRollback#verify:raw" name="testSuccessfulAggregateStaysInsideCallerRollback"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testSuccessfulAggregateStaysInsideCallerRollback#verify:managed" name="testSuccessfulAggregateStaysInsideCallerRollback"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testSuccessfulAggregateStaysInsideCallerRollback#confirm:raw" name="testSuccessfulAggregateStaysInsideCallerRollback"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testSuccessfulAggregateStaysInsideCallerRollback#confirm:managed" name="testSuccessfulAggregateStaysInsideCallerRollback"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testLoginTotpCounterCanBeUsedOnlyOnce" name="testLoginTotpCounterCanBeUsedOnlyOnce"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testPasswordResetInvalidatesPreviouslyTrustedDevice" name="testPasswordResetInvalidatesPreviouslyTrustedDevice"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testInactiveTwoFactorCannotIssueTrustedDevice" name="testInactiveTwoFactorCannotIssueTrustedDevice"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testUnknownAccountResetRequestCreatesNoOrphanToken" name="testUnknownAccountResetRequestCreatesNoOrphanToken"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testDuplicateLegacyResetTokenIsRefusedWithoutPasswordChange" name="testDuplicateLegacyResetTokenIsRefusedWithoutPasswordChange"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testRevocationLedgerFailureKeepsLiveSession" name="testRevocationLedgerFailureKeepsLiveSession"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testDestroyAndGcNeverReuseRevokedId" name="testDestroyAndGcNeverReuseRevokedId"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testMigration26ReplayPreservesSessionsRevocationsAndLoginSteps" name="testMigration26ReplayPreservesSessionsRevocationsAndLoginSteps"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testPartialUpgradeRefusesBeforeCreatingSiblingTables" name="testPartialUpgradeRefusesBeforeCreatingSiblingTables"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testDuplicatePreviouslyUsedRecoveryHashCannotBeReused" name="testDuplicatePreviouslyUsedRecoveryHashCannotBeReused"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testInvalidPersistedTwoFactorStateNeverSkipsChallenge" name="testInvalidPersistedTwoFactorStateNeverSkipsChallenge"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testMissingIdentityBusinessSchemaInsideCallerDoesNotCreateTables" name="testMissingIdentityBusinessSchemaInsideCallerDoesNotCreateTables"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testLostManagedIdentityCallerRefusesBeforeQuery" name="testLostManagedIdentityCallerRefusesBeforeQuery"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testTrustedDeviceExpiresAtExactBoundary" name="testTrustedDeviceExpiresAtExactBoundary"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testFailedTotpStepInsertDoesNotConsumeChallenge" name="testFailedTotpStepInsertDoesNotConsumeChallenge"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testMissingInstalledSessionMutexIsNotSilentlyRepaired" name="testMissingInstalledSessionMutexIsNotSilentlyRepaired"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testDisabledStatusOverridesActiveFlag" name="testDisabledStatusOverridesActiveFlag"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testUnexpectedRevocationUniqueRefusesBeforeDeletingSession" name="testUnexpectedRevocationUniqueRefusesBeforeDeletingSession"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testUnexpectedLoginStepUniqueRefusesBeforeAcceptingChallenge" name="testUnexpectedLoginStepUniqueRefusesBeforeAcceptingChallenge"/>
+   <testMethod id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testInvalidResetTokenIsRejectedBeforeHashingNewPassword" name="testInvalidResetTokenIsRejectedBeforeHashingNewPassword"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\KeyLifecycleTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\KeyLifecycleTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testRotationSerializesAgainstThreeIndependentSecretWriters" name="testRotationSerializesAgainstThreeIndependentSecretWriters"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testFourSeparateProcessesCannotWriteUsingRetiredKey" name="testFourSeparateProcessesCannotWriteUsingRetiredKey"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testMaintenanceCliBindsRotatesAndVerifiesAfterProcessRestart" name="testMaintenanceCliBindsRotatesAndVerifiesAfterProcessRestart"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testNonTransactionalBindingTableCannotAuthorizeAWriter" name="testNonTransactionalBindingTableCannotAuthorizeAWriter"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testBoundDatabaseRejectsWriterUsingAnotherKeyBeforeChanges" name="testBoundDatabaseRejectsWriterUsingAnotherKeyBeforeChanges"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testBindingIsIdempotentAndDeepVerificationIsReadOnly" name="testBindingIsIdempotentAndDeepVerificationIsReadOnly"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testRotationPreservesEverySecretAndFencesAllOldSecretWriters" name="testRotationPreservesEverySecretAndFencesAllOldSecretWriters"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testLateAuditFailureRollsBackAllCiphertextsProbeAndVersions" name="testLateAuditFailureRollsBackAllCiphertextsProbeAndVersions"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testWrongKeyCannotRebindAnExistingDatabase" name="testWrongKeyCannotRebindAnExistingDatabase"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testPlaintextOrUnknownSettingCannotBeSilentlyBound" name="testPlaintextOrUnknownSettingCannotBeSilentlyBound"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testCorruptedCipherPreventsAllRotationWrites" name="testCorruptedCipherPreventsAllRotationWrites"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testLifecycleRefusesCallerTransactions#0" name="testLifecycleRefusesCallerTransactions"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testLifecycleRefusesCallerTransactions#1" name="testLifecycleRefusesCallerTransactions"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testMaintenanceAdmissionIsRequired" name="testMaintenanceAdmissionIsRequired"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testUnknownEncryptedScopeAndBrokenOwnerReferencePreventBinding" name="testUnknownEncryptedScopeAndBrokenOwnerReferencePreventBinding"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testLegacyCronNeedsExplicitHashUpgradeBeforeBinding" name="testLegacyCronNeedsExplicitHashUpgradeBeforeBinding"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testRotationRequiresAnExistingDifferentDurableReplacementFile" name="testRotationRequiresAnExistingDifferentDurableReplacementFile"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testRotationLogsAndMetadataContainNoPlaintextOrKeyMaterial" name="testRotationLogsAndMetadataContainNoPlaintextOrKeyMaterial"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\ProviderBrandSetupTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\ProviderBrandSetupTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\ProviderBrandSetupTest::testParallelBrandSetupUsesOneProviderIdentity" name="testParallelBrandSetupUsesOneProviderIdentity"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProviderBrandSetupTest::testCustomerOrganizationAndUnrelatedBrandAreNotOverwritten" name="testCustomerOrganizationAndUnrelatedBrandAreNotOverwritten"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProviderBrandSetupTest::testLegacyNotNullOwnerReceivesExplicitOwner" name="testLegacyNotNullOwnerReceivesExplicitOwner"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProviderBrandSetupTest::testMissingOwnerIsRejectedWithoutChangingRecords" name="testMissingOwnerIsRejectedWithoutChangingRecords"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProviderBrandSetupTest::testOwnerlessCallCannotMutateACustomerOrganization" name="testOwnerlessCallCannotMutateACustomerOrganization"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProviderBrandSetupTest::testOrdinaryUserCannotConfigureProviderIdentity" name="testOrdinaryUserCannotConfigureProviderIdentity"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProviderBrandSetupTest::testLegacyProviderNeedsExplicitBindingAndKeepsCustomersIntact" name="testLegacyProviderNeedsExplicitBindingAndKeepsCustomersIntact"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProviderBrandSetupTest::testBindingAnotherCustomersOrganizationIsRejected" name="testBindingAnotherCustomersOrganizationIsRejected"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProviderBrandSetupTest::testSettingsWriteFailureRollsBackOrganizationBrandMembershipAndBinding" name="testSettingsWriteFailureRollsBackOrganizationBrandMembershipAndBinding"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProviderBrandSetupTest::testMigrationDoesNotResetAnExistingProviderBinding" name="testMigrationDoesNotResetAnExistingProviderBinding"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\ProviderVaultSchemaTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\ProviderVaultSchemaTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testVaultWritePreservesCallerTransaction" name="testVaultWritePreservesCallerTransaction"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testProviderSettingsWritePreservesCallerTransaction" name="testProviderSettingsWritePreservesCallerTransaction"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testAuditedVaultWritePreservesCallerTransactionAndAuditRollback" name="testAuditedVaultWritePreservesCallerTransactionAndAuditRollback"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testProductionMigrationsInstallVaultAndProviderSettings" name="testProductionMigrationsInstallVaultAndProviderSettings"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testKeylessMigrationReplayPreservesCiphertextVersionsDatesAndSettings" name="testKeylessMigrationReplayPreservesCiphertextVersionsDatesAndSettings"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testInstalledAuditedReadRotateAndDeleteUseNoDdlAndRollbackTogether" name="testInstalledAuditedReadRotateAndDeleteUseNoDdlAndRollbackTogether"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testMissingDependentSchemaInRawTransactionRefusesWritesWithoutDdl" name="testMissingDependentSchemaInRawTransactionRefusesWritesWithoutDdl"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testPartialExistingSchemaStopsBeforeCreatingOtherTableOrChangingRows" name="testPartialExistingSchemaStopsBeforeCreatingOtherTableOrChangingRows"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testFailedConfigurationMigrationCanResumeAfterExplicitFixtureRepair" name="testFailedConfigurationMigrationCanResumeAfterExplicitFixtureRepair"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testExplicitInstallCannotCommitMysqlTransactionAndSqliteSetupRollsBack" name="testExplicitInstallCannotCommitMysqlTransactionAndSqliteSetupRollsBack"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testRollbackRefusalPreservesSettingsCiphertextAndMigrationHistory" name="testRollbackRefusalPreservesSettingsCiphertextAndMigrationHistory"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testNativeAuditReadIncludesActorAndImpersonatorWithoutDuplicatesOrOtherUsers" name="testNativeAuditReadIncludesActorAndImpersonatorWithoutDuplicatesOrOtherUsers"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\ProvisioningProbeSafetyTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testFourWorkersCanCommitOnlyOneCompletionAndAudit" name="testFourWorkersCanCommitOnlyOneCompletionAndAudit"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testOldSnapshotCannotReplaceCommittedReconciliation" name="testOldSnapshotCannotReplaceCommittedReconciliation"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testMissingTargetIsUnknownRatherThanAbsent" name="testMissingTargetIsUnknownRatherThanAbsent"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testSameUsernameWithWrongDomainCannotCompleteLocalService" name="testSameUsernameWithWrongDomainCannotCompleteLocalService"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testApiErrorIsUnknownRatherThanAuthoritativeAbsence" name="testApiErrorIsUnknownRatherThanAuthoritativeAbsence"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testMatchingActiveAccountCommitsLocalStateAndSanitizedEvidence" name="testMatchingActiveAccountCommitsLocalStateAndSanitizedEvidence"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testUnknownObservationPersistsWithoutChangingAttemptBudgetOrState" name="testUnknownObservationPersistsWithoutChangingAttemptBudgetOrState"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testSuspendedWrongPlanAndBadIpAreNotHealthyCompletion" name="testSuspendedWrongPlanAndBadIpAreNotHealthyCompletion"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testMalformedMultipleAndWrongUserResponsesNeverProveAbsence" name="testMalformedMultipleAndWrongUserResponsesNeverProveAbsence"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testHttpErrorsWithSuccessLookingBodyDoNotReconcile" name="testHttpErrorsWithSuccessLookingBodyDoNotReconcile"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testUnsupportedActionDoesNotProbeOrCreateAnything" name="testUnsupportedActionDoesNotProbeOrCreateAnything"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testAuditFailureRollsBackPlacementActivationAndCompletion" name="testAuditFailureRollsBackPlacementActivationAndCompletion"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testUnknownAuditFailureDoesNotChangePendingState" name="testUnknownAuditFailureDoesNotChangePendingState"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testStaleOperationCannotOverwriteNewerDecision" name="testStaleOperationCannotOverwriteNewerDecision"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testCallerTransactionRefusedBeforeRemoteRead" name="testCallerTransactionRefusedBeforeRemoteRead"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testRetryRunnerDoesNotExecuteOnUnknownResult" name="testRetryRunnerDoesNotExecuteOnUnknownResult"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testMissingServerBindingIsNotAbsence" name="testMissingServerBindingIsNotAbsence"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testUnavailableProviderIsNotAbsence" name="testUnavailableProviderIsNotAbsence"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testServerProviderMismatchDoesNotReadAnotherProvider" name="testServerProviderMismatchDoesNotReadAnotherProvider"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testChangedLocalDomainDoesNotGetActivated" name="testChangedLocalDomainDoesNotGetActivated"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testErrorTextAndRawSecretsAreNotCopiedToObservation" name="testErrorTextAndRawSecretsAreNotCopiedToObservation"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testAlreadyCompletedOperationDoesNotProbeOrAppendAnotherAttempt" name="testAlreadyCompletedOperationDoesNotProbeOrAppendAnotherAttempt"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testUnknownAutomaticRetryIsHeldInsteadOfPollingForever" name="testUnknownAutomaticRetryIsHeldInsteadOfPollingForever"/>
+   <testMethod id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testHeldOperationBlocksFreshWorkflowCreate" name="testHeldOperationBlocksFreshWorkflowCreate"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\SecretStorageTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\SecretStorageTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\SecretStorageTest::testUpgradeRejectsNonTransactionalStorageBeforeWrites" name="testUpgradeRejectsNonTransactionalStorageBeforeWrites"/>
+   <testMethod id="Coleza\Tests\MariaDb\SecretStorageTest::testSmtpPasswordStoredEncryptedAndNotReturned" name="testSmtpPasswordStoredEncryptedAndNotReturned"/>
+   <testMethod id="Coleza\Tests\MariaDb\SecretStorageTest::testServerTokenStoredEncrypted" name="testServerTokenStoredEncrypted"/>
+   <testMethod id="Coleza\Tests\MariaDb\SecretStorageTest::testTotpSecretStoredEncrypted" name="testTotpSecretStoredEncrypted"/>
+   <testMethod id="Coleza\Tests\MariaDb\SecretStorageTest::testLegacyUpgradeNeedsConfirmationAndPreservesRows" name="testLegacyUpgradeNeedsConfirmationAndPreservesRows"/>
+   <testMethod id="Coleza\Tests\MariaDb\SecretStorageTest::testUpgradeRestartReplayAndNoPlaintextInQueryLog" name="testUpgradeRestartReplayAndNoPlaintextInQueryLog"/>
+   <testMethod id="Coleza\Tests\MariaDb\SecretStorageTest::testUpgradeStaysInCallerRollback#0" name="testUpgradeStaysInCallerRollback"/>
+   <testMethod id="Coleza\Tests\MariaDb\SecretStorageTest::testUpgradeStaysInCallerRollback#1" name="testUpgradeStaysInCallerRollback"/>
+   <testMethod id="Coleza\Tests\MariaDb\SecretStorageTest::testLateUpgradeWriteFailureRollsBackEverySecret" name="testLateUpgradeWriteFailureRollsBackEverySecret"/>
+   <testMethod id="Coleza\Tests\MariaDb\SecretStorageTest::testCipherCannotMoveBetweenServers" name="testCipherCannotMoveBetweenServers"/>
+   <testMethod id="Coleza\Tests\MariaDb\SecretStorageTest::testCipherCannotMoveBetweenTotpUsers" name="testCipherCannotMoveBetweenTotpUsers"/>
+   <testMethod id="Coleza\Tests\MariaDb\SecretStorageTest::testUnknownEnvelopeCannotBeUpgradedAsPlaintext" name="testUnknownEnvelopeCannotBeUpgradedAsPlaintext"/>
+   <testMethod id="Coleza\Tests\MariaDb\SecretStorageTest::testSmtpLateFailureRollsBackAllSettings" name="testSmtpLateFailureRollsBackAllSettings"/>
+   <testMethod id="Coleza\Tests\MariaDb\SecretStorageTest::testWrongKeyCannotReadOrRewriteExistingEnvelopes" name="testWrongKeyCannotReadOrRewriteExistingEnvelopes"/>
+   <testMethod id="Coleza\Tests\MariaDb\SecretStorageTest::testRuntimeNeverFallsBackToPlaintext#0" name="testRuntimeNeverFallsBackToPlaintext"/>
+   <testMethod id="Coleza\Tests\MariaDb\SecretStorageTest::testRuntimeNeverFallsBackToPlaintext#1" name="testRuntimeNeverFallsBackToPlaintext"/>
+   <testMethod id="Coleza\Tests\MariaDb\SecretStorageTest::testRuntimeNeverFallsBackToPlaintext#2" name="testRuntimeNeverFallsBackToPlaintext"/>
+   <testMethod id="Coleza\Tests\MariaDb\SecretStorageTest::testMissingKeyStopsTotpBeforeSchemaOrWrites" name="testMissingKeyStopsTotpBeforeSchemaOrWrites"/>
+   <testMethod id="Coleza\Tests\MariaDb\SecretStorageTest::testOversizedLegacyTotpRefusesBeforeChangingAnySecret" name="testOversizedLegacyTotpRefusesBeforeChangingAnySecret"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\VaultUnifiedTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\VaultUnifiedTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\VaultUnifiedTest::testFourWritersPreserveEveryVersionAndAudit" name="testFourWritersPreserveEveryVersionAndAudit"/>
+   <testMethod id="Coleza\Tests\MariaDb\VaultUnifiedTest::testVaultCipherCannotMoveBetweenNamespaces" name="testVaultCipherCannotMoveBetweenNamespaces"/>
+   <testMethod id="Coleza\Tests\MariaDb\VaultUnifiedTest::testAuditFailureRollsBackSecretRotation" name="testAuditFailureRollsBackSecretRotation"/>
+   <testMethod id="Coleza\Tests\MariaDb\VaultUnifiedTest::testServerSecretUsesVaultReference" name="testServerSecretUsesVaultReference"/>
+   <testMethod id="Coleza\Tests\MariaDb\VaultUnifiedTest::testWebhookSecretUsesVaultReference" name="testWebhookSecretUsesVaultReference"/>
+   <testMethod id="Coleza\Tests\MariaDb\VaultUnifiedTest::testVaultWriteAndAuditStayInsideCallerRollback#0" name="testVaultWriteAndAuditStayInsideCallerRollback"/>
+   <testMethod id="Coleza\Tests\MariaDb\VaultUnifiedTest::testVaultWriteAndAuditStayInsideCallerRollback#1" name="testVaultWriteAndAuditStayInsideCallerRollback"/>
+   <testMethod id="Coleza\Tests\MariaDb\VaultUnifiedTest::testLegacyVaultCipherResealPreservesVersionAndReplays" name="testLegacyVaultCipherResealPreservesVersionAndReplays"/>
+   <testMethod id="Coleza\Tests\MariaDb\VaultUnifiedTest::testProviderMetadataFailureRollsBackVaultAndAudit" name="testProviderMetadataFailureRollsBackVaultAndAudit"/>
+   <testMethod id="Coleza\Tests\MariaDb\VaultUnifiedTest::testServerOwnerFailureRollsBackVaultAndAudit" name="testServerOwnerFailureRollsBackVaultAndAudit"/>
+   <testMethod id="Coleza\Tests\MariaDb\VaultUnifiedTest::testWebhookCallerRollbackRemovesReferenceSecretAndAudit" name="testWebhookCallerRollbackRemovesReferenceSecretAndAudit"/>
+   <testMethod id="Coleza\Tests\MariaDb\VaultUnifiedTest::testLegacyOwnerUpgradePreservesSecretsAndIsIdempotent" name="testLegacyOwnerUpgradePreservesSecretsAndIsIdempotent"/>
+   <testMethod id="Coleza\Tests\MariaDb\VaultUnifiedTest::testUnconfirmedLegacyOwnerUpgradeChangesNothing" name="testUnconfirmedLegacyOwnerUpgradeChangesNothing"/>
+   <testMethod id="Coleza\Tests\MariaDb\VaultUnifiedTest::testExtraUniqueIdentityRefusesBeforeVaultMutation" name="testExtraUniqueIdentityRefusesBeforeVaultMutation"/>
+   <testMethod id="Coleza\Tests\MariaDb\VaultUnifiedTest::testRegistrarMetadataFailureRollsBackBothKeysAndAudit" name="testRegistrarMetadataFailureRollsBackBothKeysAndAudit"/>
+   <testMethod id="Coleza\Tests\MariaDb\VaultUnifiedTest::testWebhookAuditFailureRollsBackOwnerAndSecret" name="testWebhookAuditFailureRollsBackOwnerAndSecret"/>
+   <testMethod id="Coleza\Tests\MariaDb\VaultUnifiedTest::testLegacyTransferOwnerFailureRollsBackEverySecretAndReference" name="testLegacyTransferOwnerFailureRollsBackEverySecretAndReference"/>
+   <testMethod id="Coleza\Tests\MariaDb\VaultUnifiedTest::testServerNullRemovalDeletesVaultSecretInSameOperation" name="testServerNullRemovalDeletesVaultSecretInSameOperation"/>
+  </testClass>
+ </tests>
+ <groups>
+  <group name="default">
+   <test id="Coleza\Tests\MariaDb\CapacityAndNotificationTest::testParallelReservationsCannotOversubscribeOneAccount"/>
+   <test id="Coleza\Tests\MariaDb\CapacityAndNotificationTest::testParallelReservationsRespectDiskAndBandwidth"/>
+   <test id="Coleza\Tests\MariaDb\CapacityAndNotificationTest::testParallelServiceRetriesReuseOneReservation"/>
+   <test id="Coleza\Tests\MariaDb\CapacityAndNotificationTest::testParallelReleasesReturnOnlyTheirOwnQuotaOnce"/>
+   <test id="Coleza\Tests\MariaDb\CapacityAndNotificationTest::testCommitAndExpiryRacePreservesTerminalStatusAndQuota"/>
+   <test id="Coleza\Tests\MariaDb\CapacityAndNotificationTest::testNotificationPreferencesAndInboxPersistWithNativePreparedQueries"/>
+   <test id="Coleza\Tests\MariaDb\CapacityAndNotificationTest::testDuplicateLegacyScopesBlockMigrationWithoutDroppingReservations"/>
+   <test id="Coleza\Tests\MariaDb\CapacityAndNotificationTest::testCommitBindsScopeAndLaterRetryDoesNotAllocateAgain"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testFourProcessesConsumeExactlyOneChallenge#0"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testFourProcessesConsumeExactlyOneChallenge#1"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testFourProcessesConsumeExactlyOneChallenge#2"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testFourProcessesConsumeExactlyOneChallenge#3"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testFourProcessesConsumeExactlyOneChallenge#4"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testParallelTokenReplacementLeavesOneCurrentToken"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testParallelResetAndOldSessionWriterEndRevoked"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testStaleCallerCannotRehashOldPasswordOverPeerReset"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testStaleCallerCannotRedeemPeerConsumedRecoveryCode"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testNonTransactionalRevocationLedgerRefusesBeforeSessionDelete"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testMissingEmailUniqueRefusesBeforeIdentityWrites"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testMissingMigration26InRawCallerDoesNotCreateAnyTable"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testConcurrentRegistrationCreatesOneUserAndStructuredDuplicateRefusals"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testInstalledIdentitySetupDoesNotCommitCallerOrExecuteDdl"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testActiveTwoFactorCannotBeDisabledByRestartingSetup"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testRepeatedConfirmationDoesNotReplaceRecoveryCodes"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testRevokedSessionCannotBeResurrectedByOldWriterAfterGc"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testResetInsideRawCallerPreservesRollbackBoundary"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testExpiredResetAtExactBoundaryCannotChangePassword"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testFailedResetTokenReplacementPreservesOldToken"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testChildFailureKeepsAggregateAndUnrelatedCallerWrites#reset:standalone"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testChildFailureKeepsAggregateAndUnrelatedCallerWrites#reset:raw"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testChildFailureKeepsAggregateAndUnrelatedCallerWrites#reset:managed"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testChildFailureKeepsAggregateAndUnrelatedCallerWrites#verify:standalone"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testChildFailureKeepsAggregateAndUnrelatedCallerWrites#verify:raw"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testChildFailureKeepsAggregateAndUnrelatedCallerWrites#verify:managed"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testChildFailureKeepsAggregateAndUnrelatedCallerWrites#confirm:standalone"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testChildFailureKeepsAggregateAndUnrelatedCallerWrites#confirm:raw"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testChildFailureKeepsAggregateAndUnrelatedCallerWrites#confirm:managed"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testChildFailureKeepsAggregateAndUnrelatedCallerWrites#replaceVerification:standalone"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testChildFailureKeepsAggregateAndUnrelatedCallerWrites#replaceVerification:raw"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testChildFailureKeepsAggregateAndUnrelatedCallerWrites#replaceVerification:managed"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testSuccessfulAggregateStaysInsideCallerRollback#reset:raw"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testSuccessfulAggregateStaysInsideCallerRollback#reset:managed"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testSuccessfulAggregateStaysInsideCallerRollback#verify:raw"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testSuccessfulAggregateStaysInsideCallerRollback#verify:managed"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testSuccessfulAggregateStaysInsideCallerRollback#confirm:raw"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testSuccessfulAggregateStaysInsideCallerRollback#confirm:managed"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testLoginTotpCounterCanBeUsedOnlyOnce"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testPasswordResetInvalidatesPreviouslyTrustedDevice"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testInactiveTwoFactorCannotIssueTrustedDevice"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testUnknownAccountResetRequestCreatesNoOrphanToken"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testDuplicateLegacyResetTokenIsRefusedWithoutPasswordChange"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testRevocationLedgerFailureKeepsLiveSession"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testDestroyAndGcNeverReuseRevokedId"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testMigration26ReplayPreservesSessionsRevocationsAndLoginSteps"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testPartialUpgradeRefusesBeforeCreatingSiblingTables"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testDuplicatePreviouslyUsedRecoveryHashCannotBeReused"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testInvalidPersistedTwoFactorStateNeverSkipsChallenge"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testMissingIdentityBusinessSchemaInsideCallerDoesNotCreateTables"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testLostManagedIdentityCallerRefusesBeforeQuery"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testTrustedDeviceExpiresAtExactBoundary"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testFailedTotpStepInsertDoesNotConsumeChallenge"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testMissingInstalledSessionMutexIsNotSilentlyRepaired"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testDisabledStatusOverridesActiveFlag"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testUnexpectedRevocationUniqueRefusesBeforeDeletingSession"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testUnexpectedLoginStepUniqueRefusesBeforeAcceptingChallenge"/>
+   <test id="Coleza\Tests\MariaDb\IdentityLifecycleTest::testInvalidResetTokenIsRejectedBeforeHashingNewPassword"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testRotationSerializesAgainstThreeIndependentSecretWriters"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testFourSeparateProcessesCannotWriteUsingRetiredKey"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testMaintenanceCliBindsRotatesAndVerifiesAfterProcessRestart"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testNonTransactionalBindingTableCannotAuthorizeAWriter"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testBoundDatabaseRejectsWriterUsingAnotherKeyBeforeChanges"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testBindingIsIdempotentAndDeepVerificationIsReadOnly"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testRotationPreservesEverySecretAndFencesAllOldSecretWriters"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testLateAuditFailureRollsBackAllCiphertextsProbeAndVersions"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testWrongKeyCannotRebindAnExistingDatabase"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testPlaintextOrUnknownSettingCannotBeSilentlyBound"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testCorruptedCipherPreventsAllRotationWrites"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testLifecycleRefusesCallerTransactions#0"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testLifecycleRefusesCallerTransactions#1"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testMaintenanceAdmissionIsRequired"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testUnknownEncryptedScopeAndBrokenOwnerReferencePreventBinding"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testLegacyCronNeedsExplicitHashUpgradeBeforeBinding"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testRotationRequiresAnExistingDifferentDurableReplacementFile"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testRotationLogsAndMetadataContainNoPlaintextOrKeyMaterial"/>
+   <test id="Coleza\Tests\MariaDb\ProviderBrandSetupTest::testParallelBrandSetupUsesOneProviderIdentity"/>
+   <test id="Coleza\Tests\MariaDb\ProviderBrandSetupTest::testCustomerOrganizationAndUnrelatedBrandAreNotOverwritten"/>
+   <test id="Coleza\Tests\MariaDb\ProviderBrandSetupTest::testLegacyNotNullOwnerReceivesExplicitOwner"/>
+   <test id="Coleza\Tests\MariaDb\ProviderBrandSetupTest::testMissingOwnerIsRejectedWithoutChangingRecords"/>
+   <test id="Coleza\Tests\MariaDb\ProviderBrandSetupTest::testOwnerlessCallCannotMutateACustomerOrganization"/>
+   <test id="Coleza\Tests\MariaDb\ProviderBrandSetupTest::testOrdinaryUserCannotConfigureProviderIdentity"/>
+   <test id="Coleza\Tests\MariaDb\ProviderBrandSetupTest::testLegacyProviderNeedsExplicitBindingAndKeepsCustomersIntact"/>
+   <test id="Coleza\Tests\MariaDb\ProviderBrandSetupTest::testBindingAnotherCustomersOrganizationIsRejected"/>
+   <test id="Coleza\Tests\MariaDb\ProviderBrandSetupTest::testSettingsWriteFailureRollsBackOrganizationBrandMembershipAndBinding"/>
+   <test id="Coleza\Tests\MariaDb\ProviderBrandSetupTest::testMigrationDoesNotResetAnExistingProviderBinding"/>
+   <test id="Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testVaultWritePreservesCallerTransaction"/>
+   <test id="Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testProviderSettingsWritePreservesCallerTransaction"/>
+   <test id="Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testAuditedVaultWritePreservesCallerTransactionAndAuditRollback"/>
+   <test id="Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testProductionMigrationsInstallVaultAndProviderSettings"/>
+   <test id="Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testKeylessMigrationReplayPreservesCiphertextVersionsDatesAndSettings"/>
+   <test id="Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testInstalledAuditedReadRotateAndDeleteUseNoDdlAndRollbackTogether"/>
+   <test id="Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testMissingDependentSchemaInRawTransactionRefusesWritesWithoutDdl"/>
+   <test id="Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testPartialExistingSchemaStopsBeforeCreatingOtherTableOrChangingRows"/>
+   <test id="Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testFailedConfigurationMigrationCanResumeAfterExplicitFixtureRepair"/>
+   <test id="Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testExplicitInstallCannotCommitMysqlTransactionAndSqliteSetupRollsBack"/>
+   <test id="Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testRollbackRefusalPreservesSettingsCiphertextAndMigrationHistory"/>
+   <test id="Coleza\Tests\MariaDb\ProviderVaultSchemaTest::testNativeAuditReadIncludesActorAndImpersonatorWithoutDuplicatesOrOtherUsers"/>
+   <test id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testFourWorkersCanCommitOnlyOneCompletionAndAudit"/>
+   <test id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testOldSnapshotCannotReplaceCommittedReconciliation"/>
+   <test id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testMissingTargetIsUnknownRatherThanAbsent"/>
+   <test id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testSameUsernameWithWrongDomainCannotCompleteLocalService"/>
+   <test id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testApiErrorIsUnknownRatherThanAuthoritativeAbsence"/>
+   <test id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testMatchingActiveAccountCommitsLocalStateAndSanitizedEvidence"/>
+   <test id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testUnknownObservationPersistsWithoutChangingAttemptBudgetOrState"/>
+   <test id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testSuspendedWrongPlanAndBadIpAreNotHealthyCompletion"/>
+   <test id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testMalformedMultipleAndWrongUserResponsesNeverProveAbsence"/>
+   <test id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testHttpErrorsWithSuccessLookingBodyDoNotReconcile"/>
+   <test id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testUnsupportedActionDoesNotProbeOrCreateAnything"/>
+   <test id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testAuditFailureRollsBackPlacementActivationAndCompletion"/>
+   <test id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testUnknownAuditFailureDoesNotChangePendingState"/>
+   <test id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testStaleOperationCannotOverwriteNewerDecision"/>
+   <test id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testCallerTransactionRefusedBeforeRemoteRead"/>
+   <test id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testRetryRunnerDoesNotExecuteOnUnknownResult"/>
+   <test id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testMissingServerBindingIsNotAbsence"/>
+   <test id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testUnavailableProviderIsNotAbsence"/>
+   <test id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testServerProviderMismatchDoesNotReadAnotherProvider"/>
+   <test id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testChangedLocalDomainDoesNotGetActivated"/>
+   <test id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testErrorTextAndRawSecretsAreNotCopiedToObservation"/>
+   <test id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testAlreadyCompletedOperationDoesNotProbeOrAppendAnotherAttempt"/>
+   <test id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testUnknownAutomaticRetryIsHeldInsteadOfPollingForever"/>
+   <test id="Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testHeldOperationBlocksFreshWorkflowCreate"/>
+   <test id="Coleza\Tests\MariaDb\SecretStorageTest::testUpgradeRejectsNonTransactionalStorageBeforeWrites"/>
+   <test id="Coleza\Tests\MariaDb\SecretStorageTest::testSmtpPasswordStoredEncryptedAndNotReturned"/>
+   <test id="Coleza\Tests\MariaDb\SecretStorageTest::testServerTokenStoredEncrypted"/>
+   <test id="Coleza\Tests\MariaDb\SecretStorageTest::testTotpSecretStoredEncrypted"/>
+   <test id="Coleza\Tests\MariaDb\SecretStorageTest::testLegacyUpgradeNeedsConfirmationAndPreservesRows"/>
+   <test id="Coleza\Tests\MariaDb\SecretStorageTest::testUpgradeRestartReplayAndNoPlaintextInQueryLog"/>
+   <test id="Coleza\Tests\MariaDb\SecretStorageTest::testUpgradeStaysInCallerRollback#0"/>
+   <test id="Coleza\Tests\MariaDb\SecretStorageTest::testUpgradeStaysInCallerRollback#1"/>
+   <test id="Coleza\Tests\MariaDb\SecretStorageTest::testLateUpgradeWriteFailureRollsBackEverySecret"/>
+   <test id="Coleza\Tests\MariaDb\SecretStorageTest::testCipherCannotMoveBetweenServers"/>
+   <test id="Coleza\Tests\MariaDb\SecretStorageTest::testCipherCannotMoveBetweenTotpUsers"/>
+   <test id="Coleza\Tests\MariaDb\SecretStorageTest::testUnknownEnvelopeCannotBeUpgradedAsPlaintext"/>
+   <test id="Coleza\Tests\MariaDb\SecretStorageTest::testSmtpLateFailureRollsBackAllSettings"/>
+   <test id="Coleza\Tests\MariaDb\SecretStorageTest::testWrongKeyCannotReadOrRewriteExistingEnvelopes"/>
+   <test id="Coleza\Tests\MariaDb\SecretStorageTest::testRuntimeNeverFallsBackToPlaintext#0"/>
+   <test id="Coleza\Tests\MariaDb\SecretStorageTest::testRuntimeNeverFallsBackToPlaintext#1"/>
+   <test id="Coleza\Tests\MariaDb\SecretStorageTest::testRuntimeNeverFallsBackToPlaintext#2"/>
+   <test id="Coleza\Tests\MariaDb\SecretStorageTest::testMissingKeyStopsTotpBeforeSchemaOrWrites"/>
+   <test id="Coleza\Tests\MariaDb\SecretStorageTest::testOversizedLegacyTotpRefusesBeforeChangingAnySecret"/>
+   <test id="Coleza\Tests\MariaDb\VaultUnifiedTest::testFourWritersPreserveEveryVersionAndAudit"/>
+   <test id="Coleza\Tests\MariaDb\VaultUnifiedTest::testVaultCipherCannotMoveBetweenNamespaces"/>
+   <test id="Coleza\Tests\MariaDb\VaultUnifiedTest::testAuditFailureRollsBackSecretRotation"/>
+   <test id="Coleza\Tests\MariaDb\VaultUnifiedTest::testServerSecretUsesVaultReference"/>
+   <test id="Coleza\Tests\MariaDb\VaultUnifiedTest::testWebhookSecretUsesVaultReference"/>
+   <test id="Coleza\Tests\MariaDb\VaultUnifiedTest::testVaultWriteAndAuditStayInsideCallerRollback#0"/>
+   <test id="Coleza\Tests\MariaDb\VaultUnifiedTest::testVaultWriteAndAuditStayInsideCallerRollback#1"/>
+   <test id="Coleza\Tests\MariaDb\VaultUnifiedTest::testLegacyVaultCipherResealPreservesVersionAndReplays"/>
+   <test id="Coleza\Tests\MariaDb\VaultUnifiedTest::testProviderMetadataFailureRollsBackVaultAndAudit"/>
+   <test id="Coleza\Tests\MariaDb\VaultUnifiedTest::testServerOwnerFailureRollsBackVaultAndAudit"/>
+   <test id="Coleza\Tests\MariaDb\VaultUnifiedTest::testWebhookCallerRollbackRemovesReferenceSecretAndAudit"/>
+   <test id="Coleza\Tests\MariaDb\VaultUnifiedTest::testLegacyOwnerUpgradePreservesSecretsAndIsIdempotent"/>
+   <test id="Coleza\Tests\MariaDb\VaultUnifiedTest::testUnconfirmedLegacyOwnerUpgradeChangesNothing"/>
+   <test id="Coleza\Tests\MariaDb\VaultUnifiedTest::testExtraUniqueIdentityRefusesBeforeVaultMutation"/>
+   <test id="Coleza\Tests\MariaDb\VaultUnifiedTest::testRegistrarMetadataFailureRollsBackBothKeysAndAudit"/>
+   <test id="Coleza\Tests\MariaDb\VaultUnifiedTest::testWebhookAuditFailureRollsBackOwnerAndSecret"/>
+   <test id="Coleza\Tests\MariaDb\VaultUnifiedTest::testLegacyTransferOwnerFailureRollsBackEverySecretAndReference"/>
+   <test id="Coleza\Tests\MariaDb\VaultUnifiedTest::testServerNullRemovalDeletesVaultSecretInSameOperation"/>
+  </group>
+ </groups>
+</testSuite>

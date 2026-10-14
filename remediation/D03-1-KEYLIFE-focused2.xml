@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\KeyLifecycleTest.php" tests="10" assertions="44" errors="2" failures="0" skipped="0" time="7.453191">
+    <testcase name="testBoundDatabaseRejectsWriterUsingAnotherKeyBeforeChanges" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="52" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="1" time="0.072968"/>
+    <testcase name="testBindingIsIdempotentAndDeepVerificationIsReadOnly" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="60" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="28" time="0.018770"/>
+    <testcase name="testRotationPreservesEverySecretAndFencesAllOldSecretWriters" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="70" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="6" time="2.190833">
+      <error type="Error">Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest::testRotationPreservesEverySecretAndFencesAllOldSecretWriters&#13;
+Error: Call to undefined method Coleza\Domain\Servers\Services\ServerService::findServer()
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:82</error>
+    </testcase>
+    <testcase name="testLateAuditFailureRollsBackAllCiphertextsProbeAndVersions" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="92" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="2" time="2.720061"/>
+    <testcase name="testWrongKeyCannotRebindAnExistingDatabase" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="104" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="1" time="0.036407"/>
+    <testcase name="testPlaintextOrUnknownSettingCannotBeSilentlyBound" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="110" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="1" time="0.042096"/>
+    <testcase name="testCorruptedCipherPreventsAllRotationWrites" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="117" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="0" time="2.312142">
+      <error type="InvalidArgumentException">Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest::testCorruptedCipherPreventsAllRotationWrites&#13;
+InvalidArgumentException: Cipher payload truncated.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\Encryptor.php:71
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\SecretCipher.php:24
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:102
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:68
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:64
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:121</error>
+    </testcase>
+    <testsuite name="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest::testLifecycleRefusesCallerTransactions" tests="2" assertions="4" errors="0" failures="0" skipped="0" time="0.041489">
+      <testcase name="testLifecycleRefusesCallerTransactions with data set #0" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="126" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="2" time="0.023345"/>
+      <testcase name="testLifecycleRefusesCallerTransactions with data set #1" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="126" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="2" time="0.018144"/>
+    </testsuite>
+    <testcase name="testMaintenanceAdmissionIsRequired" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php" line="134" class="Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest" classname="Coleza.Tests.Unit.Domain.Vault.KeyLifecycleTest" assertions="1" time="0.018426"/>
+  </testsuite>
+</testsuites>

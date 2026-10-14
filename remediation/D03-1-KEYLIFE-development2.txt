@@ -1,0 +1,24 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+[31;1mE[0m...............................                                  32 / 32 (100%)
+
+Time: 00:16.121, Memory: 52.00 MB
+
+There was 1 error:
+
+1) Coleza\Tests\Unit\Installer\FreshInstallMigrationModeTest::testFreshInstallWithMigrationStepE2E
+LogicException: Install complete secret storage before writing.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\SecretStorageUpgrade.php:15
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:15
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:28
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:34
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Installer\WebInstallerService.php:70
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\InstallerKeyFixture.php:11
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Installer\FreshInstallMigrationModeTest.php:323
+
+[37;41mERRORS![0m
+[37;41mTests: 32[0m[37;41m, Assertions: 200[0m[37;41m, Errors: 1[0m[37;41m.[0m

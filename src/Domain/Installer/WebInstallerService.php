@@ -18,6 +18,8 @@ use Coleza\Foundation\Database\Connection;
 final class WebInstallerService
 {
     private ?Connection $connection = null;
+    private ?\Coleza\Domain\Vault\Encryptor $applicationEncryptor = null;
+    private ?string $applicationKeyFile = null;
     private InstallationStep $currentStep = InstallationStep::REQUIREMENTS;
 
     /** @var array<string, mixed> */
@@ -56,6 +58,21 @@ final class WebInstallerService
     public function setConnection(Connection $connection): void
     {
         $this->connection = $connection;
+    }
+
+    /** Create a fresh private file, or explicitly resume using an existing protected file. */
+    public function setupApplicationKey(string $keyFile, bool $resumeExisting = false): array
+    {
+        $this->assertNotLocked(); $this->assertDatabaseConnected();
+        if ($this->connection->inTransaction()) { throw new \LogicException('Key setup requires a durable standalone operation.'); }
+        $root = dirname(__DIR__, 3);
+        if (!$resumeExisting) { \Coleza\Domain\Vault\PrivateKeyFile::provision($keyFile, $root); }
+        $key = \Coleza\Domain\Vault\ApplicationKey::encryptor(\Coleza\Domain\Vault\PrivateKeyFile::load($keyFile, $root));
+        $result = (new \Coleza\Domain\Vault\KeyLifecycleService($this->connection, $key))->initialize(maintenanceConfirmed: true);
+        $this->applicationEncryptor = $key; $this->emailSetupService = new EmailSetupService($key);
+        $this->applicationKeyFile = $keyFile;
+        $this->sessionState['application_key_id'] = $result['key_id'];
+        return $result;
     }
 
     /**
@@ -288,6 +305,11 @@ final class WebInstallerService
     public function finalizeInstallation(array $extraMetadata = []): InstallationSummary
     {
         $this->assertNotLocked();
+        $this->assertDatabaseConnected();
+        if ($this->applicationEncryptor === null || $this->applicationKeyFile === null) { throw new \RuntimeException('Provision and verify a persistent application key before finalizing installation.'); }
+        $persistedKey = \Coleza\Domain\Vault\ApplicationKey::encryptor(\Coleza\Domain\Vault\PrivateKeyFile::load($this->applicationKeyFile, dirname(__DIR__, 3)));
+        if (!hash_equals($this->applicationEncryptor->fingerprint(), $persistedKey->fingerprint())) { throw new \RuntimeException('Application key file changed; explicitly resume key setup before finalizing.'); }
+        (new \Coleza\Domain\Vault\KeyLifecycleService($this->connection, $this->applicationEncryptor))->verify();
 
         $appVersion = (string) ($extraMetadata['app_version'] ?? '1.0.0');
         $adminEmail = (string) ($this->sessionState['admin_email'] ?? 'admin@localhost');

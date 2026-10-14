@@ -5,17 +5,17 @@
   "phase": "D03",
   "step": "D03.1",
   "status": "IN_PROGRESS",
-  "step_status": "D03_1_PRIVATE_FILE_KEY_PROVISIONING_AND_RUNTIME_SOURCE_LOCAL_VERIFIED_INSTALLER_ROTATION_RECOVERY_AND_GENERAL_SECRET_AUDIT_OPEN",
+  "step_status": "D03_1_INSTALLER_KEY_BINDING_ATOMIC_ROTATION_OLD_WRITER_FENCING_AND_RESTORE_KEY_GATE_LOCAL_VERIFIED_GENERAL_SECRET_CONFIG_LOG_EXPORT_AUDIT_OPEN",
   "independent_acceptance": "PENDING",
   "production_ready": false,
   "next_step": "D03.1",
   "next_phase": "D04",
   "tests": {
-    "main_total": 1591,
-    "main_assertions": 11223,
-    "mariadb_total": 149,
-    "mariadb_assertions": 1031,
-    "mariadb_scope": "D03.1 file key runtime sources: seven affected classes; exact filtered discovery; full native suite not rerun",
+    "main_total": 1616,
+    "main_assertions": 11361,
+    "mariadb_total": 168,
+    "mariadb_assertions": 1218,
+    "mariadb_scope": "D03.1 key lifecycle plus seven affected classes; eight-class exact filtered discovery; full native suite not rerun",
     "full_mariadb_current_source": false,
     "last_full_mariadb": {
       "reference_commit": "0d2e3e08d4c121a146f298f77b4bc6b008b6f66e",
@@ -23,8 +23,8 @@
       "assertions": 5399,
       "evidence": "remediation/D02-CLOSEOUT-summary.json"
     },
-    "total": 1740,
-    "assertions": 12254,
+    "total": 1784,
+    "assertions": 12579,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -41,8 +41,8 @@
     "F17": "CANONICAL_ANALYTICS_REPORTING_IMPLEMENTED_PENDING_REVIEW_HISTORICAL_SCOPE_AND_ENTRYPOINT_ACCEPTANCE_OPEN",
     "F30": "PARTIAL_PRODUCTION_SCHEMA_ANALYTICS_GOLDEN_AND_EXISTING_ADMIN_PERFORMANCE_BUDGET_VERIFIED_REAL_PROVIDER_END_TO_END_ACCEPTANCE_OPEN",
     "F21": "PARTIAL_SUPPORT_SCHEMA_ASSIGNMENT_CONVERSATION_CALLER_AND_PRE_EFFECT_DEPENDENCY_CHECKS_IMPLEMENTED_REAL_CONTEXT_COMMAND_SCOPE_AND_STORAGE_RECOVERY_OPEN",
-    "F08": "PRIVATE_FILE_CLI_PROVISIONING_AND_EXPLICIT_RUNTIME_KEY_SOURCE_LOCAL_VERIFIED_INSTALLER_BINDING_ROTATION_AND_RECOVERY_OPEN",
-    "F09": "ORIGINAL_SMTP_SERVER_TOTP_ENCRYPTION_AND_COMMON_PROVIDER_REGISTRAR_SERVER_WEBHOOK_VAULT_STORAGE_LOCAL_VERIFIED_REMAINING_SECRET_PATH_AUDIT_AND_LOG_EXPORT_ACCEPTANCE_OPEN"
+    "F08": "EXPLICIT_RUNTIME_KEY_PRIVATE_FILE_INSTALLER_BINDING_ATOMIC_ROTATION_OLD_WRITER_FENCING_AND_RESTORE_KEY_GATE_LOCAL_VERIFIED_PENDING_INDEPENDENT_REVIEW",
+    "F09": "ENCRYPTED_SMTP_TOTP_SERVER_COMMON_VAULT_AND_ONE_WAY_CRON_AUTH_TOKEN_LOCAL_VERIFIED_GENERAL_SECRET_CONFIG_LOG_EXPORT_AUDIT_OPEN"
   },
   "remaining_steps": [
     "D03.1",
@@ -86,5 +86,15 @@
   "d03_key_evidence": "remediation/D03-1-KEY-SONUC.md",
   "d03_storage_evidence": "remediation/D03-1-STORAGE-SONUC.md",
   "d03_vault_evidence": "remediation/D03-1-VAULT-SONUC.md",
-  "d03_keyfile_evidence": "remediation/D03-1-KEYFILE-SONUC.md"
+  "d03_keyfile_evidence": "remediation/D03-1-KEYFILE-SONUC.md",
+  "d03_key_lifecycle_status": "IMPLEMENTED_LOCAL_VERIFIED",
+  "d03_1_remaining_buckets": [
+    "GENERAL_SECRET_CONFIG_LOG_EXPORT_AUDIT"
+  ],
+  "d03_key_lifecycle_evidence": "remediation/D03-1-KEYLIFE-SONUC.md",
+  "d05_recovery_debt": [
+    "Non-atomic dump import and staged target recovery acceptance",
+    "SQLite SQL literal escaping and MariaDB backup dump support",
+    "Archive/file path and whole-module restore acceptance"
+  ]
 }

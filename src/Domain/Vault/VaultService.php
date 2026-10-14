@@ -71,7 +71,7 @@ final class VaultService
             SecretStorageUpgrade::assertStorage($this->db, ['security_audit_logs' => ['id', 'actor_user_id', 'event_type', 'target_resource', 'payload']]);
         }
     }
-    private static function scope(array $row): string
+    public static function scope(array $row): string
     {
         return json_encode(['vault', $row['namespace'], $row['secret_key']], JSON_THROW_ON_ERROR);
     }
@@ -88,6 +88,7 @@ final class VaultService
     {
         self::validateIdentity($namespace, $key); $this->prepare();
         $this->db->transaction(function () use ($namespace, $key, $plainValue, $actorUserId): void {
+            KeyBinding::guard($this->db, $this->encryptor);
             $suffix = $this->db->getDriverName() === 'mysql'
                 ? ' ON DUPLICATE KEY UPDATE version = version + 1'
                 : ' ON CONFLICT(namespace, secret_key) DO UPDATE SET version = version + 1';
@@ -111,6 +112,7 @@ final class VaultService
     {
         self::validateIdentity($namespace, $key); $this->prepare();
         return $this->db->transaction(function () use ($namespace, $key, $actorUserId): ?string {
+            KeyBinding::guard($this->db, $this->encryptor);
             $row = $this->db->selectOne('SELECT id, namespace, secret_key, encrypted_value FROM vault_secrets WHERE namespace = ? AND secret_key = ?' . $this->db->forUpdate(), [$namespace, $key]);
             if ($row === null) { return null; }
             $plain = $this->decode($row);
@@ -122,6 +124,7 @@ final class VaultService
     {
         $this->prepare();
         return $this->db->transaction(function () use ($actorUserId): int {
+            KeyBinding::guard($this->db, $this->encryptor);
             $changes = [];
             foreach ($this->db->select('SELECT * FROM vault_secrets ORDER BY id' . $this->db->forUpdate()) as $row) {
                 $plain = $this->decode($row);
@@ -167,6 +170,7 @@ final class VaultService
     {
         self::validateIdentity($namespace, $key); $this->prepare();
         $this->db->transaction(function () use ($namespace, $key, $actorUserId): void {
+            KeyBinding::guard($this->db, $this->encryptor);
             $this->db->delete($this->table, 'namespace = :ns AND secret_key = :k', ['ns' => $namespace, 'k' => $key]);
             $this->auditLogger?->log(actorUserId: $actorUserId ?? 0, eventType: 'VAULT_SECRET_DELETED', targetResource: strlen($namespace . ':' . $key) <= 100 ? $namespace . ':' . $key : 'vault:' . hash('sha256', json_encode(['vault', $namespace, $key], JSON_THROW_ON_ERROR)));
         });

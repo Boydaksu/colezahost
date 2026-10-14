@@ -76,6 +76,7 @@ use PHPUnit\Framework\TestCase;
  */
 final class ReleaseRehearsalLifecycleSuiteTest extends TestCase
 {
+    use \Coleza\Tests\Support\InstallerKeyFixture;
     private string $tempDir;
 
     protected function setUp(): void
@@ -87,6 +88,7 @@ final class ReleaseRehearsalLifecycleSuiteTest extends TestCase
 
     protected function tearDown(): void
     {
+        $this->cleanupInstallerKeys();
         $this->deleteDirectory($this->tempDir);
         parent::tearDown();
     }
@@ -167,6 +169,7 @@ final class ReleaseRehearsalLifecycleSuiteTest extends TestCase
         $this->assertNotEmpty($cronResult['token']);
 
         // Finalize installation
+        $this->configureInstallerKey($installer);
         $summary = $installer->finalizeInstallation();
         $this->assertSame('1.0.0', $summary->getAppVersion());
         $this->assertTrue($installerLock->isLocked());

@@ -750,6 +750,7 @@ final class ServerService
         $stored = (string) $row['auth_secret_encrypted'];
         if (str_starts_with($stored, 'vault:')) { return (new \Coleza\Domain\Vault\VaultReferenceStore($this->db, $this->encryptor))->read('server', hash('sha256', $row['hostname']), $stored); }
         // Transitional ciphertext from the preceding explicit storage upgrade remains readable.
+        \Coleza\Domain\Vault\KeyBinding::guard($this->db, $this->encryptor);
         return (new \Coleza\Domain\Vault\SecretCipher($this->encryptor))->open($stored, 'server:' . $row['hostname']);
     }
 

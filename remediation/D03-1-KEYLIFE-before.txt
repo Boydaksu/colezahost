@@ -1,0 +1,113 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+[41;37mF[0m[41;37mF[0m                                                                  2 / 2 (100%)
+
+Time: 00:00.164, Memory: 50.00 MB
+
+There were 2 failures:
+
+1) Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest::testBoundDatabaseRejectsWriterUsingAnotherKeyBeforeChanges
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+             'last_rotated_at' => '2026-10-14 08:52:32',
+             'created_at' => '2026-10-14 08:52:32',
+         ],
++        4 => Array &16 [
++            'id' => 5,
++            'namespace' => 'provider:wrong',
++            'secret_key' => 'token',
++            'encrypted_value' => 'enc:v1:VHmSAcsyZdLGVzeq/AIN9glV3ajINipBRxu7jU4iJCvYX7sdWuh2PX5ji2lvgxY10nE=',
++            'version' => 1,
++            'last_rotated_at' => '2026-10-14 08:52:32',
++            'created_at' => '2026-10-14 08:52:32',
++        ],
+     ],
+-    'servers' => Array &16 [
+-        0 => Array &17 [
++    'servers' => Array &17 [
++        0 => Array &18 [
+             'id' => 1,
+             'name' => 'Fixture',
+             'hostname' => 'lifecycle.example.test',
+@@ @@
+             'metadata_json' => '[]',
+             'created_at' => '2026-10-14 08:52:32',
+         ],
+-        1 => Array &18 [
++        1 => Array &19 [
+             'id' => 2,
+             'name' => 'Fixture',
+             'hostname' => 'legacy.example.test',
+@@ @@
+             'created_at' => '2026-10-14 08:52:32',
+         ],
+     ],
+-    'user_two_factor' => Array &19 [
+-        0 => Array &20 [
++    'user_two_factor' => Array &20 [
++        0 => Array &21 [
+             'id' => 1,
+             'user_id' => 7,
+             'secret' => 'enc:v1:VR16F9aT/eAzXPZMY4PIMsbqvunoRt9FR+E1x4qWgoS5RqNck3h3WXlEKKF0j2ZMKo4SQmH+mUdmbeZO3bccK/kX1OlvEmceyovw0pRNgVg=',
+@@ @@
+             'created_at' => '2026-10-14 08:52:32',
+         ],
+     ],
+-    'webhook_endpoints' => Array &21 [
+-        0 => Array &22 [
++    'webhook_endpoints' => Array &22 [
++        0 => Array &23 [
+             'id' => 1,
+             'target_url' => 'https://example.test/key-lifecycle',
+             'secret' => 'vault:v1:1',
+@@ @@
+             'updated_at' => '2026-10-14T08:52:32+00:00',
+         ],
+     ],
+-    'security_audit_logs' => Array &23 [
+-        0 => Array &24 [
++    'security_audit_logs' => Array &24 [
++        0 => Array &25 [
+             'id' => 1,
+             'actor_user_id' => 0,
+             'impersonator_user_id' => null,
+@@ @@
+             'payload' => null,
+             'created_at' => '2026-10-14 08:52:32',
+         ],
+-        1 => Array &25 [
++        1 => Array &26 [
+             'id' => 2,
+             'actor_user_id' => 0,
+             'impersonator_user_id' => null,
+@@ @@
+             'payload' => null,
+             'created_at' => '2026-10-14 08:52:32',
+         ],
+-        2 => Array &26 [
++        2 => Array &27 [
+             'id' => 3,
+             'actor_user_id' => 0,
+             'impersonator_user_id' => null,
+@@ @@
+             'payload' => null,
+             'created_at' => '2026-10-14 08:52:32',
+         ],
+-        3 => Array &27 [
++        3 => Array &28 [
+             'id' => 4,
+             'actor_user_id' => 0,
+             'impersonator_user_id' => null,
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:58
+
+2) Coleza\Tests\Unit\Installer\WebInstallerTest::testFinalizationRequiresVerifiedApplicationKeyBeforeWritingLock
+Failed asserting that exception of type "RuntimeException" is thrown.
+
+[37;41mFAILURES![0m
+[37;41mTests: 2[0m[37;41m, Assertions: 3[0m[37;41m, Failures: 2[0m[37;41m.[0m

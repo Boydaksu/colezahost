@@ -47,6 +47,20 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'keyRotationRace':
+        case 'keyStaleWriter':
+            $result['kind'] = $action === 'keyRotationRace' && (int) $argv[2] === 0 ? 'rotate' : 'write';
+            $result['accepted'] = false;
+            try {
+                $key = \Coleza\Tests\Support\SecretFixtureKey::encryptor();
+                if ($result['kind'] === 'rotate') {
+                    (new Coleza\Domain\Vault\KeyLifecycleService($db, $key))->rotateToFile($argv[5], dirname(__DIR__, 3), true);
+                } else {
+                    (new Coleza\Domain\Vault\VaultService($db, $key, new Coleza\Domain\Identity\Audit\AuditLogger($db)))->setSecret('provider:race', 'token', 'race-synthetic-' . $argv[2]);
+                }
+                $result['accepted'] = true;
+            } catch (RuntimeException|LogicException) { $result['status'] = 'rejected'; }
+            break;
         case 'vaultRotate':
             $vault = new Coleza\Domain\Vault\VaultService($db, \Coleza\Tests\Support\SecretFixtureKey::encryptor(), new Coleza\Domain\Identity\Audit\AuditLogger($db));
             $vault->setSecret('provider:parallel', 'api_token', 'worker-synthetic-' . $argv[2]);

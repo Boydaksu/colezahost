@@ -29,6 +29,7 @@ use PHPUnit\Framework\TestCase;
 
 final class WebInstallerTest extends TestCase
 {
+    use \Coleza\Tests\Support\InstallerKeyFixture;
     private string $tempLockFile;
     private Connection $db;
 
@@ -44,6 +45,7 @@ final class WebInstallerTest extends TestCase
 
     protected function tearDown(): void
     {
+        $this->cleanupInstallerKeys();
         if (file_exists($this->tempLockFile)) {
             unlink($this->tempLockFile);
         }
@@ -100,6 +102,50 @@ final class WebInstallerTest extends TestCase
         $phpItem = $report->getItem('php_version');
         $this->assertNotNull($phpItem);
         $this->assertTrue($phpItem->isPassed());
+    }
+
+    public function testFinalizationRequiresVerifiedApplicationKeyBeforeWritingLock(): void
+    {
+        $installer = $this->createInstaller(); $installer->setupDatabase(DatabaseConfig::sqlite());
+        $error = null; try { $installer->finalizeInstallation(); } catch (\RuntimeException $caught) { $error = $caught; }
+        self::assertNotNull($error); self::assertFileDoesNotExist($this->tempLockFile); self::assertFalse($installer->isLocked());
+    }
+
+    public function testInstallerResumesProtectedKeyAndNeverStoresKeyInSessionOrLock(): void
+    {
+        (new DatabaseSetupService())->initializeApplicationSchema($this->db);
+        $installer = $this->createInstaller(); $file = $this->configureInstallerKey($installer);
+        $key = \Coleza\Domain\Vault\PrivateKeyFile::load($file, dirname(__DIR__, 3));
+        $resumed = $this->createInstaller(); $result = $resumed->setupApplicationKey($file, true);
+        self::assertSame(\Coleza\Domain\Vault\ApplicationKey::encryptor($key)->fingerprint(), $result['key_id']);
+        $resumed->setupEmail(new EmailTransportConfig(host: 'smtp.example.test', password: 'installer-synthetic-secret'));
+        self::assertStringNotContainsString($key, json_encode($resumed->getSessionState()));
+        $resumed->finalizeInstallation();
+        self::assertStringNotContainsString($key, file_get_contents($this->tempLockFile));
+        self::assertTrue($resumed->isLocked());
+    }
+
+    public function testFinalizationRefusesAKeyFileLostAfterSetup(): void
+    {
+        (new DatabaseSetupService())->initializeApplicationSchema($this->db);
+        $installer = $this->createInstaller(); $file = $this->configureInstallerKey($installer); unlink($file);
+        $error = null; try { $installer->finalizeInstallation(); } catch (\RuntimeException $caught) { $error = $caught; }
+        self::assertNotNull($error); self::assertFileDoesNotExist($this->tempLockFile);
+    }
+
+    public function testCronTokenUsesOneWayHashAndLegacyUpgradeRequiresConfirmation(): void
+    {
+        $installer = $this->createInstaller(); $installer->setupDatabase(DatabaseConfig::sqlite());
+        $this->db = $installer->getConnection();
+        $cron = new CronSetupService(); $result = $cron->setupCron($this->db);
+        $row = $this->db->selectOne("SELECT * FROM system_settings WHERE setting_key = 'cron.token'");
+        self::assertNotSame($result['token'], $row['setting_value']); self::assertSame(0, (int) $row['is_encrypted']);
+        self::assertTrue($cron->validateCronToken($this->db, $result['token'])); self::assertFalse($cron->validateCronToken($this->db, $row['setting_value']));
+        $this->db->statement("UPDATE system_settings SET setting_value = 'legacy-synthetic-token', is_encrypted = 1 WHERE setting_key = 'cron.token'");
+        self::assertFalse($cron->validateCronToken($this->db, 'legacy-synthetic-token'));
+        try { $cron->upgradeLegacyToken($this->db); } catch (\LogicException) { self::assertSame('legacy-synthetic-token', $this->db->selectOne("SELECT setting_value FROM system_settings WHERE setting_key = 'cron.token'")['setting_value']); }
+        self::assertSame(1, $cron->upgradeLegacyToken($this->db, true)); self::assertSame(0, $cron->upgradeLegacyToken($this->db, true));
+        self::assertTrue($cron->validateCronToken($this->db, 'legacy-synthetic-token'));
     }
 
     public function testDatabaseWizardAppliesDomainMigrationsBeforeProceedingToAdmin(): void
@@ -365,6 +411,7 @@ final class WebInstallerTest extends TestCase
         $this->assertSame(InstallationStep::COMPLETED, $installer->getCurrentStep());
 
         // Finalize & Lock
+        $this->configureInstallerKey($installer);
         $summary = $installer->finalizeInstallation([
             'app_version' => '1.0.0',
             'installer_environment' => 'production',

@@ -40,9 +40,11 @@ final class EmailSetupService
         ];
 
         $password = $settings['mail.password'];
+        if ($password !== '') { $this->encryptor ??= \Coleza\Domain\Vault\ApplicationKey::encryptor(\Coleza\Domain\Vault\ApplicationKey::configured()); }
         $settings['mail.password'] = $password === '' ? '' : (new \Coleza\Domain\Vault\SecretCipher($this->encryptor))->seal($password, 'smtp:' . $prefix);
         \Coleza\Domain\Vault\SecretStorageUpgrade::assertStorage($db, [$tSettings => ['id', 'setting_key', 'setting_value', 'is_encrypted', 'updated_at']]);
-        $db->transaction(function () use ($db, $settings, $tSettings): void {
+        $db->transaction(function () use ($db, $settings, $tSettings, $prefix): void {
+            \Coleza\Domain\Vault\KeyBinding::guard($db, $this->encryptor, $prefix);
             foreach ($settings as $key => $val) {
                 $existing = $db->selectOne(sprintf('SELECT id FROM %s WHERE setting_key = ?', $tSettings), [$key]);
                 $isEncrypted = ($key === 'mail.password' && $val !== '') ? 1 : 0;

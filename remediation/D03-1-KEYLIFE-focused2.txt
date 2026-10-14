@@ -1,0 +1,29 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+..[31;1mE[0m...[31;1mE[0m...                                                        10 / 10 (100%)
+
+Time: 00:07.460, Memory: 26.00 MB
+
+There were 2 errors:
+
+1) Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest::testRotationPreservesEverySecretAndFencesAllOldSecretWriters
+Error: Call to undefined method Coleza\Domain\Servers\Services\ServerService::findServer()
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:82
+
+2) Coleza\Tests\Unit\Domain\Vault\KeyLifecycleTest::testCorruptedCipherPreventsAllRotationWrites
+InvalidArgumentException: Cipher payload truncated.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\Encryptor.php:71
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\SecretCipher.php:24
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:102
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:68
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Foundation\Database\Connection.php:258
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Vault\KeyLifecycleService.php:64
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\KeyLifecycleCases.php:121
+
+[37;41mERRORS![0m
+[37;41mTests: 10[0m[37;41m, Assertions: 44[0m[37;41m, Errors: 2[0m[37;41m.[0m
