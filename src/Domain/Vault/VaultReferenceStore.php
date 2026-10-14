@@ -17,7 +17,7 @@ final class VaultReferenceStore
     }
     private function vault(): VaultService
     {
-        $key = $this->encryptor ??= ApplicationKey::encryptor(getenv('APP_KEY') ?: null);
+        $key = $this->encryptor ??= ApplicationKey::encryptor(\Coleza\Domain\Vault\ApplicationKey::configured());
         SecretStorageUpgrade::assertStorage($this->db, VaultService::schemaRequirements() + ['security_audit_logs' => ['id', 'actor_user_id', 'event_type', 'target_resource', 'payload']]);
         return new VaultService($this->db, $key, new AuditLogger($this->db));
     }

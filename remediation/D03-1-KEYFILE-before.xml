@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Domain\Vault\PrivateKeyFileTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\PrivateKeyFileTest.php" tests="1" assertions="3" errors="0" failures="1" skipped="0" time="1.723163">
+    <testcase name="testFileConfigurationSurvivesRestartAndUsesTheSameKeyForDefaultSecretCipher" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\PrivateKeyFileTest.php" line="47" class="Coleza\Tests\Unit\Domain\Vault\PrivateKeyFileTest" classname="Coleza.Tests.Unit.Domain.Vault.PrivateKeyFileTest" assertions="3" time="1.723163">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Vault\PrivateKeyFileTest::testFileConfigurationSurvivesRestartAndUsesTheSameKeyForDefaultSecretCipher&#13;
+File configuration must resolve the persisted key.
+Failed asserting that false is true.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\PrivateKeyFileTest.php:51</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

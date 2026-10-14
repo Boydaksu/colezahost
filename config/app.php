@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 return [
     'name' => 'Coleza Host',
-    'key' => getenv('APP_KEY') ?: null,
+    'key' => \Coleza\Domain\Vault\ApplicationKey::configured(),
     'env' => getenv('APP_ENV') ?: 'production',
     'debug' => in_array(strtolower(getenv('APP_DEBUG') ?: 'false'), ['true', '1', 'yes'], true),
     'url' => getenv('APP_URL') ?: 'http://localhost',

@@ -1,0 +1,19 @@
+{
+  "reference_commit": "e1c37cdbccc70eec4bbedcd8344d79ae5a7e2738",
+  "files": {
+    "config/app.php": "5890316706f3afbfe41e00bc5327fdf00766a3066bb945b4996527ba13edf1bb",
+    "src/Domain/Servers/Services/ServerService.php": "b8c47e95410fbe689afac35ff26548f7c821e819bb9ced4fb2400c2a35580fe7",
+    "src/Domain/Vault/ApplicationKey.php": "3e19d2d6d35d14831e33cd5f948e172305bf8b72df460867aa4f4afafa9df67e",
+    "src/Domain/Vault/Encryptor.php": "ccb1be60f158ec5d2e9bd3a270f136f2d0798d8ec669024fc5afaad31ed871fa",
+    "src/Domain/Vault/PrivateKeyFile.php": "20ef0494fa597ef25c9b60aeb8b9d707aa0ca680309078dd71fb0705b1cf2172",
+    "src/Domain/Vault/SecretCipher.php": "8f28dc9e5ef4010a8c5231fbda0fd1435fd7012c794da22cf54e6086f90a519a",
+    "src/Domain/Vault/VaultReferenceStore.php": "ae127c78e8791396255cc691d655a90ade74918d763f40ed4b9dad068fe99a4a",
+    "tests/Architecture/SecurityAndDependencyScanTest.php": "da51535820d29fe50e4d5aabb90d3516a8942494a2e79990fdf55644436daba5",
+    "tests/Unit/Domain/Vault/PrivateKeyFileTest.php": "449e6838e79c6f9853311aa2d9219948140b3448bc959a52a064439bd479cd33",
+    "tools/provision-application-key.php": "0adc7e592e21c6d962d40b521b3335f63919631fd1e87d6272d0f394c765912e",
+    "tools/reviewed-processes.json": "7ab9af681e69b1d914941795f16f7cc4bba233157641b75a7a6a0c6615476cd6",
+    "tools/scan_security_and_secrets.py": "43b25d00492fcd2c584984cbb16cc32c478d584f90d846b15a7c320b34c78284",
+    "tools/verify_reviewed_process_policy.py": "c73143289ea931545023c92a83f8c94a690a72ddda773b9bf508bac007d7531e"
+  },
+  "policy_format_note": "Policy JSON CRLF normalized to LF after runs; parsed policy and every executable PHP/Python source unchanged."
+}

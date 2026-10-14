@@ -28,6 +28,8 @@ final class Encryptor
         $this->key = $key;
     }
 
+    public function fingerprint(): string { return hash('sha256', 'coleza:key-id:v1:' . $this->key); }
+
     /**
      * Encrypt plaintext string using AES-256-GCM.
      * Returns base64 payload containing IV + Tag + Ciphertext.

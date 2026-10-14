@@ -10,7 +10,7 @@ final class SecretCipher
     public function __construct(private ?Encryptor $encryptor = null) {}
     private function encryptor(): Encryptor
     {
-        return $this->encryptor ??= ApplicationKey::encryptor(getenv('APP_KEY') ?: null);
+        return $this->encryptor ??= ApplicationKey::encryptor(\Coleza\Domain\Vault\ApplicationKey::configured());
     }
     public function seal(#[\SensitiveParameter] string $plaintext, string $scope): string
     {

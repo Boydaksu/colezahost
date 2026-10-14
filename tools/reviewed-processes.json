@@ -1,0 +1,8 @@
+{
+  "files": {
+    "src/Domain/Vault/PrivateKeyFile.php": {
+      "sha256": "20ef0494fa597ef25c9b60aeb8b9d707aa0ca680309078dd71fb0705b1cf2172",
+      "reason": "One static Windows ACL script via absolute PowerShell executable and argument array. User path is passed as environment data, never script interpolation. No key material or APP_KEY is passed. Rejects reparse points, unprotected inheritance, foreign owners and broad Allow ACEs. This exception does not authorize other process execution."
+    }
+  }
+}

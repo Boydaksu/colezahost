@@ -7,6 +7,15 @@ namespace Coleza\Domain\Vault;
 /** Explicit installation key provisioning; runtime never creates or replaces a key. */
 final class ApplicationKey
 {
+    public static function configured(): ?string
+    {
+        $key = getenv('APP_KEY'); $file = getenv('APP_KEY_FILE');
+        $key = $key === false || $key === '' ? null : $key;
+        $file = $file === false || $file === '' ? null : $file;
+        if ($key !== null && $file !== null) { throw new \RuntimeException('Choose one application key source.'); }
+        return $file !== null ? PrivateKeyFile::load($file, dirname(__DIR__, 3)) : $key;
+    }
+
     public static function generate(): string
     {
         return 'base64:' . base64_encode(random_bytes(32));

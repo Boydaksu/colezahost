@@ -1,0 +1,50 @@
+{
+  "reference_commit": "e1c37cdbccc70eec4bbedcd8344d79ae5a7e2738",
+  "main": {
+    "tests": 1591,
+    "assertions": 11223
+  },
+  "native_affected_only": {
+    "tests": 149,
+    "assertions": 1031
+  },
+  "files": {
+    "config/app.php": "5890316706f3afbfe41e00bc5327fdf00766a3066bb945b4996527ba13edf1bb",
+    "remediation/D03-1-KEYFILE-SONUC.md": "a31f17c0d09f35f8b650baad3310391892e3e4af72aa16abad91e9522a764ad7",
+    "remediation/D03-1-KEYFILE-baseline.json": "7d2a46ee2cae03db9b42640a9d8c4c4b3b5f8d2c09e373456b12981538e1062a",
+    "remediation/D03-1-KEYFILE-before.txt": "cb1372c5e67f2bb04a3e27631d9ed82d6a5802bf7669221792dfb8e60a82f5c3",
+    "remediation/D03-1-KEYFILE-before.xml": "22b1abb7312160e916d5f7e456921674efe77351402b382e25494b10fbe852c9",
+    "remediation/D03-1-KEYFILE-focused.txt": "673fa5c4ba0f43f7b3bb1deb9da7c9bc1fdfed4f490b3767e1bd5504af3be723",
+    "remediation/D03-1-KEYFILE-focused.xml": "ced322f33a1e5f15ad078ab0a73432cd0ebe2f43ef9e7d5ad0c830865ede358b",
+    "remediation/D03-1-KEYFILE-main.txt": "dd439f6cf2e8a6bf1a19a460266062d572f2f79b46accc743252cb61e6c7a1de",
+    "remediation/D03-1-KEYFILE-main.xml": "0adf05c4c95c98f16429f289b877f20dceb153fcd116da4853eb825bab8d7ef1",
+    "remediation/D03-1-KEYFILE-native-discovery.txt": "c6616844a9f1f80a7dfbea74af96f7384e4c2065e16a39ce1355f71fd7cbad03",
+    "remediation/D03-1-KEYFILE-native-expected.xml": "a751c126359b00769fc0c4e695cb856de2fdd260a9d80fe666cc33c55d0e0655",
+    "remediation/D03-1-KEYFILE-native.txt": "01d5b9a666c3064ce85058770206a89d362b6b12ce74a35c5c93337142310207",
+    "remediation/D03-1-KEYFILE-native.xml": "2c6af85a8789754a813f111773ba044bcd148807902add2da085cac35299d353",
+    "remediation/D03-1-KEYFILE-preflight-main.txt": "85fb8cfe9ba83cefc36cb932e46206e2768ec32f2db82b44f895f5c1032f8756",
+    "remediation/D03-1-KEYFILE-preflight-main.xml": "72a9de37f2b84ed512588e7e4b3f1bbd47be030a3113b11833410eb0722f7a6b",
+    "remediation/D03-1-KEYFILE-preflight-native.txt": "fa1bd536bd40fe1d3231965c54d6c80829cb2d8317e10d52f5639436fd117474",
+    "remediation/D03-1-KEYFILE-preflight-native.xml": "14b64665678ad77404c651cde3aa196521d845263a4ff3d8866b6d0361643035",
+    "remediation/D03-1-KEYFILE-process-policy.txt": "ad704cac4f06b6773292177b0aee0c0839db989b981e431ae8518c674f63f2d9",
+    "remediation/D03-1-KEYFILE-security-scan.txt": "f3ecfeed4970c76df1d8666d4d53586b46b3e9c248c67bfbbce16978a54ac7da",
+    "remediation/D03-1-KEYFILE-source-freeze.json": "29add5ab69725b86033235379e8a74a9de7f725f6d7cee402baafd06ea43417a",
+    "remediation/D03-PLAN.md": "56faee34fbbd55ae1d154425863f1a50d89ef9871dd49136697f9eb6c812f13b",
+    "remediation/PLAN.md": "f725b15e879f8ae05f41a1383f5655dfef9a2f67d9effc2d6e212d9ec416ff9b",
+    "remediation/state.json": "c3654e8cb9057e9d8c6d356e047e6478e357a9cf5eb6f82f790cd9fabc0bb697",
+    "remediation/verify-d03-keyfile.py": "a84704d840097475a0bee42b60c5dc778f8dde352d8efee43016d28e6cc0b49b",
+    "src/Domain/Servers/Services/ServerService.php": "b8c47e95410fbe689afac35ff26548f7c821e819bb9ced4fb2400c2a35580fe7",
+    "src/Domain/Vault/ApplicationKey.php": "3e19d2d6d35d14831e33cd5f948e172305bf8b72df460867aa4f4afafa9df67e",
+    "src/Domain/Vault/Encryptor.php": "ccb1be60f158ec5d2e9bd3a270f136f2d0798d8ec669024fc5afaad31ed871fa",
+    "src/Domain/Vault/PrivateKeyFile.php": "20ef0494fa597ef25c9b60aeb8b9d707aa0ca680309078dd71fb0705b1cf2172",
+    "src/Domain/Vault/SecretCipher.php": "8f28dc9e5ef4010a8c5231fbda0fd1435fd7012c794da22cf54e6086f90a519a",
+    "src/Domain/Vault/VaultReferenceStore.php": "ae127c78e8791396255cc691d655a90ade74918d763f40ed4b9dad068fe99a4a",
+    "tests/Architecture/SecurityAndDependencyScanTest.php": "da51535820d29fe50e4d5aabb90d3516a8942494a2e79990fdf55644436daba5",
+    "tests/Unit/Domain/Vault/PrivateKeyFileTest.php": "449e6838e79c6f9853311aa2d9219948140b3448bc959a52a064439bd479cd33",
+    "tools/APPLICATION-KEY.md": "95c7d1a6713a557828a0ea8c8dc2f4a4ba3d9e393a02d7ec635a9de4772a828b",
+    "tools/provision-application-key.php": "0adc7e592e21c6d962d40b521b3335f63919631fd1e87d6272d0f394c765912e",
+    "tools/reviewed-processes.json": "7ab9af681e69b1d914941795f16f7cc4bba233157641b75a7a6a0c6615476cd6",
+    "tools/scan_security_and_secrets.py": "43b25d00492fcd2c584984cbb16cc32c478d584f90d846b15a7c320b34c78284",
+    "tools/verify_reviewed_process_policy.py": "c73143289ea931545023c92a83f8c94a690a72ddda773b9bf508bac007d7531e"
+  }
+}

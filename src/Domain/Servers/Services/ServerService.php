@@ -323,7 +323,7 @@ final class ServerService
     public function createServer(array $data): Server
     {
         if (isset($data['auth_secret'])) {
-            $this->encryptor ??= \Coleza\Domain\Vault\ApplicationKey::encryptor(getenv('APP_KEY') ?: null);
+            $this->encryptor ??= \Coleza\Domain\Vault\ApplicationKey::encryptor(\Coleza\Domain\Vault\ApplicationKey::configured());
             \Coleza\Domain\Vault\VaultReferenceStore::ensureSchema($this->db);
         }
         return $this->db->transaction(fn() => $this->createServerLocked($data));

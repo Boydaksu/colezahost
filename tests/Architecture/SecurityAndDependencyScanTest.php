@@ -43,7 +43,7 @@ final class SecurityAndDependencyScanTest extends TestCase
     }
 
     /**
-     * Security Constitution: Zero dangerous PHP functions in production source code.
+     * Unreviewed execution is forbidden; one content-pinned Windows ACL adapter is permitted.
      */
     public function testNoDangerousOrInsecureFunctionsInSource(): void
     {
@@ -60,12 +60,34 @@ final class SecurityAndDependencyScanTest extends TestCase
             $content = (string) file_get_contents($file);
             foreach ($forbiddenPatterns as $pattern => $desc) {
                 if (preg_match($pattern, $content, $m)) {
+                    if ($this->isReviewedProcess($file, $content, strtolower($m[1]))) { continue; }
                     $violations[] = str_replace($this->srcDir . DIRECTORY_SEPARATOR, 'src/', $file) . " uses {$desc}";
                 }
             }
         }
 
         $this->assertEmpty($violations, 'Dangerous functions found in src: ' . implode(', ', $violations));
+    }
+
+    private function isReviewedProcess(string $file, string $content, string $function): bool
+    {
+        $policy = json_decode((string) file_get_contents($this->rootDir . '/tools/reviewed-processes.json'), true, flags: JSON_THROW_ON_ERROR);
+        $relative = str_replace('\\', '/', substr($file, strlen($this->rootDir) + 1));
+        $entry = $policy['files'][$relative] ?? null;
+        return $function === 'proc_open' && is_array($entry)
+            && hash_equals($entry['sha256'], hash('sha256', $content))
+            && preg_match_all('/\b(passthru|shell_exec|system|popen|proc_open)\s*\(/i', $content) === 1;
+    }
+
+    public function testReviewedProcessExceptionRejectsChangedContentOtherPathsAndOtherFunctions(): void
+    {
+        $file = $this->rootDir . '/src/Domain/Vault/PrivateKeyFile.php';
+        $content = (string) file_get_contents($file);
+        self::assertTrue($this->isReviewedProcess($file, $content, 'proc_open'));
+        self::assertFalse($this->isReviewedProcess($file, $content . "\n// altered", 'proc_open'));
+        self::assertFalse($this->isReviewedProcess($file . '.other', $content, 'proc_open'));
+        self::assertFalse($this->isReviewedProcess($file, $content, 'shell_exec'));
+        self::assertFalse($this->isReviewedProcess($file, $content . '\nproc_open($untrusted, [], $pipes);', 'proc_open'));
     }
 
     /**

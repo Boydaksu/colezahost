@@ -9,6 +9,7 @@ Conducts exhaustive automated scans across the entire repository:
   5. Dependency & Shared-Host Compatibility Scan (PHP >= 8.4, pure PSR dependencies).
 """
 import json
+import hashlib
 import re
 import sys
 from pathlib import Path
@@ -60,6 +61,11 @@ def scan_security_functions(root_dir: Path) -> list:
     if not src_dir.exists():
         return ["[Security] Missing src directory"]
 
+    try:
+        reviewed = json.loads((root_dir / 'tools/reviewed-processes.json').read_text(encoding='utf-8'))['files']
+    except (OSError, ValueError, KeyError, TypeError):
+        reviewed = {}  # Missing/malformed policy never permits execution.
+
     for p in src_dir.rglob("*.php"):
         if not p.is_file():
             continue
@@ -68,6 +74,12 @@ def scan_security_functions(root_dir: Path) -> list:
         for pattern, desc in FORBIDDEN_FUNCTIONS:
             matches = list(re.finditer(pattern, content, re.I))
             for m in matches:
+                entry = reviewed.get(p.relative_to(root_dir).as_posix(), {})
+                process_calls = re.findall(r'\b(passthru|shell_exec|system|popen|proc_open)\s*\(', content, re.I)
+                if (m.group(1).lower() == 'proc_open' and isinstance(entry, dict)
+                        and entry.get('sha256') == hashlib.sha256(p.read_bytes()).hexdigest()
+                        and len(process_calls) == 1):
+                    continue
                 line_no = content[:m.start()].count("\n") + 1
                 violations.append(f"[Insecure Function] {p.relative_to(root_dir)}:{line_no} - {desc}")
 
