@@ -79,7 +79,7 @@ final class AutomatedHostingGoldenE2ETest extends TestCase
         $this->placementEngine = new PlacementEngine($this->serverService);
 
         // 3. Provisioning & Providers
-        $this->operationService = new ProvisioningOperationService($this->db);
+        $this->operationService = new ProvisioningOperationService($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $this->operationService->ensureTables();
 
         $this->cpanelTransport = new CpanelMemoryTransport();

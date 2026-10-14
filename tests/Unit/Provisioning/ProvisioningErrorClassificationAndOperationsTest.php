@@ -26,7 +26,7 @@ final class ProvisioningErrorClassificationAndOperationsTest extends TestCase
         $pdo = new PDO('sqlite::memory:');
         $this->db = new Connection($pdo, 'sqlite');
 
-        $this->opService = new ProvisioningOperationService($this->db);
+        $this->opService = new ProvisioningOperationService($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $this->opService->ensureTables();
     }
 

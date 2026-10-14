@@ -1,0 +1,24 @@
+{
+  "reference_commit": "28cfa90fb2a81a42155af95760d0a123ca42fe43",
+  "files": {
+    "remediation/verify-d03-provisioning-storage.py": "d971821ba488c65f4d38b2d371e809f2c1b2c5e2488d42bf985f729e5afd1fe6",
+    "src/Domain/Provisioning/Services/ProvisioningOperationService.php": "1a9812de562c798c65f9e57904638cfb0ee1cbe41fea4a8917a12277247caf9c",
+    "src/Domain/Provisioning/Services/ProvisioningPayloadStore.php": "7c2900e33ff5511f5768afd4470672b2598e48bc7d0f872cbcdbfa93de95e622",
+    "src/Domain/Vault/KeyLifecycleService.php": "37443b42983792e67cf5a2a3b956b9eff97d5b5542b045f0c63b1762ec0adc49",
+    "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php": "e7416fe2e6a00f75cc05a7841eda8eabff868941898002c65633eb10aca1c085",
+    "tests/MariaDb/ProvisioningProbeSafetyTest.php": "387c36f673723f5382c9b93d05d66b81179f3c90a8e233788cf0290739d94658",
+    "tests/MariaDb/ProvisioningSecretTest.php": "41d3e0bf7d463720a1a273bb296a8206e5c167102a754aae8320aee194f2162f",
+    "tests/MariaDb/fixtures/financial-worker.php": "98cab1cc2c42b5ff84f74fb066d47592b1e7c24b8467fa0591273a47382eb426",
+    "tests/Support/KeyLifecycleCases.php": "82f3a7ac792ecb8342e709fb280786306f8acc46ec0c37e3baa3eb737db946a6",
+    "tests/Support/ProvisioningProbeSafetyCases.php": "b20e2c03b6ce59cc26b13670bc3c59a11d2ff4481d58d7e3d572cbbb7ab8fd37",
+    "tests/Support/ProvisioningSecretCases.php": "5f2d38e06fbcb31f797612ef65ca928364777904611f072fd687d2c4cbb873b6",
+    "tests/Support/SecretEgressCases.php": "98397f5be14eab8905aab7f27088ea031450a9f46d9f440a67bd016e77595eb3",
+    "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php": "b4036123a66f5f4627adcbae109d82234afc6928bf7eb6ea74534974775deb3a",
+    "tests/Unit/Provisioning/HostingProvisioningWorkflowTest.php": "735616d7d7c7e3ab0e7412b69945e76634cd645e6081fa4cb063c17e14fe5f16",
+    "tests/Unit/Provisioning/NoDuplicateRemoteAccountFailureTest.php": "747fb584bc96cb6a35de9c2e622ed9602bad9d6bd02f3b3cf6c78f8074d1769f",
+    "tests/Unit/Provisioning/ProvisioningErrorClassificationAndOperationsTest.php": "612c99d9e4ffe1c9d5fb2ac391c20f9b33d8fdc0f4efab06d05bc87caf1ffa13",
+    "tests/Unit/Provisioning/ProvisioningRetryAndReconciliationTest.php": "fc2e091e2f6826f1a08f29afa5f60f124fe871be6a45bae77f028fa0b7a78b5a",
+    "tests/Unit/Provisioning/ProvisioningSecretTest.php": "b3f5522577a2b098940311b6c0702609ce050c4f4ba7378f1453cf45c715a457",
+    "tools/provisioning-secret-maintenance.php": "06a183b6e1e21524a4a719e03d336aa40e04b90b66f877a5aeff1a3543037a73"
+  }
+}

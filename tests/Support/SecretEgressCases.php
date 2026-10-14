@@ -43,7 +43,7 @@ trait SecretEgressCases
     public function testProviderAuditResponseIsRedactedAndOperationalInputIsNotModified(): void
     {
         (new \Coleza\Domain\Installer\DatabaseSetupService())->initializeApplicationSchema($this->db);
-        $ops = new \Coleza\Domain\Provisioning\Services\ProvisioningOperationService($this->db); $ops->ensureTables();
+        $ops = new \Coleza\Domain\Provisioning\Services\ProvisioningOperationService($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()); $ops->ensureTables();
         $op = $ops->queueOperation(42, 'fixture', 'create', ['username' => 'fixture', 'password' => 'synthetic-operational-password']);
         $result = \Coleza\Domain\Providers\DTO\ProviderOperationResult::success('create', 'Created', 'remote-42', ['username' => 'fixture'], ['access_hash' => 'synthetic-provider-secret', 'status' => 'ok']);
         $ops->recordAttempt($op->getOperationUuid(), $result);

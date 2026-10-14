@@ -19,8 +19,19 @@ final class ProvisioningOperationService
     private string $auditTable = 'provisioning_audit_logs';
 
     public function __construct(
-        private Connection $db
+        private Connection $db,
+        private ?\Coleza\Domain\Vault\Encryptor $encryptor = null
     ) {
+    }
+
+    public static function schemaRequirements(): array
+    {
+        return ['provisioning_operations' => ['id', 'operation_uuid', 'service_id', 'server_id', 'provider_slug', 'action', 'status', 'attempt_count', 'max_attempts', 'next_attempt_at', 'error_category', 'error_code', 'error_message', 'admin_message', 'payload_json', 'result_json', 'correlation_id', 'created_at', 'updated_at'],
+            'provisioning_audit_logs' => ['id', 'operation_id', 'service_id', 'action', 'attempt_number', 'success', 'error_category', 'error_code', 'client_safe_message', 'admin_actionable_message', 'raw_response_json', 'logged_at']];
+    }
+    private function prepare(): void
+    {
+        \Coleza\Domain\Vault\SecretStorageUpgrade::assertStorage($this->db, self::schemaRequirements());
     }
 
     public function getConnection(): Connection { return $this->db; }
@@ -29,6 +40,7 @@ final class ProvisioningOperationService
     public function commitReconciliation(ProvisioningOperation $expected, callable $localDecision): mixed
     {
         return $this->db->transaction(function () use ($expected, $localDecision): mixed {
+            \Coleza\Domain\Vault\KeyBinding::guard($this->db, $this->encryptor);
             $this->db->lockRow($this->opsTable, $expected->getId() ?? 0);
             $current = $this->findOperationByUuid($expected->getOperationUuid());
             if ($current === null || $current->getId() !== $expected->getId() || $current->getServiceId() !== $expected->getServiceId()
@@ -61,6 +73,9 @@ final class ProvisioningOperationService
 
     public function ensureTables(): void
     {
+        if (\Coleza\Foundation\Database\PdoSchema::useInstalledSchema($this->db, self::schemaRequirements())) {
+            \Coleza\Domain\Vault\VaultReferenceStore::ensureSchema($this->db); return;
+        }
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
             'sqlite' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
@@ -93,7 +108,7 @@ final class ProvisioningOperationService
             $this->opsTable,
             $autoInc
         );
-        $this->db->statement($sqlOps);
+        $this->db->statement($sqlOps . ($driver === 'mysql' ? ' ENGINE=InnoDB' : ''));
 
         // 2. Audit logs table
         $sqlAudit = sprintf(
@@ -114,7 +129,8 @@ final class ProvisioningOperationService
             $this->auditTable,
             $autoInc
         );
-        $this->db->statement($sqlAudit);
+        $this->db->statement($sqlAudit . ($driver === 'mysql' ? ' ENGINE=InnoDB' : ''));
+        \Coleza\Domain\Vault\VaultReferenceStore::ensureSchema($this->db);
     }
 
     /**
@@ -126,39 +142,46 @@ final class ProvisioningOperationService
         int $serviceId,
         string $providerSlug,
         string $action,
-        array $payload,
+        #[\SensitiveParameter] array $payload,
         ?int $serverId = null,
         int $maxAttempts = 3,
         ?string $correlationId = null
     ): ProvisioningOperation {
-        $uuid = 'OP-' . bin2hex(random_bytes(16));
-        $corrId = $correlationId ?? ('REQ-' . bin2hex(random_bytes(12)));
-        $now = date('Y-m-d H:i:s');
+        $this->prepare();
+        return $this->db->transaction(function () use ($serviceId, $providerSlug, $action, $payload, $serverId, $maxAttempts, $correlationId): ProvisioningOperation {
+            \Coleza\Domain\Vault\KeyBinding::guard($this->db, $this->encryptor);
+            $uuid = 'OP-' . bin2hex(random_bytes(16));
+            $corrId = $correlationId ?? ('REQ-' . bin2hex(random_bytes(12)));
+            $now = date('Y-m-d H:i:s');
 
-        $sql = sprintf(
-            'INSERT INTO %s (operation_uuid, service_id, server_id, provider_slug, action, status, attempt_count, max_attempts, next_attempt_at, payload_json, correlation_id, created_at, updated_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            $this->opsTable
-        );
+            $sql = sprintf(
+                'INSERT INTO %s (operation_uuid, service_id, server_id, provider_slug, action, status, attempt_count, max_attempts, next_attempt_at, payload_json, correlation_id, created_at, updated_at)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                $this->opsTable
+            );
 
-        $this->db->statement($sql, [
-            $uuid,
-            $serviceId,
-            $serverId,
-            $providerSlug,
-            $action,
-            ProvisioningOperation::STATUS_QUEUED,
-            0,
-            $maxAttempts,
-            $now,
-            json_encode($payload),
-            $corrId,
-            $now,
-            $now,
-        ]);
+            $this->db->statement($sql, [
+                $uuid,
+                $serviceId,
+                $serverId,
+                $providerSlug,
+                $action,
+                ProvisioningOperation::STATUS_QUEUED,
+                0,
+                $maxAttempts,
+                $now,
+                (new ProvisioningPayloadStore($this->db, $this->encryptor))->write([
+                    'operation_uuid' => $uuid, 'service_id' => $serviceId, 'server_id' => $serverId,
+                    'provider_slug' => $providerSlug, 'action' => $action, 'correlation_id' => $corrId,
+                ], 'payload_json', $payload),
+                $corrId,
+                $now,
+                $now,
+            ]);
 
-        $id = (int)$this->db->getPdo()->lastInsertId();
-        return $this->findOperationById($id) ?? throw new RuntimeException("Failed to reload newly queued operation {$id}.");
+            $id = (int)$this->db->getPdo()->lastInsertId();
+            return $this->findOperationById($id) ?? throw new RuntimeException("Failed to reload newly queued operation {$id}.");
+        });
     }
 
     /**
@@ -169,98 +192,104 @@ final class ProvisioningOperationService
         ProviderOperationResult $result,
         ?ProvisioningErrorClassification $classification = null
     ): ProvisioningOperation {
-        $op = $this->findOperationByUuid($operationUuid);
-        if ($op === null) {
-            throw new RuntimeException("Provisioning operation '{$operationUuid}' not found.");
-        }
-
-        $now = date('Y-m-d H:i:s');
-        $newAttemptCount = $op->getAttemptCount() + 1;
-        $opId = $op->getId() ?? 0;
-        $redactionContext = ['data' => $result->getData(), 'response' => $result->getRawResponse()];
-
-        if ($result->isSuccess()) {
-            // Success transition
-            $sql = sprintf(
-                'UPDATE %s SET status = ?, attempt_count = ?, next_attempt_at = NULL, error_category = NULL, error_code = NULL, error_message = NULL, admin_message = NULL, result_json = ?, updated_at = ?
-                 WHERE id = ?',
-                $this->opsTable
-            );
-            $this->db->statement($sql, [
-                ProvisioningOperation::STATUS_COMPLETED,
-                $newAttemptCount,
-                json_encode($result->getData()),
-                $now,
-                $opId,
-            ]);
-
-            // Insert audit log
-            $sqlAudit = sprintf(
-                'INSERT INTO %s (operation_id, service_id, action, attempt_number, success, raw_response_json, logged_at)
-                 VALUES (?, ?, ?, ?, 1, ?, ?)',
-                $this->auditTable
-            );
-            $this->db->statement($sqlAudit, [
-                $opId,
-                $op->getServiceId(),
-                $op->getAction(),
-                $newAttemptCount,
-                json_encode(\Coleza\Foundation\Security\SecretRedactor::sanitize($result->getRawResponse()), JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE),
-                $now,
-            ]);
-        } else {
-            // Failure transition
-            $errClass = $classification ?? ProvisioningErrorClassifier::classifyResult($result);
-
-            $shouldRetry = $errClass->isRetryable() && ($newAttemptCount < $op->getMaxAttempts());
-            $newStatus = $shouldRetry ? ProvisioningOperation::STATUS_RETRYING : ProvisioningOperation::STATUS_FAILED;
-
-            $nextAttempt = null;
-            if ($shouldRetry) {
-                $delay = max(10, $errClass->getSuggestedRetryDelaySeconds());
-                $dt = new DateTimeImmutable('now');
-                $nextAttempt = $dt->modify("+{$delay} seconds")->format('Y-m-d H:i:s');
+        $this->prepare();
+        return $this->db->transaction(function () use ($operationUuid, $result, $classification): ProvisioningOperation {
+            \Coleza\Domain\Vault\KeyBinding::guard($this->db, $this->encryptor);
+            $op = $this->findOperationByUuid($operationUuid);
+            if ($op === null) {
+                throw new RuntimeException("Provisioning operation '{$operationUuid}' not found.");
             }
 
-            $sql = sprintf(
-                'UPDATE %s SET status = ?, attempt_count = ?, next_attempt_at = ?, error_category = ?, error_code = ?, error_message = ?, admin_message = ?, result_json = ?, updated_at = ?
-                 WHERE id = ?',
-                $this->opsTable
-            );
-            $this->db->statement($sql, [
-                $newStatus,
-                $newAttemptCount,
-                $nextAttempt,
-                $errClass->getCategory(),
-                $errClass->getErrorCode(),
-                \Coleza\Foundation\Security\SecretRedactor::message($errClass->getClientSafeMessage(), $redactionContext),
-                \Coleza\Foundation\Security\SecretRedactor::message($errClass->getAdminActionableMessage(), $redactionContext),
-                json_encode($result->getData()),
-                $now,
-                $opId,
-            ]);
+            $now = date('Y-m-d H:i:s');
+            $newAttemptCount = $op->getAttemptCount() + 1;
+            $opId = $op->getId() ?? 0;
+            $redactionContext = ['data' => $result->getData(), 'response' => $result->getRawResponse()];
+            $owner = $this->db->selectOne('SELECT * FROM provisioning_operations WHERE id = ?', [$opId]);
+            $resultReference = (new ProvisioningPayloadStore($this->db, $this->encryptor))->write($owner, 'result_json', $result->getData());
 
-            // Insert audit log
-            $sqlAudit = sprintf(
-                'INSERT INTO %s (operation_id, service_id, action, attempt_number, success, error_category, error_code, client_safe_message, admin_actionable_message, raw_response_json, logged_at)
-                 VALUES (?, ?, ?, ?, 0, ?, ?, ?, ?, ?, ?)',
-                $this->auditTable
-            );
-            $this->db->statement($sqlAudit, [
-                $opId,
-                $op->getServiceId(),
-                $op->getAction(),
-                $newAttemptCount,
-                $errClass->getCategory(),
-                $errClass->getErrorCode(),
-                \Coleza\Foundation\Security\SecretRedactor::message($errClass->getClientSafeMessage(), $redactionContext),
-                \Coleza\Foundation\Security\SecretRedactor::message($errClass->getAdminActionableMessage(), $redactionContext),
-                json_encode(\Coleza\Foundation\Security\SecretRedactor::sanitize($result->getRawResponse()), JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE),
-                $now,
-            ]);
-        }
+            if ($result->isSuccess()) {
+                // Success transition
+                $sql = sprintf(
+                    'UPDATE %s SET status = ?, attempt_count = ?, next_attempt_at = NULL, error_category = NULL, error_code = NULL, error_message = NULL, admin_message = NULL, result_json = ?, updated_at = ?
+                     WHERE id = ?',
+                    $this->opsTable
+                );
+                $this->db->statement($sql, [
+                    ProvisioningOperation::STATUS_COMPLETED,
+                    $newAttemptCount,
+                    $resultReference,
+                    $now,
+                    $opId,
+                ]);
 
-        return $this->findOperationById($opId) ?? throw new RuntimeException("Operation {$opId} disappeared.");
+                // Insert audit log
+                $sqlAudit = sprintf(
+                    'INSERT INTO %s (operation_id, service_id, action, attempt_number, success, raw_response_json, logged_at)
+                     VALUES (?, ?, ?, ?, 1, ?, ?)',
+                    $this->auditTable
+                );
+                $this->db->statement($sqlAudit, [
+                    $opId,
+                    $op->getServiceId(),
+                    $op->getAction(),
+                    $newAttemptCount,
+                    json_encode(\Coleza\Foundation\Security\SecretRedactor::sanitize($result->getRawResponse()), JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE),
+                    $now,
+                ]);
+            } else {
+                // Failure transition
+                $errClass = $classification ?? ProvisioningErrorClassifier::classifyResult($result);
+
+                $shouldRetry = $errClass->isRetryable() && ($newAttemptCount < $op->getMaxAttempts());
+                $newStatus = $shouldRetry ? ProvisioningOperation::STATUS_RETRYING : ProvisioningOperation::STATUS_FAILED;
+
+                $nextAttempt = null;
+                if ($shouldRetry) {
+                    $delay = max(10, $errClass->getSuggestedRetryDelaySeconds());
+                    $dt = new DateTimeImmutable('now');
+                    $nextAttempt = $dt->modify("+{$delay} seconds")->format('Y-m-d H:i:s');
+                }
+
+                $sql = sprintf(
+                    'UPDATE %s SET status = ?, attempt_count = ?, next_attempt_at = ?, error_category = ?, error_code = ?, error_message = ?, admin_message = ?, result_json = ?, updated_at = ?
+                     WHERE id = ?',
+                    $this->opsTable
+                );
+                $this->db->statement($sql, [
+                    $newStatus,
+                    $newAttemptCount,
+                    $nextAttempt,
+                    $errClass->getCategory(),
+                    $errClass->getErrorCode(),
+                    \Coleza\Foundation\Security\SecretRedactor::message($errClass->getClientSafeMessage(), $redactionContext),
+                    \Coleza\Foundation\Security\SecretRedactor::message($errClass->getAdminActionableMessage(), $redactionContext),
+                    $resultReference,
+                    $now,
+                    $opId,
+                ]);
+
+                // Insert audit log
+                $sqlAudit = sprintf(
+                    'INSERT INTO %s (operation_id, service_id, action, attempt_number, success, error_category, error_code, client_safe_message, admin_actionable_message, raw_response_json, logged_at)
+                     VALUES (?, ?, ?, ?, 0, ?, ?, ?, ?, ?, ?)',
+                    $this->auditTable
+                );
+                $this->db->statement($sqlAudit, [
+                    $opId,
+                    $op->getServiceId(),
+                    $op->getAction(),
+                    $newAttemptCount,
+                    $errClass->getCategory(),
+                    $errClass->getErrorCode(),
+                    \Coleza\Foundation\Security\SecretRedactor::message($errClass->getClientSafeMessage(), $redactionContext),
+                    \Coleza\Foundation\Security\SecretRedactor::message($errClass->getAdminActionableMessage(), $redactionContext),
+                    json_encode(\Coleza\Foundation\Security\SecretRedactor::sanitize($result->getRawResponse()), JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE),
+                    $now,
+                ]);
+            }
+
+            return $this->findOperationById($opId) ?? throw new RuntimeException("Operation {$opId} disappeared.");
+        });
     }
 
     public function findOperationByUuid(string $uuid): ?ProvisioningOperation
@@ -356,8 +385,9 @@ final class ProvisioningOperationService
             );
         }
 
-        $payload = !empty($row['payload_json']) ? json_decode((string)$row['payload_json'], true) : [];
-        $result = !empty($row['result_json']) ? json_decode((string)$row['result_json'], true) : [];
+        $store = new ProvisioningPayloadStore($this->db, $this->encryptor);
+        $payload = $store->read($row, 'payload_json');
+        $result = $store->read($row, 'result_json');
 
         return new ProvisioningOperation(
             id: (int)$row['id'],

@@ -15,7 +15,7 @@ trait ProvisioningProbeSafetyCases
     {
         $services = new ServiceService($this->db); $services->ensureTables();
         $servers = new ServerService($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()); $servers->ensureTables();
-        $ops = new ProvisioningOperationService($this->db); $ops->ensureTables();
+        $ops = new ProvisioningOperationService($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()); $ops->ensureTables();
         $server = $servers->createServer(['name' => 'Fixture', 'hostname' => 'fixture.test', 'ip_address' => '10.0.0.1', 'provider_slug' => 'cpanel',
             'auth_type' => 'api_token', 'auth_secret' => 'local-fixture-only', 'status' => 'active']);
         $service = $services->createService(['user_id' => 1, 'product_id' => 1, 'status' => ServiceStateMachine::STATUS_PENDING,
@@ -74,7 +74,7 @@ trait ProvisioningProbeSafetyCases
     {
         [$probe, , $op, $services, $ops] = $this->probeFixture(['domain' => 'fixture.test']);
         self::assertTrue($probe->reconcile($op)->isUnknown());
-        $fresh = new ProvisioningOperationService($this->db);
+        $fresh = new ProvisioningOperationService($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         self::assertSame('queued', $fresh->findOperationByUuid($op->getOperationUuid())->getStatus());
         self::assertSame(0, $fresh->findOperationByUuid($op->getOperationUuid())->getAttemptCount());
         self::assertSame('pending', $services->findServiceById($op->getServiceId())->getStatus());
@@ -185,14 +185,14 @@ trait ProvisioningProbeSafetyCases
     public function testMissingServerBindingIsNotAbsence(): void
     {
         [$probe, $transport, $op, , $ops] = $this->probeFixture();
-        $this->db->update('provisioning_operations', ['server_id' => null], 'id = :id', ['id' => $op->getId()]);
+        $op = $ops->queueOperation($op->getServiceId(), $op->getProviderSlug(), $op->getAction(), $op->getPayload(), null);
         self::assertTrue($probe->reconcile($ops->findOperationByUuid($op->getOperationUuid()))->isUnknown());
         self::assertSame([], $transport->getRecordedRequests());
     }
     public function testUnavailableProviderIsNotAbsence(): void
     {
         [$probe, $transport, $op, , $ops] = $this->probeFixture();
-        $this->db->update('provisioning_operations', ['provider_slug' => 'missing'], 'id = :id', ['id' => $op->getId()]);
+        $op = $ops->queueOperation($op->getServiceId(), 'missing', $op->getAction(), $op->getPayload(), $op->getServerId());
         $this->db->update('servers', ['provider_slug' => 'missing'], 'id = :id', ['id' => $op->getServerId()]);
         self::assertTrue($probe->reconcile($ops->findOperationByUuid($op->getOperationUuid()))->isUnknown());
         self::assertSame([], $transport->getRecordedRequests());

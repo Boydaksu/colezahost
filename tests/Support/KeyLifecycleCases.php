@@ -36,6 +36,23 @@ trait KeyLifecycleCases
         PrivateKeyFile::provision($path, $root);
         return [$path, ApplicationKey::encryptor(PrivateKeyFile::load($path, $root))];
     }
+    public function testOperationSecretsSurviveRotationAndOwnerCorruptionPreventsVerification(): void
+    {
+        [$lifecycle, $key] = $this->lifecycleFixture();
+        $ops = new \Coleza\Domain\Provisioning\Services\ProvisioningOperationService($this->db, $key); $ops->ensureTables();
+        $op = $ops->queueOperation(42, 'fixture', 'create', ['password' => 'operation-synthetic-password']);
+        $ops->recordAttempt($op->getOperationUuid(), \Coleza\Domain\Providers\DTO\ProviderOperationResult::success('create', 'ok', '17', ['token' => 'result-synthetic-token']));
+        $lifecycle->initialize(true); [$file, $newKey] = $this->replacementFile();
+        $lifecycle->rotateToFile($file, dirname(__DIR__, 2), true);
+        $fresh = new \Coleza\Domain\Provisioning\Services\ProvisioningOperationService($this->db, $newKey);
+        self::assertSame(['password' => 'operation-synthetic-password'], $fresh->findOperationById($op->getId())->getPayload());
+        self::assertSame(['token' => 'result-synthetic-token'], $fresh->findOperationById($op->getId())->getResultData());
+        $before = $this->db->select('SELECT * FROM provisioning_operations');
+        try { $ops->queueOperation(43, 'fixture', 'create', []); self::fail('Old writer accepted'); } catch (\RuntimeException) { self::assertSame($before, $this->db->select('SELECT * FROM provisioning_operations')); }
+        $verify = new KeyLifecycleService($this->db, $newKey); $verify->verify();
+        $this->db->update('provisioning_operations', ['service_id' => 99], 'id = :id', ['id' => $op->getId()]);
+        $this->expectException(\RuntimeException::class); $verify->verify();
+    }
     private function cleanupLifecycleKeys(): void
     {
         foreach ($this->keyDirectories as $directory) {

@@ -16,6 +16,7 @@ final class KeyLifecycleService
         foreach (['vault_secrets' => 'encrypted_value', 'servers' => 'auth_secret_encrypted', 'user_two_factor' => 'secret'] as $table => $column) {
             if (KeyBinding::tableExists($db, $table) && $db->selectOne("SELECT 1 FROM {$table} WHERE {$column} IS NOT NULL AND {$column} <> '' LIMIT 1") !== null) { return true; }
         }
+        if (KeyBinding::tableExists($db, 'provisioning_operations') && $db->selectOne("SELECT 1 FROM provisioning_operations WHERE (payload_json IS NOT NULL AND payload_json <> '') OR (result_json IS NOT NULL AND result_json <> '') LIMIT 1") !== null) { return true; }
         return KeyBinding::tableExists($db, 'system_settings') && $db->selectOne("SELECT 1 FROM system_settings WHERE setting_value IS NOT NULL AND setting_value <> '' AND (setting_key = 'mail.password' OR is_encrypted = 1) LIMIT 1") !== null;
     }
 
@@ -29,6 +30,7 @@ final class KeyLifecycleService
         if (!\Coleza\Domain\Identity\IdentityPersistence::installed($this->db, ['system_settings' => ['id', 'setting_key', 'setting_value', 'is_encrypted']], installation: false, unique: ['system_settings' => 'setting_key'])) { throw new \LogicException('Install canonical settings before binding a key.'); }
         VaultPersistence::prepare($this->db);
         if (KeyBinding::tableExists($this->db, 'webhook_endpoints')) { SecretStorageUpgrade::assertStorage($this->db, ['webhook_endpoints' => ['id', 'secret']]); }
+        if (KeyBinding::tableExists($this->db, 'provisioning_operations')) { SecretStorageUpgrade::assertStorage($this->db, \Coleza\Domain\Provisioning\Services\ProvisioningOperationService::schemaRequirements()); }
     }
 
     private function maintenance(bool $confirmed): void
@@ -94,7 +96,7 @@ final class KeyLifecycleService
             if ((int) $row['version'] < 1) { throw new \LogicException('Invalid Vault version.'); }
             $scope = VaultService::scope($row); $stored = (string) $row['encrypted_value'];
             $plain = str_starts_with($stored, 'enc:') ? $old->open($stored, $scope) : $this->encryptor->decrypt($stored);
-            $identities[$scope] = true; $counts['vault']++;
+            $identities[$scope] = $plain; $counts['vault']++;
             if ($new !== null) { $plans[] = ['vault_secrets', $row['id'], ['encrypted_value' => $new->seal($plain, $scope), 'version' => (int) $row['version'] + 1, 'last_rotated_at' => date('Y-m-d H:i:s')]]; }
         }
         foreach ($this->db->select('SELECT id, setting_key, setting_value, is_encrypted FROM system_settings ORDER BY id' . $suffix) as $row) {
@@ -132,6 +134,18 @@ final class KeyLifecycleService
                 if ($namespace !== 'server') { throw new \LogicException('Transfer legacy webhook secrets to Vault before key lifecycle.'); }
                 $scope = 'server:' . $row['hostname']; $plain = $old->open($stored, $scope); $counts['legacy_server']++;
                 if ($new !== null) { $plans[] = [$table, $row['id'], [$column => $new->seal($plain, $scope)]]; }
+            }
+        }
+        if (KeyBinding::tableExists($this->db, 'provisioning_operations')) {
+            foreach ($this->db->select('SELECT * FROM provisioning_operations ORDER BY id' . $suffix) as $row) {
+                foreach (['payload_json', 'result_json'] as $column) {
+                    $stored = $row[$column]; if ($stored === null || $stored === '') { continue; }
+                    $key = \Coleza\Domain\Provisioning\Services\ProvisioningPayloadStore::key($row, $column);
+                    $scope = VaultService::scope(['namespace' => \Coleza\Domain\Provisioning\Services\ProvisioningPayloadStore::NAMESPACE, 'secret_key' => $key]);
+                    if (!hash_equals(VaultReferenceStore::reference($key), $stored) || !isset($identities[$scope])) { throw new \RuntimeException('Operation data needs explicit legacy upgrade or owner reconciliation.'); }
+                    \Coleza\Domain\Provisioning\Services\ProvisioningPayloadStore::decode($identities[$scope]);
+                    $counts['references']++;
+                }
             }
         }
         return ['plans' => $plans, 'counts' => $counts];

@@ -263,7 +263,7 @@ final class GoldenMasterScenariosE2ETest extends TestCase
 
         $placementEngine = new PlacementEngine($serverService);
 
-        $operationService = new ProvisioningOperationService($db);
+        $operationService = new ProvisioningOperationService($db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $operationService->ensureTables();
 
         $cpanelTransport = new CpanelMemoryTransport();
@@ -651,7 +651,7 @@ final class GoldenMasterScenariosE2ETest extends TestCase
 
         $placementEngine = new PlacementEngine($serverService);
 
-        $operationService = new ProvisioningOperationService($db);
+        $operationService = new ProvisioningOperationService($db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $operationService->ensureTables();
 
         $transport = new CpanelMemoryTransport();

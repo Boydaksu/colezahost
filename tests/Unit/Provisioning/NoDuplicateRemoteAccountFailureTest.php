@@ -62,7 +62,7 @@ final class NoDuplicateRemoteAccountFailureTest extends TestCase
 
         $this->placementEngine = new PlacementEngine($this->serverService);
 
-        $this->operationService = new ProvisioningOperationService($this->db);
+        $this->operationService = new ProvisioningOperationService($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $this->operationService->ensureTables();
 
         $this->transport = new CpanelMemoryTransport();

@@ -196,7 +196,7 @@ try {
             break;
         case 'provisionReconcile':
             $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-            $operationService = new Coleza\Domain\Provisioning\Services\ProvisioningOperationService($db);
+            $operationService = new Coleza\Domain\Provisioning\Services\ProvisioningOperationService($db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
             $operation = $operationService->findOperationByUuid($argv[5]);
             $transport = new Coleza\Domain\Providers\Cpanel\CpanelMemoryTransport();
             $transport->stageResponse('accountsummary', 200, ['metadata' => ['result' => 1], 'data' => ['acct' => [[

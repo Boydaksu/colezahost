@@ -21,7 +21,7 @@ final class ProvisioningProbeSafetyTest extends \Coleza\Tests\Support\MariaDbTes
             [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION, \PDO::ATTR_EMULATE_PREPARES => false]);
         $pdo->exec('USE `' . $this->database . '`');
         $other = new \Coleza\Foundation\Database\Connection($pdo);
-        $otherOps = new \Coleza\Domain\Provisioning\Services\ProvisioningOperationService($other);
+        $otherOps = new \Coleza\Domain\Provisioning\Services\ProvisioningOperationService($other, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $this->db->beginTransaction();
         try {
             $this->db->select('SELECT * FROM provisioning_operations');
