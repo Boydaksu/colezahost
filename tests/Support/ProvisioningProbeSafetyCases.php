@@ -14,7 +14,7 @@ trait ProvisioningProbeSafetyCases
     private function probeFixture(array $payload = ['username' => 'fixture', 'domain' => 'fixture.test', 'package' => 'starter'], string $action = 'create_account'): array
     {
         $services = new ServiceService($this->db); $services->ensureTables();
-        $servers = new ServerService($this->db); $servers->ensureTables();
+        $servers = new ServerService($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()); $servers->ensureTables();
         $ops = new ProvisioningOperationService($this->db); $ops->ensureTables();
         $server = $servers->createServer(['name' => 'Fixture', 'hostname' => 'fixture.test', 'ip_address' => '10.0.0.1', 'provider_slug' => 'cpanel',
             'auth_type' => 'api_token', 'auth_secret' => 'local-fixture-only', 'status' => 'active']);
@@ -172,7 +172,7 @@ trait ProvisioningProbeSafetyCases
     public function testRetryRunnerDoesNotExecuteOnUnknownResult(): void
     {
         [$probe, $transport, $op, $services, $ops] = $this->probeFixture(['domain' => 'fixture.test']);
-        $servers = new ServerService($this->db);
+        $servers = new ServerService($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $workflow = new \Coleza\Domain\Provisioning\Workflows\HostingProvisioningWorkflow($services, $servers,
             new \Coleza\Domain\Servers\Placement\PlacementEngine($servers),
             new \Coleza\Domain\Servers\Capacity\Services\CapacityReservationService($this->db, $servers),
@@ -243,7 +243,7 @@ trait ProvisioningProbeSafetyCases
     {
         [, $transport, $op, $services, $ops] = $this->probeFixture();
         $this->db->update('provisioning_operations', ['status' => 'reconciliation_required'], 'id = :id', ['id' => $op->getId()]);
-        $servers = new ServerService($this->db);
+        $servers = new ServerService($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $workflow = new \Coleza\Domain\Provisioning\Workflows\HostingProvisioningWorkflow($services, $servers,
             new \Coleza\Domain\Servers\Placement\PlacementEngine($servers),
             new \Coleza\Domain\Servers\Capacity\Services\CapacityReservationService($this->db, $servers),

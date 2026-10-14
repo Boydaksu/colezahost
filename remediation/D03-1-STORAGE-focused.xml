@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml" tests="12" assertions="27" errors="0" failures="0" skipped="0" time="0.512348">
+    <testsuite name="Unit" tests="12" assertions="27" errors="0" failures="0" skipped="0" time="0.512348">
+      <testsuite name="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\SecretStorageTest.php" tests="12" assertions="27" errors="0" failures="0" skipped="0" time="0.512348">
+        <testcase name="testSmtpPasswordStoredEncryptedAndNotReturned" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="24" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="2" time="0.306188"/>
+        <testcase name="testServerTokenStoredEncrypted" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="31" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="2" time="0.019147"/>
+        <testcase name="testTotpSecretStoredEncrypted" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="37" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="2" time="0.018766"/>
+        <testcase name="testLegacyUpgradeNeedsConfirmationAndPreservesRows" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="59" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="1" time="0.018619"/>
+        <testcase name="testUpgradeRestartReplayAndNoPlaintextInQueryLog" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="65" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="9" time="0.019686"/>
+        <testsuite name="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testUpgradeStaysInCallerRollback" tests="2" assertions="6" errors="0" failures="0" skipped="0" time="0.037930">
+          <testcase name="testUpgradeStaysInCallerRollback with data set #0" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="80" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="3" time="0.018610"/>
+          <testcase name="testUpgradeStaysInCallerRollback with data set #1" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="80" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="3" time="0.019320"/>
+        </testsuite>
+        <testcase name="testLateUpgradeWriteFailureRollsBackEverySecret" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="88" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="1" time="0.019003"/>
+        <testcase name="testCipherCannotMoveBetweenServers" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="97" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="1" time="0.018773"/>
+        <testcase name="testCipherCannotMoveBetweenTotpUsers" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="104" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="1" time="0.017991"/>
+        <testcase name="testWrongKeyOrUnknownEnvelopeCannotBeUpgradedAsPlaintext" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="111" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="1" time="0.018400"/>
+        <testcase name="testSmtpLateFailureRollsBackAllSettings" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="118" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="1" time="0.017843"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

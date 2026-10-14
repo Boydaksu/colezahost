@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml" tests="3" assertions="3" errors="0" failures="3" skipped="0" time="0.103921">
+    <testsuite name="Unit" tests="3" assertions="3" errors="0" failures="3" skipped="0" time="0.103921">
+      <testsuite name="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Vault\SecretStorageTest.php" tests="3" assertions="3" errors="0" failures="3" skipped="0" time="0.103921">
+        <testcase name="testSmtpPasswordStoredEncryptedAndNotReturned" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="24" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="1" time="0.070142">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testSmtpPasswordStoredEncryptedAndNotReturned&#13;
+Failed asserting that two strings are not identical.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:28</failure>
+        </testcase>
+        <testcase name="testServerTokenStoredEncrypted" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="31" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="1" time="0.016708">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testServerTokenStoredEncrypted&#13;
+Failed asserting that two strings are not identical.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:34</failure>
+        </testcase>
+        <testcase name="testTotpSecretStoredEncrypted" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php" line="37" class="Coleza\Tests\Unit\Domain\Vault\SecretStorageTest" classname="Coleza.Tests.Unit.Domain.Vault.SecretStorageTest" assertions="1" time="0.017071">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testTotpSecretStoredEncrypted&#13;
+Failed asserting that two strings are not identical.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:41</failure>
+        </testcase>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

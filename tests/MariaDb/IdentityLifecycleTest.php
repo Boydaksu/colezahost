@@ -61,7 +61,7 @@ final class IdentityLifecycleTest extends \Coleza\Tests\Support\MariaDbTestCase
     public function testStaleCallerCannotRedeemPeerConsumedRecoveryCode(): void
     {
         [, , $id, $two, $totp] = $this->identityFixture(); $setup = $two->beginSetup($id, 'fixture@example.test'); $codes = $two->confirmSetup($id, $totp->generateCode($setup['secret']));
-        $peer = new \Coleza\Domain\Identity\TwoFactor\TwoFactorService($this->peerIdentityConnection(), new \Coleza\Domain\Identity\TwoFactor\TotpEngine(), new \Coleza\Domain\Identity\Security\PasswordHasher());
+        $peer = new \Coleza\Domain\Identity\TwoFactor\TwoFactorService($this->peerIdentityConnection(), new \Coleza\Domain\Identity\TwoFactor\TotpEngine(), new \Coleza\Domain\Identity\Security\PasswordHasher(), \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $this->db->getPdo()->beginTransaction();
         try {
             self::assertCount(8, $this->db->select('SELECT id FROM user_recovery_codes WHERE used_at IS NULL'));

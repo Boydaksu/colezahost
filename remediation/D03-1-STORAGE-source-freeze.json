@@ -1,0 +1,26 @@
+{
+  "files": {
+    "src/Domain/Identity/TwoFactor/TwoFactorService.php": "236770b3d9226b4c42f3f1bb40f044f9557d0e378b4c1567ecca234e95a0235c",
+    "src/Domain/Installer/EmailSetupService.php": "6165224e55e281b50d1c2b08b9211b35e3fa134ac1e99034095b50d8db7b6f11",
+    "src/Domain/Servers/Services/ServerService.php": "20213146bae3869c04ccd146fd5964297e96294e50f2e0134229396814991bc8",
+    "src/Domain/Vault/Encryptor.php": "afa9d7dc88473aaf3d3473e9172fa3caa129fc147271155ac89efd4787125ff3",
+    "src/Domain/Vault/SecretCipher.php": "fbf5b3cd682c416a80c1ac04a44dfe3178d0e27888f82a8c88585dd566832923",
+    "src/Domain/Vault/SecretStorageUpgrade.php": "dff6c887d88646ed33dbc898c9640ec181d8240254ce6ee8565670e7f6401701",
+    "src/Foundation/Bootstrap/CoreServiceProvider.php": "f28bfaa4106ff4179340f421d5e7aa075a3ba54598086b3309bc3b4af1ed2778",
+    "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php": "507412471ac22262918d37df6a68d707d7937ab6f2f18fe653ba7051e7ccaa50",
+    "tests/MariaDb/IdentityLifecycleTest.php": "6f0f5a94d80212b65ede3bfd7ac4e9bf231d514feebc37d03f139bd0786ec9c4",
+    "tests/MariaDb/SecretStorageTest.php": "787cfb6349d276c4479221372bb521065a2a3a3974468984b30e66823697bfd6",
+    "tests/MariaDb/fixtures/financial-worker.php": "2910f494a93b373425efd1f32c2460207f7bf279f97a004294dc7d30416b42eb",
+    "tests/Support/IdentityLifecycleCases.php": "ed8b32f2f2660cce6984385cafe71e5c69ecfc17f50b3b4f4b4ddb1bd9b31ba7",
+    "tests/Support/ProvisioningProbeSafetyCases.php": "bd877d13b0fdf86e0fc231c6f5627781ac0928eae5e4f051ff079c859622c3d9",
+    "tests/Support/SecretFixtureKey.php": "73ec8be2cd694ab6918029eff236322701c3471d2f82e6638cf012e661306202",
+    "tests/Support/SecretStorageCases.php": "64f67735523612ef46277f9cfcc480ed3796b113c11017e68b5161472988492a",
+    "tests/Unit/Domain/Identity/TwoFactorServiceTest.php": "09697849c4537b197f044ca44b63389fc91f5074a3d00ca4124b04defb38551d",
+    "tests/Unit/Domain/Vault/SecretStorageTest.php": "dd0135dfe232e1d9de4a2c34b2192592328f4bc13a3da985bedd3be15e8113e0",
+    "tests/Unit/Provisioning/AutomatedHostingGoldenE2ETest.php": "1dc563d640de8f39eb01b28781cd40ac065c4df6ead22bc52bd41911bf9aaf20",
+    "tests/Unit/Provisioning/HostingProvisioningWorkflowTest.php": "8f4a117bf1784b1b22bba79940931a259252e355ba15b163c01864b116f7d70f",
+    "tests/Unit/Provisioning/NoDuplicateRemoteAccountFailureTest.php": "74ddf19450ac691e4c1dde88ce66692d9f7dd34d7651c6f7e888a98f22972cc3",
+    "tests/Unit/Provisioning/ProvisioningRetryAndReconciliationTest.php": "24f1e81b2baa303b4ac38ee245ed1745ce34b099663e39af568141c52c197efa",
+    "tests/Unit/Servers/ServerAndCapacityTest.php": "d6f3f6914dc22cf3eb101ee16a3de4858047bea0cce91020afc0850532153f93"
+  }
+}

@@ -24,7 +24,7 @@ final class ServerAndCapacityTest extends TestCase
         $pdo = new PDO('sqlite::memory:');
         $this->db = new Connection($pdo, 'sqlite');
 
-        $this->serverService = new ServerService($this->db);
+        $this->serverService = new ServerService($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $this->serverService->ensureTables();
     }
 

@@ -255,7 +255,7 @@ final class GoldenMasterScenariosE2ETest extends TestCase
         $serviceService = new ServiceService($db);
         $serviceService->ensureTables();
 
-        $serverService = new ServerService($db);
+        $serverService = new ServerService($db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $serverService->ensureTables();
 
         $reservationService = new CapacityReservationService($db, $serverService);
@@ -643,7 +643,7 @@ final class GoldenMasterScenariosE2ETest extends TestCase
         $serviceService = new ServiceService($db);
         $serviceService->ensureTables();
 
-        $serverService = new ServerService($db);
+        $serverService = new ServerService($db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $serverService->ensureTables();
 
         $reservationService = new CapacityReservationService($db, $serverService);

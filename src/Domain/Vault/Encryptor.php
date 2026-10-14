@@ -32,7 +32,7 @@ final class Encryptor
      * Encrypt plaintext string using AES-256-GCM.
      * Returns base64 payload containing IV + Tag + Ciphertext.
      */
-    public function encrypt(#[\SensitiveParameter] string $plainText): string
+    public function encrypt(#[\SensitiveParameter] string $plainText, string $context = ''): string
     {
         $iv = random_bytes(self::IV_LENGTH);
         $tag = '';
@@ -44,7 +44,7 @@ final class Encryptor
             OPENSSL_RAW_DATA,
             $iv,
             $tag,
-            '',
+            $context,
             self::TAG_LENGTH
         );
 
@@ -58,7 +58,7 @@ final class Encryptor
     /**
      * Decrypt base64 AES-256-GCM payload.
      */
-    public function decrypt(string $payload): string
+    public function decrypt(string $payload, string $context = ''): string
     {
         $decoded = base64_decode($payload, true);
         if ($decoded === false) {
@@ -79,7 +79,8 @@ final class Encryptor
             $this->key,
             OPENSSL_RAW_DATA,
             $iv,
-            $tag
+            $tag,
+            $context
         );
 
         if ($plainText === false) {

@@ -19,7 +19,8 @@ final class ServerService
     private string $serversTable = 'servers';
 
     public function __construct(
-        private Connection $db
+        private Connection $db,
+        private ?\Coleza\Domain\Vault\Encryptor $encryptor = null
     ) {
     }
 
@@ -365,6 +366,7 @@ final class ServerService
         $secure = isset($data['secure']) ? ((bool)$data['secure'] ? 1 : 0) : 1;
         $authType = (string)($data['auth_type'] ?? 'api_token');
         $authSecret = isset($data['auth_secret']) ? (string)$data['auth_secret'] : null;
+        if ($authSecret !== null) { $authSecret = (new \Coleza\Domain\Vault\SecretCipher($this->encryptor))->seal($authSecret, 'server:' . $hostname); }
         $ipPool = (array)($data['assigned_ip_pool'] ?? []);
         $metadata = (array)($data['metadata'] ?? []);
 
@@ -452,7 +454,8 @@ final class ServerService
             : $existing->getPort();
         $secure = isset($data['secure']) ? ((bool)$data['secure'] ? 1 : 0) : ($existing->isSecure() ? 1 : 0);
         $authType = isset($data['auth_type']) ? (string)$data['auth_type'] : $existing->getAuthType();
-        $authSecret = array_key_exists('auth_secret', $data) ? (string)$data['auth_secret'] : $existing->getAuthSecret();
+        $authSecret = array_key_exists('auth_secret', $data) ? ($data['auth_secret'] === null ? null : (string)$data['auth_secret']) : $existing->getAuthSecret();
+        if ($authSecret !== null) { $authSecret = (new \Coleza\Domain\Vault\SecretCipher($this->encryptor))->seal($authSecret, 'server:' . $existing->getHostname()); }
         $ipPool = isset($data['assigned_ip_pool']) ? (array)$data['assigned_ip_pool'] : $existing->getAssignedIpPool();
         $metadata = isset($data['metadata']) ? (array)$data['metadata'] : $existing->getMetadata();
 
@@ -756,7 +759,7 @@ final class ServerService
             port: $row['port'] !== null ? (int)$row['port'] : null,
             secure: (bool)$row['secure'],
             authType: (string)$row['auth_type'],
-            authSecret: $row['auth_secret_encrypted'] !== null ? (string)$row['auth_secret_encrypted'] : null,
+            authSecret: $row['auth_secret_encrypted'] !== null ? (new \Coleza\Domain\Vault\SecretCipher($this->encryptor))->open((string)$row['auth_secret_encrypted'], 'server:' . $row['hostname']) : null,
             assignedIpPool: is_array($ipPool) ? $ipPool : [],
             metadata: is_array($meta) ? $meta : [],
             createdAt: (string)$row['created_at']

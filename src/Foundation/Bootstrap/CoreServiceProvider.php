@@ -199,7 +199,8 @@ final class CoreServiceProvider implements ServiceProviderInterface
             return new \Coleza\Domain\Identity\TwoFactor\TwoFactorService(
                 $c->get(\Coleza\Foundation\Database\Connection::class),
                 $c->get(\Coleza\Domain\Identity\TwoFactor\TotpEngine::class),
-                $c->get(\Coleza\Domain\Identity\Security\PasswordHasher::class)
+                $c->get(\Coleza\Domain\Identity\Security\PasswordHasher::class),
+                $c->get(\Coleza\Domain\Vault\Encryptor::class)
             );
         });
 

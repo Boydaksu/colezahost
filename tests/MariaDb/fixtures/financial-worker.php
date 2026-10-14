@@ -14,7 +14,7 @@ $payments = new Coleza\Domain\Commerce\Payments\PaymentService($db, $invoices);
 $credit = new Coleza\Domain\Commerce\Credit\CreditService($db, $invoices, $payments);
 $queue = new Coleza\Foundation\Queue\DatabaseQueue($db);
 $queue->ensureTables();
-$servers = new Coleza\Domain\Servers\Services\ServerService($db);
+$servers = new Coleza\Domain\Servers\Services\ServerService($db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
 $reservations = new Coleza\Domain\Servers\Capacity\Services\CapacityReservationService($db, $servers);
 $action = $argv[3];
 if (str_starts_with($action, 'fraudReview') && getenv('COLEZA_FRAUD_BASELINE') === '1') {
@@ -59,7 +59,7 @@ try {
             $sessions = new Coleza\Domain\Identity\Session\DatabaseSessionHandler($db);
             $hasher = new Coleza\Domain\Identity\Security\PasswordHasher(PASSWORD_BCRYPT, ['cost' => 4]);
             $auth = new Coleza\Domain\Identity\Auth\AuthService($db, $hasher, $sessions);
-            $two = new Coleza\Domain\Identity\TwoFactor\TwoFactorService($db, new Coleza\Domain\Identity\TwoFactor\TotpEngine(), $hasher);
+            $two = new Coleza\Domain\Identity\TwoFactor\TwoFactorService($db, new Coleza\Domain\Identity\TwoFactor\TotpEngine(), $hasher, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
             $result['accepted'] = false;
             if ($action === 'identityResetAndSessionWrite' && (int) $argv[2] % 2 === 1) {
                 $sessions->write('original-session', ['user_id' => $id, 'old_writer' => true], $id); $result['accepted'] = true; break;

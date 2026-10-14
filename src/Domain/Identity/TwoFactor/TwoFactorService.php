@@ -18,7 +18,8 @@ final class TwoFactorService
     public function __construct(
         private Connection $db,
         private TotpEngine $totpEngine,
-        private PasswordHasher $hasher
+        private PasswordHasher $hasher,
+        private ?\Coleza\Domain\Vault\Encryptor $encryptor = null
     ) {
     }
 
@@ -86,13 +87,15 @@ final class TwoFactorService
     public function beginSetup(int $userId, string $accountEmail, string $issuer = 'Coleza Host'): array
     {
         if ($userId < 1) { throw new \InvalidArgumentException('Invalid user ID.'); }
-        $this->ensureTables(installation: false); TwoFactorLoginSchema::prepare($this->db); $secret = $this->totpEngine->generateSecret();
-        return IdentityPersistence::run($this->db, function () use ($userId, $accountEmail, $issuer, $secret): array {
+        $secret = $this->totpEngine->generateSecret();
+        $storedSecret = (new \Coleza\Domain\Vault\SecretCipher($this->encryptor))->seal($secret, 'totp:' . $userId);
+        $this->ensureTables(installation: false); TwoFactorLoginSchema::prepare($this->db);
+        return IdentityPersistence::run($this->db, function () use ($userId, $accountEmail, $issuer, $secret, $storedSecret): array {
             $sql = 'INSERT INTO user_two_factor (user_id, secret, is_enabled, enabled_at) VALUES (?, ?, 0, NULL)' . ($this->db->getDriverName() === 'mysql' ? ' ON DUPLICATE KEY UPDATE user_id = user_id' : ' ON CONFLICT(user_id) DO NOTHING');
-            $this->db->statement($sql, [$userId, $secret]);
+            $this->db->statement($sql, [$userId, $storedSecret]);
             $record = $this->stateForUpdate($userId);
             if ((int) $record['is_enabled'] === 1) { throw new ValidationException(['two_factor' => ['Active 2FA cannot be replaced by setup.']]); }
-            $this->db->update('user_two_factor', ['secret' => $secret, 'is_enabled' => 0, 'enabled_at' => null], 'user_id = :uid', ['uid' => $userId]);
+            $this->db->update('user_two_factor', ['secret' => $storedSecret, 'is_enabled' => 0, 'enabled_at' => null], 'user_id = :uid', ['uid' => $userId]);
             $this->db->delete('user_recovery_codes', 'user_id = :uid', ['uid' => $userId]);
             $this->db->delete('user_trusted_devices', 'user_id = :uid', ['uid' => $userId]);
             $this->db->delete('two_factor_login_steps', 'user_id = :uid', ['uid' => $userId]);
@@ -171,6 +174,7 @@ final class TwoFactorService
     {
         $record = $this->db->selectOne('SELECT * FROM user_two_factor WHERE user_id = ?' . IdentityPersistence::lock($this->db), [$userId]);
         if ($record !== null && (!in_array((string) $record['is_enabled'], ['0', '1'], true) || (string) $record['secret'] === '')) { throw new \LogicException('Invalid persisted 2FA state; explicit reconciliation required.'); }
+        if ($record !== null) { $record['secret'] = (new \Coleza\Domain\Vault\SecretCipher($this->encryptor))->open((string)$record['secret'], 'totp:' . $userId); }
         return $record;
     }
 

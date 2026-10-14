@@ -54,7 +54,7 @@ final class NoDuplicateRemoteAccountFailureTest extends TestCase
         $this->serviceService = new ServiceService($this->db);
         $this->serviceService->ensureTables();
 
-        $this->serverService = new ServerService($this->db);
+        $this->serverService = new ServerService($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $this->serverService->ensureTables();
 
         $this->reservationService = new CapacityReservationService($this->db, $this->serverService);

@@ -5,17 +5,17 @@
   "phase": "D03",
   "step": "D03.1",
   "status": "IN_PROGRESS",
-  "step_status": "D03_1_RUNTIME_DEFAULT_KEY_REMOVED_EXPLICIT_KEY_POLICY_LOCAL_VERIFIED_SECRET_STORAGE_AND_LEGACY_ROTATION_OPEN",
+  "step_status": "D03_1_SMTP_SERVER_TOTP_SCOPED_ENCRYPTION_AND_EXPLICIT_ATOMIC_LEGACY_UPGRADE_LOCAL_VERIFIED_KEY_LIFECYCLE_VAULT_UNIFICATION_AND_SECRET_AUDIT_OPEN",
   "independent_acceptance": "PENDING",
   "production_ready": false,
   "next_step": "D03.1",
   "next_phase": "D04",
   "tests": {
-    "main_total": 1543,
-    "main_assertions": 11049,
-    "mariadb_total": 22,
-    "mariadb_assertions": 213,
-    "mariadb_scope": "D03.1 key guard: affected ProviderVaultSchemaTest and ProviderBrandSetupTest only; not full native suite",
+    "main_total": 1561,
+    "main_assertions": 11084,
+    "mariadb_total": 131,
+    "mariadb_assertions": 895,
+    "mariadb_scope": "D03.1 storage: six affected native classes;131 exact filtered discovery cases; full native suite not rerun",
     "full_mariadb_current_source": false,
     "last_full_mariadb": {
       "reference_commit": "0d2e3e08d4c121a146f298f77b4bc6b008b6f66e",
@@ -23,8 +23,8 @@
       "assertions": 5399,
       "evidence": "remediation/D02-CLOSEOUT-summary.json"
     },
-    "total": 1565,
-    "assertions": 11262,
+    "total": 1692,
+    "assertions": 11979,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -42,7 +42,7 @@
     "F30": "PARTIAL_PRODUCTION_SCHEMA_ANALYTICS_GOLDEN_AND_EXISTING_ADMIN_PERFORMANCE_BUDGET_VERIFIED_REAL_PROVIDER_END_TO_END_ACCEPTANCE_OPEN",
     "F21": "PARTIAL_SUPPORT_SCHEMA_ASSIGNMENT_CONVERSATION_CALLER_AND_PRE_EFFECT_DEPENDENCY_CHECKS_IMPLEMENTED_REAL_CONTEXT_COMMAND_SCOPE_AND_STORAGE_RECOVERY_OPEN",
     "F08": "RUNTIME_FALLBACK_REMOVED_EXPLICIT_KEY_POLICY_VERIFIED_INSTALL_PROVISIONING_ROTATION_AND_LEGACY_RECOVERY_OPEN",
-    "F09": "OPEN_SMTP_SERVER_AND_TOTP_PLAINTEXT_STORAGE_MIGRATION_REQUIRED"
+    "F09": "SMTP_SERVER_TOTP_ENCRYPTED_STORAGE_AND_EXPLICIT_LEGACY_UPGRADE_LOCAL_VERIFIED_PROVIDER_VAULT_UNIFICATION_OTHER_SECRET_PATHS_AND_FULL_REDACTION_ACCEPTANCE_OPEN"
   },
   "remaining_steps": [
     "D03.1",
@@ -83,5 +83,6 @@
     }
   },
   "d03_plan": "remediation/D03-PLAN.md",
-  "d03_key_evidence": "remediation/D03-1-KEY-SONUC.md"
+  "d03_key_evidence": "remediation/D03-1-KEY-SONUC.md",
+  "d03_storage_evidence": "remediation/D03-1-STORAGE-SONUC.md"
 }

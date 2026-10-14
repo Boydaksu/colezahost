@@ -25,7 +25,7 @@ final class TwoFactorServiceTest extends TestCase
         $this->connection = new Connection($pdo, 'sqlite');
         $this->totpEngine = new TotpEngine();
         $this->hasher = new PasswordHasher(PASSWORD_BCRYPT, ['cost' => 4]);
-        $this->twoFactor = new TwoFactorService($this->connection, $this->totpEngine, $this->hasher);
+        $this->twoFactor = new TwoFactorService($this->connection, $this->totpEngine, $this->hasher, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
     }
 
     public function testTotpEngineCodeGenerationAndVerification(): void

@@ -18,11 +18,14 @@ use Throwable;
  */
 final class EmailSetupService
 {
+    public function __construct(private ?\Coleza\Domain\Vault\Encryptor $encryptor = null) {}
+
     /**
      * @return array<string, string>
      */
     public function configureEmail(Connection $db, EmailTransportConfig $config, string $prefix = ''): array
     {
+        if (!preg_match('/^[a-zA-Z0-9_]*$/D', $prefix)) { throw new \InvalidArgumentException('Invalid table prefix.'); }
         $tSettings = $prefix . 'system_settings';
 
         $settings = [
@@ -36,24 +39,44 @@ final class EmailSetupService
             'mail.password' => (string) ($config->getPassword() ?? ''),
         ];
 
-        foreach ($settings as $key => $val) {
-            $existing = $db->selectOne(sprintf('SELECT id FROM %s WHERE setting_key = ?', $tSettings), [$key]);
-            $isEncrypted = ($key === 'mail.password') ? 1 : 0;
+        $password = $settings['mail.password'];
+        $settings['mail.password'] = $password === '' ? '' : (new \Coleza\Domain\Vault\SecretCipher($this->encryptor))->seal($password, 'smtp:' . $prefix);
+        \Coleza\Domain\Vault\SecretStorageUpgrade::assertStorage($db, [$tSettings => ['id', 'setting_key', 'setting_value', 'is_encrypted', 'updated_at']]);
+        $db->transaction(function () use ($db, $settings, $tSettings): void {
+            foreach ($settings as $key => $val) {
+                $existing = $db->selectOne(sprintf('SELECT id FROM %s WHERE setting_key = ?', $tSettings), [$key]);
+                $isEncrypted = ($key === 'mail.password' && $val !== '') ? 1 : 0;
 
-            if ($existing !== null) {
-                $db->statement(
-                    sprintf('UPDATE %s SET setting_value = ?, is_encrypted = ?, updated_at = CURRENT_TIMESTAMP WHERE setting_key = ?', $tSettings),
-                    [$val, $isEncrypted, $key]
-                );
-            } else {
-                $db->statement(
-                    sprintf('INSERT INTO %s (setting_key, setting_value, is_encrypted, updated_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)', $tSettings),
-                    [$key, $val, $isEncrypted]
-                );
+                if ($existing !== null) {
+                    $db->statement(
+                        sprintf('UPDATE %s SET setting_value = ?, is_encrypted = ?, updated_at = CURRENT_TIMESTAMP WHERE setting_key = ?', $tSettings),
+                        [$val, $isEncrypted, $key]
+                    );
+                } else {
+                    $db->statement(
+                        sprintf('INSERT INTO %s (setting_key, setting_value, is_encrypted, updated_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)', $tSettings),
+                        [$key, $val, $isEncrypted]
+                    );
+                }
             }
-        }
 
+        });
+        $settings['mail.password'] = $password === '' ? '' : '••••••••';
         return $settings;
+    }
+
+    public function readConfiguration(Connection $db, string $prefix = ''): EmailTransportConfig
+    {
+        if (!preg_match('/^[a-zA-Z0-9_]*$/D', $prefix)) { throw new \InvalidArgumentException('Invalid table prefix.'); }
+        $values = [];
+        foreach ($db->select("SELECT setting_key, setting_value FROM {$prefix}system_settings WHERE setting_key LIKE 'mail.%'") as $row) {
+            $values[$row['setting_key']] = $row['setting_value'];
+        }
+        $stored = (string) ($values['mail.password'] ?? '');
+        $password = $stored === '' ? null : (new \Coleza\Domain\Vault\SecretCipher($this->encryptor))->open($stored, 'smtp:' . $prefix);
+        return new EmailTransportConfig(driver: $values['mail.driver'] ?? 'smtp', fromAddress: $values['mail.from_address'] ?? 'noreply@colezahost.com',
+            fromName: $values['mail.from_name'] ?? 'Coleza Host', host: $values['mail.host'] ?? null, port: (int) ($values['mail.port'] ?? 587),
+            encryption: $values['mail.encryption'] ?? 'tls', username: $values['mail.username'] ?? null, password: $password);
     }
 
     /**

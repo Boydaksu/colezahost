@@ -1,0 +1,28 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+[41;37mF[0m[41;37mF[0m[41;37mF[0m                                                                 3 / 3 (100%)
+
+Time: 00:00.131, Memory: 48.00 MB
+
+There were 3 failures:
+
+1) Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testSmtpPasswordStoredEncryptedAndNotReturned
+Failed asserting that two strings are not identical.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:28
+
+2) Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testServerTokenStoredEncrypted
+Failed asserting that two strings are not identical.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:34
+
+3) Coleza\Tests\Unit\Domain\Vault\SecretStorageTest::testTotpSecretStoredEncrypted
+Failed asserting that two strings are not identical.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretStorageCases.php:41
+
+[37;41mFAILURES![0m
+[37;41mTests: 3[0m[37;41m, Assertions: 3[0m[37;41m, Failures: 3[0m[37;41m.[0m

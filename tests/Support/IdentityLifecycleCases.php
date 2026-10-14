@@ -15,7 +15,7 @@ trait IdentityLifecycleCases
         $sessions = new DatabaseSessionHandler($this->db); $hasher = new PasswordHasher(PASSWORD_BCRYPT, ['cost' => 4]);
         $auth = new AuthService($this->db, $hasher, $sessions); $id = $auth->register('fixture@example.test', 'Original123!', 'Fixture');
         $sessions->write('original-session', ['user_id' => $id], $id);
-        $totp = new TotpEngine(); $two = new TwoFactorService($this->db, $totp, $hasher); $two->ensureTables();
+        $totp = new TotpEngine(); $two = new TwoFactorService($this->db, $totp, $hasher, \Coleza\Tests\Support\SecretFixtureKey::encryptor()); $two->ensureTables();
         return [$auth, $sessions, $id, $two, $totp];
     }
     public function testInstalledIdentitySetupDoesNotCommitCallerOrExecuteDdl(): void

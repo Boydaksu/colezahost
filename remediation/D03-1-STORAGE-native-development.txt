@@ -1,0 +1,21 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit-mariadb.xml
+
+...............................................................  63 / 130 ( 48%)
+.........................[31;1mE[0m..................................... 126 / 130 ( 96%)
+....                                                            130 / 130 (100%)
+
+Time: 03:14.663, Memory: 38.00 MB
+
+There was 1 error:
+
+1) Coleza\Tests\MariaDb\ProvisioningProbeSafetyTest::testFourWorkersCanCommitOnlyOneCompletionAndAudit
+JsonException: Syntax error
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\MariaDbTestCase.php:67
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\ProvisioningProbeSafetyTest.php:11
+
+[37;41mERRORS![0m
+[37;41mTests: 130[0m[37;41m, Assertions: 885[0m[37;41m, Errors: 1[0m[37;41m.[0m
