@@ -14,7 +14,7 @@ trait AutomationActionJournalCases
     private int $calls = 0;
     private function journalEngine(?\Closure $handler = null): \Coleza\Domain\Automation\Engine\AutomationEngine
     {
-        \Coleza\Domain\Automation\Persistence\AutomationSchema::installSchema($this->db);
+        \Coleza\Tests\Support\AutomationStorageFixture::install($this->db);
         \Coleza\Domain\Automation\Versioning\DatabaseRuleVersionManager::installSchema($this->db);
         \Coleza\Domain\Automation\Safety\DatabaseBlastRadiusLimiter::installSchema($this->db);
         $registry = new ActionRegistry();
@@ -22,7 +22,7 @@ trait AutomationActionJournalCases
             $this->calls++;
             return $handler === null ? [] : $handler($action, $context);
         }));
-        return DatabaseAutomationFactory::create($this->db, $registry);
+        return DatabaseAutomationFactory::create($this->db, $registry, encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
     }
     private function journalRule(int $count = 1): AutomationRule
     {
@@ -195,10 +195,10 @@ trait AutomationActionJournalCases
         $engine = $this->journalEngine();
         $entry = $engine->getDelayManager()->schedule('r', 'Rule', $this->journalContext(),
             [new ActionDefinition('a0', 'send'), new ActionDefinition('a1', 'send')], 0);
-        $data = \Coleza\Domain\Automation\Persistence\AutomationCodec::decode($this->db->selectOne('SELECT payload FROM automation_pending WHERE id = ?', [$entry->getId()])['payload']);
+        $data = \Coleza\Tests\Support\AutomationStorageFixture::decode($this->db, $this->db->selectOne('SELECT payload FROM automation_pending WHERE id = ?', [$entry->getId()])['payload']);
         $data['execute_at'] = (new \DateTimeImmutable('-1 hour'))->format('Y-m-d\TH:i:s.uP');
         $data['scheduled_at'] = (new \DateTimeImmutable('-1 hour -1 second'))->format('Y-m-d\TH:i:s.uP');
-        $this->db->update('automation_pending', ['payload' => \Coleza\Domain\Automation\Persistence\AutomationCodec::encode($data)], 'id = :id', ['id' => $entry->getId()]);
+        \Coleza\Tests\Support\AutomationStorageFixture::update($this->db, 'automation_pending', ['payload' => \Coleza\Domain\Automation\Persistence\AutomationCodec::encode($data)], 'id = :id', ['id' => $entry->getId()]);
         $this->rejectJournalWrite('UPDATE', "NEW.status = 'REPORTED_SUCCESS'");
         try { $engine->dispatchDueDelayedExecutions(); self::fail('Delayed outcome fault hidden'); }
         catch (\PDOException) { self::assertSame(1, $this->calls); }
@@ -236,14 +236,14 @@ trait AutomationActionJournalCases
         $engine = $this->journalEngine();
         $engine->executeRule($this->journalRule(), $this->journalContext());
         $this->db->update('automation_action_attempts', ['status' => 'UNKNOWN_NEW_STATE'], 'id = :id', ['id' => $this->journalRows()[0]['id']]);
-        try { (new \Coleza\Domain\Automation\Execution\AutomationRecoveryInspector($this->db))->listUnresolvedActionAttempts(); self::fail('Unknown state hidden'); }
+        try { (new \Coleza\Domain\Automation\Execution\AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolvedActionAttempts(); self::fail('Unknown state hidden'); }
         catch (\UnexpectedValueException) { self::assertSame(1, $this->calls); }
     }
     public function testSkippedHandlerReceiptIsNotProviderCompletionProof(): void
     {
         $engine = $this->journalEngine(static fn($a) => ActionResult::skipped($a->getId(), $a->getType(), 'nothing to do'));
         $engine->executeRule($this->journalRule(), $this->journalContext());
-        $items = (new \Coleza\Domain\Automation\Execution\AutomationRecoveryInspector($this->db))->listUnresolvedActionAttempts();
+        $items = (new \Coleza\Domain\Automation\Execution\AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolvedActionAttempts();
         self::assertCount(1, $items);
         self::assertSame('HANDLER_SKIPPED', $items[0]['reason_code']);
         self::assertFalse($items[0]['automatic_retry_allowed']);
@@ -262,7 +262,7 @@ trait AutomationActionJournalCases
     {
         $this->journalEngine();
         $this->db->statement('DROP TABLE automation_action_attempts');
-        try { DatabaseAutomationFactory::create($this->db, new ActionRegistry()); self::fail('Missing journal accepted'); }
+        try { DatabaseAutomationFactory::create($this->db, new ActionRegistry(), encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor()); self::fail('Missing journal accepted'); }
         catch (\PDOException) { self::assertSame(0, $this->calls); }
         if ($this->db->getDriverName() === 'mysql') {
             self::assertNull($this->db->selectOne("SELECT 1 FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'automation_action_attempts'"));

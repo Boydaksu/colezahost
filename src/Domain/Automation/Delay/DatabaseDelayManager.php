@@ -9,7 +9,7 @@ use DateTimeImmutable;
 final class DatabaseDelayManager implements DelayManagerInterface
 {
     private readonly PendingStore $store;
-    public function __construct(private readonly Connection $db) { $this->store = new PendingStore($db, 'delay'); }
+    public function __construct(private readonly Connection $db, private readonly ?\Coleza\Domain\Vault\Encryptor $encryptor = null) { $this->store = new PendingStore($db, 'delay', $encryptor); }
     public function schedule(string $ruleId, string $ruleName, TriggerContext $context, array $actions, int $delaySeconds, array $executionSnapshot = []): DelayedExecution
     {
         $entry = (new DelayManager())->schedule($ruleId, $ruleName, $context, $actions, $delaySeconds, $executionSnapshot);
@@ -27,12 +27,12 @@ final class DatabaseDelayManager implements DelayManagerInterface
         return $this->store->mutate($id, function (?DelayedExecution $entry): bool {
             if ($entry === null || !$entry->isDue(new DateTimeImmutable()) || $entry->getStatus() !== DelayStatus::SCHEDULED) { return false; }
             $approvalId = $entry->getExecutionSnapshot()['approval_id'] ?? null;
-            $parents = array_values(array_filter((new PendingStore($this->db, 'approval'))->list('APPROVED'),
+            $parents = array_values(array_filter((new PendingStore($this->db, 'approval', $this->encryptor))->list('APPROVED'),
                 static fn(\Coleza\Domain\Automation\Approval\PendingApproval $p): bool => $p->getDelayedExecutionId() === $entry->getId()));
             if ($approvalId !== null || $parents !== []) {
-                $parent = $approvalId === null ? null : (new PendingStore($this->db, 'approval'))->find($approvalId);
+                $parent = $approvalId === null ? null : (new PendingStore($this->db, 'approval', $this->encryptor))->find($approvalId);
                 if ($approvalId === null || count($parents) !== 1 || $parent === null || !\Coleza\Domain\Automation\Approval\ApprovalDelayLink::matches($parent, $entry,
-                    new \Coleza\Domain\Automation\Versioning\DatabaseRuleVersionManager($this->db))) {
+                    new \Coleza\Domain\Automation\Versioning\DatabaseRuleVersionManager($this->db, $this->encryptor))) {
                     throw new \LogicException('Linked approval/delay inputs are inconsistent; reconciliation required');
                 }
             }

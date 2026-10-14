@@ -7,29 +7,39 @@ use Coleza\Domain\Automation\Delay\DelayedExecution;
 
 final class PendingStore
 {
-    public function __construct(private readonly Connection $db, private readonly string $kind) {}
+    public function __construct(private readonly Connection $db, private readonly string $kind, private readonly ?\Coleza\Domain\Vault\Encryptor $encryptor = null) {}
 
     public function add(PendingApproval|DelayedExecution $entry): void
     {
-        $this->db->insert('automation_pending', ['id' => $entry->getId(), 'kind' => $this->kind,
-            'status' => $entry->getStatus()->value, 'payload' => AutomationCodec::encode(AutomationCodec::pending($entry))]);
+        $this->db->transaction(function () use ($entry): void {
+            $secrets = new AutomationSecretStore($this->db, $this->encryptor); $secrets->guard();
+            $owner = ['id' => $entry->getId(), 'kind' => $this->kind, 'status' => $entry->getStatus()->value];
+            $owner['payload'] = $secrets->write('automation_pending', $owner, AutomationCodec::pending($entry));
+            $this->db->insert('automation_pending', $owner);
+        });
     }
 
     public function find(string $id): PendingApproval|DelayedExecution|null
     {
-        $row = $this->db->selectOne('SELECT * FROM automation_pending WHERE id = ? AND kind = ?' . $this->db->forUpdate(), [$id, $this->kind]);
-        return $row === null ? null : self::hydrateRow($row);
+        return $this->db->transaction(function () use ($id): PendingApproval|DelayedExecution|null {
+            (new AutomationSecretStore($this->db, $this->encryptor))->guard();
+            $row = $this->db->selectOne('SELECT * FROM automation_pending WHERE id = ? AND kind = ?' . $this->db->forUpdate(), [$id, $this->kind]);
+            return $row === null ? null : $this->hydrateRow($row);
+        });
     }
 
     public function list(string $status): array
     {
-        return array_map(self::hydrateRow(...),
-            $this->db->select('SELECT * FROM automation_pending WHERE kind = ? AND status = ? ORDER BY id' . $this->db->forUpdate(), [$this->kind, $status]));
+        return $this->db->transaction(function () use ($status): array {
+            (new AutomationSecretStore($this->db, $this->encryptor))->guard();
+            return array_map($this->hydrateRow(...),
+                $this->db->select('SELECT * FROM automation_pending WHERE kind = ? AND status = ? ORDER BY id' . $this->db->forUpdate(), [$this->kind, $status]));
+        });
     }
 
-    public static function hydrateRow(array $row): PendingApproval|DelayedExecution
+    public function hydrateRow(array $row, bool $readOnly = false): PendingApproval|DelayedExecution
     {
-        $entry = AutomationCodec::hydrate(AutomationCodec::decode($row['payload']), $row['kind']);
+        $entry = AutomationCodec::hydrate((new AutomationSecretStore($this->db, $this->encryptor))->read('automation_pending', $row, $readOnly), $row['kind']);
         if ($entry->getId() !== $row['id'] || $entry->getStatus()->value !== $row['status']) {
             throw new \UnexpectedValueException('Pending identity or state mismatch; reconciliation required');
         }
@@ -40,6 +50,7 @@ final class PendingStore
     public function mutate(string $id, callable $change): mixed
     {
         return $this->db->transaction(function () use ($id, $change) {
+            (new AutomationSecretStore($this->db, $this->encryptor))->guard();
             $this->db->lockRow('automation_state_lock', 1);
             if ($this->db->selectOne('SELECT id FROM automation_state_lock WHERE id = 1') === null) {
                 throw new \RuntimeException('Automation state lock missing; mutation refused.');
@@ -48,7 +59,7 @@ final class PendingStore
             $result = $change($entry);
             if ($entry !== null) {
                 $this->db->update('automation_pending', ['status' => $entry->getStatus()->value,
-                    'payload' => AutomationCodec::encode(AutomationCodec::pending($entry))], 'id = :id AND kind = :kind', ['id' => $id, 'kind' => $this->kind]);
+                    'payload' => (new AutomationSecretStore($this->db, $this->encryptor))->write('automation_pending', ['id' => $id, 'kind' => $this->kind, 'status' => $entry->getStatus()->value], AutomationCodec::pending($entry))], 'id = :id AND kind = :kind', ['id' => $id, 'kind' => $this->kind]);
             }
             return $result;
         });

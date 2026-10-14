@@ -11,13 +11,17 @@ use Coleza\Domain\Automation\Versioning\DatabaseRuleVersionManager;
 /** Read-only evidence inventory. Never retries an uncertain external operation. */
 final class AutomationRecoveryInspector
 {
-    public function __construct(private readonly Connection $db) {}
+    public function __construct(private readonly Connection $db, private readonly ?\Coleza\Domain\Vault\Encryptor $encryptor = null) {}
     /** Includes direct ACTIVE runs even when no approval/delay or final history exists. */
     public function listUnresolvedActionAttempts(): array
     {
         return (new DatabaseActionAttemptJournal($this->db))->listUnresolved();
     }
     public function listUnresolved(): array
+    {
+        return $this->db->transaction(fn(): array => $this->inspect());
+    }
+    private function inspect(): array
     {
         $attempts = [];
         $dispatchSizes = [];
@@ -32,7 +36,7 @@ final class AutomationRecoveryInspector
         }
         $outcomes = [];
         foreach ($this->db->select('SELECT * FROM automation_run_history') as $row) {
-            $run = AutomationCodec::decode($row['payload']);
+            $run = (new \Coleza\Domain\Automation\Persistence\AutomationSecretStore($this->db, $this->encryptor))->read('automation_run_history', $row, true);
             if (($run['run_id'] ?? null) !== $row['id'] || ($run['rule_id'] ?? null) !== $row['rule_id']
                 || ($run['correlation_id'] ?? null) !== $row['correlation_id'] || !is_array($run['metadata'] ?? null)) {
                 throw new \UnexpectedValueException('History identity mismatch; reconciliation required');
@@ -49,8 +53,8 @@ final class AutomationRecoveryInspector
         $result = [];
         $rows = $this->db->select('SELECT * FROM automation_pending ORDER BY id');
         $entries = [];
-        foreach ($rows as $row) { $entries[$row['id']] = PendingStore::hydrateRow($row); }
-        $versions = new DatabaseRuleVersionManager($this->db);
+        foreach ($rows as $row) { $entries[$row['id']] = (new PendingStore($this->db, $row['kind'], $this->encryptor))->hydrateRow($row, true); }
+        $versions = new DatabaseRuleVersionManager($this->db, $this->encryptor, true);
         foreach ($rows as $row) {
             $entry = $entries[$row['id']];
             if ($entry instanceof DelayedExecution && isset($entry->getExecutionSnapshot()['approval_id'])) {

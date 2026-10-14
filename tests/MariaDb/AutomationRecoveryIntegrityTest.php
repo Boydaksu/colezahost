@@ -19,7 +19,7 @@ final class AutomationRecoveryIntegrityTest extends \Coleza\Tests\Support\MariaD
         $results = $this->runParallel('automationClaim', 0, $child);
         self::assertSame(1, array_sum(array_column($results, 'claimed')));
         self::assertSame('DISPATCHING', $engine->getDelayManager()->findById($child)->getStatus()->value);
-        self::assertCount(1, (new \Coleza\Domain\Automation\Execution\AutomationRecoveryInspector($this->db))->listUnresolved());
+        self::assertCount(1, (new \Coleza\Domain\Automation\Execution\AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved());
     }
     public function testReverseParentLookupUsesCommittedStateAfterOldSnapshot(): void
     {
@@ -33,13 +33,13 @@ final class AutomationRecoveryIntegrityTest extends \Coleza\Tests\Support\MariaD
         $this->db->beginTransaction();
         try {
             $this->db->select('SELECT * FROM automation_pending'); // Snapshot predates the approved parent and child.
-            $fresh = \Coleza\Domain\Automation\Engine\DatabaseAutomationFactory::create($other, new \Coleza\Domain\Automation\Actions\ActionRegistry());
+            $fresh = \Coleza\Domain\Automation\Engine\DatabaseAutomationFactory::create($other, new \Coleza\Domain\Automation\Actions\ActionRegistry(), encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
             $child = $fresh->executeApprovedRequest($pending->getId(), 'actor')->getDelayId();
-            $data = \Coleza\Domain\Automation\Persistence\AutomationCodec::decode($other->selectOne('SELECT payload FROM automation_pending WHERE id = ?', [$child])['payload']);
+            $data = \Coleza\Tests\Support\AutomationStorageFixture::decode($other, $other->selectOne('SELECT payload FROM automation_pending WHERE id = ?', [$child])['payload']);
             unset($data['execution_snapshot']['approval_id']);
             $data['execute_at'] = (new \DateTimeImmutable('-1 hour'))->format('Y-m-d\TH:i:s.uP');
             $data['scheduled_at'] = (new \DateTimeImmutable($data['execute_at']))->modify('-600 seconds')->format('Y-m-d\TH:i:s.uP');
-            $other->update('automation_pending', ['payload' => \Coleza\Domain\Automation\Persistence\AutomationCodec::encode($data)], 'id = :id', ['id' => $child]);
+            \Coleza\Tests\Support\AutomationStorageFixture::update($other, 'automation_pending', ['payload' => \Coleza\Domain\Automation\Persistence\AutomationCodec::encode($data)], 'id = :id', ['id' => $child]);
             try { $engine->getDelayManager()->claimForDispatch($child); self::fail('Stale parent snapshot bypassed reverse-link validation'); }
             catch (\LogicException) { self::assertSame('SCHEDULED', $engine->getDelayManager()->findById($child)->getStatus()->value); }
         } finally { $this->db->rollBack(); }

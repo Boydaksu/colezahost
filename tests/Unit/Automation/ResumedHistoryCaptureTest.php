@@ -31,8 +31,8 @@ final class ResumedHistoryCaptureTest extends \PHPUnit\Framework\TestCase
     public function testPersistentEvidenceValidationHappensBeforeDecisionAndExternalEffect(): void
     {
         $db = new \Coleza\Foundation\Database\Connection(new \PDO('sqlite::memory:'));
-        \Coleza\Domain\Automation\Persistence\AutomationSchema::installSchema($db);
-        $history = new \Coleza\Domain\Automation\Execution\DatabaseRunHistoryRepository($db);
+        \Coleza\Tests\Support\AutomationStorageFixture::install($db);
+        $history = new \Coleza\Domain\Automation\Execution\DatabaseRunHistoryRepository($db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         [$engine, $approval, $entry] = $this->fixture($history);
         try { $engine->executeApprovedRequest($entry->getId(), 'actor'); self::fail('Unsupported persistent inputs accepted'); }
         catch (\InvalidArgumentException) {

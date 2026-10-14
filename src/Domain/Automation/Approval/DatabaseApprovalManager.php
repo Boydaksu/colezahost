@@ -9,7 +9,7 @@ use DateTimeImmutable;
 final class DatabaseApprovalManager implements ApprovalManagerInterface
 {
     private readonly PendingStore $store;
-    public function __construct(Connection $db) { $this->store = new PendingStore($db, 'approval'); }
+    public function __construct(Connection $db, ?\Coleza\Domain\Vault\Encryptor $encryptor = null) { $this->store = new PendingStore($db, 'approval', $encryptor); }
     public function createRequest(string $ruleId, string $ruleName, TriggerContext $context, array $actions, ApprovalRequirement $requirement, array $executionSnapshot = []): PendingApproval
     {
         $entry = (new ApprovalManager())->createRequest($ruleId, $ruleName, $context, $actions, $requirement, $executionSnapshot);

@@ -106,15 +106,15 @@ trait AutomationLifecycleBoundaryCases
     public function testProviderRequiredFailureIsDurableAndNoAutomaticRetryIsGranted(): void
     {
         [$service, $record, $handler] = $this->lifecycleFixture('suspend');
-        \Coleza\Domain\Automation\Persistence\AutomationSchema::installSchema($this->db);
+        \Coleza\Tests\Support\AutomationStorageFixture::install($this->db);
         \Coleza\Domain\Automation\Versioning\DatabaseRuleVersionManager::installSchema($this->db);
         \Coleza\Domain\Automation\Safety\DatabaseBlastRadiusLimiter::installSchema($this->db);
         $registry = new \Coleza\Domain\Automation\Actions\ActionRegistry(); $registry->register($handler);
-        $engine = \Coleza\Domain\Automation\Engine\DatabaseAutomationFactory::create($this->db, $registry);
+        $engine = \Coleza\Domain\Automation\Engine\DatabaseAutomationFactory::create($this->db, $registry, encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $pending = $engine->getApprovalManager()->createRequest('r', 'Suspend', new TriggerContext('event'),
             [new ActionDefinition('a', 'service.suspend', ['service_id' => $record->getId()])], new \Coleza\Domain\Automation\Approval\ApprovalRequirement(), ['delay_seconds' => 0]);
         self::assertFalse($engine->executeApprovedRequest($pending->getId(), 'actor')->isSuccessful());
-        $items = (new \Coleza\Domain\Automation\Execution\AutomationRecoveryInspector($this->db))->listUnresolved();
+        $items = (new \Coleza\Domain\Automation\Execution\AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved();
         self::assertCount(1, $items); self::assertFalse($items[0]['automatic_retry_allowed']);
         self::assertSame('OUTCOME_UNKNOWN', $this->db->selectOne('SELECT status FROM automation_action_attempts')['status']);
         self::assertSame('active', $service->findServiceById($record->getId())->getStatus());

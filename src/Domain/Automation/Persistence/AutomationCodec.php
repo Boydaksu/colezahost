@@ -11,13 +11,13 @@ use DateTimeImmutable;
 /** Only data is stored. PHP objects and executable custom actions are never serialized. */
 final class AutomationCodec
 {
-    public static function encode(array $data): string
+    public static function encode(#[\SensitiveParameter] array $data): string
     {
         self::validate($data);
         return json_encode($data, JSON_THROW_ON_ERROR | JSON_PRESERVE_ZERO_FRACTION);
     }
 
-    private static function validate(mixed $value, int $depth = 0): void
+    private static function validate(#[\SensitiveParameter] mixed $value, int $depth = 0): void
     {
         if ($depth > 64) { throw new \InvalidArgumentException('Automation data exceeds the nesting limit.'); }
         if (is_array($value)) {
@@ -27,7 +27,7 @@ final class AutomationCodec
         }
     }
 
-    public static function decode(string $json): array
+    public static function decode(#[\SensitiveParameter] string $json): array
     {
         $data = json_decode($json, true, 65, JSON_THROW_ON_ERROR);
         if (!is_array($data)) { throw new \UnexpectedValueException('Invalid automation record.'); }

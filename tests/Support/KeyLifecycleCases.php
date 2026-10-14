@@ -36,6 +36,33 @@ trait KeyLifecycleCases
         PrivateKeyFile::provision($path, $root);
         return [$path, ApplicationKey::encryptor(PrivateKeyFile::load($path, $root))];
     }
+    public function testAutomationSecretsSurviveRotationAndDeepVerifyRejectsOwnerSplice(): void
+    {
+        [$lifecycle, $key] = $this->lifecycleFixture();
+        \Coleza\Tests\Support\AutomationStorageFixture::install($this->db);
+        \Coleza\Domain\Automation\Versioning\DatabaseRuleVersionManager::installSchema($this->db);
+        $manager = new \Coleza\Domain\Automation\Approval\DatabaseApprovalManager($this->db, $key);
+        $entry = $manager->createRequest('rule', 'Fixture', new \Coleza\Domain\Automation\Triggers\TriggerContext('event', ['password' => 'automation-synthetic-password']),
+            [new \Coleza\Domain\Automation\Actions\ActionDefinition('a', 'fixture', ['token' => 'automation-synthetic-token'])], new \Coleza\Domain\Automation\Approval\ApprovalRequirement());
+        $history = new \Coleza\Domain\Automation\Execution\DatabaseRunHistoryRepository($this->db, $key);
+        $record = new \Coleza\Domain\Automation\Execution\AutomationRunRecord('secret-run', 'rule', 'Fixture', 1, 'event', 'corr',
+            \Coleza\Domain\Automation\Execution\ExecutionMode::ACTIVE, \Coleza\Domain\Automation\Execution\RunStatus::SUCCESS, true, 'THEN', contextSummary: ['password' => 'history-synthetic-password']);
+        $history->save($record);
+        $rule = new \Coleza\Domain\Automation\Engine\AutomationRule('rule', 'Fixture', new \Coleza\Domain\Automation\Triggers\EventTrigger('event'),
+            new \Coleza\Domain\Automation\Branching\IfElseBranch(new \Coleza\Domain\Automation\Conditions\FieldCondition('enabled', '==', true),
+                [new \Coleza\Domain\Automation\Actions\ActionDefinition('a', 'fixture', ['password' => 'rule-synthetic-password'])]));
+        $version = (new \Coleza\Domain\Automation\Versioning\DatabaseRuleVersionManager($this->db, $key))->recordVersion($rule, 'actor', 'Fixture');
+        $lifecycle->initialize(true); [$file, $newKey] = $this->replacementFile();
+        $result = $lifecycle->rotateToFile($file, dirname(__DIR__, 2), true);
+        self::assertSame($entry->getContext()->all(), (new \Coleza\Domain\Automation\Approval\DatabaseApprovalManager($this->db, $newKey))->findById($entry->getId())->getContext()->all());
+        self::assertSame($record->toArray(), (new \Coleza\Domain\Automation\Execution\DatabaseRunHistoryRepository($this->db, $newKey))->findById('secret-run')->toArray());
+        self::assertSame($version->toArray(), (new \Coleza\Domain\Automation\Versioning\DatabaseRuleVersionManager($this->db, $newKey))->getVersion('rule', 1)->toArray());
+        $before = $this->db->select('SELECT * FROM automation_pending');
+        try { $manager->approve($entry->getId(), 'actor'); self::fail('Old automation writer accepted'); } catch (\RuntimeException) { self::assertSame($before, $this->db->select('SELECT * FROM automation_pending')); }
+        $verify = new KeyLifecycleService($this->db, $newKey); self::assertSame($result['counts'], $verify->verify()['counts']);
+        $this->db->update('automation_pending', ['id' => 'spliced'], 'id = :id', ['id' => $entry->getId()]);
+        $this->expectException(\RuntimeException::class); $verify->verify();
+    }
     public function testOperationSecretsSurviveRotationAndOwnerCorruptionPreventsVerification(): void
     {
         [$lifecycle, $key] = $this->lifecycleFixture();

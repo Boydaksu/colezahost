@@ -16,7 +16,7 @@ trait AutomationRecoveryIntegrityCases
 {
     private function recoveryEngine(): \Coleza\Domain\Automation\Engine\AutomationEngine
     {
-        \Coleza\Domain\Automation\Persistence\AutomationSchema::installSchema($this->db);
+        \Coleza\Tests\Support\AutomationStorageFixture::install($this->db);
         \Coleza\Domain\Automation\Versioning\DatabaseRuleVersionManager::installSchema($this->db);
         \Coleza\Domain\Automation\Safety\DatabaseBlastRadiusLimiter::installSchema($this->db);
         $registry = new ActionRegistry();
@@ -24,7 +24,7 @@ trait AutomationRecoveryIntegrityCases
             $this->calls++;
             return $action->resolveParameters($context);
         }));
-        return DatabaseAutomationFactory::create($this->db, $registry);
+        return DatabaseAutomationFactory::create($this->db, $registry, encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
     }
     private int $calls = 0;
     private function completedApproval(): array
@@ -49,21 +49,21 @@ trait AutomationRecoveryIntegrityCases
     }
     private function changePayload(string $table, string $id, callable $change): void
     {
-        $data = AutomationCodec::decode($this->db->selectOne("SELECT payload FROM {$table} WHERE id = ?", [$id])['payload']);
+        $data = \Coleza\Tests\Support\AutomationStorageFixture::decode($this->db, $this->db->selectOne("SELECT payload FROM {$table} WHERE id = ?", [$id])['payload']);
         $change($data);
-        $this->db->update($table, ['payload' => AutomationCodec::encode($data)], 'id = :id', ['id' => $id]);
+        \Coleza\Tests\Support\AutomationStorageFixture::update($this->db, $table, ['payload' => AutomationCodec::encode($data)], 'id = :id', ['id' => $id]);
     }
     public function testWrongVersionSuccessCannotHideUnresolvedApproval(): void
     {
         [, , $runId] = $this->completedApproval();
         $this->changePayload('automation_run_history', $runId, static function (&$d) { $d['rule_version'] = 99; });
-        self::assertCount(1, (new AutomationRecoveryInspector($this->db))->listUnresolved());
+        self::assertCount(1, (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved());
     }
     public function testChangedLinkedActionsCannotHideApproval(): void
     {
         [, , $delayId] = $this->linkedDelay();
         $this->changePayload('automation_pending', $delayId, static function (&$d) { $d['actions'][0]['parameters']['value'] = 999; });
-        $items = (new AutomationRecoveryInspector($this->db))->listUnresolved();
+        $items = (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved();
         self::assertNotEmpty($items);
         self::assertSame('LINKED_DELAY_MISSING_OR_MISMATCHED', $items[0]['reason']);
     }
@@ -83,7 +83,7 @@ trait AutomationRecoveryIntegrityCases
     public function testCompleteEvidenceClosesLocalInspectionWithoutReexecuting(): void
     {
         [$engine, $id] = $this->completedApproval();
-        self::assertSame([], (new AutomationRecoveryInspector($this->db))->listUnresolved());
+        self::assertSame([], (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved());
         self::assertSame(1, $this->calls);
         try { $engine->executeApprovedRequest($id, 'actor'); self::fail('Completed approval reexecuted'); }
         catch (\InvalidArgumentException) { self::assertSame(1, $this->calls); }
@@ -91,7 +91,7 @@ trait AutomationRecoveryIntegrityCases
     public function testIncompleteContradictoryAndStaleSuccessEvidenceRemainsUnresolved(): void
     {
         [, , $runId] = $this->completedApproval();
-        $original = AutomationCodec::decode($this->db->selectOne('SELECT payload FROM automation_run_history WHERE id = ?', [$runId])['payload']);
+        $original = \Coleza\Tests\Support\AutomationStorageFixture::decode($this->db, $this->db->selectOne('SELECT payload FROM automation_run_history WHERE id = ?', [$runId])['payload']);
         $changes = [
             static function (&$d) { unset($d['metadata']['pending_execution_fingerprint']); },
             static function (&$d) { $d['metadata']['pending_execution_fingerprint'] = str_repeat('a', 64); },
@@ -112,9 +112,9 @@ trait AutomationRecoveryIntegrityCases
         ];
         foreach ($changes as $change) {
             $data = $original; $change($data);
-            $this->db->update('automation_run_history', ['payload' => AutomationCodec::encode($data)], 'id = :id', ['id' => $runId]);
+            \Coleza\Tests\Support\AutomationStorageFixture::update($this->db, 'automation_run_history', ['payload' => AutomationCodec::encode($data)], 'id = :id', ['id' => $runId]);
             $before = $this->db->select('SELECT * FROM automation_pending');
-            $items = (new AutomationRecoveryInspector($this->db))->listUnresolved();
+            $items = (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved();
             self::assertCount(1, $items);
             self::assertFalse($items[0]['automatic_retry_allowed']);
             self::assertSame($before, $this->db->select('SELECT * FROM automation_pending'));
@@ -125,17 +125,17 @@ trait AutomationRecoveryIntegrityCases
     {
         [, $id] = $this->completedApproval();
         $this->changePayload('automation_pending', $id, static function (&$d) { $d['actions'][0]['parameters']['value'] = 999; });
-        self::assertCount(1, (new AutomationRecoveryInspector($this->db))->listUnresolved());
+        self::assertCount(1, (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved());
     }
     public function testDuplicateSuccessReceiptsAreAmbiguous(): void
     {
         [$engine, , $runId] = $this->completedApproval();
-        $data = AutomationCodec::decode($this->db->selectOne('SELECT payload FROM automation_run_history WHERE id = ?', [$runId])['payload']);
+        $data = \Coleza\Tests\Support\AutomationStorageFixture::decode($this->db, $this->db->selectOne('SELECT payload FROM automation_run_history WHERE id = ?', [$runId])['payload']);
         $data['run_id'] = 'duplicate';
         $original = $this->db->selectOne('SELECT * FROM automation_run_history WHERE id = ?', [$runId]);
         $original['id'] = 'duplicate'; $original['payload'] = AutomationCodec::encode($data);
-        $this->db->insert('automation_run_history', $original);
-        self::assertCount(1, (new AutomationRecoveryInspector($this->db))->listUnresolved());
+        \Coleza\Tests\Support\AutomationStorageFixture::insert($this->db, 'automation_run_history', $original);
+        self::assertCount(1, (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved());
         self::assertSame(2, $engine->getHistoryRepository()->count());
     }
     private function rejectLinkedChange(callable $change): void
@@ -147,7 +147,7 @@ trait AutomationRecoveryIntegrityCases
             $d['scheduled_at'] = (new \DateTimeImmutable($d['execute_at']))->modify('-600 seconds')->format('Y-m-d\TH:i:s.uP');
         });
         $before = $this->db->select('SELECT * FROM automation_pending');
-        $items = (new AutomationRecoveryInspector($this->db))->listUnresolved();
+        $items = (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved();
         self::assertNotEmpty($items);
         foreach ([static fn() => $engine->getDelayManager()->claimForDispatch($delayId),
             static fn() => $engine->executeApprovedRequest($approvalId, 'actor')] as $operation) {
@@ -177,7 +177,7 @@ trait AutomationRecoveryIntegrityCases
         [$engine, $parent, $child] = $this->linkedDelay();
         $this->db->delete('automation_pending', 'id = :id', ['id' => $parent]);
         $this->changePayload('automation_pending', $child, static function (&$d) { $d['execute_at'] = (new \DateTimeImmutable('-1 hour'))->format('Y-m-d\TH:i:s.uP'); });
-        $items = (new AutomationRecoveryInspector($this->db))->listUnresolved();
+        $items = (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved();
         self::assertCount(1, $items);
         self::assertSame('LINKED_APPROVAL_MISSING_OR_MISMATCHED', $items[0]['reason']);
         $this->expectException(\LogicException::class);
@@ -193,7 +193,7 @@ trait AutomationRecoveryIntegrityCases
     public function testPendingPayloadStatusMismatchStopsMutation(): void
     {
         [$engine, $id] = $this->completedApproval();
-        $this->db->update('automation_pending', ['status' => 'PENDING'], 'id = :id', ['id' => $id]);
+        \Coleza\Tests\Support\AutomationStorageFixture::update($this->db, 'automation_pending', ['status' => 'PENDING'], 'id = :id', ['id' => $id]);
         $this->expectException(\UnexpectedValueException::class);
         $engine->getApprovalManager()->reject($id, 'other', 'Must not replace existing decision');
     }
@@ -202,7 +202,7 @@ trait AutomationRecoveryIntegrityCases
         [, , $runId] = $this->completedApproval();
         $this->changePayload('automation_run_history', $runId, static function (&$d) { $d['run_id'] = 'another'; });
         $this->expectException(\UnexpectedValueException::class);
-        (new AutomationRecoveryInspector($this->db))->listUnresolved();
+        (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved();
     }
     public function testValidLinkedDelayCompletesAndFingerprintSurvivesRestart(): void
     {
@@ -212,8 +212,8 @@ trait AutomationRecoveryIntegrityCases
             $d['scheduled_at'] = (new \DateTimeImmutable($d['execute_at']))->modify('-600 seconds')->format('Y-m-d\TH:i:s.uP');
         });
         self::assertTrue($engine->dispatchDueDelayedExecutions()[$delayId]->isSuccessful());
-        self::assertSame([], (new AutomationRecoveryInspector($this->db))->listUnresolved());
-        self::assertSame([], DatabaseAutomationFactory::create($this->db, new ActionRegistry())->dispatchDueDelayedExecutions());
+        self::assertSame([], (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved());
+        self::assertSame([], DatabaseAutomationFactory::create($this->db, new ActionRegistry(), encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor())->dispatchDueDelayedExecutions());
         self::assertSame(1, $this->calls);
         self::assertArrayHasKey('pending_execution_fingerprint', $engine->getHistoryRepository()->listRecent()[0]->getMetadata());
     }
@@ -226,8 +226,8 @@ trait AutomationRecoveryIntegrityCases
         });
         $engine->dispatchDueDelayedExecutions();
         $this->changePayload('automation_pending', $delayId, static function (&$d) { $d['status'] = 'DISPATCHING'; $d['dispatched_at'] = null; });
-        $this->db->update('automation_pending', ['status' => 'DISPATCHING'], 'id = :id', ['id' => $delayId]);
-        self::assertCount(1, (new AutomationRecoveryInspector($this->db))->listUnresolved());
+        \Coleza\Tests\Support\AutomationStorageFixture::update($this->db, 'automation_pending', ['status' => 'DISPATCHING'], 'id = :id', ['id' => $delayId]);
+        self::assertCount(1, (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved());
         self::assertSame([], $engine->dispatchDueDelayedExecutions());
         self::assertSame(1, $this->calls);
     }
@@ -236,9 +236,9 @@ trait AutomationRecoveryIntegrityCases
         $engine = $this->recoveryEngine();
         $entry = new \Coleza\Domain\Automation\Delay\DelayedExecution('legacy', 'r', 'Legacy', new TriggerContext('event'),
             [new ActionDefinition('a', 'send')], new \DateTimeImmutable('-1 hour'));
-        $this->db->insert('automation_pending', ['id' => $entry->getId(), 'kind' => 'delay', 'status' => 'SCHEDULED', 'payload' => AutomationCodec::encode(AutomationCodec::pending($entry))]);
+        \Coleza\Tests\Support\AutomationStorageFixture::insert($this->db, 'automation_pending', ['id' => $entry->getId(), 'kind' => 'delay', 'status' => 'SCHEDULED', 'payload' => AutomationCodec::encode(AutomationCodec::pending($entry))]);
         self::assertTrue($engine->dispatchDueDelayedExecutions()['legacy']->isSuccessful());
-        self::assertSame([], (new AutomationRecoveryInspector($this->db))->listUnresolved());
+        self::assertSame([], (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved());
         self::assertTrue($engine->getHistoryRepository()->listRecent()[0]->getMetadata()['rule_version_unknown']);
     }
     public function testChangingOnlyExecuteTimeCannotSkipApprovedDelay(): void
@@ -253,17 +253,17 @@ trait AutomationRecoveryIntegrityCases
     public function testSuccessHistoryCannotHideMissingActionAttempt(): void
     {
         [, , $runId] = $this->completedApproval();
-        $run = AutomationCodec::decode($this->db->selectOne('SELECT payload FROM automation_run_history WHERE id = ?', [$runId])['payload']);
+        $run = \Coleza\Tests\Support\AutomationStorageFixture::decode($this->db, $this->db->selectOne('SELECT payload FROM automation_run_history WHERE id = ?', [$runId])['payload']);
         $this->db->delete('automation_action_attempts', 'id = :id', ['id' => $run['metadata']['action_attempt_ids'][0]]);
-        self::assertCount(1, (new AutomationRecoveryInspector($this->db))->listUnresolved());
+        self::assertCount(1, (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved());
     }
     public function testSuccessHistoryCannotHideUnknownActionOutcome(): void
     {
         [, , $runId] = $this->completedApproval();
-        $run = AutomationCodec::decode($this->db->selectOne('SELECT payload FROM automation_run_history WHERE id = ?', [$runId])['payload']);
+        $run = \Coleza\Tests\Support\AutomationStorageFixture::decode($this->db, $this->db->selectOne('SELECT payload FROM automation_run_history WHERE id = ?', [$runId])['payload']);
         $this->db->update('automation_action_attempts', ['status' => 'OUTCOME_UNKNOWN', 'reason_code' => 'HANDLER_EXCEPTION'],
             'id = :id', ['id' => $run['metadata']['action_attempt_ids'][0]]);
-        self::assertCount(1, (new AutomationRecoveryInspector($this->db))->listUnresolved());
+        self::assertCount(1, (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved());
     }
     public function testSuccessHistoryCannotBorrowAnotherApprovalActionAttempt(): void
     {
@@ -274,7 +274,7 @@ trait AutomationRecoveryIntegrityCases
         $engine->executeApprovedRequest($other->getId(), 'actor');
         $foreign = $this->db->selectOne('SELECT id FROM automation_action_attempts WHERE pending_id = ?', [$other->getId()])['id'];
         $this->changePayload('automation_run_history', $runId, static function (&$d) use ($foreign) { $d['metadata']['action_attempt_ids'] = [$foreign]; });
-        $items = (new AutomationRecoveryInspector($this->db))->listUnresolved();
+        $items = (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved();
         self::assertCount(1, $items);
         self::assertNotSame($other->getId(), $items[0]['id']);
     }
@@ -298,7 +298,7 @@ trait AutomationRecoveryIntegrityCases
             $this->db->update('automation_action_attempts', array_replace($original, $change), 'id = :id', ['id' => $original['id']]);
             $before = [$this->db->select('SELECT * FROM automation_action_attempts'), $this->db->select('SELECT * FROM automation_pending'),
                 $this->db->select('SELECT * FROM automation_run_history')];
-            $items = (new AutomationRecoveryInspector($this->db))->listUnresolved();
+            $items = (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved();
             self::assertCount(1, $items, json_encode(array_keys($change)));
             self::assertFalse($items[0]['automatic_retry_allowed']);
             self::assertSame($before, [$this->db->select('SELECT * FROM automation_action_attempts'), $this->db->select('SELECT * FROM automation_pending'),
@@ -306,7 +306,7 @@ trait AutomationRecoveryIntegrityCases
         }
         self::assertSame(1, $this->calls);
         $this->db->update('automation_action_attempts', $original, 'id = :id', ['id' => $original['id']]);
-        self::assertSame([], (new AutomationRecoveryInspector($this->db))->listUnresolved());
+        self::assertSame([], (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved());
     }
     public function testLegacySuccessWithoutAttemptReferencesRequiresReviewAndIsNotBackfilled(): void
     {
@@ -314,7 +314,7 @@ trait AutomationRecoveryIntegrityCases
         $this->changePayload('automation_run_history', $runId, static function (&$d) { unset($d['metadata']['action_attempt_ids']); });
         $this->db->statement('DELETE FROM automation_action_attempts');
         $before = $this->db->select('SELECT * FROM automation_run_history');
-        $items = (new AutomationRecoveryInspector($this->db))->listUnresolved();
+        $items = (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved();
         self::assertCount(1, $items);
         self::assertFalse($items[0]['automatic_retry_allowed']);
         self::assertSame($before, $this->db->select('SELECT * FROM automation_run_history'));
@@ -333,13 +333,13 @@ trait AutomationRecoveryIntegrityCases
     public function testOrderedCompleteActionsSurviveRestartButReversedDuplicatedOrPartialReferencesDoNot(): void
     {
         [, , $runId] = $this->completedTwoActions();
-        $original = AutomationCodec::decode($this->db->selectOne('SELECT payload FROM automation_run_history WHERE id = ?', [$runId])['payload']);
+        $original = \Coleza\Tests\Support\AutomationStorageFixture::decode($this->db, $this->db->selectOne('SELECT payload FROM automation_run_history WHERE id = ?', [$runId])['payload']);
         $ids = $original['metadata']['action_attempt_ids'];
-        self::assertSame([], (new AutomationRecoveryInspector($this->db))->listUnresolved());
+        self::assertSame([], (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved());
         foreach ([array_reverse($ids), [$ids[0], $ids[0]], [$ids[0]], ['unknown', $ids[1]], []] as $references) {
             $data = $original; $data['metadata']['action_attempt_ids'] = $references;
-            $this->db->update('automation_run_history', ['payload' => AutomationCodec::encode($data)], 'id = :id', ['id' => $runId]);
-            self::assertCount(1, (new AutomationRecoveryInspector($this->db))->listUnresolved());
+            \Coleza\Tests\Support\AutomationStorageFixture::update($this->db, 'automation_run_history', ['payload' => AutomationCodec::encode($data)], 'id = :id', ['id' => $runId]);
+            self::assertCount(1, (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved());
         }
         self::assertSame(2, $this->calls);
     }
@@ -348,18 +348,18 @@ trait AutomationRecoveryIntegrityCases
         [$engine, $pending] = $this->completedTwoActions();
         $engine->getActionJournal()->prepare($pending->getRuleId(), $pending->getActionsToExecute(), $pending->getContext(),
             'approval', $pending->getId(), \Coleza\Domain\Automation\Execution\PendingExecutionIdentity::fingerprint($pending), $pending->getExecutionSnapshot());
-        $items = (new AutomationRecoveryInspector($this->db))->listUnresolved();
+        $items = (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved();
         self::assertCount(1, $items);
         self::assertFalse($items[0]['automatic_retry_allowed']);
         self::assertSame(2, $this->calls);
-        self::assertCount(2, (new AutomationRecoveryInspector($this->db))->listUnresolvedActionAttempts());
+        self::assertCount(2, (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolvedActionAttempts());
     }
     public function testSecondActionCannotStartBeforeFirstActionFinishedInCompletionEvidence(): void
     {
         [, $pending] = $this->completedTwoActions();
         $rows = $this->db->select('SELECT * FROM automation_action_attempts WHERE pending_id = ? ORDER BY action_position', [$pending->getId()]);
         $this->db->update('automation_action_attempts', ['started_at' => $rows[0]['started_at']], 'id = :id', ['id' => $rows[1]['id']]);
-        self::assertCount(1, (new AutomationRecoveryInspector($this->db))->listUnresolved());
+        self::assertCount(1, (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved());
         self::assertSame(2, $this->calls);
     }
 }

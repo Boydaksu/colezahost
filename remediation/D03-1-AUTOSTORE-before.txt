@@ -1,0 +1,18 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+[41;37mF[0m                                                                   1 / 1 (100%)
+
+Time: 00:00.016, Memory: 20.00 MB
+
+There was 1 failure:
+
+1) Coleza\Tests\Unit\Automation\AutomationSecretTest::testPendingSecretsAreEncryptedAndRestartPreservesExecutionData
+Failed asserting that '[{"id":"appr_7ddbf3c9c39faddc","kind":"approval","status":"PENDING","payload":"{\"id\":\"appr_7ddbf3c9c39faddc\",\"rule_id\":\"rule\",\"rule_name\":\"Fixture\",\"status\":\"PENDING\",\"required_role\":\"admin\",\"reason\":\"Manual approval required by automation policy\",\"requested_at\":\"2026-10-14T14:45:49.865172+00:00\",\"expires_at\":\"2026-10-15T14:45:49.865172+00:00\",\"decided_by\":null,\"decision_notes\":null,\"decided_at\":null,\"actions_count\":1,\"linked_delay_id\":null,\"execution_snapshot\":[],\"context\":{\"event\":\"fixture\",\"payload\":{\"password\":\"automation-synthetic-password\",\"unlabelled\":\"automation-synthetic-unlabelled\",\"amount\":1.0},\"occurred_at\":\"2026-10-14T14:45:49.864508+00:00\",\"correlation_id\":\"fixture-correlation\"},\"actions\":[{\"id\":\"a\",\"type\":\"fixture\",\"parameters\":{\"token\":\"automation-synthetic-token\"}}],\"timeout_seconds\":86400}"}]' [ASCII](length: 909) does not contain "automation-synthetic-password" [ASCII](length: 29).
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AutomationSecretCases.php:20
+
+[37;41mFAILURES![0m
+[37;41mTests: 1[0m[37;41m, Assertions: 1[0m[37;41m, Failures: 1[0m[37;41m.[0m

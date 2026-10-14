@@ -42,7 +42,7 @@ final class BlastRadiusTest extends \Coleza\Tests\Support\MariaDbTestCase
             $count = (new \Coleza\Domain\Automation\Safety\DatabaseBlastRadiusLimiter($other))->getRecentDestructiveCount();
             return [];
         }));
-        self::assertTrue(\Coleza\Domain\Automation\Engine\DatabaseAutomationFactory::create($this->db, $registry)->executeRule(
+        self::assertTrue(\Coleza\Domain\Automation\Engine\DatabaseAutomationFactory::create($this->db, $registry, encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor())->executeRule(
             $this->destructiveRule(), new \Coleza\Domain\Automation\Triggers\TriggerContext('event', ['ok' => true]))->isSuccessful());
         self::assertSame(1, $count);
         self::assertSame(1, (new \Coleza\Domain\Automation\Safety\DatabaseBlastRadiusLimiter($other))->getRecentDestructiveCount());

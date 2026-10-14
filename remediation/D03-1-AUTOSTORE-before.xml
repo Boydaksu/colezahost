@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Automation\AutomationSecretTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Automation\AutomationSecretTest.php" tests="1" assertions="1" errors="0" failures="1" skipped="0" time="0.012838">
+    <testcase name="testPendingSecretsAreEncryptedAndRestartPreservesExecutionData" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AutomationSecretCases.php" line="13" class="Coleza\Tests\Unit\Automation\AutomationSecretTest" classname="Coleza.Tests.Unit.Automation.AutomationSecretTest" assertions="1" time="0.012838">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Automation\AutomationSecretTest::testPendingSecretsAreEncryptedAndRestartPreservesExecutionData&#13;
+Failed asserting that '[{"id":"appr_7ddbf3c9c39faddc","kind":"approval","status":"PENDING","payload":"{\"id\":\"appr_7ddbf3c9c39faddc\",\"rule_id\":\"rule\",\"rule_name\":\"Fixture\",\"status\":\"PENDING\",\"required_role\":\"admin\",\"reason\":\"Manual approval required by automation policy\",\"requested_at\":\"2026-10-14T14:45:49.865172+00:00\",\"expires_at\":\"2026-10-15T14:45:49.865172+00:00\",\"decided_by\":null,\"decision_notes\":null,\"decided_at\":null,\"actions_count\":1,\"linked_delay_id\":null,\"execution_snapshot\":[],\"context\":{\"event\":\"fixture\",\"payload\":{\"password\":\"automation-synthetic-password\",\"unlabelled\":\"automation-synthetic-unlabelled\",\"amount\":1.0},\"occurred_at\":\"2026-10-14T14:45:49.864508+00:00\",\"correlation_id\":\"fixture-correlation\"},\"actions\":[{\"id\":\"a\",\"type\":\"fixture\",\"parameters\":{\"token\":\"automation-synthetic-token\"}}],\"timeout_seconds\":86400}"}]' [ASCII](length: 909) does not contain "automation-synthetic-password" [ASCII](length: 29).
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AutomationSecretCases.php:20</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -8,7 +8,7 @@ use Coleza\Domain\Automation\Engine\AutomationRule;
 use DateTimeImmutable;
 final class DatabaseRuleVersionManager implements RuleVersionManagerInterface
 {
-    public function __construct(private readonly Connection $db) {}
+    public function __construct(private readonly Connection $db, private readonly ?\Coleza\Domain\Vault\Encryptor $encryptor = null, private readonly bool $readOnly = false) {}
     public static function installSchema(Connection $db): void
     {
         PdoSchema::autoIncrement($db->getPdo());
@@ -24,6 +24,7 @@ final class DatabaseRuleVersionManager implements RuleVersionManagerInterface
         }
         $snapshot = RuleSnapshotCodec::snapshot($rule);
         $version = $this->db->transaction(function () use ($rule, $createdBy, $changeSummary, $snapshot) {
+            (new \Coleza\Domain\Automation\Persistence\AutomationSecretStore($this->db, $this->encryptor))->guard();
             $this->db->lockRow('automation_state_lock', 1);
             if ($this->db->selectOne('SELECT id FROM automation_state_lock WHERE id = 1') === null) { throw new \RuntimeException('Automation lock missing'); }
             $latest = $this->db->selectOne('SELECT version_number FROM automation_rule_versions WHERE rule_id = ? ORDER BY version_number DESC LIMIT 1' . $this->db->forUpdate(), [$rule->getId()]);
@@ -31,7 +32,7 @@ final class DatabaseRuleVersionManager implements RuleVersionManagerInterface
             if ($number > 2147483647) { throw new \OverflowException('Rule version sequence exhausted'); }
             $record = new RuleVersion($number, $rule->getId(), $rule->getName(), $rule->getDescription(), $rule->getTrigger()->getName(),
                 $rule->getTrigger()->getType(), $rule->getPriority(), $createdBy, $changeSummary, $snapshot, new DateTimeImmutable());
-            $this->db->insert('automation_rule_versions', ['rule_id' => $rule->getId(), 'version_number' => $number, 'payload' => AutomationCodec::encode($record->toArray())]);
+            $this->db->insert('automation_rule_versions', ['rule_id' => $rule->getId(), 'version_number' => $number, 'payload' => (new \Coleza\Domain\Automation\Persistence\AutomationSecretStore($this->db, $this->encryptor))->write('automation_rule_versions', ['rule_id' => $rule->getId(), 'version_number' => $number], $record->toArray())]);
             return $record;
         });
         $rule->setVersion($version->getVersionNumber());
@@ -39,7 +40,7 @@ final class DatabaseRuleVersionManager implements RuleVersionManagerInterface
     }
     private function hydrate(array $row): RuleVersion
     {
-        $d = AutomationCodec::decode($row['payload']);
+        $d = (new \Coleza\Domain\Automation\Persistence\AutomationSecretStore($this->db, $this->encryptor))->read('automation_rule_versions', $row, $this->readOnly);
         if ($d['rule_id'] !== $row['rule_id'] || $d['version_number'] !== (int) $row['version_number']) { throw new \UnexpectedValueException('Rule version identity mismatch'); }
         $rule = RuleSnapshotCodec::restore($d['snapshot'], $d['version_number']);
         if ($rule->getId() !== $d['rule_id'] || $rule->getName() !== $d['name'] || $rule->getDescription() !== $d['description']

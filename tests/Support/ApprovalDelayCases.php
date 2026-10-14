@@ -15,7 +15,7 @@ trait ApprovalDelayCases
 {
     private function installCombined(): void
     {
-        AutomationSchema::installSchema($this->db);
+        \Coleza\Tests\Support\AutomationStorageFixture::install($this->db);
         DatabaseRuleVersionManager::installSchema($this->db);
         \Coleza\Domain\Automation\Safety\DatabaseBlastRadiusLimiter::installSchema($this->db);
     }
@@ -31,7 +31,7 @@ trait ApprovalDelayCases
         $calls = 0;
         $registry = new ActionRegistry();
         $registry->register(new CallbackActionHandler('send', function () use (&$calls) { $calls++; return ['sent' => true]; }));
-        $engine = DatabaseAutomationFactory::create($this->db, $registry);
+        $engine = DatabaseAutomationFactory::create($this->db, $registry, encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $pending = $engine->executeRule($this->combinedRule(), new TriggerContext('event', ['ok' => true]));
         $result = $engine->executeApprovedRequest($pending->getApprovalId(), 'actor');
         self::assertSame(RunStatus::DELAYED, $result->getStatus());
@@ -41,7 +41,7 @@ trait ApprovalDelayCases
     }
     private function makePending(bool $registered = false): array
     {
-        $engine = DatabaseAutomationFactory::create($this->db, new ActionRegistry());
+        $engine = DatabaseAutomationFactory::create($this->db, new ActionRegistry(), encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $rule = $this->combinedRule();
         if ($registered) { $engine->getVersionManager()->recordVersion($rule, 'author', 'First'); }
         $result = $engine->executeRule($rule, new TriggerContext('event', ['ok' => false]));
@@ -54,11 +54,11 @@ trait ApprovalDelayCases
     private function makeDue(string $id): void
     {
         $row = $this->db->selectOne('SELECT payload FROM automation_pending WHERE id = ?', [$id]);
-        $data = \Coleza\Domain\Automation\Persistence\AutomationCodec::decode($row['payload']);
+        $data = \Coleza\Tests\Support\AutomationStorageFixture::decode($this->db, $row['payload']);
         $data['execute_at'] = (new \DateTimeImmutable('-1 hour'))->format('Y-m-d\TH:i:s.uP');
         // Simulate elapsed time while retaining the approved waiting interval.
         $data['scheduled_at'] = (new \DateTimeImmutable($data['execute_at']))->modify('-' . $data['execution_snapshot']['delay_seconds'] . ' seconds')->format('Y-m-d\TH:i:s.uP');
-        $this->db->update('automation_pending', ['payload' => \Coleza\Domain\Automation\Persistence\AutomationCodec::encode($data)], 'id = :id', ['id' => $id]);
+        \Coleza\Tests\Support\AutomationStorageFixture::update($this->db, 'automation_pending', ['payload' => \Coleza\Domain\Automation\Persistence\AutomationCodec::encode($data)], 'id = :id', ['id' => $id]);
     }
     public function testRestartAndRepeatedApprovalPreserveOneChildAndOriginalDecision(): void
     {
@@ -66,7 +66,7 @@ trait ApprovalDelayCases
         [$engine, $id] = $this->makePending();
         $first = $engine->executeApprovedRequest($id, 'actor');
         $decision = $engine->getApprovalManager()->findById($id)->toArray();
-        $again = DatabaseAutomationFactory::create($this->db, new ActionRegistry());
+        $again = DatabaseAutomationFactory::create($this->db, new ActionRegistry(), encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $second = $again->executeApprovedRequest($id, 'actor');
         self::assertSame($first->getDelayId(), $second->getDelayId());
         self::assertSame($decision, $again->getApprovalManager()->findById($id)->toArray());
@@ -75,7 +75,7 @@ trait ApprovalDelayCases
         $child = $again->getDelayManager()->findById($first->getDelayId());
         self::assertSame($id, $child->getExecutionSnapshot()['approval_id']);
         self::assertSame($first->getDelayId(), $again->getApprovalManager()->findById($id)->getDelayedExecutionId());
-        self::assertSame([], (new \Coleza\Domain\Automation\Execution\AutomationRecoveryInspector($this->db))->listUnresolved());
+        self::assertSame([], (new \Coleza\Domain\Automation\Execution\AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved());
     }
     public function testOriginalVersionElseBranchAndDelaySurviveNewPublicationAndDispatch(): void
     {
@@ -94,7 +94,7 @@ trait ApprovalDelayCases
         $calls = [];
         $registry = new ActionRegistry();
         $registry->register(new CallbackActionHandler('send', function ($a, $c) use (&$calls) { $calls[] = $a->resolveParameters($c); return ['sent' => true]; }));
-        $again = DatabaseAutomationFactory::create($this->db, $registry);
+        $again = DatabaseAutomationFactory::create($this->db, $registry, encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $dispatched = $again->dispatchDueDelayedExecutions();
         self::assertSame([['value' => 2]], $calls);
         self::assertSame('ELSE', $dispatched[$child->getId()]->getBranchTaken());
@@ -104,7 +104,7 @@ trait ApprovalDelayCases
         self::assertCount(1, $final);
         self::assertSame(1, $final[0]->getRuleVersion());
         self::assertSame($id, $final[0]->getMetadata()['approval_id']);
-        self::assertSame([], (new \Coleza\Domain\Automation\Execution\AutomationRecoveryInspector($this->db))->listUnresolved());
+        self::assertSame([], (new \Coleza\Domain\Automation\Execution\AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved());
         self::assertSame($child->getId(), $again->executeApprovedRequest($id, 'actor')->getDelayId());
         self::assertSame(1, $this->childCount());
     }
@@ -113,9 +113,9 @@ trait ApprovalDelayCases
         $this->installCombined();
         [$engine, $id] = $this->makePending(true);
         $row = $this->db->selectOne('SELECT payload FROM automation_pending WHERE id = ?', [$id]);
-        $data = \Coleza\Domain\Automation\Persistence\AutomationCodec::decode($row['payload']);
+        $data = \Coleza\Tests\Support\AutomationStorageFixture::decode($this->db, $row['payload']);
         unset($data['execution_snapshot']['delay_seconds']); // D02-3k payload format.
-        $this->db->update('automation_pending', ['payload' => \Coleza\Domain\Automation\Persistence\AutomationCodec::encode($data)], 'id = :id', ['id' => $id]);
+        \Coleza\Tests\Support\AutomationStorageFixture::update($this->db, 'automation_pending', ['payload' => \Coleza\Domain\Automation\Persistence\AutomationCodec::encode($data)], 'id = :id', ['id' => $id]);
         $engine->getVersionManager()->recordVersion($this->combinedRule(0), 'other', 'Removed delay in new version');
         $result = $engine->executeApprovedRequest($id, 'actor');
         self::assertSame(RunStatus::DELAYED, $result->getStatus());
@@ -124,7 +124,7 @@ trait ApprovalDelayCases
     public function testUnknownHistoricalPolicyIsNotAssumedToHaveZeroDelay(): void
     {
         $this->installCombined();
-        $engine = DatabaseAutomationFactory::create($this->db, new ActionRegistry());
+        $engine = DatabaseAutomationFactory::create($this->db, new ActionRegistry(), encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $pending = $engine->getApprovalManager()->createRequest('legacy', 'Unknown', new TriggerContext('event'), [], new ApprovalRequirement());
         try { $engine->executeApprovedRequest($pending->getId(), 'actor'); self::fail('Unknown policy executed'); }
         catch (\LogicException) {
@@ -137,10 +137,10 @@ trait ApprovalDelayCases
         $this->installCombined();
         [$engine, $id] = $this->makePending(true);
         $row = $this->db->selectOne('SELECT payload FROM automation_pending WHERE id = ?', [$id]);
-        $data = \Coleza\Domain\Automation\Persistence\AutomationCodec::decode($row['payload']);
+        $data = \Coleza\Tests\Support\AutomationStorageFixture::decode($this->db, $row['payload']);
         unset($data['execution_snapshot']['delay_seconds']);
         $data['execution_snapshot']['rule_fingerprint'] = str_repeat('a', 64);
-        $this->db->update('automation_pending', ['payload' => \Coleza\Domain\Automation\Persistence\AutomationCodec::encode($data)], 'id = :id', ['id' => $id]);
+        \Coleza\Tests\Support\AutomationStorageFixture::update($this->db, 'automation_pending', ['payload' => \Coleza\Domain\Automation\Persistence\AutomationCodec::encode($data)], 'id = :id', ['id' => $id]);
         $this->expectException(\LogicException::class);
         $engine->executeApprovedRequest($id, 'actor');
     }
@@ -202,7 +202,7 @@ trait ApprovalDelayCases
         $result = $engine->executeApprovedRequest($id, 'actor');
         $this->makeDue($result->getDelayId());
         self::assertTrue($engine->getDelayManager()->claimForDispatch($result->getDelayId()));
-        $items = (new \Coleza\Domain\Automation\Execution\AutomationRecoveryInspector($this->db))->listUnresolved();
+        $items = (new \Coleza\Domain\Automation\Execution\AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved();
         self::assertCount(1, $items);
         self::assertSame($result->getDelayId(), $items[0]['id']);
         self::assertFalse($items[0]['automatic_retry_allowed']);
@@ -214,7 +214,7 @@ trait ApprovalDelayCases
         [$engine, $id] = $this->makePending();
         $result = $engine->executeApprovedRequest($id, 'actor');
         $this->db->delete('automation_pending', 'id = :id', ['id' => $result->getDelayId()]);
-        $items = (new \Coleza\Domain\Automation\Execution\AutomationRecoveryInspector($this->db))->listUnresolved();
+        $items = (new \Coleza\Domain\Automation\Execution\AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved();
         self::assertSame('LINKED_DELAY_MISSING_OR_MISMATCHED', $items[0]['reason']);
         $this->expectException(\LogicException::class);
         $engine->executeApprovedRequest($id, 'actor');
@@ -227,7 +227,7 @@ trait ApprovalDelayCases
         $engine->getDelayManager()->cancel($result->getDelayId());
         self::assertSame($result->getDelayId(), $engine->executeApprovedRequest($id, 'actor')->getDelayId());
         self::assertSame(1, $this->childCount());
-        self::assertSame([], (new \Coleza\Domain\Automation\Execution\AutomationRecoveryInspector($this->db))->listUnresolved());
+        self::assertSame([], (new \Coleza\Domain\Automation\Execution\AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved());
     }
     public function testMissingCoordinatorCannotSkipTheDelay(): void
     {
@@ -243,7 +243,7 @@ trait ApprovalDelayCases
         $calls = 0;
         $registry = new ActionRegistry();
         $registry->register(new CallbackActionHandler('send', function () use (&$calls) { $calls++; return ['sent' => true]; }));
-        $engine = DatabaseAutomationFactory::create($this->db, $registry);
+        $engine = DatabaseAutomationFactory::create($this->db, $registry, encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $request = $engine->executeRule($this->combinedRule(0), new TriggerContext('event', ['ok' => true]));
         self::assertSame(RunStatus::SUCCESS, $engine->executeApprovedRequest($request->getApprovalId(), 'actor')->getStatus());
         self::assertSame(1, $calls);
@@ -254,7 +254,7 @@ trait ApprovalDelayCases
     public function testDryRunAndObserveDoNotCreateApprovalOrDelay(): void
     {
         $this->installCombined();
-        $engine = DatabaseAutomationFactory::create($this->db, new ActionRegistry());
+        $engine = DatabaseAutomationFactory::create($this->db, new ActionRegistry(), encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         foreach ([\Coleza\Domain\Automation\Execution\ExecutionMode::DRY_RUN, \Coleza\Domain\Automation\Execution\ExecutionMode::OBSERVE] as $mode) {
             $result = $engine->executeRule($this->combinedRule(), new TriggerContext('event', ['ok' => true]), $mode);
             self::assertSame($mode, $result->getExecutionMode());
@@ -265,7 +265,7 @@ trait ApprovalDelayCases
     public function testExplicitManualDelayPolicyWorksWithUnknownOtherProvenance(): void
     {
         $this->installCombined();
-        $engine = DatabaseAutomationFactory::create($this->db, new ActionRegistry());
+        $engine = DatabaseAutomationFactory::create($this->db, new ActionRegistry(), encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $pending = $engine->getApprovalManager()->createRequest('manual', 'Explicit policy', new TriggerContext('event'), [], new ApprovalRequirement(), ['delay_seconds' => 60]);
         $result = $engine->executeApprovedRequest($pending->getId(), 'actor');
         self::assertSame(RunStatus::DELAYED, $result->getStatus());
@@ -279,9 +279,9 @@ trait ApprovalDelayCases
         $this->installCombined();
         [$engine, $id] = $this->makePending();
         $row = $this->db->selectOne('SELECT payload FROM automation_pending WHERE id = ?', [$id]);
-        $data = \Coleza\Domain\Automation\Persistence\AutomationCodec::decode($row['payload']);
+        $data = \Coleza\Tests\Support\AutomationStorageFixture::decode($this->db, $row['payload']);
         $data['expires_at'] = (new \DateTimeImmutable('-1 hour'))->format('Y-m-d\TH:i:s.uP');
-        $this->db->update('automation_pending', ['payload' => \Coleza\Domain\Automation\Persistence\AutomationCodec::encode($data)], 'id = :id', ['id' => $id]);
+        \Coleza\Tests\Support\AutomationStorageFixture::update($this->db, 'automation_pending', ['payload' => \Coleza\Domain\Automation\Persistence\AutomationCodec::encode($data)], 'id = :id', ['id' => $id]);
         try { $engine->executeApprovedRequest($id, 'actor'); self::fail('Expired approval scheduled'); }
         catch (\InvalidArgumentException) { self::assertSame(0, $this->childCount()); }
         self::assertSame(1, $engine->getApprovalManager()->processExpirations());
@@ -290,7 +290,7 @@ trait ApprovalDelayCases
     public function testDestructivePauseIsCheckedWithinAtomicHandoff(): void
     {
         $this->installCombined();
-        $engine = DatabaseAutomationFactory::create($this->db, new ActionRegistry());
+        $engine = DatabaseAutomationFactory::create($this->db, new ActionRegistry(), encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $rule = new AutomationRule('suspend', 'Restricted', new EventTrigger('event'),
             new IfElseBranch(new FieldCondition('ok', '==', true), [new ActionDefinition('a', 'service.suspend')]),
             approvalRequirement: new ApprovalRequirement(), delaySeconds: 60);
@@ -308,7 +308,7 @@ trait ApprovalDelayCases
         $engine->getHistoryRepository()->save(new \Coleza\Domain\Automation\Execution\AutomationRunRecord('simulated', $entry->getRuleId(), 'Rule', 0,
             $entry->getContext()->getEventName(), $entry->getContext()->getCorrelationId(), \Coleza\Domain\Automation\Execution\ExecutionMode::DRY_RUN,
             RunStatus::SUCCESS, true, 'THEN', metadata: ['approval_id' => $id]));
-        $items = (new \Coleza\Domain\Automation\Execution\AutomationRecoveryInspector($this->db))->listUnresolved();
+        $items = (new \Coleza\Domain\Automation\Execution\AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved();
         self::assertCount(1, $items);
         self::assertSame('MISSING_OUTCOME', $items[0]['reason']);
     }
@@ -317,9 +317,9 @@ trait ApprovalDelayCases
         $this->installCombined();
         [$engine, $id] = $this->makePending(true);
         $row = $this->db->selectOne('SELECT payload FROM automation_pending WHERE id = ?', [$id]);
-        $data = \Coleza\Domain\Automation\Persistence\AutomationCodec::decode($row['payload']);
+        $data = \Coleza\Tests\Support\AutomationStorageFixture::decode($this->db, $row['payload']);
         $data['execution_snapshot']['delay_seconds'] = 0;
-        $this->db->update('automation_pending', ['payload' => \Coleza\Domain\Automation\Persistence\AutomationCodec::encode($data)], 'id = :id', ['id' => $id]);
+        \Coleza\Tests\Support\AutomationStorageFixture::update($this->db, 'automation_pending', ['payload' => \Coleza\Domain\Automation\Persistence\AutomationCodec::encode($data)], 'id = :id', ['id' => $id]);
         $this->expectException(\LogicException::class);
         $engine->executeApprovedRequest($id, 'actor');
     }

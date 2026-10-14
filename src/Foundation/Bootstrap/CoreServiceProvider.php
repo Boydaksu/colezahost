@@ -43,7 +43,8 @@ final class CoreServiceProvider implements ServiceProviderInterface
             static fn(Container $c): \Coleza\Domain\Automation\Engine\AutomationEngine => \Coleza\Domain\Automation\Engine\DatabaseAutomationFactory::create(
                 $c->get(\Coleza\Foundation\Database\Connection::class),
                 $c->get(\Coleza\Domain\Automation\Actions\ActionRegistryInterface::class),
-                $c->get(\Psr\Log\LoggerInterface::class)
+                $c->get(\Psr\Log\LoggerInterface::class),
+                $c->get(\Coleza\Domain\Vault\Encryptor::class)
             ));
         foreach ([
             \Coleza\Domain\Automation\Versioning\RuleVersionManagerInterface::class => 'getVersionManager',

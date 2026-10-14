@@ -16,7 +16,7 @@ trait AutomationVersionCases
 {
     private function versionInstall(): void
     {
-        AutomationSchema::installSchema($this->db);
+        \Coleza\Tests\Support\AutomationStorageFixture::install($this->db);
         DatabaseRuleVersionManager::installSchema($this->db);
         \Coleza\Domain\Automation\Safety\DatabaseBlastRadiusLimiter::installSchema($this->db);
     }
@@ -32,8 +32,8 @@ trait AutomationVersionCases
     {
         $this->versionInstall();
         $rule = $this->rule(100, approval: new ApprovalRequirement('billing', 3600, 'Review'), delay: 60);
-        $record = (new DatabaseRuleVersionManager($this->db))->recordVersion($rule, 'actor', 'Initial');
-        $stored = (new DatabaseRuleVersionManager($this->db))->getVersion($rule->getId(), 1);
+        $record = (new DatabaseRuleVersionManager($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->recordVersion($rule, 'actor', 'Initial');
+        $stored = (new DatabaseRuleVersionManager($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->getVersion($rule->getId(), 1);
         self::assertSame($record->toArray(), $stored->toArray());
         $restored = RuleSnapshotCodec::restore($stored->getSnapshot(), 1);
         self::assertSame(RuleSnapshotCodec::snapshot($rule), RuleSnapshotCodec::snapshot($restored));
@@ -50,7 +50,7 @@ trait AutomationVersionCases
         $this->versionInstall();
         foreach ([new ManualTrigger(''), new ManualTrigger(null), new ManualTrigger('billing'), new ScheduleTrigger('hourly')] as $trigger) {
             $rule = $this->rule(trigger: $trigger);
-            $record = (new DatabaseRuleVersionManager($this->db))->recordVersion($rule, 'actor', 'Trigger');
+            $record = (new DatabaseRuleVersionManager($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->recordVersion($rule, 'actor', 'Trigger');
             $restored = RuleSnapshotCodec::restore($record->getSnapshot(), $record->getVersionNumber());
             self::assertSame(RuleSnapshotCodec::snapshot($rule), RuleSnapshotCodec::snapshot($restored));
         }
@@ -58,10 +58,10 @@ trait AutomationVersionCases
     public function testChangesAndLatestVersionPersistWithoutOverwritingOldVersion(): void
     {
         $this->versionInstall();
-        $manager = new DatabaseRuleVersionManager($this->db);
+        $manager = new DatabaseRuleVersionManager($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $first = $manager->recordVersion($this->rule(10), 'alice', 'First');
         $manager->recordVersion($this->rule(20, new EventTrigger('service.*', ['brand' => 8])), 'bob', 'Behavior change');
-        $again = new DatabaseRuleVersionManager($this->db);
+        $again = new DatabaseRuleVersionManager($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         self::assertSame($first->toArray(), $again->getVersion('versioned_rule', 1)->toArray());
         self::assertSame(2, $again->getLatestVersion('versioned_rule')->getVersionNumber());
         self::assertSame([1, 2], array_map(static fn($v) => $v->getVersionNumber(), $again->getVersions('versioned_rule')));
@@ -77,13 +77,13 @@ trait AutomationVersionCases
         $registry = new ActionRegistry();
         $calls = [];
         $registry->register(new CallbackActionHandler('send', function ($action, $context) use (&$calls) { $calls[] = $action->resolveParameters($context); return ['sent' => true]; }));
-        $engine = DatabaseAutomationFactory::create($this->db, $registry);
+        $engine = DatabaseAutomationFactory::create($this->db, $registry, encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $rule = $this->rule(10, approval: new ApprovalRequirement());
         $engine->getVersionManager()->recordVersion($rule, 'alice', 'First');
         $pending = $engine->executeVersion($rule->getId(), 1, new TriggerContext('invoice.paid', ['brand' => 7, 'paid' => false]));
         self::assertSame('ELSE', $pending->getBranchTaken());
         $engine->getVersionManager()->recordVersion($this->rule(99, approval: new ApprovalRequirement()), 'bob', 'New');
-        $again = DatabaseAutomationFactory::create($this->db, $registry);
+        $again = DatabaseAutomationFactory::create($this->db, $registry, encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $result = $again->executeApprovedRequest($pending->getApprovalId(), 'operator');
         self::assertSame([['value' => -10]], $calls);
         self::assertFalse($result->isConditionPassed());
@@ -93,34 +93,34 @@ trait AutomationVersionCases
         self::assertSame('ELSE', $run->getBranchTaken());
         self::assertFalse($run->getMetadata()['rule_version_unknown']);
         self::assertFalse($run->getMetadata()['condition_unknown']);
-        self::assertSame([], (new AutomationRecoveryInspector($this->db))->listUnresolved());
+        self::assertSame([], (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved());
     }
     public function testDelayedProvenancePersistsAndCannotBeReplacedByCurrentRule(): void
     {
         $this->versionInstall();
-        $engine = DatabaseAutomationFactory::create($this->db, new ActionRegistry());
+        $engine = DatabaseAutomationFactory::create($this->db, new ActionRegistry(), encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $rule = $this->rule(10, delay: 3600);
         $engine->getVersionManager()->recordVersion($rule, 'actor', 'First');
         $result = $engine->executeVersion($rule->getId(), 1, new TriggerContext('invoice.paid', ['brand' => 7, 'paid' => false]));
-        $again = DatabaseAutomationFactory::create($this->db, new ActionRegistry());
+        $again = DatabaseAutomationFactory::create($this->db, new ActionRegistry(), encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $entry = $again->getDelayManager()->findById($result->getDelayId());
         self::assertSame(1, $entry->getExecutionSnapshot()['rule_version']);
         self::assertSame('ELSE', $entry->getExecutionSnapshot()['branch_taken']);
         self::assertFalse($entry->getExecutionSnapshot()['condition_passed']);
         self::assertSame(64, strlen($entry->getExecutionSnapshot()['rule_fingerprint']));
         $row = $this->db->selectOne('SELECT payload FROM automation_pending WHERE id = ?', [$entry->getId()]);
-        $payload = AutomationCodec::decode($row['payload']);
+        $payload = \Coleza\Tests\Support\AutomationStorageFixture::decode($this->db, $row['payload']);
         $payload['execute_at'] = (new \DateTimeImmutable('-1 hour'))->format('Y-m-d\TH:i:s.uP'); // Simulate the passage of time in this isolated fixture.
-        $this->db->update('automation_pending', ['payload' => AutomationCodec::encode($payload)], 'id = :id', ['id' => $entry->getId()]);
+        \Coleza\Tests\Support\AutomationStorageFixture::update($this->db, 'automation_pending', ['payload' => AutomationCodec::encode($payload)], 'id = :id', ['id' => $entry->getId()]);
         $calls = [];
         $registry = new ActionRegistry();
         $registry->register(new CallbackActionHandler('send', function ($action, $context) use (&$calls) { $calls[] = $action->resolveParameters($context); return ['sent' => true]; }));
         $again->getVersionManager()->recordVersion($this->rule(99, delay: 3600), 'other', 'New version');
-        $dispatch = DatabaseAutomationFactory::create($this->db, $registry)->dispatchDueDelayedExecutions();
+        $dispatch = DatabaseAutomationFactory::create($this->db, $registry, encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor())->dispatchDueDelayedExecutions();
         self::assertSame([['value' => -10]], $calls);
         self::assertSame('ELSE', $dispatch[$entry->getId()]->getBranchTaken());
         self::assertSame(1, $again->getHistoryRepository()->listRecent()[0]->getRuleVersion());
-        self::assertSame([], (new AutomationRecoveryInspector($this->db))->listUnresolved());
+        self::assertSame([], (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved());
         $rule->setName('Unpublished change');
         $this->expectException(\LogicException::class);
         $again->executeRule($rule, new TriggerContext('invoice.paid', ['brand' => 7]));
@@ -128,7 +128,7 @@ trait AutomationVersionCases
     public function testSchemaRerunAndRollbackPreserveLedger(): void
     {
         $this->versionInstall();
-        $manager = new DatabaseRuleVersionManager($this->db);
+        $manager = new DatabaseRuleVersionManager($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $first = $manager->recordVersion($this->rule(), 'actor', 'First');
         $this->versionInstall();
         self::assertSame($first->toArray(), $manager->getLatestVersion('versioned_rule')->toArray());
@@ -141,7 +141,7 @@ trait AutomationVersionCases
     public function testInvalidObjectInRuleIsRejectedWithoutVersionOrSequenceConsumption(): void
     {
         $this->versionInstall();
-        $manager = new DatabaseRuleVersionManager($this->db);
+        $manager = new DatabaseRuleVersionManager($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $bad = new AutomationRule('r', 'Bad', new EventTrigger('event'), new IfElseBranch(new FieldCondition('field', '==', new \stdClass())));
         try { $manager->recordVersion($bad, 'actor', 'Invalid'); self::fail('Object persisted'); }
         catch (\InvalidArgumentException) { self::assertSame([], $manager->getVersions('r')); }
@@ -150,23 +150,23 @@ trait AutomationVersionCases
     public function testUnknownVersionAndCorruptedSnapshotFailBeforeExecution(): void
     {
         $this->versionInstall();
-        $engine = DatabaseAutomationFactory::create($this->db, new ActionRegistry());
+        $engine = DatabaseAutomationFactory::create($this->db, new ActionRegistry(), encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         try { $engine->executeVersion('missing', 1, new TriggerContext('event')); self::fail('Missing version executed'); }
         catch (\InvalidArgumentException) { self::assertSame(0, $engine->getHistoryRepository()->count()); }
         $record = $engine->getVersionManager()->recordVersion($this->rule(), 'actor', 'First');
         $data = $record->toArray(); $data['snapshot']['id'] = 'other_rule';
-        $this->db->update('automation_rule_versions', ['payload' => AutomationCodec::encode($data)], 'rule_id = :id', ['id' => 'versioned_rule']);
+        \Coleza\Tests\Support\AutomationStorageFixture::update($this->db, 'automation_rule_versions', ['payload' => AutomationCodec::encode($data)], 'rule_id = :id', ['id' => 'versioned_rule']);
         $this->expectException(\UnexpectedValueException::class);
         $engine->executeVersion('versioned_rule', 1, new TriggerContext('invoice.paid'));
     }
     public function testRecoveryInspectorReportsUnfinishedApprovalAndNeverRetries(): void
     {
         $this->versionInstall();
-        $engine = DatabaseAutomationFactory::create($this->db, new ActionRegistry());
+        $engine = DatabaseAutomationFactory::create($this->db, new ActionRegistry(), encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $entry = $engine->getApprovalManager()->createRequest('r', 'Ask', new TriggerContext('event'), [new ActionDefinition('a', 'send')], new ApprovalRequirement());
         $engine->getApprovalManager()->approve($entry->getId(), 'actor'); // Simulate termination immediately after persisted decision.
         $before = $this->db->select('SELECT * FROM automation_pending');
-        $unresolved = (new AutomationRecoveryInspector($this->db))->listUnresolved();
+        $unresolved = (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved();
         self::assertCount(1, $unresolved);
         self::assertSame('MISSING_OUTCOME', $unresolved[0]['reason']);
         self::assertFalse($unresolved[0]['automatic_retry_allowed']);
@@ -176,7 +176,7 @@ trait AutomationVersionCases
     public function testRecoveryInspectorDoesNotTreatFailedOrUnrelatedHistoryAsSuccess(): void
     {
         $this->versionInstall();
-        $engine = DatabaseAutomationFactory::create($this->db, new ActionRegistry());
+        $engine = DatabaseAutomationFactory::create($this->db, new ActionRegistry(), encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $context = new TriggerContext('event', correlationId: 'original');
         $entry = $engine->getApprovalManager()->createRequest('r', 'Ask', $context, [], new ApprovalRequirement());
         $engine->getApprovalManager()->approve($entry->getId(), 'actor');
@@ -184,7 +184,7 @@ trait AutomationVersionCases
             $engine->getHistoryRepository()->save(new AutomationRunRecord($id, 'r', 'Ask', 0, 'event', $correlation, ExecutionMode::ACTIVE, $status,
                 true, 'THEN', metadata: ['approval_id' => $entry->getId()]));
         }
-        $unresolved = (new AutomationRecoveryInspector($this->db))->listUnresolved();
+        $unresolved = (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved();
         self::assertCount(1, $unresolved);
         self::assertSame('AMBIGUOUS_OR_FAILED_OUTCOME', $unresolved[0]['reason']);
     }
@@ -192,7 +192,7 @@ trait AutomationVersionCases
     public function testFailedVersionInsertRollsBackAndDoesNotConsumeNumber(): void
     {
         $this->versionInstall();
-        $manager = new DatabaseRuleVersionManager($this->db);
+        $manager = new DatabaseRuleVersionManager($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $manager->recordVersion($this->rule(), 'actor', 'First');
         $this->db->statement($this->db->getDriverName() === 'mysql'
             ? "CREATE TRIGGER version_insert_fail BEFORE INSERT ON automation_rule_versions FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'injected write failure'"
@@ -209,10 +209,10 @@ trait AutomationVersionCases
     {
         $this->versionInstall();
         $entry = new \Coleza\Domain\Automation\Delay\DelayedExecution('inflight', 'r', 'Delay', new TriggerContext('event'), [], new \DateTimeImmutable('-1 hour'));
-        $this->db->insert('automation_pending', ['id' => $entry->getId(), 'kind' => 'delay', 'status' => 'SCHEDULED', 'payload' => AutomationCodec::encode(AutomationCodec::pending($entry))]);
-        self::assertTrue(DatabaseAutomationFactory::create($this->db, new ActionRegistry())->getDelayManager()->claimForDispatch($entry->getId()));
+        \Coleza\Tests\Support\AutomationStorageFixture::insert($this->db, 'automation_pending', ['id' => $entry->getId(), 'kind' => 'delay', 'status' => 'SCHEDULED', 'payload' => AutomationCodec::encode(AutomationCodec::pending($entry))]);
+        self::assertTrue(DatabaseAutomationFactory::create($this->db, new ActionRegistry(), encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor())->getDelayManager()->claimForDispatch($entry->getId()));
         $before = $this->db->select('SELECT * FROM automation_pending');
-        $items = (new AutomationRecoveryInspector($this->db))->listUnresolved();
+        $items = (new AutomationRecoveryInspector($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->listUnresolved();
         self::assertSame('DISPATCHING', $items[0]['status']);
         self::assertSame('MISSING_OUTCOME', $items[0]['reason']);
         self::assertSame($before, $this->db->select('SELECT * FROM automation_pending'));
@@ -221,7 +221,7 @@ trait AutomationVersionCases
     public function testInvalidProvenanceIsRejectedBeforePendingInsert(): void
     {
         $this->versionInstall();
-        $manager = DatabaseAutomationFactory::create($this->db, new ActionRegistry())->getApprovalManager();
+        $manager = DatabaseAutomationFactory::create($this->db, new ActionRegistry(), encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor())->getApprovalManager();
         try {
             $manager->createRequest('r', 'Bad', new TriggerContext('event'), [], new ApprovalRequirement(),
                 ['rule_version' => 1, 'condition_passed' => true, 'branch_taken' => 'ELSE', 'rule_fingerprint' => null]);

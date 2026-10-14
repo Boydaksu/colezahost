@@ -221,7 +221,7 @@ try {
                 if ($id === 1) { throw new RuntimeException('Uncertain outcome after simulated effect'); }
                 return [];
             }));
-            $engine = Coleza\Domain\Automation\Engine\DatabaseAutomationFactory::create($db, $registry);
+            $engine = Coleza\Domain\Automation\Engine\DatabaseAutomationFactory::create($db, $registry, encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
             $rule = new Coleza\Domain\Automation\Engine\AutomationRule('parallel_blast', 'Parallel destructive', new Coleza\Domain\Automation\Triggers\EventTrigger('event'),
                 new Coleza\Domain\Automation\Branching\IfElseBranch(new Coleza\Domain\Automation\Conditions\FieldCondition('ok', '==', true),
                     [new Coleza\Domain\Automation\Actions\ActionDefinition('a', 'service.terminate')]));
@@ -232,24 +232,27 @@ try {
         case 'approvalDelaySameActor':
         case 'approvalDelayDifferentActors':
             try {
-                $engine = Coleza\Domain\Automation\Engine\DatabaseAutomationFactory::create($db, new Coleza\Domain\Automation\Actions\ActionRegistry());
+                $engine = Coleza\Domain\Automation\Engine\DatabaseAutomationFactory::create($db, new Coleza\Domain\Automation\Actions\ActionRegistry(), encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
                 $result['delay_id'] = $engine->executeApprovedRequest($argv[5], $action === 'approvalDelaySameActor' ? 'actor' : 'actor_' . $argv[2])->getDelayId();
             } catch (InvalidArgumentException $error) {
                 $result = ['status' => 'rejected', 'reason' => $error->getMessage()];
+            } catch (Throwable $error) {
+                $result = ['status' => 'error', 'class' => $error::class, 'reason' => Coleza\Foundation\Security\SecretRedactor::text($error->getMessage())];
+                if ($error instanceof PDOException) { $result['sqlstate'] = $error->errorInfo[0] ?? null; $result['driver_code'] = $error->errorInfo[1] ?? null; }
             }
             break;
         case 'automationVersion':
             $rule = new Coleza\Domain\Automation\Engine\AutomationRule('parallel_rule', 'Rule', new Coleza\Domain\Automation\Triggers\EventTrigger('event'),
                 new Coleza\Domain\Automation\Branching\IfElseBranch(new Coleza\Domain\Automation\Conditions\FieldCondition('value', '==', (int) $argv[2])));
-            $version = (new Coleza\Domain\Automation\Versioning\DatabaseRuleVersionManager($db))->recordVersion($rule, 'worker_' . $argv[2], 'Concurrent publication');
+            $version = (new Coleza\Domain\Automation\Versioning\DatabaseRuleVersionManager($db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->recordVersion($rule, 'worker_' . $argv[2], 'Concurrent publication');
             $result['version'] = $version->getVersionNumber();
             break;
         case 'automationClaim':
-            $result['claimed'] = (int) (new Coleza\Domain\Automation\Delay\DatabaseDelayManager($db))->claimForDispatch($argv[5]);
+            $result['claimed'] = (int) (new Coleza\Domain\Automation\Delay\DatabaseDelayManager($db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->claimForDispatch($argv[5]);
             break;
         case 'automationApprove':
             try {
-                (new Coleza\Domain\Automation\Approval\DatabaseApprovalManager($db))->approve($argv[5], 'worker_' . $argv[2]);
+                (new Coleza\Domain\Automation\Approval\DatabaseApprovalManager($db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->approve($argv[5], 'worker_' . $argv[2]);
             } catch (InvalidArgumentException $error) {
                 $result = ['status' => 'rejected', 'reason' => $error->getMessage()];
             }

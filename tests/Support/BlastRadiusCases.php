@@ -15,7 +15,7 @@ trait BlastRadiusCases
 {
     private function installBlastRadius(): void
     {
-        AutomationSchema::installSchema($this->db);
+        \Coleza\Tests\Support\AutomationStorageFixture::install($this->db);
         DatabaseRuleVersionManager::installSchema($this->db);
         \Coleza\Domain\Automation\Safety\DatabaseBlastRadiusLimiter::installSchema($this->db);
     }
@@ -31,7 +31,7 @@ trait BlastRadiusCases
         $registry = new ActionRegistry();
         $registry->register(new CallbackActionHandler('service.terminate', function () use (&$calls) { $calls++; return []; }));
         for ($i = 0; $i < 7; $i++) {
-            DatabaseAutomationFactory::create($this->db, $registry)->executeRule($this->destructiveRule(), new TriggerContext('event', ['ok' => true]));
+            DatabaseAutomationFactory::create($this->db, $registry, encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor())->executeRule($this->destructiveRule(), new TriggerContext('event', ['ok' => true]));
         }
         self::assertSame(5, $calls, 'Reconstruction must not reset the shared destructive budget');
     }
@@ -44,7 +44,7 @@ trait BlastRadiusCases
             $calls++;
             throw new \RuntimeException('Response lost after a possible external effect');
         }));
-        $engine = DatabaseAutomationFactory::create($this->db, $registry);
+        $engine = DatabaseAutomationFactory::create($this->db, $registry, encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         for ($i = 0; $i < 7; $i++) { $engine->executeRule($this->destructiveRule(), new TriggerContext('event', ['ok' => true])); }
         self::assertSame(5, $calls, 'Unknown external outcomes must not release destructive permits');
     }
@@ -102,7 +102,7 @@ trait BlastRadiusCases
         $calls = 0;
         $registry = new ActionRegistry();
         $registry->register(new CallbackActionHandler('service.terminate', function () use (&$calls) { $calls++; return []; }));
-        $engine = DatabaseAutomationFactory::create($this->db, $registry);
+        $engine = DatabaseAutomationFactory::create($this->db, $registry, encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         foreach ([\Coleza\Domain\Automation\Execution\ExecutionMode::DRY_RUN, \Coleza\Domain\Automation\Execution\ExecutionMode::OBSERVE] as $mode) {
             $rule = $this->destructiveRule();
             $rule->setExecutionMode($mode);
@@ -118,7 +118,7 @@ trait BlastRadiusCases
         $calls = 0;
         $registry = new ActionRegistry();
         $registry->register(new CallbackActionHandler('service.terminate', function () use (&$calls) { $calls++; return []; }));
-        $engine = DatabaseAutomationFactory::create($this->db, $registry);
+        $engine = DatabaseAutomationFactory::create($this->db, $registry, encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $this->db->beginTransaction();
         try {
             try { $engine->executeRule($this->destructiveRule(), new TriggerContext('event', ['ok' => true])); self::fail('Caller transaction accepted'); }
@@ -150,7 +150,7 @@ trait BlastRadiusCases
             $countAtCallback = $this->limiter()->getRecentDestructiveCount();
             return \Coleza\Domain\Automation\Actions\ActionResult::failed($action->getId(), $action->getType(), 'uncertain');
         }));
-        self::assertFalse(DatabaseAutomationFactory::create($this->db, $registry)->executeRule($this->destructiveRule(), new TriggerContext('event', ['ok' => true]))->isSuccessful());
+        self::assertFalse(DatabaseAutomationFactory::create($this->db, $registry, encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor())->executeRule($this->destructiveRule(), new TriggerContext('event', ['ok' => true]))->isSuccessful());
         self::assertFalse($inTransaction);
         self::assertSame(1, $countAtCallback);
         self::assertSame(1, $this->limiter()->getRecentDestructiveCount());
@@ -171,7 +171,7 @@ trait BlastRadiusCases
         $this->installBlastRadius();
         $this->db->statement('DELETE FROM automation_blast_policy');
         $this->expectException(\RuntimeException::class);
-        DatabaseAutomationFactory::create($this->db, new ActionRegistry());
+        DatabaseAutomationFactory::create($this->db, new ActionRegistry(), encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
     }
     public function testInconsistentWorkerPolicyIsRefused(): void
     {
@@ -185,7 +185,7 @@ trait BlastRadiusCases
         $calls = 0;
         $registry = new ActionRegistry();
         $registry->register(new CallbackActionHandler('service.terminate', function () use (&$calls) { $calls++; return []; }));
-        $engine = DatabaseAutomationFactory::create($this->db, $registry);
+        $engine = DatabaseAutomationFactory::create($this->db, $registry, encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $this->db->statement('UPDATE automation_blast_policy SET max_actions = 100 WHERE id = 1');
         self::assertFalse($engine->executeRule($this->destructiveRule(), new TriggerContext('event', ['ok' => true]))->isSuccessful());
         self::assertSame(0, $calls);
@@ -210,7 +210,7 @@ trait BlastRadiusCases
         $calls = 0;
         $registry = new ActionRegistry();
         $registry->register(new CallbackActionHandler('service.terminate', function () use (&$calls) { $calls++; return []; }));
-        $engine = DatabaseAutomationFactory::create($this->db, $registry);
+        $engine = DatabaseAutomationFactory::create($this->db, $registry, encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         self::assertFalse($engine->executeRule($this->destructiveRule(), new TriggerContext('event', ['ok' => true]))->isSuccessful());
         self::assertSame(0, $calls);
         self::assertSame(0, $this->limiterCount());
@@ -260,7 +260,7 @@ trait BlastRadiusCases
         $this->installBlastRadius();
         $this->db->statement('DROP TABLE automation_destructive_permits');
         $this->expectException(\PDOException::class);
-        DatabaseAutomationFactory::create($this->db, new ActionRegistry());
+        DatabaseAutomationFactory::create($this->db, new ActionRegistry(), encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
     }
     public function testApprovedPathUsesSharedBudgetBeforeDestructiveHandler(): void
     {
@@ -269,7 +269,7 @@ trait BlastRadiusCases
         $calls = 0;
         $registry = new ActionRegistry();
         $registry->register(new CallbackActionHandler('service.terminate', function () use (&$calls) { $calls++; return []; }));
-        $engine = DatabaseAutomationFactory::create($this->db, $registry);
+        $engine = DatabaseAutomationFactory::create($this->db, $registry, encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $pending = $engine->getApprovalManager()->createRequest('r', 'Approved destructive', new TriggerContext('event'),
             [new ActionDefinition('a', 'service.terminate')], new \Coleza\Domain\Automation\Approval\ApprovalRequirement(), ['delay_seconds' => 0]);
         self::assertFalse($engine->executeApprovedRequest($pending->getId(), 'operator')->isSuccessful());
@@ -282,12 +282,12 @@ trait BlastRadiusCases
         for ($i = 0; $i < 5; $i++) { self::assertTrue($this->limiter()->tryAcquire('server.destroy')); }
         $entry = new \Coleza\Domain\Automation\Delay\DelayedExecution('due_destructive', 'r', 'Due destructive', new TriggerContext('event'),
             [new ActionDefinition('a', 'service.terminate')], new \DateTimeImmutable('-1 hour'));
-        $this->db->insert('automation_pending', ['id' => $entry->getId(), 'kind' => 'delay', 'status' => 'SCHEDULED',
+        \Coleza\Tests\Support\AutomationStorageFixture::insert($this->db, 'automation_pending', ['id' => $entry->getId(), 'kind' => 'delay', 'status' => 'SCHEDULED',
             'payload' => \Coleza\Domain\Automation\Persistence\AutomationCodec::encode(\Coleza\Domain\Automation\Persistence\AutomationCodec::pending($entry))]);
         $calls = 0;
         $registry = new ActionRegistry();
         $registry->register(new CallbackActionHandler('service.terminate', function () use (&$calls) { $calls++; return []; }));
-        $results = DatabaseAutomationFactory::create($this->db, $registry)->dispatchDueDelayedExecutions();
+        $results = DatabaseAutomationFactory::create($this->db, $registry, encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor())->dispatchDueDelayedExecutions();
         self::assertCount(1, $results);
         self::assertFalse($results[$entry->getId()]->isSuccessful());
         self::assertSame(0, $calls);
@@ -301,7 +301,7 @@ trait BlastRadiusCases
         $calls = 0;
         $registry = new ActionRegistry();
         $registry->register(new CallbackActionHandler('notification.send', function () use (&$calls) { $calls++; return []; }));
-        self::assertTrue(DatabaseAutomationFactory::create($this->db, $registry)->executeRule($this->destructiveRule('notification.send'),
+        self::assertTrue(DatabaseAutomationFactory::create($this->db, $registry, encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor())->executeRule($this->destructiveRule('notification.send'),
             new TriggerContext('event', ['ok' => true]))->isSuccessful());
         self::assertSame(1, $calls);
         self::assertSame(5, $this->limiter()->getRecentDestructiveCount());
@@ -309,20 +309,20 @@ trait BlastRadiusCases
     public function testUpgradeFromPreBudgetSchemaPreservesPendingVersionAndPause(): void
     {
         // The actual pre-15 shape has no budget tables; runtime factory must not silently create them.
-        AutomationSchema::installSchema($this->db);
+        \Coleza\Tests\Support\AutomationStorageFixture::install($this->db);
         DatabaseRuleVersionManager::installSchema($this->db);
-        $pending = (new \Coleza\Domain\Automation\Approval\DatabaseApprovalManager($this->db))->createRequest('legacy_r', 'Existing approval',
+        $pending = (new \Coleza\Domain\Automation\Approval\DatabaseApprovalManager($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->createRequest('legacy_r', 'Existing approval',
             new TriggerContext('event', ['service_id' => 42]), [new ActionDefinition('a', 'service.terminate')],
             new \Coleza\Domain\Automation\Approval\ApprovalRequirement(), ['delay_seconds' => 0]);
-        $version = (new DatabaseRuleVersionManager($this->db))->recordVersion($this->destructiveRule(), 'author', 'Before budget upgrade');
+        $version = (new DatabaseRuleVersionManager($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->recordVersion($this->destructiveRule(), 'author', 'Before budget upgrade');
         $pause = new \Coleza\Domain\Automation\Safety\DatabaseEmergencyPauseManager($this->db);
         $pause->pause('operator', 'Upgrade containment', 'ALL');
         $before = [$this->db->select('SELECT * FROM automation_pending'), $this->db->select('SELECT * FROM automation_rule_versions'), $pause->getState()->toArray()];
-        try { DatabaseAutomationFactory::create($this->db, new ActionRegistry()); self::fail('Factory silently upgraded missing budget'); }
+        try { DatabaseAutomationFactory::create($this->db, new ActionRegistry(), encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor()); self::fail('Factory silently upgraded missing budget'); }
         catch (\PDOException) { self::assertNotEmpty($before[0]); }
         $migration = require dirname(__DIR__, 2) . '/database/migrations/2026_10_12_000015_automation_destructive_budget.php';
         $migration->up($this->db);
-        $engine = DatabaseAutomationFactory::create($this->db, new ActionRegistry());
+        $engine = DatabaseAutomationFactory::create($this->db, new ActionRegistry(), encryptor: \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         self::assertSame($before, [$this->db->select('SELECT * FROM automation_pending'), $this->db->select('SELECT * FROM automation_rule_versions'), $pause->getState()->toArray()]);
         self::assertSame($pending->toArray(), $engine->getApprovalManager()->findById($pending->getId())->toArray());
         self::assertSame($version->toArray(), $engine->getVersionManager()->getVersion($this->destructiveRule()->getId(), 1)->toArray());
