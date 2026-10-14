@@ -1,0 +1,19 @@
+{
+  "reference_commit": "ccfbf1b5c10be5347e62a0dcf11af2a279b59239",
+  "files": {
+    "src/Api/Logging/ApiRequestLogger.php": "005937787bb404d50be91e5ba304bf35bf7f0332da5a2353adebb4af345b9447",
+    "src/Domain/Identity/Audit/AuditLogger.php": "25d64c956afe78768fb4cd5431525d93347ac0853e9a0312932313c03a1cc2b5",
+    "src/Domain/Privacy/Export/DefaultPrivacyDataCollector.php": "1099e19bf96237c47a3b883e3e92891cded0f64372479ae1c49315895b5455f2",
+    "src/Domain/Privacy/Export/PrivacyExportPackage.php": "8657c2bbdbe23acc62a65785702ad87bc311b5309ace8eecd64035d9292cc3e5",
+    "src/Domain/Privacy/Requests/PrivacyRequestService.php": "e2c0131af86ebe3edfb47d74cf26715274f7c040f502543e7a5d654a79642a99",
+    "src/Domain/Provisioning/Services/ProvisioningOperationService.php": "1bc2697b0adf224eaf1d5e2d6a93b8f08723f7709e9fb52c4e69dc8b142bf65c",
+    "src/Foundation/Config/ConfigRepository.php": "083095f34e7415890dc57f10f05d84c92ecff478b8ab98e80a581845159ace04",
+    "src/Foundation/Logging/LogSanitizer.php": "3d59b8f0be4412c6faf0272cb857a8617ce16b054fd77dcd9f97add2d7d3227d",
+    "src/Foundation/Logging/Logger.php": "d5b83168ad78a9a776411fe8024c2b4d9830abed237f693d512f01b5c08de3a5",
+    "src/Foundation/Security/SecretRedactor.php": "884736887efa31d437d012630bcf34e272b9b46bf2979bd8c546fd24300aa7d6",
+    "tests/MariaDb/SecretEgressTest.php": "a8118c69e3e818016f6d56875974f5d86c3a29ffe0109f9b435a6861e4c9e4f6",
+    "tests/Support/SecretEgressCases.php": "2ad69aabaed7a129d5f69318ef67def205829f37f3cc9a3dace299d86e18cab6",
+    "tests/Unit/Foundation/Logging/SecretEgressTest.php": "cd8c4f25b3b570dcd4e4bfbe2c37800f59d9c823466f9e807ea246916ef53cf2",
+    "tests/Unit/Foundation/Logging/SecretRedactionTest.php": "78b35cd3f95330739d4a0fb5bb64e69bb89f93737410359808f74abe95db689d"
+  }
+}

@@ -52,7 +52,7 @@ final class ProvisioningOperationService
         $evidence['automatic_retry_allowed'] = false;
         $this->db->insert($this->auditTable, ['operation_id' => $op->getId(), 'service_id' => $op->getServiceId(), 'action' => 'reconciliation',
             'attempt_number' => $op->getAttemptCount(), 'success' => 0, 'client_safe_message' => 'Remote outcome requires reconciliation.',
-            'raw_response_json' => json_encode($evidence, JSON_THROW_ON_ERROR), 'logged_at' => date('Y-m-d H:i:s')]);
+            'raw_response_json' => json_encode(\Coleza\Foundation\Security\SecretRedactor::sanitize($evidence), JSON_THROW_ON_ERROR), 'logged_at' => date('Y-m-d H:i:s')]);
         if ($result->isUnknown() && $op->getStatus() === ProvisioningOperation::STATUS_RETRYING) {
             $this->db->update($this->opsTable, ['status' => ProvisioningOperation::STATUS_RECONCILIATION_REQUIRED,
                 'next_attempt_at' => null, 'updated_at' => date('Y-m-d H:i:s')], 'id = :id', ['id' => $op->getId()]);
@@ -177,6 +177,7 @@ final class ProvisioningOperationService
         $now = date('Y-m-d H:i:s');
         $newAttemptCount = $op->getAttemptCount() + 1;
         $opId = $op->getId() ?? 0;
+        $redactionContext = ['data' => $result->getData(), 'response' => $result->getRawResponse()];
 
         if ($result->isSuccess()) {
             // Success transition
@@ -204,7 +205,7 @@ final class ProvisioningOperationService
                 $op->getServiceId(),
                 $op->getAction(),
                 $newAttemptCount,
-                json_encode($result->getRawResponse()),
+                json_encode(\Coleza\Foundation\Security\SecretRedactor::sanitize($result->getRawResponse()), JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE),
                 $now,
             ]);
         } else {
@@ -232,8 +233,8 @@ final class ProvisioningOperationService
                 $nextAttempt,
                 $errClass->getCategory(),
                 $errClass->getErrorCode(),
-                $errClass->getClientSafeMessage(),
-                $errClass->getAdminActionableMessage(),
+                \Coleza\Foundation\Security\SecretRedactor::message($errClass->getClientSafeMessage(), $redactionContext),
+                \Coleza\Foundation\Security\SecretRedactor::message($errClass->getAdminActionableMessage(), $redactionContext),
                 json_encode($result->getData()),
                 $now,
                 $opId,
@@ -252,9 +253,9 @@ final class ProvisioningOperationService
                 $newAttemptCount,
                 $errClass->getCategory(),
                 $errClass->getErrorCode(),
-                $errClass->getClientSafeMessage(),
-                $errClass->getAdminActionableMessage(),
-                json_encode($result->getRawResponse()),
+                \Coleza\Foundation\Security\SecretRedactor::message($errClass->getClientSafeMessage(), $redactionContext),
+                \Coleza\Foundation\Security\SecretRedactor::message($errClass->getAdminActionableMessage(), $redactionContext),
+                json_encode(\Coleza\Foundation\Security\SecretRedactor::sanitize($result->getRawResponse()), JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE),
                 $now,
             ]);
         }
@@ -394,9 +395,9 @@ final class ProvisioningOperationService
             success: (bool)$row['success'],
             errorCategory: $row['error_category'] !== null ? (string)$row['error_category'] : null,
             errorCode: $row['error_code'] !== null ? (string)$row['error_code'] : null,
-            clientSafeMessage: $row['client_safe_message'] !== null ? (string)$row['client_safe_message'] : null,
-            adminActionableMessage: $row['admin_actionable_message'] !== null ? (string)$row['admin_actionable_message'] : null,
-            rawResponse: is_array($raw) ? $raw : null,
+            clientSafeMessage: $row['client_safe_message'] !== null ? \Coleza\Foundation\Security\SecretRedactor::message((string)$row['client_safe_message'], is_array($raw) ? $raw : []) : null,
+            adminActionableMessage: $row['admin_actionable_message'] !== null ? \Coleza\Foundation\Security\SecretRedactor::message((string)$row['admin_actionable_message'], is_array($raw) ? $raw : []) : null,
+            rawResponse: is_array($raw) ? \Coleza\Foundation\Security\SecretRedactor::sanitize($raw) : null,
             loggedAt: (string)$row['logged_at']
         );
     }

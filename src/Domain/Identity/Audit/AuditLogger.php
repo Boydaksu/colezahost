@@ -67,8 +67,8 @@ final class AuditLogger
             'event_type' => $eventType,
             'target_resource' => $targetResource,
             'ip_address' => $ip,
-            'user_agent' => $userAgent,
-            'payload' => !empty($payload) ? json_encode($payload, JSON_UNESCAPED_SLASHES) : null,
+            'user_agent' => $userAgent === null ? null : \Coleza\Foundation\Security\SecretRedactor::text($userAgent),
+            'payload' => !empty($payload) ? json_encode(\Coleza\Foundation\Security\SecretRedactor::sanitize($payload), JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_SLASHES) : null,
         ]);
     }
 
@@ -80,12 +80,16 @@ final class AuditLogger
     public function getLogsForUser(int $userId): array
     {
         $this->ensureTable();
-        return $this->db->select(
+        $rows = $this->db->select(
             sprintf(
                 'SELECT * FROM %s WHERE actor_user_id = :actor_uid OR impersonator_user_id = :impersonator_uid ORDER BY id DESC',
                 $this->table
             ),
             ['actor_uid' => $userId, 'impersonator_uid' => $userId]
         );
+        foreach ($rows as &$row) {
+            foreach (['payload', 'user_agent'] as $field) { if (is_string($row[$field] ?? null)) { $row[$field] = \Coleza\Foundation\Security\SecretRedactor::text($row[$field]); } }
+        }
+        return $rows;
     }
 }

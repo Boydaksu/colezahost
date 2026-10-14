@@ -8,15 +8,17 @@ use DateTimeImmutable;
 
 final class PrivacyExportPackage
 {
+    private readonly array $data;
     /**
      * @param array<string, mixed> $data
      */
     public function __construct(
         private readonly int $userId,
         private readonly DateTimeImmutable $generatedAt,
-        private readonly array $data,
+        array $data,
         private readonly string $checksum
     ) {
+        $this->data = \Coleza\Foundation\Security\SecretRedactor::sanitize($data);
     }
 
     /**
@@ -24,6 +26,7 @@ final class PrivacyExportPackage
      */
     public static function create(int $userId, array $data, ?DateTimeImmutable $generatedAt = null): self
     {
+        $data = \Coleza\Foundation\Security\SecretRedactor::sanitize($data);
         $timestamp = $generatedAt ?? new DateTimeImmutable();
         $payload = [
             'schema' => 'colezahost_gdpr_export_v1',

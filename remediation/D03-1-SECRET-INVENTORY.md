@@ -1,0 +1,23 @@
+# D03.1 — sır denetimi dosya matrisi
+
+Referans ccfbf1b5c10be5347e62a0dcf11af2a279b59239; orijinal master Security Constitution: password/token/TOTP/recovery/card/EPP/provider secrets loglanmaz; provider sırları Vault'ta; immutable audit uygulama logundan ayrıdır. Bu matris D03.1'i kapatma raporu değildir. Statik kaynak taraması, mevcut testler ve yeni EGRESS regresyonları birlikte kullanılır; bütün ürünün runtime/HTTP kabulü sayılmaz.
+
+| Dosya/yol | Durum | Bu adım ve kalan sınır |
+|---|---|---|
+| Foundation/Security/SecretRedactor.php | Uygulandı | Alias/JSON/query/URI/basic-bearer/PEM/envelope/PAN maskeleme; bounded depth, opaque object ve exception, hook çalıştırmama. Kaynağı belirtilmemiş key'siz/işaretsiz sırları tahmin eden DLP sistemi değildir. |
+| Foundation/Logging/Logger.php, LogSanitizer.php | Uygulandı | Message/context/correlation/level/channel; known context values, escaped embedded JSON, invalid UTF8. SensitiveParameter wrapper args. Legacy file içerikleri otomatik yeniden yazılmaz. |
+| Foundation/Config/ConfigRepository.php | Uygulandı | all()/debugInfo safe bulk snapshot; runtime get() raw ve yerinde kalır. Ekran/composition kullanımı D08 ile kabul edilecek. |
+| Api/Logging/ApiRequestLogger.php | Uygulandı | Query/fragment/userinfo write/read route görünümünden çıkarılır; eski DB kanıtı değiştirilmez. Dinamik path segmentleri ve diğer HTTP response/exception yolları son entegrasyon kabulünde incelenecek. |
+| Domain/Identity/Audit/AuditLogger.php | Uygulandı | New payload/useragent scrub; legacy payload read view scrub, immutable DB bytes korunur. Retention/forensic historical access ayrı izin/politika ister. |
+| Domain/Provisioning/Services/ProvisioningOperationService.php audit alanları | Uygulandı | raw_response_json/error diagnostics ve legacy audit view scrub; remote decision/fingerprint/result schema işlevi korunur. |
+| Aynı dosya payload_json/result_json | Açık — operational carrier | İşlem için gerekli plaintext değer kaybolmadan Vault/şifreli kalıcılık + owner reference + rotation inventory kurulmalı. Log redaction operational input yerine uygulanmaz. |
+| Domain/Privacy/Export/DefaultPrivacyDataCollector.php, PrivacyExportPackage.php | Uygulandı | Default/custom collector için package boundary; constructor/create sanitize, checksum sanitized data. Eski unsanitized package checksum'ı yeni görünümü doğrulamış sayılmaz. |
+| Domain/Privacy/Requests/PrivacyRequestService.php getExport | Uygulandı | Integrity bozulan/legacy unsanitized paket servis edilmez; kayıt sessizce yeniden checksum'lanmaz. Legacy stored package reconciliation/retention son kabulde ele alınacak. |
+| Foundation/Database/Connection.php query log; exception/DTO diagnostic getters | Açık — comprehensive acceptance | PSR logger üzerinden çıkan bindings masked; doğrudan query-log ve diğer response/export kullanımları dosya bazında tamamlanmalı. |
+| Domain/Automation/Persistence/AutomationCodec.php ve execution context/parameters persistence | Açık — operational carrier | Context/all ve action parameter JSON round-trip execution için kullanılır. Secret flow varsa doğru Vault/reference storage ve replay korunmalı; toptan redact ederek eylem bozmak çözüm değildir. |
+| Domain/Notifications/History/NotificationLog.php ve notification template/body/history yolları | Açık — comprehensive acceptance | Auth/reset/verification bildirimlerinin gerekli delivery materyali ve saklanan/admin-visible kopyaları ayrı doğrulanacak. |
+| Domain/Privacy/Tombstone/PrivacyTombstoneService.php, PrivacyTombstone.php | Açık — signing keys | Bilinen default HMAC key mevcut. Bağımsız kalıcı purpose key, explicit legacy provenance ve master-key rotation boyunca tombstone integrity kabulü gerekir. |
+| Domain/Privacy/Redaction/RedactionAuditService.php, RedactionAuditRecord.php | Açık — signing keys | Bilinen default HMAC key mevcut. Immutable eski record trust/provenance yanlış kabul edilmeden ayrı key ve geçiş tasarlanmalı. |
+| Domain/Backup archive/config/files/restore export | D05 + secret acceptance açık | Key gate önceki KEYLIFE commitinde tamamlandı. DB dump/file disclosure policy, staging/path ve whole-module recovery tamamlanmış sayılmaz. |
+
+D03.1 kalan tek genel denetim grubunun sabit üç alt işi: operational secret carriers; independent privacy signing keys/legacy integrity; comprehensive sink/legacy export/response acceptance. Paylaşılan diagnostic/export boundary bu EGRESS paketinde yerel olarak uygulandı. Yeni bir D02 alt fazı açılmaz; actor ve backend scope D03.2–D03.4'te kalır.

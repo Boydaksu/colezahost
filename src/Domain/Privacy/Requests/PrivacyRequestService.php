@@ -229,12 +229,13 @@ final class PrivacyRequestService
             return null;
         }
 
-        return new PrivacyExportPackage(
+        $package = new PrivacyExportPackage(
             userId: (int) $row['user_id'],
             generatedAt: new DateTimeImmutable((string) $row['completed_at']),
             data: $decoded['data'],
             checksum: (string) $row['export_checksum']
         );
+        return $package->verifyIntegrity() ? $package : null;
     }
 
     public function getRequest(int $id): ?PrivacyRequest

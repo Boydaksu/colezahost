@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml" tests="6" assertions="7" errors="0" failures="6" skipped="0" time="6.738686">
+    <testsuite name="Unit" tests="6" assertions="7" errors="0" failures="6" skipped="0" time="6.738686">
+      <testsuite name="Coleza\Tests\Unit\Foundation\Logging\SecretEgressTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Foundation\Logging\SecretEgressTest.php" tests="2" assertions="2" errors="0" failures="2" skipped="0" time="6.603049">
+        <testcase name="testSecurityAuditCannotPersistCredentialsFromNestedPayloads" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretEgressCases.php" line="6" class="Coleza\Tests\Unit\Foundation\Logging\SecretEgressTest" classname="Coleza.Tests.Unit.Foundation.Logging.SecretEgressTest" assertions="1" time="6.563420">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Foundation\Logging\SecretEgressTest::testSecurityAuditCannotPersistCredentialsFromNestedPayloads&#13;
+Failed asserting that '{"status":"failed","details":{"app.key":"synthetic-audit-key","metadata":"{\"password\":\"synthetic-audit-password\"}"}}' [ASCII](length: 120) does not contain "synthetic-audit-key" [ASCII](length: 19).
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretEgressCases.php:12</failure>
+        </testcase>
+        <testcase name="testApiLogsStoreRouteWithoutQueryFragmentOrAuthorityCredentials" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretEgressCases.php" line="17" class="Coleza\Tests\Unit\Foundation\Logging\SecretEgressTest" classname="Coleza.Tests.Unit.Foundation.Logging.SecretEgressTest" assertions="1" time="0.039629">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Foundation\Logging\SecretEgressTest::testApiLogsStoreRouteWithoutQueryFragmentOrAuthorityCredentials&#13;
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'/api/cron/run'
++'https://user:synthetic-url-password@example.test/api/cron/run?token=synthetic-query-token&amp;page=2#synthetic-fragment'
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretEgressCases.php:23</failure>
+        </testcase>
+      </testsuite>
+      <testsuite name="Coleza\Tests\Unit\Foundation\Logging\SecretRedactionTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Foundation\Logging\SecretRedactionTest.php" tests="4" assertions="5" errors="0" failures="4" skipped="0" time="0.135636">
+        <testcase name="testLogMessageAndContextCannotRevealKnownOrEncodedCredentials" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Foundation\Logging\SecretRedactionTest.php" line="11" class="Coleza\Tests\Unit\Foundation\Logging\SecretRedactionTest" classname="Coleza.Tests.Unit.Foundation.Logging.SecretRedactionTest" assertions="1" time="0.132393">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Foundation\Logging\SecretRedactionTest::testLogMessageAndContextCannotRevealKnownOrEncodedCredentials&#13;
+Failed asserting that '{"timestamp":"2026-10-14T13:01:01.225Z","level":"ERROR","channel":"app","message":"Failed with synthetic-unlabelled-password; Authorization: Bearer synthetic-bearer","context":{"password":"********","metadata":"{\"APP_KEY\":\"synthetic-app-key\"}","url":"https://user:synthetic-url-password@example.test/callback?t%6fken=synthetic-query-token&amp;ok=1"},"correlation":{"request_id":"d8605f56-20e0-4896-b6a8-ce5e52c39716","correlation_id":"d8605f56-20e0-4896-b6a8-ce5e52c39716","operation_id":null,"user_id":null,"org_id":null}}\r\n
+' [ASCII](length: 525) does not contain "synthetic-unlabelled-password" [ASCII](length: 29).
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Foundation\Logging\SecretRedactionTest.php:20</failure>
+        </testcase>
+        <testcase name="testObjectSerializationHooksAreNeverExecutedByLogSanitization" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Foundation\Logging\SecretRedactionTest.php" line="25" class="Coleza\Tests\Unit\Foundation\Logging\SecretRedactionTest" classname="Coleza.Tests.Unit.Foundation.Logging.SecretRedactionTest" assertions="1" time="0.000522">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Foundation\Logging\SecretRedactionTest::testObjectSerializationHooksAreNeverExecutedByLogSanitization&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Foundation\Logging\SecretRedactionTest.php:32</failure>
+        </testcase>
+        <testcase name="testSettingRowsAndConfigDiagnosticsMaskKeysWithoutBreakingRuntimeAccess" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Foundation\Logging\SecretRedactionTest.php" line="35" class="Coleza\Tests\Unit\Foundation\Logging\SecretRedactionTest" classname="Coleza.Tests.Unit.Foundation.Logging.SecretRedactionTest" assertions="2" time="0.001331">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Foundation\Logging\SecretRedactionTest::testSettingRowsAndConfigDiagnosticsMaskKeysWithoutBreakingRuntimeAccess&#13;
+Failed asserting that '{"app":{"key":"synthetic-config-key","name":"Coleza"},"database":{"password":"synthetic-db-password"}}' [ASCII](length: 102) does not contain "synthetic-config-key" [ASCII](length: 20).
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Foundation\Logging\SecretRedactionTest.php:39</failure>
+        </testcase>
+        <testcase name="testExportPackageScrubsCustomCollectorAndNestedJsonBeforeChecksum" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Foundation\Logging\SecretRedactionTest.php" line="46" class="Coleza\Tests\Unit\Foundation\Logging\SecretRedactionTest" classname="Coleza.Tests.Unit.Foundation.Logging.SecretRedactionTest" assertions="1" time="0.001391">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Foundation\Logging\SecretRedactionTest::testExportPackageScrubsCustomCollectorAndNestedJsonBeforeChecksum&#13;
+Failed asserting that '{\n
+    "schema": "colezahost_gdpr_export_v1",\n
+    "user_id": 7,\n
+    "generated_at": "2026-10-14 13:01:01",\n
+    "checksum": "46604a51572ca2a83bc943fcc48a99875ca33d72f36e38776101af089c5f2235",\n
+    "data": {\n
+        "profile": {\n
+            "name": "Alice",\n
+            "company": "Coleza",\n
+            "api_key_hash": "synthetic-key-hash"\n
+        },\n
+        "metadata": "{\"epp_code\":\"synthetic-epp-secret\",\"password\":\"synthetic-export-password\"}",\n
+        "invoices": [\n
+            {\n
+                "id": 42,\n
+                "total": 500\n
+            }\n
+        ]\n
+    }\n
+}' [ASCII](length: 575) does not contain "synthetic-key-hash" [ASCII](length: 18).
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Foundation\Logging\SecretRedactionTest.php:50</failure>
+        </testcase>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

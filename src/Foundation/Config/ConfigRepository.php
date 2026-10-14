@@ -62,8 +62,10 @@ final class ConfigRepository
      */
     public function all(): array
     {
-        return $this->items;
+        return \Coleza\Foundation\Security\SecretRedactor::sanitize($this->items);
     }
+
+    public function __debugInfo(): array { return $this->all(); }
 
     /**
      * Load all .php configuration files from a directory.

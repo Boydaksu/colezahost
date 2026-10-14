@@ -5,17 +5,17 @@
   "phase": "D03",
   "step": "D03.1",
   "status": "IN_PROGRESS",
-  "step_status": "D03_1_INSTALLER_KEY_BINDING_ATOMIC_ROTATION_OLD_WRITER_FENCING_AND_RESTORE_KEY_GATE_LOCAL_VERIFIED_GENERAL_SECRET_CONFIG_LOG_EXPORT_AUDIT_OPEN",
+  "step_status": "D03_1_SHARED_LOG_CONFIG_AUDIT_API_AND_PRIVACY_EXPORT_EGRESS_LOCAL_VERIFIED_OPERATIONAL_CARRIERS_SIGNING_KEYS_AND_COMPREHENSIVE_ACCEPTANCE_OPEN",
   "independent_acceptance": "PENDING",
   "production_ready": false,
   "next_step": "D03.1",
   "next_phase": "D04",
   "tests": {
-    "main_total": 1616,
-    "main_assertions": 11361,
-    "mariadb_total": 168,
-    "mariadb_assertions": 1218,
-    "mariadb_scope": "D03.1 key lifecycle plus seven affected classes; eight-class exact filtered discovery; full native suite not rerun",
+    "main_total": 1642,
+    "main_assertions": 11462,
+    "mariadb_total": 180,
+    "mariadb_assertions": 1089,
+    "mariadb_scope": "D03.1 shared egress: SecretEgress/KeyLifecycle/VaultUnified/ProvisioningProbeSafety/ApiSessionPersistence/PrivacyMigrationInstall/IdentityLifecycle; seven-class exact filtered discovery; full native not rerun",
     "full_mariadb_current_source": false,
     "last_full_mariadb": {
       "reference_commit": "0d2e3e08d4c121a146f298f77b4bc6b008b6f66e",
@@ -23,8 +23,8 @@
       "assertions": 5399,
       "evidence": "remediation/D02-CLOSEOUT-summary.json"
     },
-    "total": 1784,
-    "assertions": 12579,
+    "total": 1822,
+    "assertions": 12551,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -42,7 +42,7 @@
     "F30": "PARTIAL_PRODUCTION_SCHEMA_ANALYTICS_GOLDEN_AND_EXISTING_ADMIN_PERFORMANCE_BUDGET_VERIFIED_REAL_PROVIDER_END_TO_END_ACCEPTANCE_OPEN",
     "F21": "PARTIAL_SUPPORT_SCHEMA_ASSIGNMENT_CONVERSATION_CALLER_AND_PRE_EFFECT_DEPENDENCY_CHECKS_IMPLEMENTED_REAL_CONTEXT_COMMAND_SCOPE_AND_STORAGE_RECOVERY_OPEN",
     "F08": "EXPLICIT_RUNTIME_KEY_PRIVATE_FILE_INSTALLER_BINDING_ATOMIC_ROTATION_OLD_WRITER_FENCING_AND_RESTORE_KEY_GATE_LOCAL_VERIFIED_PENDING_INDEPENDENT_REVIEW",
-    "F09": "ENCRYPTED_SMTP_TOTP_SERVER_COMMON_VAULT_AND_ONE_WAY_CRON_AUTH_TOKEN_LOCAL_VERIFIED_GENERAL_SECRET_CONFIG_LOG_EXPORT_AUDIT_OPEN"
+    "F09": "SHARED_LOG_CONFIG_AUDIT_API_AND_PRIVACY_EXPORT_REDACTION_LOCAL_VERIFIED_OPERATIONAL_CARRIERS_SIGNING_KEYS_AND_COMPREHENSIVE_ACCEPTANCE_OPEN"
   },
   "remaining_steps": [
     "D03.1",
@@ -96,5 +96,15 @@
     "Non-atomic dump import and staged target recovery acceptance",
     "SQLite SQL literal escaping and MariaDB backup dump support",
     "Archive/file path and whole-module restore acceptance"
-  ]
+  ],
+  "d03_general_secret_audit": {
+    "shared_egress": "IMPLEMENTED_LOCAL_VERIFIED",
+    "inventory": "remediation/D03-1-SECRET-INVENTORY.md",
+    "remaining": [
+      "OPERATIONAL_SECRET_CARRIERS_AND_VAULT_PERSISTENCE",
+      "INDEPENDENT_PRIVACY_SIGNING_KEYS_AND_LEGACY_INTEGRITY",
+      "COMPREHENSIVE_SINK_LEGACY_EXPORT_AND_RESPONSE_ACCEPTANCE"
+    ]
+  },
+  "d03_egress_evidence": "remediation/D03-1-EGRESS-SONUC.md"
 }

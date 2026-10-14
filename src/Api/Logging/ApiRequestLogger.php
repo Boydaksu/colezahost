@@ -60,7 +60,7 @@ final class ApiRequestLogger
         return (int) $this->db->insert($this->table, [
             'key_id' => $keyId,
             'method' => strtoupper($method),
-            'path' => $path,
+            'path' => \Coleza\Foundation\Security\SecretRedactor::route($path),
             'status_code' => $statusCode,
             'duration_ms' => $durationMs,
             'ip_address' => $ip,
@@ -76,9 +76,11 @@ final class ApiRequestLogger
     public function getLogsForKey(int $keyId): array
     {
         $this->ensureTable(installation: false);
-        return $this->db->select(
+        $rows = $this->db->select(
             sprintf('SELECT * FROM %s WHERE key_id = :kid ORDER BY id DESC', $this->table),
             ['kid' => $keyId]
         );
+        foreach ($rows as &$row) { $row['path'] = \Coleza\Foundation\Security\SecretRedactor::route((string) $row['path']); }
+        return $rows;
     }
 }

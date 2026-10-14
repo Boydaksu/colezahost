@@ -29,7 +29,7 @@ final class DefaultPrivacyDataCollector implements PrivacyDataCollectorInterface
             'support_tickets' => $this->collectTickets($userId),
         ];
 
-        return $data;
+        return \Coleza\Foundation\Security\SecretRedactor::sanitize($data);
     }
 
     /**
