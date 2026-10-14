@@ -32,8 +32,9 @@ final class DomainExpiryAndReminderTest extends TestCase
         $this->catalog = new DomainCatalogService($this->db);
         $this->catalog->ensureTables();
 
-        $this->domainService = new DomainService($this->db, $this->catalog);
+        $this->domainService = new DomainService($this->db, $this->catalog, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $this->domainService->ensureTables();
+        \Coleza\Domain\Vault\VaultReferenceStore::ensureSchema($this->db);
 
         // Register .com with standard 30d grace, 30d redemption
         $tld = $this->catalog->registerTld([

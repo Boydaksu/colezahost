@@ -1,0 +1,157 @@
+<?xml version="1.0"?>
+<testSuite xmlns="https://xml.phpunit.de/testSuite">
+ <tests>
+  <testClass name="Coleza\Tests\MariaDb\AdoptionPersistenceTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\AdoptionPersistenceTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\AdoptionPersistenceTest::testFourConcurrentServiceAdoptionsCreateOneServiceAndIdentity" name="testFourConcurrentServiceAdoptionsCreateOneServiceAndIdentity"/>
+   <testMethod id="Coleza\Tests\MariaDb\AdoptionPersistenceTest::testFourConcurrentDomainAdoptionsCreateOneDomainAndIdentity" name="testFourConcurrentDomainAdoptionsCreateOneDomainAndIdentity"/>
+   <testMethod id="Coleza\Tests\MariaDb\AdoptionPersistenceTest::testInstalledServiceAdoptionIsVisibleToApplicationAndRepeatSafe" name="testInstalledServiceAdoptionIsVisibleToApplicationAndRepeatSafe"/>
+   <testMethod id="Coleza\Tests\MariaDb\AdoptionPersistenceTest::testInstalledDomainAdoptionIsVisibleToApplicationAndRepeatSafe" name="testInstalledDomainAdoptionIsVisibleToApplicationAndRepeatSafe"/>
+   <testMethod id="Coleza\Tests\MariaDb\AdoptionPersistenceTest::testIdentityWriteFailureLeavesNoOrphanService" name="testIdentityWriteFailureLeavesNoOrphanService"/>
+   <testMethod id="Coleza\Tests\MariaDb\AdoptionPersistenceTest::testIdentityWriteFailureLeavesNoOrphanDomain" name="testIdentityWriteFailureLeavesNoOrphanDomain"/>
+   <testMethod id="Coleza\Tests\MariaDb\AdoptionPersistenceTest::testMissingServiceDatesDoNotCreateBillingDatesOrService" name="testMissingServiceDatesDoNotCreateBillingDatesOrService"/>
+   <testMethod id="Coleza\Tests\MariaDb\AdoptionPersistenceTest::testServiceReplayCannotReuseAnotherCustomerOrSourceSystem" name="testServiceReplayCannotReuseAnotherCustomerOrSourceSystem"/>
+   <testMethod id="Coleza\Tests\MariaDb\AdoptionPersistenceTest::testDomainReplayCannotReuseAnotherCustomer" name="testDomainReplayCannotReuseAnotherCustomer"/>
+   <testMethod id="Coleza\Tests\MariaDb\AdoptionPersistenceTest::testLegacyServiceTableStopsWithoutChangingRecords" name="testLegacyServiceTableStopsWithoutChangingRecords"/>
+   <testMethod id="Coleza\Tests\MariaDb\AdoptionPersistenceTest::testUnknownProductOrServerMappingDoesNotDefaultToFirstRecord" name="testUnknownProductOrServerMappingDoesNotDefaultToFirstRecord"/>
+   <testMethod id="Coleza\Tests\MariaDb\AdoptionPersistenceTest::testLegacyDomainTableStopsWithoutChangingRecords" name="testLegacyDomainTableStopsWithoutChangingRecords"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\DomainSecretTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\DomainSecretTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\DomainSecretTest::testFourConcurrentCreatorsHaveOneOwnerAndNoOrphanSecret" name="testFourConcurrentCreatorsHaveOneOwnerAndNoOrphanSecret"/>
+   <testMethod id="Coleza\Tests\MariaDb\DomainSecretTest::testFourWritersAndReadersKeepOwnerAndCipherConsistent" name="testFourWritersAndReadersKeepOwnerAndCipherConsistent"/>
+   <testMethod id="Coleza\Tests\MariaDb\DomainSecretTest::testOldSnapshotReadsCommittedEppAndOperationResultTogether" name="testOldSnapshotReadsCommittedEppAndOperationResultTogether"/>
+   <testMethod id="Coleza\Tests\MariaDb\DomainSecretTest::testEppAndOperationDataAreEncryptedAndRestartExactly" name="testEppAndOperationDataAreEncryptedAndRestartExactly"/>
+   <testMethod id="Coleza\Tests\MariaDb\DomainSecretTest::testMetadataUpdatePreservesEppReferenceAndExplicitClearDeletesSecret" name="testMetadataUpdatePreservesEppReferenceAndExplicitClearDeletesSecret"/>
+   <testMethod id="Coleza\Tests\MariaDb\DomainSecretTest::testSplicedReferencesAreRejected#0" name="testSplicedReferencesAreRejected"/>
+   <testMethod id="Coleza\Tests\MariaDb\DomainSecretTest::testSplicedReferencesAreRejected#1" name="testSplicedReferencesAreRejected"/>
+   <testMethod id="Coleza\Tests\MariaDb\DomainSecretTest::testLateTimelineFailureRollsBackEppVaultAndSecurityAudit" name="testLateTimelineFailureRollsBackEppVaultAndSecurityAudit"/>
+   <testMethod id="Coleza\Tests\MariaDb\DomainSecretTest::testLateOperationFailureRollsBackNewOwnerAndResultStateVaultAndAudits" name="testLateOperationFailureRollsBackNewOwnerAndResultStateVaultAndAudits"/>
+   <testMethod id="Coleza\Tests\MariaDb\DomainSecretTest::testParentRollbackIncludesEppAndOperations#0" name="testParentRollbackIncludesEppAndOperations"/>
+   <testMethod id="Coleza\Tests\MariaDb\DomainSecretTest::testParentRollbackIncludesEppAndOperations#1" name="testParentRollbackIncludesEppAndOperations"/>
+   <testMethod id="Coleza\Tests\MariaDb\DomainSecretTest::testWrongKeyCannotReadOrReplaceEppAndResult" name="testWrongKeyCannotReadOrReplaceEppAndResult"/>
+   <testMethod id="Coleza\Tests\MariaDb\DomainSecretTest::testLegacyUpgradeRequiresProvenanceAndMalformedBatchIsAtomic" name="testLegacyUpgradeRequiresProvenanceAndMalformedBatchIsAtomic"/>
+   <testMethod id="Coleza\Tests\MariaDb\DomainSecretTest::testCachedSuccessDoesNotRepeatCallbackAndDiagnosticsHideSecrets" name="testCachedSuccessDoesNotRepeatCallbackAndDiagnosticsHideSecrets"/>
+   <testMethod id="Coleza\Tests\MariaDb\DomainSecretTest::testConfiguredKeyIsRequiredBeforeEppOrOperationWrites" name="testConfiguredKeyIsRequiredBeforeEppOrOperationWrites"/>
+   <testMethod id="Coleza\Tests\MariaDb\DomainSecretTest::testLegacyUpgradeCannotOverwriteAnExistingVaultOwner" name="testLegacyUpgradeCannotOverwriteAnExistingVaultOwner"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\KeyLifecycleTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\KeyLifecycleTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testRotationSerializesAgainstThreeIndependentSecretWriters" name="testRotationSerializesAgainstThreeIndependentSecretWriters"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testFourSeparateProcessesCannotWriteUsingRetiredKey" name="testFourSeparateProcessesCannotWriteUsingRetiredKey"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testMaintenanceCliBindsRotatesAndVerifiesAfterProcessRestart" name="testMaintenanceCliBindsRotatesAndVerifiesAfterProcessRestart"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testNonTransactionalBindingTableCannotAuthorizeAWriter" name="testNonTransactionalBindingTableCannotAuthorizeAWriter"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testDomainSecretsSurviveRotationAndDeepVerifyRejectsOwnerSplice" name="testDomainSecretsSurviveRotationAndDeepVerifyRejectsOwnerSplice"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testAutomationSecretsSurviveRotationAndDeepVerifyRejectsOwnerSplice" name="testAutomationSecretsSurviveRotationAndDeepVerifyRejectsOwnerSplice"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testOperationSecretsSurviveRotationAndOwnerCorruptionPreventsVerification" name="testOperationSecretsSurviveRotationAndOwnerCorruptionPreventsVerification"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testBoundDatabaseRejectsWriterUsingAnotherKeyBeforeChanges" name="testBoundDatabaseRejectsWriterUsingAnotherKeyBeforeChanges"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testBindingIsIdempotentAndDeepVerificationIsReadOnly" name="testBindingIsIdempotentAndDeepVerificationIsReadOnly"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testRotationPreservesEverySecretAndFencesAllOldSecretWriters" name="testRotationPreservesEverySecretAndFencesAllOldSecretWriters"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testLateAuditFailureRollsBackAllCiphertextsProbeAndVersions" name="testLateAuditFailureRollsBackAllCiphertextsProbeAndVersions"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testWrongKeyCannotRebindAnExistingDatabase" name="testWrongKeyCannotRebindAnExistingDatabase"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testPlaintextOrUnknownSettingCannotBeSilentlyBound" name="testPlaintextOrUnknownSettingCannotBeSilentlyBound"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testCorruptedCipherPreventsAllRotationWrites" name="testCorruptedCipherPreventsAllRotationWrites"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testLifecycleRefusesCallerTransactions#0" name="testLifecycleRefusesCallerTransactions"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testLifecycleRefusesCallerTransactions#1" name="testLifecycleRefusesCallerTransactions"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testMaintenanceAdmissionIsRequired" name="testMaintenanceAdmissionIsRequired"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testUnknownEncryptedScopeAndBrokenOwnerReferencePreventBinding" name="testUnknownEncryptedScopeAndBrokenOwnerReferencePreventBinding"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testLegacyCronNeedsExplicitHashUpgradeBeforeBinding" name="testLegacyCronNeedsExplicitHashUpgradeBeforeBinding"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testRotationRequiresAnExistingDifferentDurableReplacementFile" name="testRotationRequiresAnExistingDifferentDurableReplacementFile"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testRotationLogsAndMetadataContainNoPlaintextOrKeyMaterial" name="testRotationLogsAndMetadataContainNoPlaintextOrKeyMaterial"/>
+   <testMethod id="Coleza\Tests\MariaDb\KeyLifecycleTest::testEmptyCronTokenCannotBeCreatedOrAuthenticate" name="testEmptyCronTokenCannotBeCreatedOrAuthenticate"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\LegacyAdoptionUpgradeTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testInstallerUpgradesLegacyServiceAndPreservesOriginalAndPlacement" name="testInstallerUpgradesLegacyServiceAndPreservesOriginalAndPlacement"/>
+   <testMethod id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testInstallerUpgradesLegacyDomainAndAllowsNewApplicationRecord" name="testInstallerUpgradesLegacyDomainAndAllowsNewApplicationRecord"/>
+   <testMethod id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testRepeatedUpgradeDoesNotOverwriteLaterServiceChanges" name="testRepeatedUpgradeDoesNotOverwriteLaterServiceChanges"/>
+   <testMethod id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testInvalidLegacyAmountStopsBothTablesBeforeRenaming" name="testInvalidLegacyAmountStopsBothTablesBeforeRenaming"/>
+   <testMethod id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testMissingLegacyDateIsNotInvented" name="testMissingLegacyDateIsNotInvented"/>
+   <testMethod id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testDeletedLegacyIdsAreNotReused" name="testDeletedLegacyIdsAreNotReused"/>
+   <testMethod id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testIdentityLinksKeepTheirTargetIdsAndFields" name="testIdentityLinksKeepTheirTargetIdsAndFields"/>
+   <testMethod id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testNormalizedDomainCollisionStopsBeforeDdl" name="testNormalizedDomainCollisionStopsBeforeDdl"/>
+   <testMethod id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testCustomIndexStopsWithoutDroppingIt" name="testCustomIndexStopsWithoutDroppingIt"/>
+   <testMethod id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testInterruptedCopyCanResumeWithoutDuplicateRowsOrLostArchive" name="testInterruptedCopyCanResumeWithoutDuplicateRowsOrLostArchive"/>
+   <testMethod id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testExplicitLegacyRenewalAndGraceFlagsArePreserved" name="testExplicitLegacyRenewalAndGraceFlagsArePreserved"/>
+   <testMethod id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testConfiguredNonTwoDecimalCurrencyStopsBeforeConversion" name="testConfiguredNonTwoDecimalCurrencyStopsBeforeConversion"/>
+   <testMethod id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testMissingIdentityDoesNotCreateDuplicateServiceOnReimport" name="testMissingIdentityDoesNotCreateDuplicateServiceOnReimport"/>
+   <testMethod id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testInboundForeignKeyStopsBeforeChangingItsTarget" name="testInboundForeignKeyStopsBeforeChangingItsTarget"/>
+   <testMethod id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testMalformedMetadataStopsBeforeArchiving" name="testMalformedMetadataStopsBeforeArchiving"/>
+   <testMethod id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testUnknownIdentityStateStopsBeforeLegacyAdoptionChanges" name="testUnknownIdentityStateStopsBeforeLegacyAdoptionChanges"/>
+   <testMethod id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testMetadataGrowthPastCanonicalTextLimitStopsBeforeDdl" name="testMetadataGrowthPastCanonicalTextLimitStopsBeforeDdl"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\SqlPortabilityCloseoutTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest::testDomainPricingUpdatesOnlyMatchingOperationYearAndCurrency" name="testDomainPricingUpdatesOnlyMatchingOperationYearAndCurrency"/>
+   <testMethod id="Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest::testDomainContactsRepeatWithoutReplacingOtherContacts" name="testDomainContactsRepeatWithoutReplacingOtherContacts"/>
+  </testClass>
+ </tests>
+ <groups>
+  <group name="default">
+   <test id="Coleza\Tests\MariaDb\AdoptionPersistenceTest::testFourConcurrentServiceAdoptionsCreateOneServiceAndIdentity"/>
+   <test id="Coleza\Tests\MariaDb\AdoptionPersistenceTest::testFourConcurrentDomainAdoptionsCreateOneDomainAndIdentity"/>
+   <test id="Coleza\Tests\MariaDb\AdoptionPersistenceTest::testInstalledServiceAdoptionIsVisibleToApplicationAndRepeatSafe"/>
+   <test id="Coleza\Tests\MariaDb\AdoptionPersistenceTest::testInstalledDomainAdoptionIsVisibleToApplicationAndRepeatSafe"/>
+   <test id="Coleza\Tests\MariaDb\AdoptionPersistenceTest::testIdentityWriteFailureLeavesNoOrphanService"/>
+   <test id="Coleza\Tests\MariaDb\AdoptionPersistenceTest::testIdentityWriteFailureLeavesNoOrphanDomain"/>
+   <test id="Coleza\Tests\MariaDb\AdoptionPersistenceTest::testMissingServiceDatesDoNotCreateBillingDatesOrService"/>
+   <test id="Coleza\Tests\MariaDb\AdoptionPersistenceTest::testServiceReplayCannotReuseAnotherCustomerOrSourceSystem"/>
+   <test id="Coleza\Tests\MariaDb\AdoptionPersistenceTest::testDomainReplayCannotReuseAnotherCustomer"/>
+   <test id="Coleza\Tests\MariaDb\AdoptionPersistenceTest::testLegacyServiceTableStopsWithoutChangingRecords"/>
+   <test id="Coleza\Tests\MariaDb\AdoptionPersistenceTest::testUnknownProductOrServerMappingDoesNotDefaultToFirstRecord"/>
+   <test id="Coleza\Tests\MariaDb\AdoptionPersistenceTest::testLegacyDomainTableStopsWithoutChangingRecords"/>
+   <test id="Coleza\Tests\MariaDb\DomainSecretTest::testFourConcurrentCreatorsHaveOneOwnerAndNoOrphanSecret"/>
+   <test id="Coleza\Tests\MariaDb\DomainSecretTest::testFourWritersAndReadersKeepOwnerAndCipherConsistent"/>
+   <test id="Coleza\Tests\MariaDb\DomainSecretTest::testOldSnapshotReadsCommittedEppAndOperationResultTogether"/>
+   <test id="Coleza\Tests\MariaDb\DomainSecretTest::testEppAndOperationDataAreEncryptedAndRestartExactly"/>
+   <test id="Coleza\Tests\MariaDb\DomainSecretTest::testMetadataUpdatePreservesEppReferenceAndExplicitClearDeletesSecret"/>
+   <test id="Coleza\Tests\MariaDb\DomainSecretTest::testSplicedReferencesAreRejected#0"/>
+   <test id="Coleza\Tests\MariaDb\DomainSecretTest::testSplicedReferencesAreRejected#1"/>
+   <test id="Coleza\Tests\MariaDb\DomainSecretTest::testLateTimelineFailureRollsBackEppVaultAndSecurityAudit"/>
+   <test id="Coleza\Tests\MariaDb\DomainSecretTest::testLateOperationFailureRollsBackNewOwnerAndResultStateVaultAndAudits"/>
+   <test id="Coleza\Tests\MariaDb\DomainSecretTest::testParentRollbackIncludesEppAndOperations#0"/>
+   <test id="Coleza\Tests\MariaDb\DomainSecretTest::testParentRollbackIncludesEppAndOperations#1"/>
+   <test id="Coleza\Tests\MariaDb\DomainSecretTest::testWrongKeyCannotReadOrReplaceEppAndResult"/>
+   <test id="Coleza\Tests\MariaDb\DomainSecretTest::testLegacyUpgradeRequiresProvenanceAndMalformedBatchIsAtomic"/>
+   <test id="Coleza\Tests\MariaDb\DomainSecretTest::testCachedSuccessDoesNotRepeatCallbackAndDiagnosticsHideSecrets"/>
+   <test id="Coleza\Tests\MariaDb\DomainSecretTest::testConfiguredKeyIsRequiredBeforeEppOrOperationWrites"/>
+   <test id="Coleza\Tests\MariaDb\DomainSecretTest::testLegacyUpgradeCannotOverwriteAnExistingVaultOwner"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testRotationSerializesAgainstThreeIndependentSecretWriters"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testFourSeparateProcessesCannotWriteUsingRetiredKey"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testMaintenanceCliBindsRotatesAndVerifiesAfterProcessRestart"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testNonTransactionalBindingTableCannotAuthorizeAWriter"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testDomainSecretsSurviveRotationAndDeepVerifyRejectsOwnerSplice"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testAutomationSecretsSurviveRotationAndDeepVerifyRejectsOwnerSplice"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testOperationSecretsSurviveRotationAndOwnerCorruptionPreventsVerification"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testBoundDatabaseRejectsWriterUsingAnotherKeyBeforeChanges"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testBindingIsIdempotentAndDeepVerificationIsReadOnly"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testRotationPreservesEverySecretAndFencesAllOldSecretWriters"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testLateAuditFailureRollsBackAllCiphertextsProbeAndVersions"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testWrongKeyCannotRebindAnExistingDatabase"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testPlaintextOrUnknownSettingCannotBeSilentlyBound"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testCorruptedCipherPreventsAllRotationWrites"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testLifecycleRefusesCallerTransactions#0"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testLifecycleRefusesCallerTransactions#1"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testMaintenanceAdmissionIsRequired"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testUnknownEncryptedScopeAndBrokenOwnerReferencePreventBinding"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testLegacyCronNeedsExplicitHashUpgradeBeforeBinding"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testRotationRequiresAnExistingDifferentDurableReplacementFile"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testRotationLogsAndMetadataContainNoPlaintextOrKeyMaterial"/>
+   <test id="Coleza\Tests\MariaDb\KeyLifecycleTest::testEmptyCronTokenCannotBeCreatedOrAuthenticate"/>
+   <test id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testInstallerUpgradesLegacyServiceAndPreservesOriginalAndPlacement"/>
+   <test id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testInstallerUpgradesLegacyDomainAndAllowsNewApplicationRecord"/>
+   <test id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testRepeatedUpgradeDoesNotOverwriteLaterServiceChanges"/>
+   <test id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testInvalidLegacyAmountStopsBothTablesBeforeRenaming"/>
+   <test id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testMissingLegacyDateIsNotInvented"/>
+   <test id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testDeletedLegacyIdsAreNotReused"/>
+   <test id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testIdentityLinksKeepTheirTargetIdsAndFields"/>
+   <test id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testNormalizedDomainCollisionStopsBeforeDdl"/>
+   <test id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testCustomIndexStopsWithoutDroppingIt"/>
+   <test id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testInterruptedCopyCanResumeWithoutDuplicateRowsOrLostArchive"/>
+   <test id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testExplicitLegacyRenewalAndGraceFlagsArePreserved"/>
+   <test id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testConfiguredNonTwoDecimalCurrencyStopsBeforeConversion"/>
+   <test id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testMissingIdentityDoesNotCreateDuplicateServiceOnReimport"/>
+   <test id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testInboundForeignKeyStopsBeforeChangingItsTarget"/>
+   <test id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testMalformedMetadataStopsBeforeArchiving"/>
+   <test id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testUnknownIdentityStateStopsBeforeLegacyAdoptionChanges"/>
+   <test id="Coleza\Tests\MariaDb\LegacyAdoptionUpgradeTest::testMetadataGrowthPastCanonicalTextLimitStopsBeforeDdl"/>
+   <test id="Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest::testDomainPricingUpdatesOnlyMatchingOperationYearAndCurrency"/>
+   <test id="Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest::testDomainContactsRepeatWithoutReplacingOtherContacts"/>
+  </group>
+ </groups>
+</testSuite>

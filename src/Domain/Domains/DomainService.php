@@ -17,7 +17,8 @@ final class DomainService
 
     public function __construct(
         private readonly Connection $db,
-        private readonly ?DomainCatalogService $catalogService = null
+        private readonly ?DomainCatalogService $catalogService = null,
+        private readonly ?\Coleza\Domain\Vault\Encryptor $encryptor = null
     ) {
     }
 
@@ -225,15 +226,21 @@ final class DomainService
 
     public function findDomainById(int $id): ?Domain
     {
-        $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE id = ?', $this->domainsTable), [$id]);
-        return $row ? $this->hydrateDomain($row) : null;
+        return $this->db->transaction(function () use ($id): ?Domain {
+            \Coleza\Domain\Vault\KeyBinding::guard($this->db, $this->encryptor);
+            $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE id = ?', $this->domainsTable) . $this->db->forUpdate(), [$id]);
+            return $row ? $this->hydrateDomain($row) : null;
+        });
     }
 
     public function findDomainByName(string $domainName): ?Domain
     {
-        $normalized = strtolower(trim($domainName));
-        $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE domain = ?', $this->domainsTable), [$normalized]);
-        return $row ? $this->hydrateDomain($row) : null;
+        return $this->db->transaction(function () use ($domainName): ?Domain {
+            \Coleza\Domain\Vault\KeyBinding::guard($this->db, $this->encryptor);
+            $normalized = strtolower(trim($domainName));
+            $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE domain = ?', $this->domainsTable) . $this->db->forUpdate(), [$normalized]);
+            return $row ? $this->hydrateDomain($row) : null;
+        });
     }
 
     /**
@@ -241,11 +248,14 @@ final class DomainService
      */
     public function listDomainsByUserId(int $userId): array
     {
-        $rows = $this->db->select(
-            sprintf('SELECT * FROM %s WHERE user_id = ? ORDER BY domain ASC', $this->domainsTable),
-            [$userId]
-        );
-        return array_map([$this, 'hydrateDomain'], $rows);
+        return $this->db->transaction(function () use ($userId): array {
+            \Coleza\Domain\Vault\KeyBinding::guard($this->db, $this->encryptor);
+            $rows = $this->db->select(
+                sprintf('SELECT * FROM %s WHERE user_id = ? ORDER BY domain ASC', $this->domainsTable) . $this->db->forUpdate(),
+                [$userId]
+            );
+            return array_map([$this, 'hydrateDomain'], $rows);
+        });
     }
 
     /**
@@ -253,58 +263,67 @@ final class DomainService
      */
     public function listDomainsByStatus(string $status): array
     {
-        $rows = $this->db->select(
-            sprintf('SELECT * FROM %s WHERE status = ? ORDER BY expiry_date ASC', $this->domainsTable),
-            [strtolower(trim($status))]
-        );
-        return array_map([$this, 'hydrateDomain'], $rows);
+        return $this->db->transaction(function () use ($status): array {
+            \Coleza\Domain\Vault\KeyBinding::guard($this->db, $this->encryptor);
+            $rows = $this->db->select(
+                sprintf('SELECT * FROM %s WHERE status = ? ORDER BY expiry_date ASC', $this->domainsTable) . $this->db->forUpdate(),
+                [strtolower(trim($status))]
+            );
+            return array_map([$this, 'hydrateDomain'], $rows);
+        });
     }
 
     /**
      * @param array<string, mixed> $data
      */
-    public function updateDomain(int $id, array $data): Domain
+    public function updateDomain(int $id, #[\SensitiveParameter] array $data): Domain
     {
-        $existing = $this->findDomainById($id);
-        if ($existing === null) {
-            throw new ValidationException(['id' => "Domain ID {$id} not found."], 'Domain not found');
-        }
+        return $this->db->transaction(function () use ($id, $data): Domain {
+            \Coleza\Domain\Vault\KeyBinding::guard($this->db, $this->encryptor);
+            $existing = $this->findDomainById($id);
+            if ($existing === null) {
+                throw new ValidationException(['id' => "Domain ID {$id} not found."], 'Domain not found');
+            }
 
-        $now = date('Y-m-d H:i:s');
-        $autoRenew = isset($data['auto_renew']) ? ((bool) $data['auto_renew'] ? 1 : 0) : ($existing->isAutoRenew() ? 1 : 0);
-        $whoisPrivacy = isset($data['whois_privacy']) ? ((bool) $data['whois_privacy'] ? 1 : 0) : ($existing->isWhoisPrivacy() ? 1 : 0);
-        $dns = isset($data['dns_management']) ? ((bool) $data['dns_management'] ? 1 : 0) : ($existing->isDnsManagement() ? 1 : 0);
-        $emailFwd = isset($data['email_forwarding']) ? ((bool) $data['email_forwarding'] ? 1 : 0) : ($existing->isEmailForwarding() ? 1 : 0);
-        $isLocked = isset($data['is_locked']) ? ((bool) $data['is_locked'] ? 1 : 0) : ($existing->isLocked() ? 1 : 0);
-        $eppCode = array_key_exists('epp_code', $data) ? $data['epp_code'] : $existing->getEppCode();
-        $registrarId = array_key_exists('registrar_id', $data) ? $data['registrar_id'] : $existing->getRegistrarId();
-        $nameservers = isset($data['nameservers']) ? json_encode($data['nameservers']) : json_encode($existing->getNameservers());
-        $metadata = isset($data['metadata']) ? json_encode($data['metadata']) : json_encode($existing->getMetadata());
+            $now = date('Y-m-d H:i:s');
+            $autoRenew = isset($data['auto_renew']) ? ((bool) $data['auto_renew'] ? 1 : 0) : ($existing->isAutoRenew() ? 1 : 0);
+            $whoisPrivacy = isset($data['whois_privacy']) ? ((bool) $data['whois_privacy'] ? 1 : 0) : ($existing->isWhoisPrivacy() ? 1 : 0);
+            $dns = isset($data['dns_management']) ? ((bool) $data['dns_management'] ? 1 : 0) : ($existing->isDnsManagement() ? 1 : 0);
+            $emailFwd = isset($data['email_forwarding']) ? ((bool) $data['email_forwarding'] ? 1 : 0) : ($existing->isEmailForwarding() ? 1 : 0);
+            $isLocked = isset($data['is_locked']) ? ((bool) $data['is_locked'] ? 1 : 0) : ($existing->isLocked() ? 1 : 0);
+            $owner = $this->db->selectOne('SELECT * FROM domains WHERE id = ?', [$id]);
+            $eppCode = array_key_exists('epp_code', $data)
+                ? (new DomainSecretStore($this->db, $this->encryptor))->write('domains', $owner, 'epp_code', $data['epp_code'] === null ? null : (string) $data['epp_code'])
+                : $owner['epp_code'];
+            $registrarId = array_key_exists('registrar_id', $data) ? $data['registrar_id'] : $existing->getRegistrarId();
+            $nameservers = isset($data['nameservers']) ? json_encode($data['nameservers']) : json_encode($existing->getNameservers());
+            $metadata = isset($data['metadata']) ? json_encode($data['metadata']) : json_encode($existing->getMetadata());
 
-        $sql = sprintf(
-            'UPDATE %s SET
-                auto_renew = ?, whois_privacy = ?, dns_management = ?,
-                email_forwarding = ?, is_locked = ?, epp_code = ?,
-                registrar_id = ?, nameservers_json = ?, metadata_json = ?, updated_at = ?
-             WHERE id = ?',
-            $this->domainsTable
-        );
+            $sql = sprintf(
+                'UPDATE %s SET
+                    auto_renew = ?, whois_privacy = ?, dns_management = ?,
+                    email_forwarding = ?, is_locked = ?, epp_code = ?,
+                    registrar_id = ?, nameservers_json = ?, metadata_json = ?, updated_at = ?
+                 WHERE id = ?',
+                $this->domainsTable
+            );
 
-        $this->db->statement($sql, [
-            $autoRenew,
-            $whoisPrivacy,
-            $dns,
-            $emailFwd,
-            $isLocked,
-            $eppCode,
-            $registrarId,
-            $nameservers,
-            $metadata,
-            $now,
-            $id,
-        ]);
+            $this->db->statement($sql, [
+                $autoRenew,
+                $whoisPrivacy,
+                $dns,
+                $emailFwd,
+                $isLocked,
+                $eppCode,
+                $registrarId,
+                $nameservers,
+                $metadata,
+                $now,
+                $id,
+            ]);
 
-        return $this->findDomainById($id) ?? throw new ValidationException(['id' => 'Domain update failed'], 'Update error');
+            return $this->findDomainById($id) ?? throw new ValidationException(['id' => 'Domain update failed'], 'Update error');
+        });
     }
 
     /**
@@ -563,26 +582,31 @@ final class DomainService
         return $this->findDomainById($id) ?? throw new ValidationException(['id' => 'Auto-renew update failed'], 'Domain error');
     }
 
-    public function setEppCode(int $id, string $eppCode): Domain
+    public function setEppCode(int $id, #[\SensitiveParameter] string $eppCode): Domain
     {
-        $domain = $this->findDomainById($id);
-        if ($domain === null) {
-            throw new ValidationException(['id' => "Domain ID {$id} not found."], 'Domain not found');
-        }
+        return $this->db->transaction(function () use ($id, $eppCode): Domain {
+            \Coleza\Domain\Vault\KeyBinding::guard($this->db, $this->encryptor);
+            $domain = $this->findDomainById($id);
+            if ($domain === null) {
+                throw new ValidationException(['id' => "Domain ID {$id} not found."], 'Domain not found');
+            }
 
-        $now = date('Y-m-d H:i:s');
-        $sql = sprintf('UPDATE %s SET epp_code = ?, updated_at = ? WHERE id = ?', $this->domainsTable);
-        $this->db->statement($sql, [trim($eppCode), $now, $id]);
+            $now = date('Y-m-d H:i:s');
+            $sql = sprintf('UPDATE %s SET epp_code = ?, updated_at = ? WHERE id = ?', $this->domainsTable);
+            $owner = $this->db->selectOne('SELECT * FROM domains WHERE id = ?', [$id]);
+            $reference = (new DomainSecretStore($this->db, $this->encryptor))->write('domains', $owner, 'epp_code', trim($eppCode));
+            $this->db->statement($sql, [$reference, $now, $id]);
 
-        $this->recordTimelineEvent(
-            domainId: $id,
-            eventType: 'epp_code_updated',
-            description: 'Domain EPP transfer authorization code updated.',
-            payload: [],
-            actorType: 'system'
-        );
+            $this->recordTimelineEvent(
+                domainId: $id,
+                eventType: 'epp_code_updated',
+                description: 'Domain EPP transfer authorization code updated.',
+                payload: [],
+                actorType: 'system'
+            );
 
-        return $this->findDomainById($id) ?? throw new ValidationException(['id' => 'EPP update failed'], 'Domain error');
+            return $this->findDomainById($id) ?? throw new ValidationException(['id' => 'EPP update failed'], 'Domain error');
+        });
     }
 
     /**
@@ -754,6 +778,8 @@ final class DomainService
         string $actorType = 'system',
         ?int $actorId = null
     ): DomainTimelineEvent {
+        $description = \Coleza\Foundation\Security\SecretRedactor::message($description, $payload);
+        $payload = \Coleza\Foundation\Security\SecretRedactor::sanitize($payload);
         $now = date('Y-m-d H:i:s');
         $sql = sprintf(
             'INSERT INTO %s (domain_id, event_type, actor_id, actor_type, description, payload_json, created_at)
@@ -820,7 +846,7 @@ final class DomainService
             dnsManagement: (bool) ($row['dns_management'] ?? true),
             emailForwarding: (bool) ($row['email_forwarding'] ?? true),
             isLocked: (bool) ($row['is_locked'] ?? true),
-            eppCode: isset($row['epp_code']) ? (string) $row['epp_code'] : null,
+            eppCode: (new DomainSecretStore($this->db, $this->encryptor))->read('domains', $row, 'epp_code'),
             registrarId: isset($row['registrar_id']) ? (string) $row['registrar_id'] : null,
             nameservers: json_decode((string) ($row['nameservers_json'] ?? '[]'), true) ?: [],
             subscriptionId: isset($row['subscription_id']) ? (int) $row['subscription_id'] : null,
@@ -862,12 +888,13 @@ final class DomainService
      */
     private function hydrateTimelineEvent(array $row): DomainTimelineEvent
     {
+        $payload = json_decode((string) ($row['payload_json'] ?? '{}'), true) ?: [];
         return new DomainTimelineEvent(
             id: isset($row['id']) ? (int) $row['id'] : null,
             domainId: (int) $row['domain_id'],
             eventType: (string) $row['event_type'],
-            description: (string) $row['description'],
-            payload: json_decode((string) ($row['payload_json'] ?? '{}'), true) ?: [],
+            description: \Coleza\Foundation\Security\SecretRedactor::message((string) $row['description'], $payload),
+            payload: \Coleza\Foundation\Security\SecretRedactor::sanitize($payload),
             actorType: (string) ($row['actor_type'] ?? 'system'),
             actorId: isset($row['actor_id']) ? (int) $row['actor_id'] : null,
             createdAt: isset($row['created_at']) ? new DateTimeImmutable((string) $row['created_at']) : null

@@ -68,14 +68,15 @@ final class DomainGoldenE2ETest extends TestCase
         $this->catalogService->ensureTables();
 
         // 3. Domain Service
-        $this->domainService = new DomainService($this->db, $this->catalogService);
+        $this->domainService = new DomainService($this->db, $this->catalogService, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $this->domainService->ensureTables();
+        \Coleza\Domain\Vault\VaultReferenceStore::ensureSchema($this->db);
 
         // 4. Registrar Registry
         $this->registrarRegistry = new RegistrarRegistry();
 
         // 5. Operations & Reconciliation
-        $this->operationRepo = new DomainOperationRepository($this->db);
+        $this->operationRepo = new DomainOperationRepository($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $this->operationRepo->ensureTable();
 
         $this->flowService = new DomainRegistrarService(

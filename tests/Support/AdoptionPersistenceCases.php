@@ -46,7 +46,7 @@ trait AdoptionPersistenceCases
         [, $domains] = $this->adopters();
         $result = $domains->adoptDomain($this->domainDto(), 'fixture-batch');
         self::assertTrue($result->isSuccess());
-        $loaded = (new \Coleza\Domain\Domains\DomainService($this->db))->findDomainByName('example.test');
+        $loaded = (new \Coleza\Domain\Domains\DomainService($this->db, null, \Coleza\Tests\Support\SecretFixtureKey::encryptor()))->findDomainByName('example.test');
         self::assertSame($result->getAdoptedDomainId(), $loaded->getId());
         self::assertSame('2026-12-02', $loaded->getExpiryDate());
         self::assertSame(['ns1.example.test'], $loaded->getNameservers());

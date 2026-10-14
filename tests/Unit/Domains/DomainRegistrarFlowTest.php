@@ -44,8 +44,9 @@ final class DomainRegistrarFlowTest extends TestCase
         $this->catalogService = new DomainCatalogService($this->db);
         $this->catalogService->ensureTables();
 
-        $this->domainService = new DomainService($this->db, $this->catalogService);
+        $this->domainService = new DomainService($this->db, $this->catalogService, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $this->domainService->ensureTables();
+        \Coleza\Domain\Vault\VaultReferenceStore::ensureSchema($this->db);
 
         $this->registry = new RegistrarRegistry();
 

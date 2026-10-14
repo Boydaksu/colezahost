@@ -20,6 +20,12 @@ final class KeyLifecycleService
         foreach (\Coleza\Domain\Automation\Persistence\AutomationSecretStore::requirements() as $table => $_) {
             if (KeyBinding::tableExists($db, $table) && $db->selectOne("SELECT 1 FROM {$table} LIMIT 1") !== null) { return true; }
         }
+        foreach (\Coleza\Domain\Domains\DomainSecretStore::requirements() as $table => $columns) {
+            if (!KeyBinding::tableExists($db, $table)) { continue; }
+            $fields = $table === 'domains' ? ['epp_code'] : ['payload_json', 'result_json'];
+            $where = implode(' OR ', array_map(static fn(string $field): string => "({$field} IS NOT NULL AND {$field} <> '')", $fields));
+            if ($db->selectOne("SELECT 1 FROM {$table} WHERE {$where} LIMIT 1") !== null) { return true; }
+        }
         return KeyBinding::tableExists($db, 'system_settings') && $db->selectOne("SELECT 1 FROM system_settings WHERE setting_value IS NOT NULL AND setting_value <> '' AND (setting_key = 'mail.password' OR is_encrypted = 1) LIMIT 1") !== null;
     }
 
@@ -35,6 +41,9 @@ final class KeyLifecycleService
         if (KeyBinding::tableExists($this->db, 'webhook_endpoints')) { SecretStorageUpgrade::assertStorage($this->db, ['webhook_endpoints' => ['id', 'secret']]); }
         if (KeyBinding::tableExists($this->db, 'provisioning_operations')) { SecretStorageUpgrade::assertStorage($this->db, \Coleza\Domain\Provisioning\Services\ProvisioningOperationService::schemaRequirements()); }
         foreach (\Coleza\Domain\Automation\Persistence\AutomationSecretStore::requirements() as $table => $columns) {
+            if (KeyBinding::tableExists($this->db, $table)) { SecretStorageUpgrade::assertStorage($this->db, [$table => $columns]); }
+        }
+        foreach (\Coleza\Domain\Domains\DomainSecretStore::requirements() as $table => $columns) {
             if (KeyBinding::tableExists($this->db, $table)) { SecretStorageUpgrade::assertStorage($this->db, [$table => $columns]); }
         }
     }
@@ -162,6 +171,19 @@ final class KeyLifecycleService
                 if (!hash_equals(VaultReferenceStore::reference($key), $row['payload']) || !isset($identities[$scope])) { throw new \RuntimeException('Automation data needs explicit legacy upgrade or owner reconciliation.'); }
                 \Coleza\Domain\Automation\Persistence\AutomationSecretStore::validateData($table, $row, $identities[$scope]);
                 $counts['references']++;
+            }
+        }
+        foreach (\Coleza\Domain\Domains\DomainSecretStore::requirements() as $table => $_) {
+            if (!KeyBinding::tableExists($this->db, $table)) { continue; }
+            foreach ($this->db->select("SELECT * FROM {$table} ORDER BY id" . $suffix) as $row) {
+                foreach ($table === 'domains' ? ['epp_code'] : ['payload_json', 'result_json'] as $column) {
+                    $stored = $row[$column]; if ($stored === null || $stored === '') { continue; }
+                    $key = \Coleza\Domain\Domains\DomainSecretStore::key($table, $row, $column);
+                    $scope = VaultService::scope(['namespace' => \Coleza\Domain\Domains\DomainSecretStore::NAMESPACE, 'secret_key' => $key]);
+                    if (!hash_equals(VaultReferenceStore::reference($key), $stored) || !isset($identities[$scope])) { throw new \RuntimeException('Domain data needs explicit legacy upgrade or owner reconciliation.'); }
+                    if ($table !== 'domains') { \Coleza\Domain\Domains\DomainSecretStore::decode($identities[$scope]); }
+                    $counts['references']++;
+                }
             }
         }
         return ['plans' => $plans, 'counts' => $counts];

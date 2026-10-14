@@ -5,17 +5,17 @@
   "phase": "D03",
   "step": "D03.1",
   "status": "IN_PROGRESS",
-  "step_status": "D03_1_PROVISIONING_AND_AUTOMATION_DATA_VAULT_STORAGE_LOCAL_VERIFIED_DOMAIN_CARRIERS_SIGNING_KEYS_AND_COMPREHENSIVE_ACCEPTANCE_OPEN",
+  "step_status": "D03_1_INVENTORIED_OPERATIONAL_CARRIERS_VAULT_STORAGE_LOCAL_VERIFIED_PRIVACY_SIGNING_KEYS_AND_COMPREHENSIVE_ACCEPTANCE_OPEN",
   "independent_acceptance": "PENDING",
   "production_ready": false,
   "next_step": "D03.1",
   "next_phase": "D04",
   "tests": {
-    "main_total": 1663,
-    "main_assertions": 11542,
-    "mariadb_total": 182,
-    "mariadb_assertions": 1517,
-    "mariadb_scope": "D03.1 automation storage: ApprovalDelay/AutomationActionJournal/AutomationLifecycleBoundary/AutomationPersistence/AutomationRecoveryIntegrity/AutomationSecret/AutomationVersion/BlastRadius/KeyLifecycle; nine-class exact filtered discovery; full native not rerun",
+    "main_total": 1677,
+    "main_assertions": 11595,
+    "mariadb_total": 69,
+    "mariadb_assertions": 539,
+    "mariadb_scope": "D03.1 domain storage: DomainSecret/KeyLifecycle/SqlPortabilityCloseout/LegacyAdoptionUpgrade/AdoptionPersistence; five-class exact filtered discovery; full native not rerun",
     "full_mariadb_current_source": false,
     "last_full_mariadb": {
       "reference_commit": "0d2e3e08d4c121a146f298f77b4bc6b008b6f66e",
@@ -23,8 +23,8 @@
       "assertions": 5399,
       "evidence": "remediation/D02-CLOSEOUT-summary.json"
     },
-    "total": 1845,
-    "assertions": 13059,
+    "total": 1746,
+    "assertions": 12134,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -42,7 +42,7 @@
     "F30": "PARTIAL_PRODUCTION_SCHEMA_ANALYTICS_GOLDEN_AND_EXISTING_ADMIN_PERFORMANCE_BUDGET_VERIFIED_REAL_PROVIDER_END_TO_END_ACCEPTANCE_OPEN",
     "F21": "PARTIAL_SUPPORT_SCHEMA_ASSIGNMENT_CONVERSATION_CALLER_AND_PRE_EFFECT_DEPENDENCY_CHECKS_IMPLEMENTED_REAL_CONTEXT_COMMAND_SCOPE_AND_STORAGE_RECOVERY_OPEN",
     "F08": "EXPLICIT_RUNTIME_KEY_PRIVATE_FILE_INSTALLER_BINDING_ATOMIC_ROTATION_OLD_WRITER_FENCING_AND_RESTORE_KEY_GATE_LOCAL_VERIFIED_PENDING_INDEPENDENT_REVIEW",
-    "F09": "SHARED_EGRESS_PROVISIONING_AND_AUTOMATION_VAULT_STORAGE_LOCAL_VERIFIED_DOMAIN_CARRIERS_PRIVACY_SIGNING_KEYS_AND_COMPREHENSIVE_ACCEPTANCE_OPEN"
+    "F09": "SHARED_EGRESS_AND_INVENTORIED_PROVISIONING_AUTOMATION_DOMAIN_VAULT_STORAGE_LOCAL_VERIFIED_PRIVACY_SIGNING_KEYS_AND_COMPREHENSIVE_ACCEPTANCE_OPEN"
   },
   "remaining_steps": [
     "D03.1",
@@ -101,17 +101,17 @@
     "shared_egress": "IMPLEMENTED_LOCAL_VERIFIED",
     "inventory": "remediation/D03-1-SECRET-INVENTORY.md",
     "remaining": [
-      "OPERATIONAL_SECRET_CARRIERS_AND_VAULT_PERSISTENCE",
       "INDEPENDENT_PRIVACY_SIGNING_KEYS_AND_LEGACY_INTEGRITY",
       "COMPREHENSIVE_SINK_LEGACY_EXPORT_AND_RESPONSE_ACCEPTANCE"
     ],
     "provisioning_storage": "IMPLEMENTED_LOCAL_VERIFIED",
-    "operational_carriers_remaining": [
-      "DOMAIN_REGISTRAR_OPERATION_DATA_AND_EPP_STORAGE"
-    ],
-    "automation_storage": "IMPLEMENTED_LOCAL_VERIFIED"
+    "operational_carriers_remaining": [],
+    "automation_storage": "IMPLEMENTED_LOCAL_VERIFIED",
+    "domain_storage": "IMPLEMENTED_LOCAL_VERIFIED",
+    "operational_carriers": "INVENTORIED_PATHS_IMPLEMENTED_LOCAL_VERIFIED"
   },
   "d03_egress_evidence": "remediation/D03-1-EGRESS-SONUC.md",
   "d03_provisioning_storage_evidence": "remediation/D03-1-PROVSTORE-SONUC.md",
-  "d03_automation_storage_evidence": "remediation/D03-1-AUTOSTORE-SONUC.md"
+  "d03_automation_storage_evidence": "remediation/D03-1-AUTOSTORE-SONUC.md",
+  "d03_domain_storage_evidence": "remediation/D03-1-DOMSTORE-SONUC.md"
 }

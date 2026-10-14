@@ -507,11 +507,12 @@ final class ChaosAndConcurrencySuiteTest extends TestCase
             'registrar_id' => 'chaos_registrar',
         ]);
 
-        $domainService = new DomainService($this->db, $catalog);
+        $domainService = new DomainService($this->db, $catalog, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $domainService->ensureTables();
+        \Coleza\Domain\Vault\VaultReferenceStore::ensureSchema($this->db);
 
         $registry = new RegistrarRegistry();
-        $operationRepo = new DomainOperationRepository($this->db);
+        $operationRepo = new DomainOperationRepository($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $operationRepo->ensureTable();
 
         $registrarService = new DomainRegistrarService($domainService, $registry, $catalog);

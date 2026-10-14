@@ -1,0 +1,18 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+[41;37mF[0m                                                                   1 / 1 (100%)
+
+Time: 00:00.084, Memory: 26.00 MB
+
+There was 1 failure:
+
+1) Coleza\Tests\Unit\Domains\DomainSecretTest::testEppAndOperationDataAreEncryptedAndRestartExactly
+Failed asserting that '[[{"id":1,"user_id":7,"organization_id":null,"domain":"secret.example","sld":"secret","tld":".example","status":"pending_registration","registration_period_years":1,"registration_date":null,"expiry_date":null,"next_due_date":null,"auto_renew":1,"whois_privacy":0,"dns_management":1,"email_forwarding":1,"is_locked":1,"epp_code":"synthetic-epp-secret","registrar_id":null,"nameservers_json":"[\"ns1.coleza.com\",\"ns2.coleza.com\"]","subscription_id":null,"metadata_json":"[]","created_at":"2026-10-14 19:50:10","updated_at":"2026-10-14 19:50:10"}],[{"id":1,"domain_id":1,"operation_type":"transfer","idempotency_key":"fixture","status":"succeeded","remote_transaction_id":"remote","error_code":null,"error_message":null,"payload_json":"{\"epp_code\":\"synthetic-epp-secret\",\"unlabelled\":\"synthetic-input-secret\",\"amount\":1}","result_json":"{\"token\":\"synthetic-result-secret\"}","attempts":1,"last_attempt_at":"2026-10-14 19:50:10","reconciled_at":null,"created_at":"2026-10-14 19:50:10","updated_at":"2026-10-14 19:50:10"}]]' [ASCII](length: 1034) does not contain "synthetic-epp-secret" [ASCII](length: 20).
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\DomainSecretCases.php:21
+
+[37;41mFAILURES![0m
+[37;41mTests: 1[0m[37;41m, Assertions: 1[0m[37;41m, Failures: 1[0m[37;41m.[0m

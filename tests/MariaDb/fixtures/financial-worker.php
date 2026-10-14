@@ -241,6 +241,26 @@ try {
                 if ($error instanceof PDOException) { $result['sqlstate'] = $error->errorInfo[0] ?? null; $result['driver_code'] = $error->errorInfo[1] ?? null; }
             }
             break;
+        case 'domainSecretDuplicate':
+        case 'domainSecretWrite':
+            try {
+                $domainKey = \Coleza\Tests\Support\SecretFixtureKey::encryptor();
+                $domainService = new Coleza\Domain\Domains\DomainService($db, null, $domainKey);
+                $domainOps = new Coleza\Domain\Domains\Registrar\Reconciliation\DomainOperationRepository($db, $domainKey);
+                if ($action === 'domainSecretDuplicate') {
+                    $op = $domainOps->create(['domain_id' => $id, 'operation_type' => 'transfer', 'idempotency_key' => 'native-duplicate', 'payload' => ['token' => 'synthetic-worker-input']]);
+                    $result['operation_id'] = $op->getId();
+                } else {
+                    for ($iteration = 0; $iteration < 3; $iteration++) {
+                        $domainService->setEppCode($id, 'synthetic-worker-epp-' . $argv[2]);
+                        $domainOps->markUncertain((int) $argv[5], 'Timeout', 'TIMEOUT', ['marker' => (int) $argv[2], 'token' => 'synthetic-worker-result']);
+                        $domainService->findDomainById($id); $domainOps->findById((int) $argv[5]);
+                    }
+                }
+            } catch (PDOException $error) {
+                $result = ['status' => $error->getCode() === '23000' ? 'rejected' : 'error', 'sqlstate' => $error->getCode(), 'driver_code' => $error->errorInfo[1] ?? null];
+            } catch (Throwable $error) { $result = ['status' => 'error', 'class' => $error::class]; }
+            break;
         case 'automationVersion':
             $rule = new Coleza\Domain\Automation\Engine\AutomationRule('parallel_rule', 'Rule', new Coleza\Domain\Automation\Triggers\EventTrigger('event'),
                 new Coleza\Domain\Automation\Branching\IfElseBranch(new Coleza\Domain\Automation\Conditions\FieldCondition('value', '==', (int) $argv[2])));

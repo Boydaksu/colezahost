@@ -43,7 +43,7 @@ final class SqlPortabilityCloseoutTest extends MariaDbTestCase
 
     public function testDomainContactsRepeatWithoutReplacingOtherContacts(): void
     {
-        $domains = new DomainService($this->db);
+        $domains = new DomainService($this->db, null, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $domain = $domains->createDomain(['user_id' => 7, 'domain' => 'closeout.example']);
         $first = $domains->setContact($domain->getId(), 'registrant', ['first_name' => 'İlk', 'last_name' => 'Kişi', 'email' => 'first@example.test', 'phone' => '+905551112233']);
         $domains->setContact($domain->getId(), 'admin', ['first_name' => 'Admin', 'last_name' => 'User', 'email' => 'admin@example.test', 'phone' => '+905551112233']);

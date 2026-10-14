@@ -46,8 +46,9 @@ final class DomainOperationIdempotencyAndReconciliationTest extends TestCase
         $this->catalog = new DomainCatalogService($this->db);
         $this->catalog->ensureTables();
 
-        $this->domainService = new DomainService($this->db, $this->catalog);
+        $this->domainService = new DomainService($this->db, $this->catalog, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $this->domainService->ensureTables();
+        \Coleza\Domain\Vault\VaultReferenceStore::ensureSchema($this->db);
 
         $this->registry = new RegistrarRegistry();
 
@@ -63,7 +64,7 @@ final class DomainOperationIdempotencyAndReconciliationTest extends TestCase
             $this->catalog
         );
 
-        $this->operationRepo = new DomainOperationRepository($this->db);
+        $this->operationRepo = new DomainOperationRepository($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $this->operationRepo->ensureTable();
 
         $this->idempotentService = new IdempotentDomainOperationService(

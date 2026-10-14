@@ -538,10 +538,11 @@ final class GoldenMasterScenariosE2ETest extends TestCase
             currencyCode: 'USD'
         );
 
-        $domainService = new DomainService($db, $catalogService);
+        $domainService = new DomainService($db, $catalogService, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $domainService->ensureTables();
+        \Coleza\Domain\Vault\VaultReferenceStore::ensureSchema($db);
 
-        $operationRepo = new DomainOperationRepository($db);
+        $operationRepo = new DomainOperationRepository($db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $operationRepo->ensureTable();
 
         $vaultConfig = new RegistrarConfiguration(

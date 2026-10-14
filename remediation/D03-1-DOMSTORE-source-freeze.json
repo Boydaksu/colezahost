@@ -1,0 +1,26 @@
+{
+  "reference_commit": "65a5601d4048314cc633764611050ba1bb9fc935",
+  "files": {
+    "remediation/verify-d03-domain-storage.py": "3b08cef877f9403edbf9c7ce58106a7001ec7940fedd25889916fe377ebd8e16",
+    "src/Domain/Domains/DomainSecretStore.php": "306eb6ae35f8ee89c191960dce422acf1cc0f5e064bcf4069bd861bb875293ad",
+    "src/Domain/Domains/DomainService.php": "4daef0528a8f2696175d2f8936acdc9cab8660e3855e5d81f8637d08ca99ae96",
+    "src/Domain/Domains/Registrar/Reconciliation/DomainOperationRepository.php": "6847482f7dc4ac81b06e8bf2d2eec4016ac62bd03bcc9f354db05687b980f40c",
+    "src/Domain/Vault/KeyLifecycleService.php": "f0551a012c0d459f681a19e155415bde3ca46a0a826df884851be13c34f4b658",
+    "tests/Integration/Chaos/ChaosAndConcurrencySuiteTest.php": "bfedbc2dfb50c0296c0e27f4bc74ec938f1768e6b6afa00786bf9bfd3d14311e",
+    "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php": "01be91a8b127e25451e9718b431cc5c7b685c7d6c64e9cf67b63675cafd322e9",
+    "tests/MariaDb/DomainSecretTest.php": "c183f5c384240e2e39f3406395051d7833ae070213d2aa3df1913b2041beab32",
+    "tests/MariaDb/SqlPortabilityCloseoutTest.php": "81f8e7c2ffcfaa0be98980cd9412427cfa1b3e9dbc9b8d93e098bfe49cfcf211",
+    "tests/MariaDb/fixtures/financial-worker.php": "7e39db9c7ae3095b8221813b81dfe9b5d8dd3858e9d4abe2550c4d8b0de43951",
+    "tests/Support/AdoptionPersistenceCases.php": "a69af44d5f637eab80d1502770aa24068ec4f1a7784b840003a6ab0c84e124cb",
+    "tests/Support/DomainSecretCases.php": "f71416be4f103b94bec73f84667ca36cb8c3e9ef08f8c5d0c34727975367176c",
+    "tests/Support/KeyLifecycleCases.php": "a6dcf0b2aaaf4bfabf2f9aced90e97fdd771318cc94f01c265b399c27a396279",
+    "tests/Support/LegacyAdoptionUpgradeCases.php": "37621147bca2362ab8ab6e6d88066d054dea25d5f3a73236146be07034fab453",
+    "tests/Unit/Domains/DomainExpiryAndReminderTest.php": "a72dda618fdb6e679e29114e3b0d30996d8824a44cf0349ac985a8eab6491fbb",
+    "tests/Unit/Domains/DomainGoldenE2ETest.php": "5953fb9062567c94d97f5523a97f47ebb8756d63bc456ea7953047237f69d221",
+    "tests/Unit/Domains/DomainLifecycleAndContactTest.php": "f2db95a376f4c69b99db6ab32020a2c90830106d171ce106a616ff67240db6c6",
+    "tests/Unit/Domains/DomainOperationIdempotencyAndReconciliationTest.php": "da7b631e1ac2a1cc229d07c739482c678c15777b3f458d1ec256d2d05c0972db",
+    "tests/Unit/Domains/DomainRegistrarFlowTest.php": "16db4c1ef435627db7a01640eeca60fb30285a45fdd8d01f39435b3e9cb8a804",
+    "tests/Unit/Domains/DomainSecretTest.php": "3ba5075ff1dde93be6c0cc8eaf2649197a4006fea101f80312f2573c2103bf29",
+    "tools/domain-secret-maintenance.php": "5106930871398a6feaac2acda3269846073e5cb4d727567d6d9e1f39800faebe"
+  }
+}

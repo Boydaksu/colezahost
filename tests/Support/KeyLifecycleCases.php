@@ -36,6 +36,29 @@ trait KeyLifecycleCases
         PrivateKeyFile::provision($path, $root);
         return [$path, ApplicationKey::encryptor(PrivateKeyFile::load($path, $root))];
     }
+    public function testDomainSecretsSurviveRotationAndDeepVerifyRejectsOwnerSplice(): void
+    {
+        [$lifecycle, $key] = $this->lifecycleFixture();
+        $domains = new \Coleza\Domain\Domains\DomainService($this->db, null, $key);
+        $ops = new \Coleza\Domain\Domains\Registrar\Reconciliation\DomainOperationRepository($this->db, $key); $ops->ensureTable();
+        $d = $domains->createDomain(['user_id' => 7, 'domain' => 'secret.example']); $domains->setEppCode($d->getId(), 'domain-synthetic-epp');
+        $op = $ops->create(['domain_id' => $d->getId(), 'operation_type' => 'transfer', 'idempotency_key' => 'fixture', 'payload' => ['epp_code' => 'input-synthetic-epp']]);
+        $ops->markSucceeded($op->getId(), 'remote', ['token' => 'result-synthetic-token']);
+        $lifecycle->initialize(true); [$file, $newKey] = $this->replacementFile();
+        $result = $lifecycle->rotateToFile($file, dirname(__DIR__, 2), true);
+        $fresh = new \Coleza\Domain\Domains\DomainService($this->db, null, $newKey);
+        $freshOps = new \Coleza\Domain\Domains\Registrar\Reconciliation\DomainOperationRepository($this->db, $newKey);
+        self::assertSame('domain-synthetic-epp', $fresh->findDomainById($d->getId())->getEppCode());
+        self::assertSame(['epp_code' => 'input-synthetic-epp'], $freshOps->findById($op->getId())->getPayload());
+        self::assertSame(['token' => 'result-synthetic-token'], $freshOps->findById($op->getId())->getResult());
+        $before = $this->db->select('SELECT * FROM domains'); $beforeOps = $this->db->select('SELECT * FROM domain_registrar_operations');
+        foreach ([fn() => $domains->setEppCode($d->getId(), 'stale'), fn() => $ops->markProcessing($op->getId())] as $action) {
+            try { $action(); self::fail('Old domain writer accepted'); } catch (\RuntimeException) { self::assertSame($before, $this->db->select('SELECT * FROM domains')); self::assertSame($beforeOps, $this->db->select('SELECT * FROM domain_registrar_operations')); }
+        }
+        $verify = new KeyLifecycleService($this->db, $newKey); self::assertSame($result['counts'], $verify->verify()['counts']);
+        $this->db->update('domain_registrar_operations', ['domain_id' => 99], 'id = :id', ['id' => $op->getId()]);
+        $this->expectException(\RuntimeException::class); $verify->verify();
+    }
     public function testAutomationSecretsSurviveRotationAndDeepVerifyRejectsOwnerSplice(): void
     {
         [$lifecycle, $key] = $this->lifecycleFixture();

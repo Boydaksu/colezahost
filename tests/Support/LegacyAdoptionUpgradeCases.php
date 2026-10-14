@@ -49,7 +49,7 @@ trait LegacyAdoptionUpgradeCases
     {
         $before = $this->legacyDomain();
         (new \Coleza\Domain\Installer\DatabaseSetupService())->initializeApplicationSchema($this->db);
-        $domains = new \Coleza\Domain\Domains\DomainService($this->db);
+        $domains = new \Coleza\Domain\Domains\DomainService($this->db, null, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $loaded = $domains->findDomainByName('example.test');
         self::assertSame(22, $loaded->getId());
         self::assertSame('manual', $loaded->getRegistrarId());
