@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Coleza\Domain\Backup\Storage;
 
 use Coleza\Domain\Backup\BackupDestinationType;
-use RuntimeException;
 
 /**
  * Amazon S3 / S3-compatible object storage adapter for backup archives.
- * Simulation requires explicit opt-in; unimplemented real transport fails closed.
+ * Real transport uses authenticated, verified connections; simulation requires explicit opt-in.
  */
 final class S3BackupStorageAdapter implements BackupStorageAdapterInterface
 {
@@ -43,7 +42,7 @@ final class S3BackupStorageAdapter implements BackupStorageAdapterInterface
             return true;
         }
 
-        throw new RuntimeException('Real backup transport is not configured; operation was not performed.');
+        return $this->remote()->store($backupId, $localArchivePath, $localManifestPath);
     }
 
     public function retrieve(string $backupId, string $localDestinationDir): bool
@@ -69,7 +68,7 @@ final class S3BackupStorageAdapter implements BackupStorageAdapterInterface
             return true;
         }
 
-        throw new RuntimeException('Real backup transport is not configured; operation was not performed.');
+        return $this->remote()->retrieve($backupId, $localDestinationDir);
     }
 
     public function delete(string $backupId): bool
@@ -83,7 +82,7 @@ final class S3BackupStorageAdapter implements BackupStorageAdapterInterface
             return false;
         }
 
-        throw new RuntimeException('Real backup transport is not configured; operation was not performed.');
+        return $this->remote()->delete($backupId);
     }
 
     public function exists(string $backupId): bool
@@ -93,7 +92,7 @@ final class S3BackupStorageAdapter implements BackupStorageAdapterInterface
             return isset($this->simulatedBuckets[$backupId]);
         }
 
-        throw new RuntimeException('Real backup transport is not configured; operation was not performed.');
+        return $this->remote()->exists($backupId);
     }
 
     public function listBackups(): array
@@ -102,6 +101,10 @@ final class S3BackupStorageAdapter implements BackupStorageAdapterInterface
             return array_keys($this->simulatedBuckets);
         }
 
-        throw new RuntimeException('Real backup transport is not configured; operation was not performed.');
+        return $this->remote()->listBackups();
+    }
+    private function remote(): RemoteBackupRepository
+    {
+        return new RemoteBackupRepository(new S3CurlBackupTransport($this->s3Config));
     }
 }

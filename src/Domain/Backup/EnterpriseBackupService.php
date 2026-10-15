@@ -141,14 +141,14 @@ final class EnterpriseBackupService
             foreach([$readback.'/'.$backupId.'.zip',$readback.'/'.$backupId.'.manifest.json',$readback.'/.publish.lock']as$file){if(is_file($file)&&!is_link($file)){unlink($file);}}
             if(count(scandir($readback))===2){rmdir($readback);}
         }
-        if($destination->getType()!==BackupDestinationType::LOCAL){
-            if(!unlink($tempArchive)||!unlink($tempManifest)){throw new RuntimeException('Verified backup delivered, but local cleanup did not finish.');}
-        }
-
         // 6. Apply Retention Policy if provided
         if ($retentionPolicy !== null) {
-            $manifests = [$backupId => $manifest];
-            $retentionPolicy->apply($destination, $manifests);
+            $manifests = $this->verifiedHistory($destination);
+            $manifests[$backupId] = $manifest;
+            $retentionPolicy->apply($destination, $manifests, [$backupId]);
+        }
+        if($destination->getType()!==BackupDestinationType::LOCAL){
+            if(!unlink($tempArchive)||!unlink($tempManifest)){throw new RuntimeException('Verified backup delivered, but local cleanup did not finish.');}
         }
 
         return [
@@ -157,6 +157,30 @@ final class EnterpriseBackupService
             'encrypted' => $isEncrypted,
             'verified' => true,
         ];
+    }
+
+    /** Metadata is admitted to retention only after a complete independent package read-back. */
+    private function verifiedHistory(BackupStorageAdapterInterface $destination): array
+    {
+        $manifests = [];
+        foreach ($destination->listBackups() as $id) {
+            \Coleza\Domain\Backup\Storage\BackupPackage::id($id);
+            $directory = rtrim($this->workingDirectory, '/\\') . '/history_' . bin2hex(random_bytes(12));
+            if (!mkdir($directory, 0700)) { throw new RuntimeException('Cannot create private backup history staging.'); }
+            try {
+                if (!$destination->retrieve($id, $directory)) { throw new RuntimeException('Listed backup could not be verified; retention stopped.'); }
+                $data = \Coleza\Domain\Backup\Storage\BackupPackage::verify($id, $directory . '/' . $id . '.zip', $directory . '/' . $id . '.manifest.json');
+                // Missing dates remain unknown and are protected by the retention policy.
+                if (is_string($data['created_at'] ?? null) && strtotime($data['created_at']) !== false) { $manifests[$id] = BackupManifest::fromArray($data); }
+            } finally {
+                foreach ([$id . '.zip', $id . '.manifest.json', '.publish.lock'] as $name) {
+                    $path = $directory . '/' . $name;
+                    if (is_file($path) && !is_link($path)) { unlink($path); }
+                }
+                if (count(scandir($directory)) === 2) { rmdir($directory); }
+            }
+        }
+        return $manifests;
     }
 
     private function dumpDatabase(Connection $db): string

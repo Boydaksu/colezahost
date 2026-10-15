@@ -1,0 +1,22 @@
+name: Real backup transport regression
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  protocols:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: curl, dom, mbstring, pdo_sqlite, simplexml, xml, xmlwriter, zip
+          coverage: none
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: composer install --no-interaction --prefer-dist
+      - run: python -m pip install -r tests/Support/backup-protocol-requirements.txt
+      - name: HTTPS SigV4 and pinned SSH transfer, failures and retention
+        run: vendor/bin/phpunit tests/Integration/Backup/RemoteBackupTransportTest.php --colors=never

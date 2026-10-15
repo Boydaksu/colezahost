@@ -38,9 +38,10 @@ final class BackupRetentionPolicy
      *
      * @param BackupStorageAdapterInterface $storage
      * @param array<string, BackupManifest> $manifests Map of backupId => BackupManifest
+     * @param list<string> $protectedBackupIds Newly verified deliveries must survive timestamp ties/clock changes.
      * @return array{retained: array<int, string>, pruned: array<int, string>}
      */
-    public function apply(BackupStorageAdapterInterface $storage, array $manifests): array
+    public function apply(BackupStorageAdapterInterface $storage, array $manifests, array $protectedBackupIds = []): array
     {
         $backupIds = $storage->listBackups();
         if (empty($backupIds)) {
@@ -54,12 +55,13 @@ final class BackupRetentionPolicy
             if(!$manifest instanceof BackupManifest||$manifest->getBackupId()!==$id||$manifest->getFileSizeBytes()<=0||!preg_match('/^[a-f0-9]{64}$/D',$manifest->getSha256Checksum())||strtotime($manifest->getCreatedAt())===false){$retained[]=$id;continue;}
             $known[]=$id;
         }
-        usort($known,static fn(string $a,string $b):int=>strtotime($manifests[$b]->getCreatedAt())<=>strtotime($manifests[$a]->getCreatedAt()));
+        $protected=array_fill_keys($protectedBackupIds,true);
+        usort($known,static fn(string $a,string $b):int=>((int)isset($protected[$b])<=>(int)isset($protected[$a]))?:((strtotime($manifests[$b]->getCreatedAt())<=>strtotime($manifests[$a]->getCreatedAt()))?:strcmp($a,$b)));
         foreach($known as$index=>$id){
             $tooMany=$this->maxBackupsToKeep>0&&$index>=$this->maxBackupsToKeep;
             $tooOld=$this->retentionDays>0&&(time()-strtotime($manifests[$id]->getCreatedAt()))/86400>$this->retentionDays;
             // Always keep the newest known complete copy, even when its age exceeds policy.
-            if($index>0&&($tooMany||$tooOld)){
+            if(!isset($protected[$id])&&$index>0&&($tooMany||$tooOld)){
                 if(!$storage->delete($id)){throw new \RuntimeException('Backup retention deletion failed; pruning stopped.');}$pruned[]=$id;
             }else{$retained[]=$id;}
         }

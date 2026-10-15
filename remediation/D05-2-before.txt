@@ -1,0 +1,25 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+FF                                                                  2 / 2 (100%)
+
+Time: 00:01.029, Memory: 20.00 MB
+
+There were 2 failures:
+
+1) Coleza\Tests\Integration\Backup\RemoteBackupTransportTest::testRealLifecycleUsesIndependentClientsAndPreservesExactBytes@s3 with data ('s3')
+Real protocol lifecycle failed: Real backup transport is not configured; operation was not performed.
+Failed asserting that 'Real backup transport is not configured; operation was not performed.' is null.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Backup\RemoteBackupTransportTest.php:104
+
+2) Coleza\Tests\Integration\Backup\RemoteBackupTransportTest::testRealLifecycleUsesIndependentClientsAndPreservesExactBytes@sftp with data ('sftp')
+Real protocol lifecycle failed: Real SFTP transport is not configured; backup transfer was not performed.
+Failed asserting that 'Real SFTP transport is not configured; backup transfer was not performed.' is null.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Backup\RemoteBackupTransportTest.php:104
+
+FAILURES!
+Tests: 2, Assertions: 2, Failures: 2.

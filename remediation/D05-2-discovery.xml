@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<testSuite xmlns="https://xml.phpunit.de/testSuite">
+ <tests>
+  <testClass name="Coleza\Tests\MariaDb\BackupAdmissionTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\BackupAdmissionTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\BackupAdmissionTest::testUnsupportedMariaDbDumpCannotPublishEmptyDatabaseBackup#0" name="testUnsupportedMariaDbDumpCannotPublishEmptyDatabaseBackup"/>
+   <testMethod id="Coleza\Tests\MariaDb\BackupAdmissionTest::testUnsupportedMariaDbDumpCannotPublishEmptyDatabaseBackup#1" name="testUnsupportedMariaDbDumpCannotPublishEmptyDatabaseBackup"/>
+   <testMethod id="Coleza\Tests\MariaDb\BackupAdmissionTest::testRejectedDumpPreservesCallerTransactionAndDoesNoDatabaseWork" name="testRejectedDumpPreservesCallerTransactionAndDoesNoDatabaseWork"/>
+   <testMethod id="Coleza\Tests\MariaDb\BackupAdmissionTest::testFilesOnlyScopeDoesNotMisrepresentMariaDbAsIncluded" name="testFilesOnlyScopeDoesNotMisrepresentMariaDbAsIncluded"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\InstallationAcceptanceTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\InstallationAcceptanceTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testConcurrentDocumentsFromFourOrganizationsAreUnique#0" name="testConcurrentDocumentsFromFourOrganizationsAreUnique"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testConcurrentDocumentsFromFourOrganizationsAreUnique#1" name="testConcurrentDocumentsFromFourOrganizationsAreUnique"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testDifferentOrganizationsCanCreateDocumentsWithUnambiguousNumbers" name="testDifferentOrganizationsCanCreateDocumentsWithUnambiguousNumbers"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testDoctorDoesNotCreateTablesOrCommitAnApplicationTransaction" name="testDoctorDoesNotCreateTablesOrCommitAnApplicationTransaction"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testDoctorReadsInstalledCronAndActualQueue" name="testDoctorReadsInstalledCronAndActualQueue"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testApplicationSchemaInstallsMigrationsAndRepeatsWithoutDataLoss" name="testApplicationSchemaInstallsMigrationsAndRepeatsWithoutDataLoss"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testLegacyDocumentAndCounterSurviveGlobalNumberMigration" name="testLegacyDocumentAndCounterSurviveGlobalNumberMigration"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testUnsupportedPrefixIsRejectedBeforeAnyTableIsCreated" name="testUnsupportedPrefixIsRejectedBeforeAnyTableIsCreated"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testLegacyDoctorCronHistoryIsPreservedWithoutInventingSuccess" name="testLegacyDoctorCronHistoryIsPreservedWithoutInventingSuccess"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testFailedCronIsNotHealthyEvenWhenRecent" name="testFailedCronIsNotHealthyEvenWhenRecent"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\SqlPortabilityCloseoutTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest::testDomainPricingUpdatesOnlyMatchingOperationYearAndCurrency" name="testDomainPricingUpdatesOnlyMatchingOperationYearAndCurrency"/>
+   <testMethod id="Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest::testDomainContactsRepeatWithoutReplacingOtherContacts" name="testDomainContactsRepeatWithoutReplacingOtherContacts"/>
+  </testClass>
+ </tests>
+ <groups>
+  <group name="default">
+   <test id="Coleza\Tests\MariaDb\BackupAdmissionTest::testUnsupportedMariaDbDumpCannotPublishEmptyDatabaseBackup#0"/>
+   <test id="Coleza\Tests\MariaDb\BackupAdmissionTest::testUnsupportedMariaDbDumpCannotPublishEmptyDatabaseBackup#1"/>
+   <test id="Coleza\Tests\MariaDb\BackupAdmissionTest::testRejectedDumpPreservesCallerTransactionAndDoesNoDatabaseWork"/>
+   <test id="Coleza\Tests\MariaDb\BackupAdmissionTest::testFilesOnlyScopeDoesNotMisrepresentMariaDbAsIncluded"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testConcurrentDocumentsFromFourOrganizationsAreUnique#0"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testConcurrentDocumentsFromFourOrganizationsAreUnique#1"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testDifferentOrganizationsCanCreateDocumentsWithUnambiguousNumbers"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testDoctorDoesNotCreateTablesOrCommitAnApplicationTransaction"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testDoctorReadsInstalledCronAndActualQueue"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testApplicationSchemaInstallsMigrationsAndRepeatsWithoutDataLoss"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testLegacyDocumentAndCounterSurviveGlobalNumberMigration"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testUnsupportedPrefixIsRejectedBeforeAnyTableIsCreated"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testLegacyDoctorCronHistoryIsPreservedWithoutInventingSuccess"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testFailedCronIsNotHealthyEvenWhenRecent"/>
+   <test id="Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest::testDomainPricingUpdatesOnlyMatchingOperationYearAndCurrency"/>
+   <test id="Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest::testDomainContactsRepeatWithoutReplacingOtherContacts"/>
+  </group>
+ </groups>
+</testSuite>

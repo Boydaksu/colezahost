@@ -3,16 +3,16 @@
   "reference_report": "review/INCELEME.md",
   "plan": "remediation/PLAN.md",
   "phase": "D05",
-  "step": "D05.1",
+  "step": "D05.2",
   "status": "IN_PROGRESS",
   "step_status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
   "independent_acceptance": "PENDING",
   "production_ready": false,
-  "next_step": "D05.2",
+  "next_step": "D05.3",
   "next_phase": "D05",
   "tests": {
-    "main_total": 1906,
-    "main_assertions": 12613,
+    "main_total": 1959,
+    "main_assertions": 12765,
     "mariadb_total": 16,
     "mariadb_assertions": 119,
     "mariadb_scope": "Exact 3 affected classes: backup scope admission/files-only verified delivery, installation acceptance and SQL portability; full native not rerun",
@@ -23,8 +23,8 @@
       "assertions": 5399,
       "evidence": "remediation/D02-CLOSEOUT-summary.json"
     },
-    "total": 1922,
-    "assertions": 12732,
+    "total": 1975,
+    "assertions": 12884,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -45,11 +45,10 @@
     "F09": "INVENTORIED_SECRET_STORAGE_DIAGNOSTIC_EXPORT_AND_LEGACY_PATHS_IMPLEMENTED_LOCAL_VERIFIED_PENDING_INDEPENDENT_REVIEW",
     "F07": "SERVER_CATALOG_PRICE_AND_MONETARY_INTEGRITY_WITH_CANONICAL_MANUAL_APPLICATION_FLOW_LOCAL_VERIFIED_HTTP_AND_INDEPENDENT_ACCEPTANCE_OPEN_D08_D09",
     "F15": "RENEWAL_AND_PAID_PERIOD_RECEIPT_WITH_MANUAL_APPROVAL_FLOW_LOCAL_NATIVE_VERIFIED_HTTP_PROVIDER_INTEGRATION_AND_INDEPENDENT_ACCEPTANCE_OPEN_D06_D08_D09",
-    "F10": "PARTIAL_FAILURE_SAFE_PUBLICATION_AND_SOURCE_PRESERVATION_LOCAL_VERIFIED_REAL_S3_SFTP_TRANSPORT_OPEN_D05_2",
+    "F10": "IMPLEMENTED_FAILURE_SAFE_REAL_S3_SFTP_TRANSPORT_AUTH_IDENTITY_PUBLICATION_READBACK_HISTORY_RETENTION_LOCAL_PROTOCOL_VERIFIED_EXTERNAL_ACCOUNT_AND_INDEPENDENT_ACCEPTANCE_PENDING",
     "F11": "PARTIAL_ENTERPRISE_MISSING_DB_OR_UNSUPPORTED_MARIADB_DUMP_ADMISSION_REJECTED_REAL_CONSISTENT_DUMP_RECURSIVE_FILES_AND_PREUPDATE_PATHS_OPEN_D05_3_D05_4"
   },
   "remaining_steps": [
-    "D05.2",
     "D05.3",
     "D05.4",
     "D05.5"
@@ -110,10 +109,10 @@
       "status": "IN_PROGRESS",
       "plan": "remediation/D05-PLAN.md",
       "completed_steps": [
-        "D05.1"
+        "D05.1",
+        "D05.2"
       ],
       "remaining_steps": [
-        "D05.2",
         "D05.3",
         "D05.4",
         "D05.5"
@@ -130,7 +129,7 @@
   "d03_1_remaining_buckets": [],
   "d03_key_lifecycle_evidence": "remediation/D03-1-KEYLIFE-SONUC.md",
   "d05_recovery_debt": [
-    "Real S3/SFTP transport, remote history verification and external-account acceptance (D05.2)",
+    "External AWS/S3-compatible and independent SFTP account acceptance PENDING; real transports and verified remote history implemented/local protocol verified D05.2 (HTTP composition D08)",
     "Consistent MariaDB dump, recursive file mapping and SQL/binary/Unicode restore on a staged fresh target (D05.3)",
     "Non-atomic import interruption, target/file swap, privacy tombstone/key and health/mode recovery acceptance (D05.3)",
     "Mandatory verified pre-update backup, real migrations, signed package compatibility and rollback (D05.4)",
@@ -230,6 +229,14 @@
       "evidence": "remediation/D05-1-SONUC.md",
       "independent_acceptance": "PENDING",
       "scope": "Backup store result and independent read-back verification before local cleanup; atomic local archive/manifest publication with collision/ID/checksum guards; conservative retention protecting unknown history and last copy; unsupported remote production operations and missing/MariaDB dump explicitly rejected rather than fake success. Actual transports D05.2 and consistent dump/restore D05.3 remain open."
+    },
+    "D05.2": {
+      "status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
+      "date": "2026-10-15",
+      "evidence": "remediation/D05-2-SONUC.md",
+      "independent_acceptance": "PENDING",
+      "external_account_acceptance": "PENDING",
+      "scope": "Real cURL S3 HTTPS/SigV4 and SFTP pinned-host password/private-key transports; streamed verified publication/readback/list/delete, per-ID remote mutation locks and collision protection; independently verified history before retention, protected new delivery across timestamp ties; local real HTTPS/SSH protocol failure and two-process concurrency tests. External accounts and HTTP composition remain acceptance boundaries."
     }
   },
   "d03_staging_storage_evidence": "remediation/D03-1-STAGING-SONUC.md",
@@ -244,5 +251,6 @@
   "d04_flow_evidence": "remediation/D04-3-SONUC.md",
   "d04_closure": "remediation/D04-CLOSURE.md",
   "d05_plan": "remediation/D05-PLAN.md",
-  "d05_publication_evidence": "remediation/D05-1-SONUC.md"
+  "d05_publication_evidence": "remediation/D05-1-SONUC.md",
+  "d05_transport_evidence": "remediation/D05-2-SONUC.md"
 }

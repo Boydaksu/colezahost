@@ -1,0 +1,41 @@
+{
+  "phase": "D05",
+  "step": "D05.2",
+  "status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
+  "reference_commit": "cbb4dd91569ae62aab214c19368966f67c368ea7",
+  "before": {
+    "tests": 2,
+    "failures": 2,
+    "errors": 0
+  },
+  "main": {
+    "tests": 1959,
+    "assertions": 12765
+  },
+  "protocol": {
+    "tests": 35,
+    "assertions": 127
+  },
+  "configuration": {
+    "tests": 17,
+    "assertions": 17
+  },
+  "mariadb": {
+    "tests": 16,
+    "assertions": 119
+  },
+  "native_classes": 3,
+  "full_mariadb_current_source": false,
+  "remaining_steps": [
+    "D05.3",
+    "D05.4",
+    "D05.5"
+  ],
+  "real_remote_transport_implemented": true,
+  "external_account_acceptance": "PENDING",
+  "ci_workflow_added": true,
+  "ci_execution_observed": false,
+  "mariadb_dump_implemented": false,
+  "production_ready": false,
+  "independent_acceptance": "PENDING"
+}

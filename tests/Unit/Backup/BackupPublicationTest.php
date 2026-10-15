@@ -112,9 +112,15 @@ final class BackupPublicationTest extends TestCase
         $destination=new LocalBackupStorageAdapter($this->root.'/store');[$a,$m,$newer]=$this->sourcePackage('newer','a',20);$destination->store('newer',$a,$m);[$a,$m,$older]=$this->sourcePackage('older','b',40);$destination->store('older',$a,$m);
         $policy=new \Coleza\Domain\Backup\BackupRetentionPolicy(1,1);$result=$policy->apply($destination,[]);self::assertCount(2,$result['retained']);self::assertSame([],$result['pruned']);$result=$policy->apply($destination,['newer'=>$newer,'older'=>$older]);self::assertSame(['newer'],$result['retained']);self::assertSame(['older'],$result['pruned']);self::assertTrue($destination->exists('newer'));
     }
-    public function testAutomaticRetentionDoesNotDeleteUninspectedHistory(): void
+    public function testAutomaticRetentionNowVerifiesHistoryAndKeepsTheNewDelivery(): void
     {
-        $destination=new LocalBackupStorageAdapter($this->root.'/store');$service=new EnterpriseBackupService($this->root.'/work');for($i=0;$i<3;$i++){$service->createBackup(BackupScope::FILES,$destination,[$this->root.'/source.txt'],retentionPolicy:new \Coleza\Domain\Backup\BackupRetentionPolicy(1,1));}self::assertCount(3,$destination->listBackups());
+        $destination=new LocalBackupStorageAdapter($this->root.'/store');$service=new EnterpriseBackupService($this->root.'/work');for($i=0;$i<3;$i++){$result=$service->createBackup(BackupScope::FILES,$destination,[$this->root.'/source.txt'],retentionPolicy:new \Coleza\Domain\Backup\BackupRetentionPolicy(1,1));self::assertSame([$result['manifest']->getBackupId()],$destination->listBackups());}
+    }
+    public function testCurrentDeliveryIsProtectedEvenWhenHistoryHasAFutureTimestamp(): void
+    {
+        $destination=new LocalBackupStorageAdapter($this->root.'/store');[$a,$m]=$this->sourcePackage('future','old contents',-5);$destination->store('future',$a,$m);
+        $result=(new EnterpriseBackupService($this->root.'/work'))->createBackup(BackupScope::FILES,$destination,[$this->root.'/source.txt'],retentionPolicy:new \Coleza\Domain\Backup\BackupRetentionPolicy(1,1));
+        self::assertSame([$result['manifest']->getBackupId()],$destination->listBackups());
     }
     public function testTransportExceptionRetainsSourcePair(): void {$this->rejectAndKeepLocal('throw');}
     public function testPartialReadbackRetainsSourcePair(): void {$this->rejectAndKeepLocal('partial');}

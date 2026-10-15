@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Integration\Backup\RemoteBackupTransportTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Backup\RemoteBackupTransportTest.php" tests="2" assertions="2" errors="0" failures="2" skipped="0" time="0.008766">
+    <testsuite name="Coleza\Tests\Integration\Backup\RemoteBackupTransportTest::testRealLifecycleUsesIndependentClientsAndPreservesExactBytes" tests="2" assertions="2" errors="0" failures="2" skipped="0" time="0.008766">
+      <testcase name="testRealLifecycleUsesIndependentClientsAndPreservesExactBytes with data set &quot;s3&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Backup\RemoteBackupTransportTest.php" line="87" class="Coleza\Tests\Integration\Backup\RemoteBackupTransportTest" classname="Coleza.Tests.Integration.Backup.RemoteBackupTransportTest" assertions="1" time="0.006536">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Backup\RemoteBackupTransportTest::testRealLifecycleUsesIndependentClientsAndPreservesExactBytes with data set "s3"&#13;
+Real protocol lifecycle failed: Real backup transport is not configured; operation was not performed.
+Failed asserting that 'Real backup transport is not configured; operation was not performed.' is null.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Backup\RemoteBackupTransportTest.php:104</failure>
+      </testcase>
+      <testcase name="testRealLifecycleUsesIndependentClientsAndPreservesExactBytes with data set &quot;sftp&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Backup\RemoteBackupTransportTest.php" line="87" class="Coleza\Tests\Integration\Backup\RemoteBackupTransportTest" classname="Coleza.Tests.Integration.Backup.RemoteBackupTransportTest" assertions="1" time="0.002229">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Backup\RemoteBackupTransportTest::testRealLifecycleUsesIndependentClientsAndPreservesExactBytes with data set "sftp"&#13;
+Real protocol lifecycle failed: Real SFTP transport is not configured; backup transfer was not performed.
+Failed asserting that 'Real SFTP transport is not configured; backup transfer was not performed.' is null.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Backup\RemoteBackupTransportTest.php:104</failure>
+      </testcase>
+    </testsuite>
+  </testsuite>
+</testsuites>
