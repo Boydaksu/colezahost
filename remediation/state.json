@@ -3,19 +3,19 @@
   "reference_report": "review/INCELEME.md",
   "plan": "remediation/PLAN.md",
   "phase": "D04",
-  "step": "D04.1",
+  "step": "D04.2",
   "status": "IN_PROGRESS",
   "step_status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
   "independent_acceptance": "PENDING",
   "production_ready": false,
-  "next_step": "D04.2",
+  "next_step": "D04.3",
   "next_phase": "D04",
   "tests": {
-    "main_total": 1847,
-    "main_assertions": 12389,
-    "mariadb_total": 75,
-    "mariadb_assertions": 630,
-    "mariadb_scope": "Exact 6 affected classes: commerce integrity, command authorization, financial concurrency, SQL portability, installation and documents; full native not rerun",
+    "main_total": 1865,
+    "main_assertions": 12456,
+    "mariadb_total": 132,
+    "mariadb_assertions": 1216,
+    "mariadb_scope": "Exact 9 affected classes: renewal/commerce integrity, command authorization, financial concurrency, SQL portability, installation, documents, automation lifecycle/persistence; full native not rerun",
     "full_mariadb_current_source": false,
     "last_full_mariadb": {
       "reference_commit": "0d2e3e08d4c121a146f298f77b4bc6b008b6f66e",
@@ -23,8 +23,8 @@
       "assertions": 5399,
       "evidence": "remediation/D02-CLOSEOUT-summary.json"
     },
-    "total": 1922,
-    "assertions": 13019,
+    "total": 1997,
+    "assertions": 13672,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -43,10 +43,10 @@
     "F21": "PARTIAL_SUPPORT_SCHEMA_AND_CURRENT_ACTOR_ORGANIZATION_DEPARTMENT_COMMAND_SCOPE_IMPLEMENTED_LOCAL_VERIFIED_FULL_STORAGE_RECOVERY_AND_D07_D08_PRODUCT_FLOW_ACCEPTANCE_OPEN",
     "F08": "EXPLICIT_RUNTIME_KEY_PRIVATE_FILE_INSTALLER_BINDING_ATOMIC_ROTATION_OLD_WRITER_FENCING_AND_RESTORE_KEY_GATE_LOCAL_VERIFIED_PENDING_INDEPENDENT_REVIEW",
     "F09": "INVENTORIED_SECRET_STORAGE_DIAGNOSTIC_EXPORT_AND_LEGACY_PATHS_IMPLEMENTED_LOCAL_VERIFIED_PENDING_INDEPENDENT_REVIEW",
-    "F07": "CUSTOMER_SERVER_PRICE_BOUNDARY_AND_ORDER_INVOICE_MONETARY_INTEGRITY_LOCAL_VERIFIED_END_TO_END_COMMERCE_ACCEPTANCE_REMAINS_D04_3_D08_D09"
+    "F07": "CUSTOMER_SERVER_PRICE_BOUNDARY_AND_ORDER_INVOICE_MONETARY_INTEGRITY_LOCAL_VERIFIED_END_TO_END_COMMERCE_ACCEPTANCE_REMAINS_D04_3_D08_D09",
+    "F15": "RENEWAL_GENERATION_AND_PAID_PERIOD_RECEIPT_IMPLEMENTED_LOCAL_NATIVE_VERIFIED_FULL_COMMERCE_FLOW_AND_PERFORMANCE_ACCEPTANCE_REMAINS_D04_3_D08_D09"
   },
   "remaining_steps": [
-    "D04.2",
     "D04.3"
   ],
   "remaining_phases": [
@@ -91,10 +91,10 @@
       "status": "IN_PROGRESS",
       "plan": "remediation/D04-PLAN.md",
       "completed_steps": [
-        "D04.1"
+        "D04.1",
+        "D04.2"
       ],
       "remaining_steps": [
-        "D04.2",
         "D04.3"
       ],
       "independent_acceptance": "PENDING"
@@ -187,6 +187,13 @@
       "evidence": "remediation/D04-1-SONUC.md",
       "independent_acceptance": "PENDING",
       "scope": "Server catalog pricing, valid active selections, scoped user vs organization overrides/exemptions, explicit privileged manual price, bounded integer totals, inclusive/exclusive tax and exact frozen order-to-invoice allocation, audit/savepoint rollback, current MariaDB reads and concurrent one-order invoice generation"
+    },
+    "D04.2": {
+      "status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
+      "date": "2026-10-15",
+      "evidence": "remediation/D04-2-SONUC.md",
+      "independent_acceptance": "PENDING",
+      "scope": "Persisted service owner/currency/price/period and current state; atomic one-period invoice generation and one-time paid settlement receipt; partial/foreign/unrelated/replayed invoice rejection; caller rollback, concurrent generate/settle/mixed tests; payment-context automation uses same bound period command"
     }
   },
   "d03_staging_storage_evidence": "remediation/D03-1-STAGING-SONUC.md",
@@ -196,5 +203,6 @@
   "d03_command_authorization_evidence": "remediation/D03-4-SONUC.md",
   "d03_closure": "remediation/D03-CLOSURE.md",
   "d04_plan": "remediation/D04-PLAN.md",
-  "d04_pricing_evidence": "remediation/D04-1-SONUC.md"
+  "d04_pricing_evidence": "remediation/D04-1-SONUC.md",
+  "d04_renewal_evidence": "remediation/D04-2-SONUC.md"
 }

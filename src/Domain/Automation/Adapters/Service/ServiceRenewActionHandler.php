@@ -44,7 +44,16 @@ final class ServiceRenewActionHandler implements ActionHandlerInterface
         $expectedLockVersion = isset($resolved['expected_lock_version']) ? (int) $resolved['expected_lock_version'] : null;
 
         try {
-            $service = $this->serviceService->renewService($serviceId, $expectedLockVersion);
+            $invoiceId=$resolved['invoice_id']??$context->get('invoice.id')??$context->get('invoice_id');
+            if($invoiceId!==null||in_array($context->getEventName(),['invoice.paid','invoice_paid','payment.completed','payment_completed'],true)){
+                $invoiceId=\Coleza\Domain\Commerce\CommerceAmounts::integer($invoiceId,'invoice_id',1);
+                $db=$this->serviceService->getConnection();
+                (new \Coleza\Domain\Commerce\Recurring\RenewalInvoiceService($db,new \Coleza\Domain\Commerce\Invoices\InvoiceService($db)))->settlePaidInvoice($invoiceId,expectedServiceId:$serviceId);
+                $service=$this->serviceService->findServiceById($serviceId);
+            }else{
+                // Explicit non-payment automation retains the manual extension command.
+                $service = $this->serviceService->renewService($serviceId, $expectedLockVersion);
+            }
             $durationMs = (microtime(true) - $start) * 1000;
 
             return ActionResult::success($action->getId(), $this->getType(), [

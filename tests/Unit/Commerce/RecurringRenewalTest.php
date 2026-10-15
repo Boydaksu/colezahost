@@ -40,8 +40,15 @@ final class RecurringRenewalTest extends TestCase
         $this->invoiceService = new InvoiceService($this->db, null, $this->taxService);
         $this->invoiceService->ensureTables();
 
+        (new \Coleza\Domain\Commerce\Services\ServiceService($this->db))->ensureTables();
         $this->renewalService = new RenewalInvoiceService($this->db, $this->invoiceService, $this->taxService);
         $this->renewalService->ensureTables();
+    }
+
+    private function persistRenewalService(array $data): void
+    {
+        $service=(new \Coleza\Domain\Commerce\Services\ServiceService($this->db))->createService(['product_id'=>1,'status'=>'active']+$data);
+        $this->db->statement('UPDATE services SET id=? WHERE id=?',[$data['service_id'],$service->getId()]);
     }
 
     public function testBillingPeriodCalculationAcrossCycles(): void
@@ -108,6 +115,7 @@ final class RecurringRenewalTest extends TestCase
             'description' => 'cPanel Shared Hosting Standard',
         ];
 
+        $this->persistRenewalService($serviceData);
         $invoice = $this->renewalService->generateRenewalInvoice($serviceData);
 
         $this->assertNotNull($invoice->getId());
@@ -123,7 +131,7 @@ final class RecurringRenewalTest extends TestCase
         $this->assertCount(1, $invoice->getItems());
         $item = $invoice->getItems()[0];
         $this->assertSame(101, $item->getServiceId());
-        $this->assertSame('cPanel Shared Hosting Standard (2026-11-01 to 2026-12-01)', $item->getDescription());
+        $this->assertSame('Service Renewal #'.$this->db->selectOne('SELECT service_number FROM services WHERE id=101')['service_number'].' (2026-11-01 to 2026-12-01)', $item->getDescription());
         $this->assertSame(5000, $item->getSubtotalMinor());
         $this->assertSame(1000, $item->getTaxAmountMinor());
         $this->assertSame(6000, $item->getTotalMinor());
@@ -141,6 +149,7 @@ final class RecurringRenewalTest extends TestCase
             'description' => 'Dedicated Server Enterprise',
         ];
 
+        $this->persistRenewalService($serviceData);
         // First generation
         $invoice1 = $this->renewalService->generateRenewalInvoice($serviceData);
         $this->assertNotNull($invoice1->getId());
@@ -184,6 +193,7 @@ final class RecurringRenewalTest extends TestCase
             ],
         ];
 
+        foreach($services as $data){$this->persistRenewalService($data);}
         $generated = $this->renewalService->processBatchRenewals($services, asOfDate: '2026-10-21', leadDays: 14);
 
         $this->assertCount(2, $generated);

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Commerce\RenewalIntegrityTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Commerce\RenewalIntegrityTest.php" tests="2" assertions="2" errors="0" failures="2" skipped="0" time="0.044867">
+    <testcase name="testManualDueDateEditDoesNotReplayConsumedInvoice" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RenewalIntegrityCases.php" line="136" class="Coleza\Tests\Unit\Commerce\RenewalIntegrityTest" classname="Coleza.Tests.Unit.Commerce.RenewalIntegrityTest" assertions="1" time="0.043086">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Commerce\RenewalIntegrityTest::testManualDueDateEditDoesNotReplayConsumedInvoice&#13;
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+-Array &amp;0 []
++Array &amp;0 [
++    0 =&gt; Array &amp;1 [
++        'service_id' =&gt; 1,
++        'action' =&gt; 'renewed',
++        'status' =&gt; 'active',
++        'next_due_date' =&gt; '2026-12-01',
++    ],
++]
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RenewalIntegrityCases.php:139</failure>
+    </testcase>
+    <testcase name="testReceiptWriteFailureRollsBackExtensionAndAllowsRetry" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RenewalIntegrityCases.php" line="142" class="Coleza\Tests\Unit\Commerce\RenewalIntegrityTest" classname="Coleza.Tests.Unit.Commerce.RenewalIntegrityTest" assertions="1" time="0.001780">
+      <failure type="PHPUnit\Framework\AssertionFailedError">Coleza\Tests\Unit\Commerce\RenewalIntegrityTest::testReceiptWriteFailureRollsBackExtensionAndAllowsRetry&#13;
+Receipt failure ignored
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RenewalIntegrityCases.php:146</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

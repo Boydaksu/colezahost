@@ -1065,11 +1065,11 @@ final class ServiceService
      *
      * @return array<Service>
      */
-    public function findServicesDueForRenewal(string $asOfDate, int $leadDays = 14): array
+    public function findServicesDueForRenewal(string $asOfDate, int $leadDays = 14, bool $autoRenewOnly = true): array
     {
         $cutoffDate = (new \DateTimeImmutable($asOfDate))->modify("+{$leadDays} days")->format('Y-m-d');
         $sql = sprintf(
-            'SELECT * FROM %s WHERE status = ? AND auto_renew = 1 AND next_due_date <= ? ORDER BY next_due_date ASC',
+            'SELECT * FROM %s WHERE status = ? '.($autoRenewOnly?'AND auto_renew = 1 ':'')."AND billing_cycle <> 'one_time' AND next_due_date <= ? ORDER BY next_due_date ASC",
             $this->servicesTable
         );
         $rows = $this->db->select($sql, [ServiceStateMachine::STATUS_ACTIVE, $cutoffDate]);

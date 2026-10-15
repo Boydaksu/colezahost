@@ -31,7 +31,7 @@ final class ServiceRenewalScheduler
         $start = microtime(true);
         $referenceDate = $asOfDate ?? date('Y-m-d');
 
-        $dueServices = $this->serviceService->findServicesDueForRenewal($referenceDate, $policy->getLeadDays());
+        $dueServices = $this->serviceService->findServicesDueForRenewal($referenceDate, $policy->getLeadDays(), $policy->isAutoRenewOnly());
 
         $results = [];
         foreach ($dueServices as $service) {
@@ -55,6 +55,8 @@ final class ServiceRenewalScheduler
         string $referenceDate
     ): RenewalExecutionResult {
         $serviceId = (int) $service->getId();
+
+        if(\Coleza\Domain\Pricing\Entities\PriceCycle::getMonths($service->getBillingCycle())<=0||!BillingPeriod::isDueForRenewal($service->getNextDueDate(),$referenceDate,$policy->getLeadDays())){return RenewalExecutionResult::skipped($serviceId,'Service is outside the recurring renewal window');}
 
         // 1. Check auto_renew preference
         if ($policy->isAutoRenewOnly() && !$service->getBillingRelation()->isAutoRenew()) {
@@ -91,7 +93,7 @@ final class ServiceRenewalScheduler
 
         // 4. Generate invoice
         try {
-            $invoice = $this->renewalInvoiceService->generateRenewalInvoice($serviceData, $invoiceDueDate);
+            $invoice = $this->renewalInvoiceService->generateRenewalInvoice($serviceData, $invoiceDueDate, !$policy->isAutoRenewOnly());
 
             // 5. Send notification if configured
             $notificationSent = false;

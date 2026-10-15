@@ -1,0 +1,35 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+FF                                                                  2 / 2 (100%)
+
+Time: 00:00.046, Memory: 20.00 MB
+
+There were 2 failures:
+
+1) Coleza\Tests\Unit\Commerce\RenewalIntegrityTest::testManualDueDateEditDoesNotReplayConsumedInvoice
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+-Array &0 []
++Array &0 [
++    0 => Array &1 [
++        'service_id' => 1,
++        'action' => 'renewed',
++        'status' => 'active',
++        'next_due_date' => '2026-12-01',
++    ],
++]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RenewalIntegrityCases.php:139
+
+2) Coleza\Tests\Unit\Commerce\RenewalIntegrityTest::testReceiptWriteFailureRollsBackExtensionAndAllowsRetry
+Receipt failure ignored
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RenewalIntegrityCases.php:146
+
+FAILURES!
+Tests: 2, Assertions: 2, Failures: 2.

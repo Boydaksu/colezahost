@@ -65,63 +65,13 @@ final class OverdueLifecycleWorkflow
      */
     public function handleInvoicePaid(int $invoiceId, ?OverdueGracePolicy $policy = null): array
     {
-        $activePolicy = $policy ?? new OverdueGracePolicy();
-        $invoice = $this->invoiceService->findInvoiceById($invoiceId);
-        if ($invoice === null || !$invoice->isPaid()) {
-            return [];
+        $activePolicy=$policy??new OverdueGracePolicy();
+        $db=$this->serviceService->getConnection();
+        $actions=(new \Coleza\Domain\Commerce\Recurring\RenewalInvoiceService($db,$this->invoiceService))->settlePaidInvoice($invoiceId,$activePolicy->isAutoReactivationAllowed());
+        // External mail runs after an owned commit, never inside a caller's unfinished transaction.
+        if(!$db->getPdo()->inTransaction()&&$activePolicy->shouldSendNotifications()&&$this->notificationEngine!==null){
+            foreach($actions as$action){if($action['action']==='unsuspended'){$service=$this->serviceService->findServiceById($action['service_id']);$this->sendNotification($service,'service_unsuspended',['service_name'=>$service->getDomain()??$service->getServiceNumber()]);}}
         }
-
-        $actions = [];
-        $serviceIds = [];
-
-        foreach ($invoice->getItems() as $item) {
-            $serviceId = $item->getServiceId();
-            if ($serviceId !== null && !in_array($serviceId, $serviceIds, true)) {
-                $serviceIds[] = $serviceId;
-            }
-        }
-
-        foreach ($serviceIds as $serviceId) {
-            $service = $this->serviceService->findServiceById($serviceId);
-            if ($service === null) {
-                continue;
-            }
-
-            // 1. Reactivate / unsuspend if suspended
-            if ($service->isSuspended() && $activePolicy->isAutoReactivationAllowed()) {
-                try {
-                    $unsuspended = $this->serviceService->unsuspendService($serviceId);
-
-                    if ($activePolicy->shouldSendNotifications() && $this->notificationEngine !== null) {
-                        $this->sendNotification($unsuspended, 'service_unsuspended', [
-                            'service_name' => $unsuspended->getDomain() ?? $unsuspended->getServiceNumber(),
-                        ]);
-                    }
-
-                    $actions[] = [
-                        'service_id' => $serviceId,
-                        'action' => 'unsuspended',
-                        'status' => $unsuspended->getStatus(),
-                    ];
-                } catch (Throwable $e) {
-                    $this->logger?->error("Failed to unsuspend service {$serviceId} on payment: {$e->getMessage()}");
-                }
-            }
-
-            // 2. Advance renewal date if this was a renewal invoice
-            try {
-                $renewed = $this->serviceService->renewService($serviceId);
-                $actions[] = [
-                    'service_id' => $serviceId,
-                    'action' => 'renewed',
-                    'status' => $renewed->getStatus(),
-                    'next_due_date' => $renewed->getNextDueDate(),
-                ];
-            } catch (Throwable $e) {
-                $this->logger?->info("Service {$serviceId} renewal step: {$e->getMessage()}");
-            }
-        }
-
         return $actions;
     }
 

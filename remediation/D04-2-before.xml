@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Commerce\RenewalIntegrityTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Commerce\RenewalIntegrityTest.php" tests="5" assertions="5" errors="0" failures="5" skipped="0" time="0.016312">
+    <testcase name="testPaidRenewalReplayDoesNotAdvanceTwice" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RenewalIntegrityCases.php" line="25" class="Coleza\Tests\Unit\Commerce\RenewalIntegrityTest" classname="Coleza.Tests.Unit.Commerce.RenewalIntegrityTest" assertions="1" time="0.010997">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Commerce\RenewalIntegrityTest::testPaidRenewalReplayDoesNotAdvanceTwice&#13;
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'2026-12-01'
++'2027-01-01'
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RenewalIntegrityCases.php:30</failure>
+    </testcase>
+    <testcase name="testForeignPaidInvoiceCannotRenewService" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RenewalIntegrityCases.php" line="32" class="Coleza\Tests\Unit\Commerce\RenewalIntegrityTest" classname="Coleza.Tests.Unit.Commerce.RenewalIntegrityTest" assertions="1" time="0.001633">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Commerce\RenewalIntegrityTest::testForeignPaidInvoiceCannotRenewService&#13;
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'2026-11-01'
++'2026-12-01'
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RenewalIntegrityCases.php:36</failure>
+    </testcase>
+    <testcase name="testUnrelatedPaidInvoiceCannotRenewService" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RenewalIntegrityCases.php" line="38" class="Coleza\Tests\Unit\Commerce\RenewalIntegrityTest" classname="Coleza.Tests.Unit.Commerce.RenewalIntegrityTest" assertions="1" time="0.001674">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Commerce\RenewalIntegrityTest::testUnrelatedPaidInvoiceCannotRenewService&#13;
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'2026-11-01'
++'2026-12-01'
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RenewalIntegrityCases.php:42</failure>
+    </testcase>
+    <testcase name="testRenewalPriceComesFromPersistedService" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RenewalIntegrityCases.php" line="44" class="Coleza\Tests\Unit\Commerce\RenewalIntegrityTest" classname="Coleza.Tests.Unit.Commerce.RenewalIntegrityTest" assertions="1" time="0.001064">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Commerce\RenewalIntegrityTest::testRenewalPriceComesFromPersistedService&#13;
+Failed asserting that 1 is identical to 1000.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RenewalIntegrityCases.php:47</failure>
+    </testcase>
+    <testcase name="testRenewalRecordFailureDoesNotLeaveOrphanInvoice" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RenewalIntegrityCases.php" line="49" class="Coleza\Tests\Unit\Commerce\RenewalIntegrityTest" classname="Coleza.Tests.Unit.Commerce.RenewalIntegrityTest" assertions="1" time="0.000944">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Commerce\RenewalIntegrityTest::testRenewalRecordFailureDoesNotLeaveOrphanInvoice&#13;
+Failed asserting that actual size 1 matches expected size 0.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RenewalIntegrityCases.php:53</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

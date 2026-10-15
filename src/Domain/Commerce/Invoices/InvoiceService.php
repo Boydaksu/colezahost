@@ -461,7 +461,7 @@ final class InvoiceService
     private function hydrateInvoice(array $row): Invoice
     {
         $invoiceId = (int)$row['id'];
-        $itemRows = $this->db->select(sprintf('SELECT * FROM %s WHERE invoice_id = ?', $this->invoiceItemsTable), [$invoiceId]);
+        $itemRows = $this->db->select(sprintf('SELECT * FROM %s WHERE invoice_id = ?', $this->invoiceItemsTable) . $this->db->forUpdate(), [$invoiceId]);
 
         $items = [];
         foreach ($itemRows as $iRow) {

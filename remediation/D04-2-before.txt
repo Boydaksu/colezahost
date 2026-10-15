@@ -1,0 +1,53 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+FFFFF                                                               5 / 5 (100%)
+
+Time: 00:00.018, Memory: 20.00 MB
+
+There were 5 failures:
+
+1) Coleza\Tests\Unit\Commerce\RenewalIntegrityTest::testPaidRenewalReplayDoesNotAdvanceTwice
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'2026-12-01'
++'2027-01-01'
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RenewalIntegrityCases.php:30
+
+2) Coleza\Tests\Unit\Commerce\RenewalIntegrityTest::testForeignPaidInvoiceCannotRenewService
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'2026-11-01'
++'2026-12-01'
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RenewalIntegrityCases.php:36
+
+3) Coleza\Tests\Unit\Commerce\RenewalIntegrityTest::testUnrelatedPaidInvoiceCannotRenewService
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'2026-11-01'
++'2026-12-01'
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RenewalIntegrityCases.php:42
+
+4) Coleza\Tests\Unit\Commerce\RenewalIntegrityTest::testRenewalPriceComesFromPersistedService
+Failed asserting that 1 is identical to 1000.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RenewalIntegrityCases.php:47
+
+5) Coleza\Tests\Unit\Commerce\RenewalIntegrityTest::testRenewalRecordFailureDoesNotLeaveOrphanInvoice
+Failed asserting that actual size 1 matches expected size 0.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\RenewalIntegrityCases.php:53
+
+FAILURES!
+Tests: 5, Assertions: 5, Failures: 5.

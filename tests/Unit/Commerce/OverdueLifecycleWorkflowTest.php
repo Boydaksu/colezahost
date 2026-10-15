@@ -192,25 +192,9 @@ final class OverdueLifecycleWorkflowTest extends TestCase
         );
         $serviceId = $service->getId();
 
-        // 2. Create invoice for this service
-        $invoice = $this->invoiceService->createInvoice([
-            'user_id' => 1,
-            'status' => Invoice::STATUS_UNPAID,
-            'currency_code' => 'USD',
-            'subtotal_minor' => 3000,
-            'tax_total_minor' => 0,
-            'total_minor' => 3000,
-        ], [
-            [
-                'description' => 'Renewal Invoice #1',
-                'quantity' => 1,
-                'unit_amount_minor' => 3000,
-                'subtotal_minor' => 3000,
-                'tax_amount_minor' => 0,
-                'total_minor' => 3000,
-                'service_id' => $serviceId,
-            ],
-        ]);
+        // A paid renewal is identified by its persisted service/period record.
+        $renewals=new \Coleza\Domain\Commerce\Recurring\RenewalInvoiceService($this->db,$this->invoiceService);$renewals->ensureTables();
+        $invoice=$renewals->generateRenewalInvoice(['service_id'=>$serviceId]);
 
         $this->mailTransport->clear();
 

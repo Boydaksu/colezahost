@@ -47,6 +47,17 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'renewalGenerate':
+        case 'renewalSettle':
+        case 'renewalMixed':
+            $renewals=new Coleza\Domain\Commerce\Recurring\RenewalInvoiceService($db,$invoices);
+            if($action==='renewalGenerate'||($action==='renewalMixed'&&(int)$argv[2]%2===0)){
+                $result['invoice_id']=$renewals->generateRenewalInvoice(['service_id'=>$id,'next_due_date'=>'2026-11-01'])->getId();
+            }else{
+                $invoiceId=$action==='renewalMixed'?(int)$argv[5]:$id;
+                $result['actions']=$renewals->settlePaidInvoice($invoiceId);
+            }
+            break;
         case 'commerceOrderInvoice':
             $orders=new Coleza\Domain\Commerce\Orders\OrderService($db);
             $result['invoice_id']=$invoices->createInvoiceFromOrder($orders->findOrderById($id))->getId();

@@ -1,61 +1,40 @@
 <?php
-
 declare(strict_types=1);
-
 namespace Coleza\Domain\Commerce\Recurring;
 
 use Coleza\Domain\Pricing\Entities\PriceCycle;
+use Coleza\Foundation\Exceptions\ValidationException;
 use DateTimeImmutable;
 
 final class BillingPeriod
 {
-    /**
-     * Calculate next due date from a base date and billing cycle.
-     */
-    public static function calculateNextDueDate(string $baseDate, string $cycle): string
+    public static function date(string $date): DateTimeImmutable
     {
-        $dt = new DateTimeImmutable($baseDate);
-        $months = PriceCycle::getMonths($cycle);
-        if ($months <= 0) {
-            return $baseDate;
-        }
-
-        return $dt->modify("+{$months} month")->format('Y-m-d');
+        $value=DateTimeImmutable::createFromFormat('!Y-m-d',$date);
+        if($value===false||$value->format('Y-m-d')!==$date){throw new ValidationException(['date'=>['A valid YYYY-MM-DD date is required.']]);}
+        return $value;
     }
 
-    /**
-     * Compute [period_start, period_end] string pair.
-     *
-     * @return array{start: string, end: string}
-     */
-    public static function computePeriod(string $startDate, string $cycle): array
+    public static function calculateNextDueDate(string $baseDate,string $cycle): string
     {
-        $start = new DateTimeImmutable($startDate);
-        $months = PriceCycle::getMonths($cycle);
-        if ($months <= 0) {
-            return [
-                'start' => $startDate,
-                'end' => $startDate,
-            ];
-        }
-
-        $end = $start->modify("+{$months} month");
-        return [
-            'start' => $start->format('Y-m-d'),
-            'end' => $end->format('Y-m-d'),
-        ];
+        $date=self::date($baseDate);
+        if(!PriceCycle::isValid($cycle)){throw new ValidationException(['cycle'=>['Invalid billing cycle.']]);}
+        $months=PriceCycle::getMonths($cycle);
+        if($months<=0){return $baseDate;}
+        $target=$date->modify('first day of this month')->modify("+{$months} months");
+        $day=min((int)$date->format('d'),(int)$target->format('t'));
+        return $target->setDate((int)$target->format('Y'),(int)$target->format('m'),$day)->format('Y-m-d');
     }
 
-    /**
-     * Determine if a renewal should be generated given the service next due date,
-     * target reference date (default today), and lead days.
-     */
-    public static function isDueForRenewal(string $nextDueDate, string $referenceDate, int $leadDays = 14): bool
+    public static function computePeriod(string $startDate,string $cycle): array
     {
-        $due = new DateTimeImmutable($nextDueDate);
-        $ref = new DateTimeImmutable($referenceDate);
-        $cutoff = $due->modify("-{$leadDays} days");
+        self::date($startDate);
+        return ['start'=>$startDate,'end'=>self::calculateNextDueDate($startDate,$cycle)];
+    }
 
-        return $ref >= $cutoff;
+    public static function isDueForRenewal(string $nextDueDate,string $referenceDate,int $leadDays=14): bool
+    {
+        if($leadDays<0){throw new ValidationException(['lead_days'=>['Lead days cannot be negative.']]);}
+        return self::date($referenceDate)>=self::date($nextDueDate)->modify("-{$leadDays} days");
     }
 }
