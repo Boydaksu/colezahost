@@ -14,7 +14,7 @@ final class DatabaseQueue implements QueueInterface
     private string $failedJobsTable = 'failed_jobs';
     private bool $initialized = false;
 
-    public function __construct(private Connection $db)
+    public function __construct(private Connection $db, private ?QueuePayloadStoreInterface $payloadStore = null)
     {
     }
 
@@ -22,7 +22,9 @@ final class DatabaseQueue implements QueueInterface
     {
         if ($this->initialized) { return; }
         if ($this->db->getDriverName() === 'mysql' && $this->db->inTransaction()) {
-            throw new RuntimeException('Initialize queue schema before starting an application transaction.');
+            if (!\Coleza\Foundation\Database\PdoSchema::useInstalledSchema($this->db, self::schemaRequirements())) { throw new RuntimeException('Initialize queue schema before starting an application transaction.'); }
+            $this->initialized = true;
+            return;
         }
         $driver = $this->db->getDriverName();
         $autoInc = match ($driver) {
@@ -63,119 +65,102 @@ final class DatabaseQueue implements QueueInterface
         $this->initialized = true;
     }
 
+    public static function schemaRequirements(): array
+    {
+        return ['jobs' => ['id', 'queue', 'payload', 'attempts', 'reserved_at', 'reservation_token', 'available_at'],
+            'failed_jobs' => ['id', 'queue', 'payload', 'exception']];
+    }
+    private function payloads(): QueuePayloadStoreInterface
+    {
+        return $this->payloadStore ?? throw new RuntimeException('Configure encrypted queue payload storage before processing jobs.');
+    }
+
+    /** Prepare outside caller transactions; installed dependencies are checked without DDL inside them. */
+    public function prepareStorage(): void
+    {
+        $this->payloads()->prepareKey(); $this->ensureTables(); $this->payloads()->prepare();
+    }
+
     public function push(JobInterface $job, int $delaySeconds = 0): int|string
     {
-        $this->ensureTables();
-        $now = time();
-        $availableAt = $now + $delaySeconds;
+        $this->prepareStorage();
         $queue = $job->queue();
+        if ($queue === '' || strlen($queue) > 50 || $delaySeconds < 0 || $delaySeconds > 2147483647 - time()) {
+            throw new \InvalidArgumentException('Invalid queue or delay.');
+        }
         $payload = serialize($job);
-
-        return $this->db->insert($this->jobsTable, [
-            'queue' => $queue,
-            'payload' => $payload,
-            'attempts' => 0,
-            'reserved_at' => null,
-            'available_at' => $availableAt,
-        ]);
+        return $this->db->transaction(function () use ($queue, $payload, $delaySeconds): int|string {
+            $this->payloads()->guard();
+            $id = $this->db->insert($this->jobsTable, ['queue' => $queue, 'payload' => '', 'attempts' => 0,
+                'reserved_at' => null, 'reservation_token' => null, 'available_at' => time() + $delaySeconds]);
+            $ref = $this->payloads()->writeNew($this->jobsTable, ['id' => $id, 'queue' => $queue], $payload);
+            $this->db->update($this->jobsTable, ['payload' => $ref], 'id = :id', ['id' => $id]);
+            return $id;
+        });
     }
 
     public function pop(string $queue = 'default'): ?QueueJob
     {
-        $this->ensureTables();
-        $now = time();
-        $expirationCutoff = $now - 300; // 5 minutes reservation timeout
-
+        $this->prepareStorage(); $now = time(); $expirationCutoff = $now - 300;
         return $this->db->transaction(function (Connection $db) use ($queue, $now, $expirationCutoff): ?QueueJob {
-            $row = $db->selectOne(
-                sprintf(
-                    'SELECT id, payload, attempts FROM %s
-                     WHERE queue = :q
-                       AND available_at <= :now
-                       AND (reserved_at IS NULL OR reserved_at < :cutoff)
-                     ORDER BY id ASC LIMIT 1' . ($db->getDriverName() === 'mysql' ? ' FOR UPDATE SKIP LOCKED' : ''),
-                    $this->jobsTable
-                ),
-                [
-                    'q' => $queue,
-                    'now' => $now,
-                    'cutoff' => $expirationCutoff,
-                ]
-            );
-
-            if ($row === null) {
-                return null;
-            }
-
-            $id = $row['id'];
-            $attempts = (int) $row['attempts'] + 1;
+            // Same ordering as application-key rotation: binding, queue owner, Vault.
+            $this->payloads()->guard();
+            $row = $db->selectOne('SELECT * FROM jobs WHERE queue = :q AND available_at <= :now
+                AND (reserved_at IS NULL OR reserved_at < :cutoff) ORDER BY id ASC LIMIT 1'
+                . ($db->getDriverName() === 'mysql' ? ' FOR UPDATE SKIP LOCKED' : ''),
+                ['q' => $queue, 'now' => $now, 'cutoff' => $expirationCutoff]);
+            if ($row === null) { return null; }
+            $payload = $this->payloads()->read($this->jobsTable, $row);
             $token = bin2hex(random_bytes(32));
             $claimed = $db->affectingStatement('UPDATE jobs SET reserved_at = ?, reservation_token = ?, attempts = attempts + 1
-                WHERE id = ? AND (reserved_at IS NULL OR reserved_at < ?)', [$now, $token, $id, $expirationCutoff]);
-            if ($claimed !== 1) { return null; }
-
-            $jobInstance = @unserialize((string) $row['payload']);
-            if (!$jobInstance instanceof JobInterface) {
-                // Malformed job, immediately purge
-                $db->delete($this->jobsTable, 'id = :id', ['id' => $id]);
-                return null;
-            }
-
-            return new QueueJob($id, $queue, $jobInstance, $attempts, $token);
+                WHERE id = ? AND (reserved_at IS NULL OR reserved_at < ?)', [$now, $token, $row['id'], $expirationCutoff]);
+            if ($claimed !== 1) { throw new RuntimeException('Queue reservation was lost.'); }
+            try { $instance = unserialize($payload); }
+            catch (Throwable) { throw new RuntimeException('Queue job could not be hydrated.'); }
+            if (!$instance instanceof JobInterface) { throw new RuntimeException('Queue payload does not describe an installed job.'); }
+            return new QueueJob($row['id'], $queue, $instance, (int) $row['attempts'] + 1, $token);
         });
+    }
+
+    private function owned(QueueJob $job): ?array
+    {
+        return $this->db->selectOne('SELECT * FROM jobs WHERE id = ? AND reservation_token = ? AND queue = ?' . $this->db->forUpdate(),
+            [$job->getId(), $job->getReservationToken(), $job->getQueue()]);
     }
 
     public function delete(QueueJob $job): void
     {
-        $this->ensureTables();
-        $this->db->delete($this->jobsTable, 'id = :id AND reservation_token = :token',
-            ['id' => $job->getId(), 'token' => $job->getReservationToken()]);
+        $this->prepareStorage();
+        $this->db->transaction(function () use ($job): void {
+            $this->payloads()->guard(); $row = $this->owned($job);
+            if ($row === null) { return; }
+            $this->payloads()->read($this->jobsTable, $row);
+            $this->payloads()->delete($this->jobsTable, $row);
+            $this->db->delete($this->jobsTable, 'id = :id', ['id' => $row['id']]);
+        });
     }
 
     public function releaseOrFail(QueueJob $job, Throwable $exception): void
     {
-        $this->ensureTables();
+        $this->prepareStorage();
         $this->db->transaction(function () use ($job, $exception): void {
-            $this->db->lockRow($this->jobsTable, (int) $job->getId());
-            $owned = $this->db->selectOne('SELECT id FROM jobs WHERE id = ? AND reservation_token = ?' . $this->db->forUpdate(),
-                [$job->getId(), $job->getReservationToken()]);
-            if ($owned === null) { return; }
-            $this->releaseOwnedJob($job, $exception);
+            $this->payloads()->guard(); $row = $this->owned($job);
+            if ($row === null) { return; }
+            $this->payloads()->read($this->jobsTable, $row);
+            $instance = $job->getJob();
+            if ((int) $row['attempts'] >= $instance->maxAttempts()) {
+                $id = $this->db->insert($this->failedJobsTable, ['queue' => $row['queue'], 'payload' => '', 'exception' => get_class($exception)]);
+                $ref = $this->payloads()->writeNew($this->failedJobsTable, ['id' => $id, 'queue' => $row['queue']], serialize($instance));
+                $this->db->update($this->failedJobsTable, ['payload' => $ref], 'id = :id', ['id' => $id]);
+                $this->payloads()->delete($this->jobsTable, $row);
+                $this->db->delete($this->jobsTable, 'id = :id', ['id' => $row['id']]);
+                return;
+            }
+            $backoff = $instance->backoffSeconds() * (int) $row['attempts'];
+            if ($backoff < 0 || $backoff > 2147483647 - time()) { throw new RuntimeException('Invalid queue retry delay.'); }
+            $this->db->update($this->jobsTable, ['reserved_at' => null, 'reservation_token' => null,
+                'available_at' => time() + $backoff], 'id = :id', ['id' => $row['id']]);
         });
-    }
-
-    private function releaseOwnedJob(QueueJob $job, Throwable $exception): void
-    {
-        $jobInstance = $job->getJob();
-
-        if ($job->getAttempts() >= $jobInstance->maxAttempts()) {
-            // Move to Dead Letter Queue (DLQ)
-            $this->db->transaction(function (Connection $db) use ($job, $exception): void {
-                $db->insert($this->failedJobsTable, [
-                    'queue' => $job->getQueue(),
-                    'payload' => serialize($job->getJob()),
-                    'exception' => get_class($exception), // Never persist exception messages, trace arguments or file paths.
-                ]);
-
-                $db->delete($this->jobsTable, 'id = :id', ['id' => $job->getId()]);
-            });
-            return;
-        }
-
-        // Release with backoff delay
-        $backoff = $jobInstance->backoffSeconds() * $job->getAttempts(); // linear or exponential
-        $availableAt = time() + $backoff;
-
-        $this->db->update(
-            $this->jobsTable,
-            [
-                'reserved_at' => null,
-                'reservation_token' => null,
-                'available_at' => $availableAt,
-            ],
-            'id = :where_id',
-            ['where_id' => $job->getId()]
-        );
     }
 
     public function size(string $queue = 'default'): int

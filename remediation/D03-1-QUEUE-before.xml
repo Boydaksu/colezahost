@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Security\QueueSecretTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Security\QueueSecretTest.php" tests="2" assertions="4" errors="0" failures="2" skipped="0" time="0.007127">
+    <testcase name="testQueuedPayloadIsEncryptedAndRestartsExactly" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\QueueSecretCases.php" line="10" class="Coleza\Tests\Unit\Security\QueueSecretTest" classname="Coleza.Tests.Unit.Security.QueueSecretTest" assertions="1" time="0.005787">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Security\QueueSecretTest::testQueuedPayloadIsEncryptedAndRestartsExactly&#13;
+Failed asserting that '[{"id":1,"queue":"default","payload":"O:35:\"Coleza\\Tests\\Support\\QueueSecretJob\":2:{s:4:\"data\";a:3:{s:8:\"password\";s:24:\"synthetic-queue-password\";s:10:\"unlabelled\";s:23:\"synthetic-opaque-secret\";s:6:\"amount\";d:1;}s:5:\"limit\";i:1;}","attempts":0,"reserved_at":null,"reservation_token":null,"available_at":1792056480,"created_at":"2026-10-15 09:28:00"}]' [ASCII](length: 371) does not contain "synthetic-opaque-secret" [ASCII](length: 23).
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\QueueSecretCases.php:14</failure>
+    </testcase>
+    <testcase name="testDeadLetterPayloadIsEncryptedAndPreservesFailedJob" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\QueueSecretCases.php" line="18" class="Coleza\Tests\Unit\Security\QueueSecretTest" classname="Coleza.Tests.Unit.Security.QueueSecretTest" assertions="3" time="0.001340">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Security\QueueSecretTest::testDeadLetterPayloadIsEncryptedAndPreservesFailedJob&#13;
+Failed asserting that '[{"id":1,"queue":"default","payload":"O:35:\"Coleza\\Tests\\Support\\QueueSecretJob\":2:{s:4:\"data\";a:1:{s:8:\"password\";s:27:\"synthetic-failed-job-secret\";}s:5:\"limit\";i:1;}","exception":"RuntimeException","failed_at":"2026-10-15 09:28:00"}]' [ASCII](length: 249) does not contain "synthetic-failed-job-secret" [ASCII](length: 27).
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\QueueSecretCases.php:23</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

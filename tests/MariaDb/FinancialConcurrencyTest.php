@@ -140,7 +140,7 @@ final class FinancialConcurrencyTest extends MariaDbTestCase
 
     public function testParallelQueueClaimsNeverReturnSameJob(): void
     {
-        $queue = new DatabaseQueue($this->db);
+        $queue = new DatabaseQueue($this->db, new \Coleza\Domain\Vault\QueuePayloadStore($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()));
         for ($i = 0; $i < 32; $i++) { $queue->push(new ConcurrencyTestJob()); }
         $jobs = array_merge(...array_column($this->workers('queue', 0), 'jobs'));
         self::assertCount(32, $jobs);

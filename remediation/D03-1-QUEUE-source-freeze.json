@@ -1,0 +1,26 @@
+{
+  "reference_commit": "2600f4c5d31aed2746fff6eb493846c0d5c51e3c",
+  "files": {
+    "src/Domain/Vault/KeyLifecycleService.php": "a9a6e4af67eb3a0e58b0a55ab4e6264da2e4eef1edb0e5688c5b9f4026faf599",
+    "src/Domain/Vault/QueuePayloadStore.php": "9990fe6e232f0a211f94938c0805ea5e61a7ab9f6a771c6ea7daf703fc069f33",
+    "src/Foundation/Bootstrap/CoreServiceProvider.php": "a63d0d3b1dfe9463e7f9d26da97be6a99cbe46b4e57d312ea6c765b92f706aea",
+    "src/Foundation/Queue/DatabaseQueue.php": "6f46931222784a23385cfe7dd071cfbe257f56483c19ff7f13e7d85e89fb360a",
+    "src/Foundation/Queue/QueuePayloadStoreInterface.php": "c57b39d43eee44feef00d1461a4b5c945a62aa199c67aa8ab4751347bc9f4c1b",
+    "tests/Integration/Performance/PerformanceAndReferenceBudgetRegressionTest.php": "c2402f24aec99ae6b306ef84f27c3e14db672e6cb7088b7a5485154dd5ae2ed1",
+    "tests/Integration/SharedHost/SharedHostCompatibilityMatrixTest.php": "a1aba11b0a36f123064300be3df7b51133d16c57c2829050b87494c43b4da90e",
+    "tests/MariaDb/FinancialConcurrencyTest.php": "d50af84e5f3f9c76f11d3634112d0715410c5314c78a663415fa7638a48f1e58",
+    "tests/MariaDb/QueueSecretTest.php": "8c96c43c173846b7d132f75fc64e8b822929e53bfa9e8d422b4fb2ed923dcbdc",
+    "tests/MariaDb/fixtures/financial-worker.php": "dd4da9d097e1773641c6ef04b28ef6045118738639c1e6de6de5811800c88b28",
+    "tests/Support/KeyLifecycleCases.php": "491647082e269c7ad8675b4b3208336bd32b0a79aaa6b01318016d6b6e6a2606",
+    "tests/Support/QueueSecretCases.php": "64bd42a5acd36c5f09542fd77455ccc235931f95c18f41bff56f21a7df9a1a03",
+    "tests/Support/QueueSecretHookJob.php": "c5daf6f85c9a07ee93010c48f1aacbf67df9e1979e928a0903dc9c6e7c065fad",
+    "tests/Support/QueueSecretJob.php": "15b1e6782c0bb1f1d068ff1c5235df20917f213825ea26be947e05aed3155f77",
+    "tests/Support/SecretAcceptanceCases.php": "afd33f496471610e0909e076970fcceab23bbc0a5abbbea8eaa9c2e11badc212",
+    "tests/Unit/Backup/RestoreWizardAndDisasterRecoveryTest.php": "5f5d80ce12a453580c993fbf9b32610dc0d5c958cc350d148ddb7a0c75157b10",
+    "tests/Unit/Foundation/Queue/DatabaseQueueTest.php": "bc1c68c1af034c751985b8e1954dd84761625463a0b350622f76cf2d5a692f75",
+    "tests/Unit/Foundation/Worker/WorkerSupervisorTest.php": "6e3504e7c38b6b975862137132cb941779e95c3143b62f67ad8b6c41ad1c3c4f",
+    "tests/Unit/Payments/FinancialAtomicityRegressionTest.php": "53674f17fbcf7fd33e31c448084a53178a09ef13ea6d9ce6b032ba5378d1b2a5",
+    "tests/Unit/Security/QueueSecretTest.php": "2532dede18adde939bfa9c6dacd223cac6803ad34bab1e71f391359368dbb6ba",
+    "tools/queue-secret-maintenance.php": "70784675b0b2d8631da3db384cd795687bb3104db573e03ab79b3212f0439964"
+  }
+}

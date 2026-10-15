@@ -373,7 +373,7 @@ final class PerformanceAndReferenceBudgetRegressionTest extends TestCase
      */
     public function testQueueWorkerHonorsRuntimeAndMemoryBudgets(): void
     {
-        $queue = new DatabaseQueue($this->db);
+        $queue = new DatabaseQueue($this->db, new \Coleza\Domain\Vault\QueuePayloadStore($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()));
 
         // Push 10 jobs to queue
         for ($i = 0; $i < 10; $i++) {

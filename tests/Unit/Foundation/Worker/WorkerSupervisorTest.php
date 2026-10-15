@@ -45,7 +45,7 @@ final class WorkerSupervisorTest extends TestCase
     {
         $pdo = new PDO('sqlite::memory:');
         $this->connection = new Connection($pdo, 'sqlite');
-        $this->queue = new DatabaseQueue($this->connection);
+        $this->queue = new DatabaseQueue($this->connection, new \Coleza\Domain\Vault\QueuePayloadStore($this->connection, \Coleza\Tests\Support\SecretFixtureKey::encryptor()));
         SimpleTaskJob::$handledCount = 0;
     }
 

@@ -28,6 +28,47 @@ trait KeyLifecycleCases
         $hook = $hooks->registerEndpoint('https://example.test/key-lifecycle');
         return [new KeyLifecycleService($this->db, $key), $key, $vault, $email, $two, $totp, $server->getId(), $hook->getId(), $hook->getSecret()];
     }
+    public function testQueueJobsAndDeadLettersSurviveRotationAndRejectAllOldWriters(): void
+    {
+        [$lifecycle, $key] = $this->lifecycleFixture();
+        $queue = new \Coleza\Foundation\Queue\DatabaseQueue($this->db, new \Coleza\Domain\Vault\QueuePayloadStore($this->db, $key));
+        $queue->push(new QueueSecretJob(['password' => 'synthetic-rotated-dead-letter']));
+        $failed = $queue->pop(); $failed->getJob()->data['stage'] = 'failed'; $queue->releaseOrFail($failed, new \RuntimeException('failed'));
+        $queue->push(new QueueSecretHookJob(['password' => 'synthetic-rotated-pending', 'amount' => 1.0]));
+        QueueSecretHookJob::$wakes = 0;
+        $lifecycle->initialize(true); self::assertSame(0, QueueSecretHookJob::$wakes);
+        [$file, $newKey] = $this->replacementFile(); $beforeOwners = $this->db->select('SELECT * FROM jobs'); $beforeFailed = $this->db->select('SELECT * FROM failed_jobs');
+        $result = $lifecycle->rotateToFile($file, dirname(__DIR__, 2), true);
+        self::assertSame(0, QueueSecretHookJob::$wakes);
+        self::assertSame($beforeOwners, $this->db->select('SELECT * FROM jobs')); self::assertSame($beforeFailed, $this->db->select('SELECT * FROM failed_jobs'));
+        $verify = new KeyLifecycleService($this->db, $newKey); $beforeAudit = $this->db->select('SELECT * FROM security_audit_logs');
+        self::assertSame($result['counts'], $verify->verify()['counts']); self::assertSame(0, QueueSecretHookJob::$wakes);
+        self::assertSame($beforeAudit, $this->db->select('SELECT * FROM security_audit_logs'));
+        $fresh = new \Coleza\Foundation\Queue\DatabaseQueue($this->db, new \Coleza\Domain\Vault\QueuePayloadStore($this->db, $newKey)); $job = $fresh->pop();
+        self::assertSame('synthetic-rotated-pending', $job->getJob()->data['password']); self::assertSame(1.0, $job->getJob()->data['amount']);
+        foreach ([fn() => $queue->push(new QueueSecretJob()), fn() => $queue->pop(), fn() => $queue->delete($job), fn() => $queue->releaseOrFail($job, new \RuntimeException('failed'))] as $action) {
+            $before = [$this->db->select('SELECT * FROM jobs'), $this->db->select('SELECT * FROM failed_jobs'), $this->db->select('SELECT * FROM vault_secrets'), $this->db->select('SELECT * FROM security_audit_logs')];
+            try { $action(); self::fail('Stale queue key accepted'); } catch (\RuntimeException) {
+                self::assertSame($before, [$this->db->select('SELECT * FROM jobs'), $this->db->select('SELECT * FROM failed_jobs'), $this->db->select('SELECT * FROM vault_secrets'), $this->db->select('SELECT * FROM security_audit_logs')]);
+            }
+        }
+        $row = $this->db->selectOne('SELECT * FROM failed_jobs');
+        $plain = (new \Coleza\Domain\Vault\QueuePayloadStore($this->db, $newKey))->read('failed_jobs', $row);
+        self::assertSame('failed', unserialize($plain)->data['stage']);
+        $fresh->delete($job); self::assertSame(0, $fresh->size()); self::assertSame(1, $fresh->failedSize());
+    }
+    public function testPlaintextQueueOwnerStopsDeepVerificationAndRotationWithoutEffects(): void
+    {
+        [$lifecycle, $key] = $this->lifecycleFixture(); $queue = new \Coleza\Foundation\Queue\DatabaseQueue($this->db, new \Coleza\Domain\Vault\QueuePayloadStore($this->db, $key));
+        $id = $queue->push(new QueueSecretJob(['password' => 'synthetic-inventory-secret'])); $lifecycle->initialize(true);
+        $this->db->statement('UPDATE jobs SET payload = ? WHERE id = ?', [serialize(new QueueSecretJob()), $id]);
+        [$file] = $this->replacementFile(); $before = [$this->db->select('SELECT * FROM vault_secrets'), $this->db->select('SELECT * FROM system_settings'), $this->db->select('SELECT * FROM security_audit_logs')];
+        foreach ([fn() => $lifecycle->verify(), fn() => $lifecycle->rotateToFile($file, dirname(__DIR__, 2), true)] as $action) {
+            try { $action(); self::fail('Plaintext queue inventory accepted'); } catch (\RuntimeException) {
+                self::assertSame($before, [$this->db->select('SELECT * FROM vault_secrets'), $this->db->select('SELECT * FROM system_settings'), $this->db->select('SELECT * FROM security_audit_logs')]);
+            }
+        }
+    }
     private function replacementFile(): array
     {
         $directory = sys_get_temp_dir() . '/coleza-keylife-test-' . bin2hex(random_bytes(12));

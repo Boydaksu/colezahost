@@ -88,7 +88,7 @@ final class FinancialAtomicityRegressionTest extends TestCase
 
     public function testOldQueueWorkerCannotDeleteReassignedJob(): void
     {
-        $queue = new DatabaseQueue($this->db);
+        $queue = new DatabaseQueue($this->db, new \Coleza\Domain\Vault\QueuePayloadStore($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()));
         $queue->push(new AtomicityJob());
         $first = $queue->pop();
         $this->db->statement('UPDATE jobs SET reserved_at = 0');
@@ -102,7 +102,7 @@ final class FinancialAtomicityRegressionTest extends TestCase
 
     public function testOldQueueWorkerCannotFailReassignedJob(): void
     {
-        $queue = new DatabaseQueue($this->db);
+        $queue = new DatabaseQueue($this->db, new \Coleza\Domain\Vault\QueuePayloadStore($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()));
         $queue->push(new AtomicityJob());
         $first = $queue->pop();
         $this->db->statement('UPDATE jobs SET reserved_at = 0');

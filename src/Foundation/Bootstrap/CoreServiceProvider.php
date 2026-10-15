@@ -118,7 +118,7 @@ final class CoreServiceProvider implements ServiceProviderInterface
 
         // Bind DatabaseQueue and QueueInterface
         $container->singleton(\Coleza\Foundation\Queue\DatabaseQueue::class, static function (Container $c): \Coleza\Foundation\Queue\DatabaseQueue {
-            return new \Coleza\Foundation\Queue\DatabaseQueue($c->get(\Coleza\Foundation\Database\Connection::class));
+            return new \Coleza\Foundation\Queue\DatabaseQueue($c->get(\Coleza\Foundation\Database\Connection::class), new \Coleza\Domain\Vault\QueuePayloadStore($c->get(\Coleza\Foundation\Database\Connection::class), $c->get(\Coleza\Domain\Vault\Encryptor::class)));
         });
 
         $container->singleton(\Coleza\Foundation\Queue\QueueInterface::class, static function (Container $c): \Coleza\Foundation\Queue\QueueInterface {

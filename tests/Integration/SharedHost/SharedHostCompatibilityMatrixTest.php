@@ -112,7 +112,7 @@ final class SharedHostCompatibilityMatrixTest extends TestCase
     #[\PHPUnit\Framework\Attributes\PreserveGlobalState(false)]
     public function testQueueOperatesReliablyViaDatabaseQueueWithoutRedis(): void
     {
-        $queue = new DatabaseQueue($this->db);
+        $queue = new DatabaseQueue($this->db, new \Coleza\Domain\Vault\QueuePayloadStore($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()));
         $this->assertSame(0, $queue->size('shared_host_queue'));
 
         // Push 5 jobs

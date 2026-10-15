@@ -12,7 +12,7 @@ $db = new Coleza\Foundation\Database\Connection($pdo);
 $invoices = new Coleza\Domain\Commerce\Invoices\InvoiceService($db);
 $payments = new Coleza\Domain\Commerce\Payments\PaymentService($db, $invoices);
 $credit = new Coleza\Domain\Commerce\Credit\CreditService($db, $invoices, $payments);
-$queue = new Coleza\Foundation\Queue\DatabaseQueue($db);
+$queue = new Coleza\Foundation\Queue\DatabaseQueue($db, new \Coleza\Domain\Vault\QueuePayloadStore($db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()));
 $queue->ensureTables();
 $servers = new Coleza\Domain\Servers\Services\ServerService($db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
 $reservations = new Coleza\Domain\Servers\Capacity\Services\CapacityReservationService($db, $servers);

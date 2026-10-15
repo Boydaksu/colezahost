@@ -134,7 +134,7 @@ final class RestoreWizardAndDisasterRecoveryTest extends TestCase
         $this->assertSame('DISASTER-RECOVERY-KEY-999', file_get_contents($this->tempFreshAppDir . '/app_license.txt'));
     }
 
-    public static function keyRestoreCases(): array { return [['correct'], ['wrong'], ['missing'], ['corrupt'], ['unbound'], ['encrypted-wrong']]; }
+    public static function keyRestoreCases(): array { return [['correct'], ['wrong'], ['missing'], ['corrupt'], ['unbound'], ['encrypted-wrong'], ['queue-corrupt'], ['queue-legacy']]; }
     #[\PHPUnit\Framework\Attributes\DataProvider('keyRestoreCases')]
     public function testBoundRestoreRequiresTheApplicationKeyAndDeepCipherVerification(string $case): void
     {
@@ -142,9 +142,12 @@ final class RestoreWizardAndDisasterRecoveryTest extends TestCase
         (new \Coleza\Domain\Installer\DatabaseSetupService())->initializeApplicationSchema($source);
         $key = \Coleza\Tests\Support\SecretFixtureKey::encryptor();
         (new \Coleza\Domain\Vault\VaultService($source, $key))->setSecret('provider:restore', 'token', 'restore-synthetic-secret');
+        (new \Coleza\Foundation\Queue\DatabaseQueue($source, new \Coleza\Domain\Vault\QueuePayloadStore($source, $key)))->push(new \Coleza\Tests\Support\QueueSecretJob(['password' => 'restore-synthetic-queue-secret']));
         (new \Coleza\Domain\Vault\KeyLifecycleService($source, $key))->initialize(true);
         if ($case === 'corrupt') { $source->statement("UPDATE vault_secrets SET encrypted_value = 'enc:v1:broken'"); }
         if ($case === 'unbound') { $source->statement('DELETE FROM system_settings WHERE setting_key = ?', [\Coleza\Domain\Vault\KeyBinding::SETTING]); }
+        if ($case === 'queue-corrupt') { $source->statement("UPDATE jobs SET queue = 'tampered'"); }
+        if ($case === 'queue-legacy') { $source->statement('UPDATE jobs SET payload = ?', [serialize(new \Coleza\Tests\Support\QueueSecretJob())]); }
         $file = $this->tempWorkDir . '/verified-asset.txt'; file_put_contents($file, 'asset');
         $adapter = new LocalBackupStorageAdapter($this->tempStorageDir);
         $archiveEncrypted = $case === 'encrypted-wrong';
@@ -157,6 +160,7 @@ final class RestoreWizardAndDisasterRecoveryTest extends TestCase
             self::assertSame($case === 'correct', $result->isSuccess(), $result->getErrorMessage() ?? '');
             if ($case === 'correct') {
                 self::assertSame('restore-synthetic-secret', (new \Coleza\Domain\Vault\VaultService($this->freshHostingDb, $key))->getSecret('provider:restore', 'token'));
+                self::assertSame('restore-synthetic-queue-secret', (new \Coleza\Foundation\Queue\DatabaseQueue($this->freshHostingDb, new \Coleza\Domain\Vault\QueuePayloadStore($this->freshHostingDb, $key)))->pop()->getJob()->data['password']);
                 self::assertFileExists($this->tempFreshAppDir . '/verified-asset.txt');
             } else {
                 self::assertFileDoesNotExist($this->tempFreshAppDir . '/verified-asset.txt');

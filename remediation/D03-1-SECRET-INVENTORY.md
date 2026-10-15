@@ -1,6 +1,6 @@
 # D03.1 — güncel sır denetimi dosya matrisi
 
-15.10.2026; ACCEPT paketi, başlangıç referansı 552e8dad1e8160866cf2ff2ce07ceb670072a2f1. Orijinal master Security/Data Constitution esas alınır. Bu tablo güncel durumdur; önceki paketlerin raporları kendi commitlerindeki tarihsel kanıttır. D02 kapalı, D03.1 açık, bağımsız kabul bekliyor. Yerel test sonucu production kabulü değildir.
+15.10.2026; QUEUE sonrası güncel durum; son paket başlangıç referansı 2600f4c5d31aed2746fff6eb493846c0d5c51e3c. Orijinal master Security/Data Constitution esas alınır. Bu tablo güncel durumdur; önceki paketlerin raporları kendi commitlerindeki tarihsel kanıttır. D02 kapalı, D03.1 açık, bağımsız kabul bekliyor. Yerel test sonucu production kabulü değildir.
 
 | Dosya / yol | Güncel durum ve doğrulanan sınır |
 |---|---|
@@ -19,12 +19,12 @@
 | Domain/Privacy/Redaction/{RedactionAuditService,RedactionScanReport}.php | ACCEPT: beş legacy tablo ve gerekli kolonları açık kapsamdır; erişilemeyen/eksik tablo/kolon eksik tarama ve uygun değil sonucudur. Hassas residual değerler rapora kopyalanmaz. Bütün ürünün PII silme uygunluk sertifikası değildir. |
 | ProvisioningPayloadStore; AutomationSecretStore; DomainSecretStore ve sahip repository'ler | Önceki PROVSTORE/AUTOSTORE/DOMSTORE paketleri: fiziksel Vault, owner/column binding, exact round-trip, aggregate transaction, explicit legacy maintenance ve key lifecycle/restore inventory yerel doğrulandı. Bu yollar yeniden açılmadı. |
 | PrivacyTombstoneService/PrivacyTombstone; RedactionAuditService/RedactionAuditRecord; PrivacySigningKey/PrivacyLegacyEvidenceStore/PrivacyKeyBinding/PrivacyIntegrityVerifier | PRIVSIG/PRIVLEG/PRIVBIND: bağımsız kalıcı purpose key, bütün alan HMAC v2, explicit legacy provenance, writer fence, read-only recovery/APP_KEY lifecycle doğrulaması tamamlandı. Eski default-key açığı güncel kaynakta açık değildir. |
-| Foundation/Queue/DatabaseQueue.php jobs.payload ve failed_jobs.payload | **AÇIK Q1:** serialize(job) halen düz metin. Gerekli job girdisini maskeleyerek bozmak çözüm değildir. Scope-bound şifreleme/Vault, eski kayıtlar için açık bakım, exact execution round-trip, atomic reservation/DLQ, rotation/restore ve stale-writer testleri gerekir. |
+| Foundation/Queue/{DatabaseQueue,QueuePayloadStoreInterface}.php; Domain/Vault/QueuePayloadStore.php jobs.payload ve failed_jobs.payload | **Q1 UYGULANDI:** bütün job bytes fiziksel Vault’ta; table/ID/queue/column kapsamlı referans. Aggregate push/pop/ack/retry/DLQ ve audit; explicit trusted legacy bakım, hook çalıştırmadan structural validation, key rotation/restore inventory, stale writer fence ve native CLI/paralel işçi kabulü. Salt metadata schema/size yolları anahtarsız kalır. Kanıt D03-1-QUEUE-SONUC.md. |
 | Domain/Migration/Staging/DatabaseStagingRepository.php raw_payload_json/canonical_payload_json | **AÇIK Q2:** pristine kaynak ve canonical JSON halen düz metin. Şifreli ve source-owner bağlı saklama, canonical güncellemede raw koruma, eski verinin açık bakımı, tanı hatalarının temizlenmesi, parent rollback, rotation/restore ve native kabul gerekir. |
 | Domain/Backup archive/config/files/restore | D05: dump/parser/path/file ve kesintili kurtarma kabulü açık. Anahtar ve privacy integrity gate'in önceki tamamlanması bütün backup güvenliği değildir. |
 
 ## D03.1 kalan somut iş
 
-Q1 ve Q2, daha önce açık bırakılan comprehensive acceptance başlığında dosya incelemesiyle doğrulanan iki saklama açığıdır. Önceki üç operational carrier paketini tekrar yapmak değildir. Bu iki yol uygulandıktan sonra bütün envanterde açık D03.1 satırı kalmadığı ve key/legacy/recovery kabulünün yeni sahipleri içerdiği kontrol edilmelidir; bu son kontrol yeni bir işlev geliştirme fazı değildir.
+Yalnız **Q2 migration staging raw/canonical JSON** açık kalır. Q1 kuyruk paketi uygulandı; önceki üç operational carrier ve privacy key işleri yeniden açılmadı. Q2 uygulandıktan sonra envanterde açık D03.1 satırı kalmadığı ve key/legacy/recovery kabulünün yeni sahipleri içerdiği son kez kontrol edilmelidir; bu yeni bir geliştirme fazı değildir.
 
-Diğer fazlara ait işler bu listeyi büyütmez: D03.2–D03.4 actor/üyelik/step-up/RBAC; D05 tam recovery ve retention/durability; D06 gerçek provider lifecycle; D08 HTTP/composition; D09 bağımsız kabul. ACCEPT ham kanıtı ve test kapsamı D03-1-ACCEPT-SONUC.md'dedir.
+Diğer fazlara ait işler bu listeyi büyütmez: D03.2–D03.4 actor/üyelik/step-up/RBAC; D05 tam recovery ve retention/durability; D06 gerçek provider lifecycle; D08 HTTP/composition; D09 bağımsız kabul. Diagnostic ACCEPT kanıtı D03-1-ACCEPT-SONUC.md, Q1 kanıtı D03-1-QUEUE-SONUC.md'dir. Önceki raporların açık iş listeleri kendi commitlerindeki tarihsel durumu gösterir.

@@ -113,7 +113,7 @@ trait SecretAcceptanceCases
 
     public function testQueueFailureStoresExceptionTypeWithoutTraceOrMessage(): void
     {
-        $queue = new \Coleza\Foundation\Queue\DatabaseQueue($this->db);
+        $queue = new \Coleza\Foundation\Queue\DatabaseQueue($this->db, new \Coleza\Domain\Vault\QueuePayloadStore($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor()));
         $queue->push(new SecretAcceptanceFailingJob());
         $worker = new \Coleza\Foundation\Queue\QueueWorker($queue);
         self::assertTrue($worker->runNext());

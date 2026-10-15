@@ -1,0 +1,23 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+[41;37mF[0m[41;37mF[0m                                                                  2 / 2 (100%)
+
+Time: 00:00.012, Memory: 20.00 MB
+
+There were 2 failures:
+
+1) Coleza\Tests\Unit\Security\QueueSecretTest::testQueuedPayloadIsEncryptedAndRestartsExactly
+Failed asserting that '[{"id":1,"queue":"default","payload":"O:35:\"Coleza\\Tests\\Support\\QueueSecretJob\":2:{s:4:\"data\";a:3:{s:8:\"password\";s:24:\"synthetic-queue-password\";s:10:\"unlabelled\";s:23:\"synthetic-opaque-secret\";s:6:\"amount\";d:1;}s:5:\"limit\";i:1;}","attempts":0,"reserved_at":null,"reservation_token":null,"available_at":1792056480,"created_at":"2026-10-15 09:28:00"}]' [ASCII](length: 371) does not contain "synthetic-opaque-secret" [ASCII](length: 23).
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\QueueSecretCases.php:14
+
+2) Coleza\Tests\Unit\Security\QueueSecretTest::testDeadLetterPayloadIsEncryptedAndPreservesFailedJob
+Failed asserting that '[{"id":1,"queue":"default","payload":"O:35:\"Coleza\\Tests\\Support\\QueueSecretJob\":2:{s:4:\"data\";a:1:{s:8:\"password\";s:27:\"synthetic-failed-job-secret\";}s:5:\"limit\";i:1;}","exception":"RuntimeException","failed_at":"2026-10-15 09:28:00"}]' [ASCII](length: 249) does not contain "synthetic-failed-job-secret" [ASCII](length: 27).
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\QueueSecretCases.php:23
+
+[37;41mFAILURES![0m
+[37;41mTests: 2[0m[37;41m, Assertions: 4[0m[37;41m, Failures: 2[0m[37;41m.[0m
