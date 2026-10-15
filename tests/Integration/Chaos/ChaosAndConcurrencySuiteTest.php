@@ -152,10 +152,12 @@ final class ChaosAndConcurrencySuiteTest extends TestCase
                     'product_name' => 'Gold Cloud',
                     'billing_cycle' => 'monthly',
                     'currency_code' => 'TRY',
-                    'price_minor' => 25000,
+                    'unit_price_minor' => 25000,
                 ],
             ]
         );
+
+        self::assertSame(25000,$order->getTotalMinor());
 
         $invoice = $this->invoiceService->createInvoice(
             [

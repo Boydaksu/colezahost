@@ -163,7 +163,7 @@ final class PricingService
             'SELECT * FROM %s WHERE target_type = ? AND target_id = ? AND currency_code = ? AND cycle = ?',
             $this->pricePointsTable
         );
-        $row = $this->db->selectOne($sql, [$targetType, $targetId, strtoupper($currencyCode), $cycle]);
+        $row = $this->db->selectOne($sql . $this->db->forUpdate(), [$targetType, $targetId, strtoupper($currencyCode), $cycle]);
 
         return $row ? $this->hydratePricePoint($row) : null;
     }
@@ -206,18 +206,21 @@ final class PricingService
         array $selectedOptionSubIds = [],
         array $selectedAddonIds = [],
         ?int $customerId = null,
-        ?int $serviceId = null
+        ?int $serviceId = null,
+        ?int $userId = null,
+        bool $strictSelection = false
     ): PriceQuote {
         $currency = strtoupper($currencyCode);
 
         // 1. Base Product Price
         $basePricePoint = $this->findPricePoint(PricePoint::TARGET_PRODUCT, $productId, $currency, $cycle);
         if ($basePricePoint === null || !$basePricePoint->isActive()) {
+            if($strictSelection){throw new ValidationException(['pricing'=>['Active product price required for this currency and cycle.']]);}
             throw new RuntimeException("Pricing not configured for product {$productId} in {$currency} / {$cycle}.");
         }
 
         $standardBase = $basePricePoint->getPriceMinor();
-        $basePrice = $this->resolvePrice(PricePoint::TARGET_PRODUCT, $productId, $standardBase, $currency, $cycle, $customerId, $serviceId);
+        $basePrice = $this->resolvePrice(PricePoint::TARGET_PRODUCT, $productId, $standardBase, $currency, $cycle, $customerId, $serviceId, $userId);
         $setupFee = $basePricePoint->getSetupFeeMinor();
 
         $items = [];
@@ -239,11 +242,14 @@ final class PricingService
                 $optPrice = $this->findPricePoint(PricePoint::TARGET_OPTION, $subId, $currency, PriceCycle::ONE_TIME);
             }
 
+            if ($strictSelection && ($optPrice === null || !$optPrice->isActive())) { throw new ValidationException(['pricing'=>['Every selected item requires an active price.']]); }
             if ($optPrice !== null && $optPrice->isActive()) {
                 $optStandard = $optPrice->getPriceMinor();
-                $optFinal = $this->resolvePrice(PricePoint::TARGET_OPTION, $subId, $optStandard, $currency, $optPrice->getCycle(), $customerId, $serviceId);
+                $optFinal = $this->resolvePrice(PricePoint::TARGET_OPTION, $subId, $optStandard, $currency, $optPrice->getCycle(), $customerId, $serviceId, $userId);
 
-                $optionsTotal += $optFinal;
+                $oneTime=$optPrice->getCycle()===PriceCycle::ONE_TIME&&$cycle!==PriceCycle::ONE_TIME;
+                $optionsTotal += $oneTime?0:$optFinal;
+                $optionsSetup += $oneTime?$optFinal:0;
                 $optionsSetup += $optPrice->getSetupFeeMinor();
                 $items[] = [
                     'name' => "OptionSub #{$subId}",
@@ -264,11 +270,14 @@ final class PricingService
                 $addonPrice = $this->findPricePoint(PricePoint::TARGET_ADDON, $addonId, $currency, PriceCycle::ONE_TIME);
             }
 
+            if ($strictSelection && ($addonPrice === null || !$addonPrice->isActive())) { throw new ValidationException(['pricing'=>['Every selected item requires an active price.']]); }
             if ($addonPrice !== null && $addonPrice->isActive()) {
                 $addonStandard = $addonPrice->getPriceMinor();
-                $addonFinal = $this->resolvePrice(PricePoint::TARGET_ADDON, $addonId, $addonStandard, $currency, $addonPrice->getCycle(), $customerId, $serviceId);
+                $addonFinal = $this->resolvePrice(PricePoint::TARGET_ADDON, $addonId, $addonStandard, $currency, $addonPrice->getCycle(), $customerId, $serviceId, $userId);
 
-                $addonsTotal += $addonFinal;
+                $oneTime=$addonPrice->getCycle()===PriceCycle::ONE_TIME&&$cycle!==PriceCycle::ONE_TIME;
+                $addonsTotal += $oneTime?0:$addonFinal;
+                $addonsSetup += $oneTime?$addonFinal:0;
                 $addonsSetup += $addonPrice->getSetupFeeMinor();
                 $items[] = [
                     'name' => "Addon #{$addonId}",
@@ -303,7 +312,7 @@ final class PricingService
     public function createPriceOverride(array $data): PriceOverride
     {
         $scope = (string)($data['scope'] ?? PriceOverride::SCOPE_CUSTOMER);
-        if ($scope !== PriceOverride::SCOPE_CUSTOMER && $scope !== PriceOverride::SCOPE_SERVICE) {
+        if (!in_array($scope, [PriceOverride::SCOPE_CUSTOMER,PriceOverride::SCOPE_SERVICE,PriceOverride::SCOPE_USER],true)) {
             throw new ValidationException(['scope' => ['Invalid override scope.']], 'Invalid override scope.');
         }
 
@@ -383,7 +392,8 @@ final class PricingService
         string $currency,
         string $cycle,
         ?int $customerId,
-        ?int $serviceId
+        ?int $serviceId,
+        ?int $userId = null
     ): int {
         // 1. Service override (most specific)
         if ($serviceId !== null) {
@@ -401,6 +411,7 @@ final class PricingService
             }
         }
 
+        if ($userId !== null) { $override=$this->findMatchingOverride(PriceOverride::SCOPE_USER,$userId,$targetType,$targetId,$currency,$cycle);if($override!==null){return $override->apply($standardPriceMinor);} }
         return $standardPriceMinor;
     }
 
@@ -420,7 +431,7 @@ final class PricingService
             $this->overridesTable
         );
 
-        $row = $this->db->selectOne($sql, [$scope, $scopeId, $targetType, $targetId, $currency, $cycle]);
+        $row = $this->db->selectOne($sql . $this->db->forUpdate(), [$scope, $scopeId, $targetType, $targetId, $currency, $cycle]);
         return $row ? $this->hydratePriceOverride($row) : null;
     }
 

@@ -2,20 +2,20 @@
   "reference_commit": "6dc47ea83bb51c09c993e6cef3af3577e5955f51",
   "reference_report": "review/INCELEME.md",
   "plan": "remediation/PLAN.md",
-  "phase": "D03",
-  "step": "D03.4",
+  "phase": "D04",
+  "step": "D04.1",
   "status": "IN_PROGRESS",
-  "step_status": "D03_IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED_D04_READY",
+  "step_status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
   "independent_acceptance": "PENDING",
   "production_ready": false,
-  "next_step": "D04",
+  "next_step": "D04.2",
   "next_phase": "D04",
   "tests": {
-    "main_total": 1829,
-    "main_assertions": 12324,
-    "mariadb_total": 228,
-    "mariadb_assertions": 1616,
-    "mariadb_scope": "Exact 11 affected native classes: command authorization/impersonation, authentication, organization, identity/session, support, financial concurrency, documents, legacy schema, SQL/install; full native not rerun",
+    "main_total": 1847,
+    "main_assertions": 12389,
+    "mariadb_total": 75,
+    "mariadb_assertions": 630,
+    "mariadb_scope": "Exact 6 affected classes: commerce integrity, command authorization, financial concurrency, SQL portability, installation and documents; full native not rerun",
     "full_mariadb_current_source": false,
     "last_full_mariadb": {
       "reference_commit": "0d2e3e08d4c121a146f298f77b4bc6b008b6f66e",
@@ -23,8 +23,8 @@
       "assertions": 5399,
       "evidence": "remediation/D02-CLOSEOUT-summary.json"
     },
-    "total": 2057,
-    "assertions": 13940,
+    "total": 1922,
+    "assertions": 13019,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -42,9 +42,13 @@
     "F30": "PARTIAL_PRODUCTION_SCHEMA_ANALYTICS_GOLDEN_AND_EXISTING_ADMIN_PERFORMANCE_BUDGET_VERIFIED_REAL_PROVIDER_END_TO_END_ACCEPTANCE_OPEN",
     "F21": "PARTIAL_SUPPORT_SCHEMA_AND_CURRENT_ACTOR_ORGANIZATION_DEPARTMENT_COMMAND_SCOPE_IMPLEMENTED_LOCAL_VERIFIED_FULL_STORAGE_RECOVERY_AND_D07_D08_PRODUCT_FLOW_ACCEPTANCE_OPEN",
     "F08": "EXPLICIT_RUNTIME_KEY_PRIVATE_FILE_INSTALLER_BINDING_ATOMIC_ROTATION_OLD_WRITER_FENCING_AND_RESTORE_KEY_GATE_LOCAL_VERIFIED_PENDING_INDEPENDENT_REVIEW",
-    "F09": "INVENTORIED_SECRET_STORAGE_DIAGNOSTIC_EXPORT_AND_LEGACY_PATHS_IMPLEMENTED_LOCAL_VERIFIED_PENDING_INDEPENDENT_REVIEW"
+    "F09": "INVENTORIED_SECRET_STORAGE_DIAGNOSTIC_EXPORT_AND_LEGACY_PATHS_IMPLEMENTED_LOCAL_VERIFIED_PENDING_INDEPENDENT_REVIEW",
+    "F07": "CUSTOMER_SERVER_PRICE_BOUNDARY_AND_ORDER_INVOICE_MONETARY_INTEGRITY_LOCAL_VERIFIED_END_TO_END_COMMERCE_ACCEPTANCE_REMAINS_D04_3_D08_D09"
   },
-  "remaining_steps": [],
+  "remaining_steps": [
+    "D04.2",
+    "D04.3"
+  ],
   "remaining_phases": [
     "D04",
     "D05",
@@ -82,6 +86,18 @@
       "independent_acceptance": "PENDING",
       "remaining_steps": [],
       "next_phase": "D04"
+    },
+    "D04": {
+      "status": "IN_PROGRESS",
+      "plan": "remediation/D04-PLAN.md",
+      "completed_steps": [
+        "D04.1"
+      ],
+      "remaining_steps": [
+        "D04.2",
+        "D04.3"
+      ],
+      "independent_acceptance": "PENDING"
     }
   },
   "d03_plan": "remediation/D03-PLAN.md",
@@ -164,6 +180,13 @@
       "evidence": "remediation/D03-4-SONUC.md",
       "independent_acceptance": "PENDING",
       "scope": "Current actor/resource/system-vs-organization permission checks in commerce commands, scoped proof for refunds/role assignment-revocation, authenticated support context and department/internal-note boundaries, impersonation proof/session rotation/effective customer/audit aggregate; HTTP composition remains D08 and provider lifecycle D06"
+    },
+    "D04.1": {
+      "status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
+      "date": "2026-10-15",
+      "evidence": "remediation/D04-1-SONUC.md",
+      "independent_acceptance": "PENDING",
+      "scope": "Server catalog pricing, valid active selections, scoped user vs organization overrides/exemptions, explicit privileged manual price, bounded integer totals, inclusive/exclusive tax and exact frozen order-to-invoice allocation, audit/savepoint rollback, current MariaDB reads and concurrent one-order invoice generation"
     }
   },
   "d03_staging_storage_evidence": "remediation/D03-1-STAGING-SONUC.md",
@@ -171,5 +194,7 @@
   "d03_organization_evidence": "remediation/D03-2-SONUC.md",
   "d03_authentication_evidence": "remediation/D03-3-SONUC.md",
   "d03_command_authorization_evidence": "remediation/D03-4-SONUC.md",
-  "d03_closure": "remediation/D03-CLOSURE.md"
+  "d03_closure": "remediation/D03-CLOSURE.md",
+  "d04_plan": "remediation/D04-PLAN.md",
+  "d04_pricing_evidence": "remediation/D04-1-SONUC.md"
 }

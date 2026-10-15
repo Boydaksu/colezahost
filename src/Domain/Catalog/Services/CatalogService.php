@@ -29,6 +29,33 @@ final class CatalogService
     ) {
     }
 
+    public function lockPurchaseProducts(array $ids): void
+    {
+        sort($ids);foreach($ids as$id){$this->db->selectOne('SELECT id FROM products WHERE id=?'.$this->db->forUpdate(),[$id]);}
+    }
+    /** Validate current catalog state under the purchase transaction, without runtime schema creation. */
+    public function purchaseSelection(int $productId,array $subIds,array $addonIds,int $quantity): array
+    {
+        $lock=$this->db->forUpdate();
+        $row=$this->db->selectOne('SELECT * FROM products WHERE id=?'.$lock,[$productId]);
+        $group=$row===null?null:$this->db->selectOne('SELECT * FROM product_groups WHERE id=?'.$lock,[$row['group_id']]);
+        if($row===null||(int)$row['is_active']!==1||$group===null||(int)$group['is_active']!==1){throw new ValidationException(['product'=>['Active product and group required.']]);}
+        $availability=$this->db->selectOne('SELECT * FROM product_availability WHERE product_id=?'.$lock,[$productId]);
+        if($availability!==null){
+            $now=date('Y-m-d H:i:s');
+            if($availability['status']!=='available'||($availability['available_from']!==null&&$availability['available_from']>$now)||($availability['available_until']!==null&&$availability['available_until']<$now)||((int)$availability['stock_tracking_enabled']===1&&(int)$availability['allow_backorders']!==1&&(int)$availability['stock_quantity']<$quantity)||($availability['max_per_customer']!==null&&(int)$availability['max_per_customer']<$quantity)){throw new ValidationException(['product'=>['Product is unavailable for the requested quantity.']]);}
+        }
+        $parents=$this->db->select('SELECT * FROM configurable_options WHERE is_active=1 AND (product_id=? OR group_id=?) ORDER BY id'.$lock,[$productId,$row['group_id']]);
+        $allowed=array_column($parents,null,'id');$selected=[];
+        foreach($subIds as$id){$sub=$this->db->selectOne('SELECT * FROM configurable_option_subs WHERE id=?'.$lock,[$id]);if($sub===null||(int)$sub['is_active']!==1||!isset($allowed[$sub['option_id']])||isset($selected[$sub['option_id']])){throw new ValidationException(['options'=>['Select one active value per applicable option.']]);}$selected[$sub['option_id']]=$id;}
+        foreach($parents as$parent){if((int)$parent['is_required']===1&&!isset($selected[$parent['id']])){throw new ValidationException(['options'=>['Required option is missing.']]);}}
+        foreach($addonIds as$id){$addon=$this->db->selectOne('SELECT * FROM product_addons WHERE id=?'.$lock,[$id]);if($addon===null||(int)$addon['is_active']!==1){throw new ValidationException(['addons'=>['Active addon required.']]);}
+            $applicable=json_decode((string)($addon['applicable_products_json']??'[]'),true,flags:JSON_THROW_ON_ERROR);
+            if(!is_array($applicable)||($applicable!==[]&&!in_array($productId,$applicable,true))){throw new ValidationException(['addons'=>['Addon does not apply to the selected product.']]);}
+        }
+        return ['name'=>(string)$row['name'],'availability'=>$availability];
+    }
+
     public function ensureTables(): void
     {
         $driver = $this->db->getDriverName();

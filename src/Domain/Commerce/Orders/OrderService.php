@@ -10,6 +10,8 @@ use Coleza\Domain\Tax\Services\TaxService;
 use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Exceptions\ValidationException;
 use RuntimeException;
+use Coleza\Domain\Commerce\CommerceAmounts as Amounts;
+use Coleza\Foundation\Database\PdoSchema;
 
 final class OrderService
 {
@@ -86,6 +88,14 @@ final class OrderService
      */
     public function createOrder(array $orderData, array $itemsData): Order
     {
+        $requirements=['orders'=>['id','order_number','user_id','organization_id','status','currency_code','subtotal_minor','tax_total_minor','total_minor'],'order_items'=>['id','order_id','product_id','product_name','cycle','quantity','unit_price_minor','unit_setup_fee_minor','total_minor','metadata_json']];
+        if(!PdoSchema::useInstalledSchema($this->db,$requirements)){throw new \LogicException('Install order schema before creation.');}
+        if($this->db->getDriverName()==='mysql'){foreach(array_keys($requirements)as$table){$row=$this->db->selectOne('SELECT ENGINE FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[$table]);if(strcasecmp((string)$row['ENGINE'],'InnoDB')!==0){throw new \LogicException('Transactional order storage required.');}}}
+        return $this->db->transaction(fn():Order=>$this->createOrderLocked($orderData,$itemsData));
+    }
+    /** Trusted internal snapshot/manual primitive; public customer commands use the catalog purchase boundary. */
+    private function createOrderLocked(array $orderData,array $itemsData): Order
+    {
         $userId = (int)($orderData['user_id'] ?? 0);
         if ($userId <= 0) {
             throw new ValidationException(['user_id' => ['Valid user_id required.']], 'Invalid user.');
@@ -111,7 +121,7 @@ final class OrderService
             $productId = (int)($itemData['product_id'] ?? 0);
             $productName = trim((string)($itemData['product_name'] ?? "Product #{$productId}"));
             $cycle = (string)($itemData['cycle'] ?? 'monthly');
-            $quantity = max(1, (int)($itemData['quantity'] ?? 1));
+            $quantity = Amounts::integer($itemData['quantity'] ?? 1,'quantity',1);
             $optionSubIds = isset($itemData['option_sub_ids']) && is_array($itemData['option_sub_ids']) ? $itemData['option_sub_ids'] : [];
             $addonIds = isset($itemData['addon_ids']) && is_array($itemData['addon_ids']) ? $itemData['addon_ids'] : [];
             $metadata = isset($itemData['metadata']) && is_array($itemData['metadata']) ? $itemData['metadata'] : [];
@@ -121,9 +131,9 @@ final class OrderService
 
             if (isset($itemData['unit_price_minor'])) {
                 // Direct custom/override price passed (e.g. manual admin order)
-                $unitPrice = (int)$itemData['unit_price_minor'];
-                $unitSetup = (int)($itemData['unit_setup_fee_minor'] ?? 0);
-                $itemTotal = ($unitPrice + $unitSetup) * $quantity;
+                $unitPrice = Amounts::integer($itemData['unit_price_minor'],'unit_price_minor');
+                $unitSetup = Amounts::integer($itemData['unit_setup_fee_minor'] ?? 0,'unit_setup_fee_minor');
+                $itemTotal = Amounts::multiply(Amounts::add($unitPrice,$unitSetup),$quantity);
             } elseif ($this->pricingService !== null) {
                 // Authoritative quote from pricing engine
                 $quote = $this->pricingService->calculateQuote(
@@ -137,14 +147,12 @@ final class OrderService
 
                 $unitPrice = $quote->getRecurringTotalMinor();
                 $unitSetup = $quote->getSetupFeeMinor();
-                $itemTotal = ($unitPrice + $unitSetup) * $quantity;
+                $itemTotal = Amounts::multiply(Amounts::add($unitPrice,$unitSetup),$quantity);
             } else {
-                $unitPrice = 0;
-                $unitSetup = 0;
-                $itemTotal = 0;
+                throw new ValidationException(['pricing'=>['Explicit trusted price or configured pricing service required.']]);
             }
 
-            $orderSubtotal += $itemTotal;
+            $orderSubtotal = Amounts::add($orderSubtotal,$itemTotal);
             $computedItems[] = [
                 'product_id' => $productId,
                 'product_name' => $productName,
@@ -167,12 +175,16 @@ final class OrderService
                 amountMinor: $orderSubtotal,
                 taxClassId: $taxClass->getId() ?? 1,
                 countryCode: $countryCode,
-                customerId: $organizationId ?? $userId
+                customerId: array_key_exists('tax_customer_id',$orderData) ? $orderData['tax_customer_id'] : ($organizationId ?? $userId)
             );
             $orderTax = $taxResult->getTaxTotalMinor();
+            $netParts=Amounts::allocate($taxResult->getSubtotalMinor(),array_column($computedItems,'total_minor'));
+            $taxParts=Amounts::allocate($orderTax,array_column($computedItems,'total_minor'));
+            foreach($computedItems as $i=>&$computed){$computed['metadata']['commerce_tax_snapshot']=$taxResult->toArray()+['line_net_minor'=>$netParts[$i],'line_tax_minor'=>$taxParts[$i]];$computed['total_minor']=$netParts[$i];}unset($computed);
+            $orderSubtotal=$taxResult->getSubtotalMinor();
         }
 
-        $orderTotal = $orderSubtotal + $orderTax;
+        $orderTotal = Amounts::add($orderSubtotal,$orderTax);
 
         // Persist Order
         $sql = sprintf(

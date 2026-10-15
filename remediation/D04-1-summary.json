@@ -1,0 +1,30 @@
+{
+  "phase": "D04",
+  "step": "D04.1",
+  "status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
+  "reference_commit": "07aa6a7dd8b5d5d0f41b5e116d79a0e22c176d67",
+  "before": {
+    "tests": 5,
+    "failures": 5,
+    "errors": 0
+  },
+  "main": {
+    "tests": 1847,
+    "assertions": 12389
+  },
+  "mariadb": {
+    "tests": 75,
+    "assertions": 630
+  },
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "native_classes": 6,
+  "full_mariadb_current_source": false,
+  "remaining_steps": [
+    "D04.2",
+    "D04.3"
+  ],
+  "production_ready": false,
+  "independent_acceptance": "PENDING"
+}

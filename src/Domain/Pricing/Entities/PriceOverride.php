@@ -7,6 +7,7 @@ namespace Coleza\Domain\Pricing\Entities;
 final class PriceOverride
 {
     public const SCOPE_CUSTOMER = 'customer'; // user_id or org_id
+    public const SCOPE_USER = 'user'; // Explicit personal-user scope; never collides with an organization/client ID.
     public const SCOPE_SERVICE = 'service';   // service_id
 
     public const TYPE_FIXED = 'fixed';       // Replaces standard price with explicit minor unit amount

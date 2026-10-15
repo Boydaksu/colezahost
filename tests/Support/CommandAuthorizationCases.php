@@ -130,7 +130,7 @@ trait CommandAuthorizationCases
     }
     public function testFinanceMutationAuditFailureLeavesNoPartialRows(): void
     {
-        [, , , ,$invoices]=$this->commandFixture();$app=new \Coleza\Application\Commerce\Invoices\InvoiceApplicationService($invoices);
+        [, $rbac, , ,$invoices]=$this->commandFixture();$role=$rbac->findOrCreateRole('billing');$rbac->grantPermission($role,'invoices.manage');$rbac->assignRole(2,'billing');$app=new \Coleza\Application\Commerce\Invoices\InvoiceApplicationService($invoices);
         $this->db->statement($this->db->getDriverName()==='mysql'?"CREATE TRIGGER reject_command_audit BEFORE INSERT ON security_audit_logs FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'audit failure'":"CREATE TRIGGER reject_command_audit BEFORE INSERT ON security_audit_logs BEGIN SELECT RAISE(ABORT, 'audit failure'); END");
         $before=$this->db->select('SELECT * FROM invoices');
         try{$app->createInvoice(new \Coleza\Application\Commerce\Invoices\CreateInvoiceCommand(2,items:[['description'=>'New','unit_amount_minor'=>100]]),2);self::fail('Audit failure swallowed');}catch(\PDOException){self::assertSame($before,$this->db->select('SELECT * FROM invoices'));}

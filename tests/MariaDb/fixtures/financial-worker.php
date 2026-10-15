@@ -47,6 +47,10 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'commerceOrderInvoice':
+            $orders=new Coleza\Domain\Commerce\Orders\OrderService($db);
+            $result['invoice_id']=$invoices->createInvoiceFromOrder($orders->findOrderById($id))->getId();
+            break;
         case 'commandImpersonate':
             $interactive = new Coleza\Application\Identity\AuthenticationService($db, Coleza\Tests\Support\SecretFixtureKey::encryptor());
             $impersonation = new Coleza\Domain\Identity\Impersonation\ImpersonationService(new Coleza\Domain\Identity\Session\DatabaseSessionHandler($db), new Coleza\Domain\Identity\Rbac\RbacService($db), new Coleza\Domain\Identity\Audit\AuditLogger($db), $interactive);

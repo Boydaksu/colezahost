@@ -1,0 +1,171 @@
+<?xml version="1.0"?>
+<testSuite xmlns="https://xml.phpunit.de/testSuite">
+ <tests>
+  <testClass name="Coleza\Tests\MariaDb\CommerceIntegrityTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\CommerceIntegrityTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testFourWorkersCreateOnlyOneInvoiceForOrder" name="testFourWorkersCreateOnlyOneInvoiceForOrder"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testOldSnapshotUsesCurrentPriceAndTaxWithoutDdlAndParentRollbackRemovesOrder" name="testOldSnapshotUsesCurrentPriceAndTaxWithoutDdlAndParentRollbackRemovesOrder"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testOldSnapshotCannotPurchaseDeactivatedProduct" name="testOldSnapshotCannotPurchaseDeactivatedProduct"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testCustomerCannotSupplyOrderPrice" name="testCustomerCannotSupplyOrderPrice"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testAbsentPricingCannotSilentlyProduceFreeOrder" name="testAbsentPricingCannotSilentlyProduceFreeOrder"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testNegativeInvoiceAmountIsRejected" name="testNegativeInvoiceAmountIsRejected"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testInconsistentInvoiceLineTotalIsRejected" name="testInconsistentInvoiceLineTotalIsRejected"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testOrderInvoiceTaxRoundingPreservesWholeAmount" name="testOrderInvoiceTaxRoundingPreservesWholeAmount"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testCatalogPriceAndTaxAreFrozenUntilInvoice" name="testCatalogPriceAndTaxAreFrozenUntilInvoice"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testEveryClientMoneyAliasAndSnapshotInjectionIsRejected" name="testEveryClientMoneyAliasAndSnapshotInjectionIsRejected"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testInvalidQuantitiesAndOverflowLeaveNoOrder" name="testInvalidQuantitiesAndOverflowLeaveNoOrder"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testInactiveUnknownAndUnavailableProductsAreRejected" name="testInactiveUnknownAndUnavailableProductsAreRejected"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testRequiredOptionApplicabilityAndMissingSelectionPrice" name="testRequiredOptionApplicabilityAndMissingSelectionPrice"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testOneTimeAddonIsChargedOnceAndCannotTargetAnotherProduct" name="testOneTimeAddonIsChargedOnceAndCannotTargetAnotherProduct"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testOrganizationPriceAndTaxExemptionCannotLeakToSameNumberedPersonalUser" name="testOrganizationPriceAndTaxExemptionCannotLeakToSameNumberedPersonalUser"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testCustomerCannotCreateManualInvoiceOrManualPriceOrder" name="testCustomerCannotCreateManualInvoiceOrManualPriceOrder"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testExplicitStaffOverrideRequiresReasonAndActualPermission" name="testExplicitStaffOverrideRequiresReasonAndActualPermission"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testInclusiveAndMixedTaxDoesNotDoubleChargeOrLoseRemainder" name="testInclusiveAndMixedTaxDoesNotDoubleChargeOrLoseRemainder"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testCustomerOrderInvoiceUsesPersistedSnapshotAndChecksOwnership" name="testCustomerOrderInvoiceUsesPersistedSnapshotAndChecksOwnership"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testChildFailureRollsBackOrderAndPreservesRawAndManagedParent" name="testChildFailureRollsBackOrderAndPreservesRawAndManagedParent"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testPurchaseAuditFailureRollsBackAllRows" name="testPurchaseAuditFailureRollsBackAllRows"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\CommandAuthorizationTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\CommandAuthorizationTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testFourProcessesConsumeOneImpersonationProofAndRotateOnce" name="testFourProcessesConsumeOneImpersonationProofAndRotateOnce"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testOldSnapshotCannotReuseRevokedFinancialPermission" name="testOldSnapshotCannotReuseRevokedFinancialPermission"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testInstalledRoleMutationAndAuthorizationExecuteNoDdlInCaller" name="testInstalledRoleMutationAndAuthorizationExecuteNoDdlInCaller"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testMyisamAuthorizationMappingRefusesBeforeCommerceWrite" name="testMyisamAuthorizationMappingRefusesBeforeCommerceWrite"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testAnonymousInvoiceReadIsDenied" name="testAnonymousInvoiceReadIsDenied"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testCallerAdminFlagDoesNotAuthorizeForeignInvoice" name="testCallerAdminFlagDoesNotAuthorizeForeignInvoice"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testOrganizationWildcardNeverGrantsSystemFinancialPermission" name="testOrganizationWildcardNeverGrantsSystemFinancialPermission"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testPermissionWildcardRequiresNamespaceBoundary" name="testPermissionWildcardRequiresNamespaceBoundary"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testImpersonationCannotReassignForeignSession" name="testImpersonationCannotReassignForeignSession"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testCurrentOrganizationMembershipControlsOwnAndColleagueInvoices" name="testCurrentOrganizationMembershipControlsOwnAndColleagueInvoices"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testImpersonatedCustomerNeverInheritsAdministrativeInvoicePermission" name="testImpersonatedCustomerNeverInheritsAdministrativeInvoicePermission"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testNestedAndAdministratorTargetsAreDenied" name="testNestedAndAdministratorTargetsAreDenied"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testAuditFailureRollsBackImpersonationStartAndStopAndPreservesProof" name="testAuditFailureRollsBackImpersonationStartAndStopAndPreservesProof"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testImpersonationRespectsRawAndManagedParentRollback" name="testImpersonationRespectsRawAndManagedParentRollback"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testRevokedImpersonationPermissionAndExpiredTargetAreRechecked" name="testRevokedImpersonationPermissionAndExpiredTargetAreRechecked"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testSupportUsesCurrentDepartmentAndHidesInternalNotesFromCustomer" name="testSupportUsesCurrentDepartmentAndHidesInternalNotesFromCustomer"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testCustomerCannotWriteInternalNoteOrBypassCsrf" name="testCustomerCannotWriteInternalNoteOrBypassCsrf"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testFinanceMutationAuditFailureLeavesNoPartialRows" name="testFinanceMutationAuditFailureLeavesNoPartialRows"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testRoleAdministrationRequiresScopeBoundStepUpAndCurrentPermission" name="testRoleAdministrationRequiresScopeBoundStepUpAndCurrentPermission"/>
+   <testMethod id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testSupportReplyAuditFailurePreservesRawAndManagedCaller" name="testSupportReplyAuditFailurePreservesRawAndManagedCaller"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\FinancialConcurrencyTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\FinancialConcurrencyTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\FinancialConcurrencyTest::testConcurrentSettlementCreatesOnlyOneAllocation" name="testConcurrentSettlementCreatesOnlyOneAllocation"/>
+   <testMethod id="Coleza\Tests\MariaDb\FinancialConcurrencyTest::testConcurrentInvoicePaymentsCannotOverpay" name="testConcurrentInvoicePaymentsCannotOverpay"/>
+   <testMethod id="Coleza\Tests\MariaDb\FinancialConcurrencyTest::testConcurrentCreditDebitCannotOverspend" name="testConcurrentCreditDebitCannotOverspend"/>
+   <testMethod id="Coleza\Tests\MariaDb\FinancialConcurrencyTest::testConcurrentCreditApplicationConservesInvoiceAndCredit" name="testConcurrentCreditApplicationConservesInvoiceAndCredit"/>
+   <testMethod id="Coleza\Tests\MariaDb\FinancialConcurrencyTest::testConcurrentRefundCannotExceedPayment" name="testConcurrentRefundCannotExceedPayment"/>
+   <testMethod id="Coleza\Tests\MariaDb\FinancialConcurrencyTest::testConcurrentGatewayRefundMakesOnlyOneProviderCall" name="testConcurrentGatewayRefundMakesOnlyOneProviderCall"/>
+   <testMethod id="Coleza\Tests\MariaDb\FinancialConcurrencyTest::testParallelCallbacksShareOneEventAndOneAllocation" name="testParallelCallbacksShareOneEventAndOneAllocation"/>
+   <testMethod id="Coleza\Tests\MariaDb\FinancialConcurrencyTest::testParallelQueueClaimsNeverReturnSameJob" name="testParallelQueueClaimsNeverReturnSameJob"/>
+   <testMethod id="Coleza\Tests\MariaDb\FinancialConcurrencyTest::testTokenLookupUsesAUniqueMariaDbIndex" name="testTokenLookupUsesAUniqueMariaDbIndex"/>
+   <testMethod id="Coleza\Tests\MariaDb\FinancialConcurrencyTest::testSchemaSetupCannotImplicitlyCommitAnApplicationTransaction" name="testSchemaSetupCannotImplicitlyCommitAnApplicationTransaction"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\SqlPortabilityCloseoutTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest::testDomainPricingUpdatesOnlyMatchingOperationYearAndCurrency" name="testDomainPricingUpdatesOnlyMatchingOperationYearAndCurrency"/>
+   <testMethod id="Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest::testDomainContactsRepeatWithoutReplacingOtherContacts" name="testDomainContactsRepeatWithoutReplacingOtherContacts"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\InstallationAcceptanceTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\InstallationAcceptanceTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testConcurrentDocumentsFromFourOrganizationsAreUnique#0" name="testConcurrentDocumentsFromFourOrganizationsAreUnique"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testConcurrentDocumentsFromFourOrganizationsAreUnique#1" name="testConcurrentDocumentsFromFourOrganizationsAreUnique"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testDifferentOrganizationsCanCreateDocumentsWithUnambiguousNumbers" name="testDifferentOrganizationsCanCreateDocumentsWithUnambiguousNumbers"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testDoctorDoesNotCreateTablesOrCommitAnApplicationTransaction" name="testDoctorDoesNotCreateTablesOrCommitAnApplicationTransaction"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testDoctorReadsInstalledCronAndActualQueue" name="testDoctorReadsInstalledCronAndActualQueue"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testApplicationSchemaInstallsMigrationsAndRepeatsWithoutDataLoss" name="testApplicationSchemaInstallsMigrationsAndRepeatsWithoutDataLoss"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testLegacyDocumentAndCounterSurviveGlobalNumberMigration" name="testLegacyDocumentAndCounterSurviveGlobalNumberMigration"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testUnsupportedPrefixIsRejectedBeforeAnyTableIsCreated" name="testUnsupportedPrefixIsRejectedBeforeAnyTableIsCreated"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testLegacyDoctorCronHistoryIsPreservedWithoutInventingSuccess" name="testLegacyDoctorCronHistoryIsPreservedWithoutInventingSuccess"/>
+   <testMethod id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testFailedCronIsNotHealthyEvenWhenRecent" name="testFailedCronIsNotHealthyEvenWhenRecent"/>
+  </testClass>
+  <testClass name="Coleza\Tests\MariaDb\DocumentPersistenceTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\MariaDb\DocumentPersistenceTest.php">
+   <testMethod id="Coleza\Tests\MariaDb\DocumentPersistenceTest::testQuotePersistsItemsAndTurkishContentAcrossConnections" name="testQuotePersistsItemsAndTurkishContentAcrossConnections"/>
+   <testMethod id="Coleza\Tests\MariaDb\DocumentPersistenceTest::testProformaPersistsItemsAndAmounts" name="testProformaPersistsItemsAndAmounts"/>
+   <testMethod id="Coleza\Tests\MariaDb\DocumentPersistenceTest::testAnnouncementPersistsAndPublishes" name="testAnnouncementPersistsAndPublishes"/>
+   <testMethod id="Coleza\Tests\MariaDb\DocumentPersistenceTest::testParallelDocumentNumbersAreUniqueAndPreserveLegacyCounter" name="testParallelDocumentNumbersAreUniqueAndPreserveLegacyCounter"/>
+   <testMethod id="Coleza\Tests\MariaDb\DocumentPersistenceTest::testDocumentMigrationPreservesExistingRowsAndCanBeRepeated" name="testDocumentMigrationPreservesExistingRowsAndCanBeRepeated"/>
+   <testMethod id="Coleza\Tests\MariaDb\DocumentPersistenceTest::testDocumentMigrationCompletesAPartialSchema" name="testDocumentMigrationCompletesAPartialSchema"/>
+   <testMethod id="Coleza\Tests\MariaDb\DocumentPersistenceTest::testItemWriteFailureDoesNotLeaveAParentDocument#0" name="testItemWriteFailureDoesNotLeaveAParentDocument"/>
+   <testMethod id="Coleza\Tests\MariaDb\DocumentPersistenceTest::testItemWriteFailureDoesNotLeaveAParentDocument#1" name="testItemWriteFailureDoesNotLeaveAParentDocument"/>
+   <testMethod id="Coleza\Tests\MariaDb\DocumentPersistenceTest::testConstructorCannotCommitAnExistingTransaction#0" name="testConstructorCannotCommitAnExistingTransaction"/>
+   <testMethod id="Coleza\Tests\MariaDb\DocumentPersistenceTest::testConstructorCannotCommitAnExistingTransaction#1" name="testConstructorCannotCommitAnExistingTransaction"/>
+   <testMethod id="Coleza\Tests\MariaDb\DocumentPersistenceTest::testConstructorCannotCommitAnExistingTransaction#2" name="testConstructorCannotCommitAnExistingTransaction"/>
+   <testMethod id="Coleza\Tests\MariaDb\DocumentPersistenceTest::testConstructorCannotCommitAnExistingTransaction#3" name="testConstructorCannotCommitAnExistingTransaction"/>
+  </testClass>
+ </tests>
+ <groups>
+  <group name="default">
+   <test id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testFourWorkersCreateOnlyOneInvoiceForOrder"/>
+   <test id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testOldSnapshotUsesCurrentPriceAndTaxWithoutDdlAndParentRollbackRemovesOrder"/>
+   <test id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testOldSnapshotCannotPurchaseDeactivatedProduct"/>
+   <test id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testCustomerCannotSupplyOrderPrice"/>
+   <test id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testAbsentPricingCannotSilentlyProduceFreeOrder"/>
+   <test id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testNegativeInvoiceAmountIsRejected"/>
+   <test id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testInconsistentInvoiceLineTotalIsRejected"/>
+   <test id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testOrderInvoiceTaxRoundingPreservesWholeAmount"/>
+   <test id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testCatalogPriceAndTaxAreFrozenUntilInvoice"/>
+   <test id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testEveryClientMoneyAliasAndSnapshotInjectionIsRejected"/>
+   <test id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testInvalidQuantitiesAndOverflowLeaveNoOrder"/>
+   <test id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testInactiveUnknownAndUnavailableProductsAreRejected"/>
+   <test id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testRequiredOptionApplicabilityAndMissingSelectionPrice"/>
+   <test id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testOneTimeAddonIsChargedOnceAndCannotTargetAnotherProduct"/>
+   <test id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testOrganizationPriceAndTaxExemptionCannotLeakToSameNumberedPersonalUser"/>
+   <test id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testCustomerCannotCreateManualInvoiceOrManualPriceOrder"/>
+   <test id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testExplicitStaffOverrideRequiresReasonAndActualPermission"/>
+   <test id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testInclusiveAndMixedTaxDoesNotDoubleChargeOrLoseRemainder"/>
+   <test id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testCustomerOrderInvoiceUsesPersistedSnapshotAndChecksOwnership"/>
+   <test id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testChildFailureRollsBackOrderAndPreservesRawAndManagedParent"/>
+   <test id="Coleza\Tests\MariaDb\CommerceIntegrityTest::testPurchaseAuditFailureRollsBackAllRows"/>
+   <test id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testFourProcessesConsumeOneImpersonationProofAndRotateOnce"/>
+   <test id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testOldSnapshotCannotReuseRevokedFinancialPermission"/>
+   <test id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testInstalledRoleMutationAndAuthorizationExecuteNoDdlInCaller"/>
+   <test id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testMyisamAuthorizationMappingRefusesBeforeCommerceWrite"/>
+   <test id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testAnonymousInvoiceReadIsDenied"/>
+   <test id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testCallerAdminFlagDoesNotAuthorizeForeignInvoice"/>
+   <test id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testOrganizationWildcardNeverGrantsSystemFinancialPermission"/>
+   <test id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testPermissionWildcardRequiresNamespaceBoundary"/>
+   <test id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testImpersonationCannotReassignForeignSession"/>
+   <test id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testCurrentOrganizationMembershipControlsOwnAndColleagueInvoices"/>
+   <test id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testImpersonatedCustomerNeverInheritsAdministrativeInvoicePermission"/>
+   <test id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testNestedAndAdministratorTargetsAreDenied"/>
+   <test id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testAuditFailureRollsBackImpersonationStartAndStopAndPreservesProof"/>
+   <test id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testImpersonationRespectsRawAndManagedParentRollback"/>
+   <test id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testRevokedImpersonationPermissionAndExpiredTargetAreRechecked"/>
+   <test id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testSupportUsesCurrentDepartmentAndHidesInternalNotesFromCustomer"/>
+   <test id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testCustomerCannotWriteInternalNoteOrBypassCsrf"/>
+   <test id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testFinanceMutationAuditFailureLeavesNoPartialRows"/>
+   <test id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testRoleAdministrationRequiresScopeBoundStepUpAndCurrentPermission"/>
+   <test id="Coleza\Tests\MariaDb\CommandAuthorizationTest::testSupportReplyAuditFailurePreservesRawAndManagedCaller"/>
+   <test id="Coleza\Tests\MariaDb\FinancialConcurrencyTest::testConcurrentSettlementCreatesOnlyOneAllocation"/>
+   <test id="Coleza\Tests\MariaDb\FinancialConcurrencyTest::testConcurrentInvoicePaymentsCannotOverpay"/>
+   <test id="Coleza\Tests\MariaDb\FinancialConcurrencyTest::testConcurrentCreditDebitCannotOverspend"/>
+   <test id="Coleza\Tests\MariaDb\FinancialConcurrencyTest::testConcurrentCreditApplicationConservesInvoiceAndCredit"/>
+   <test id="Coleza\Tests\MariaDb\FinancialConcurrencyTest::testConcurrentRefundCannotExceedPayment"/>
+   <test id="Coleza\Tests\MariaDb\FinancialConcurrencyTest::testConcurrentGatewayRefundMakesOnlyOneProviderCall"/>
+   <test id="Coleza\Tests\MariaDb\FinancialConcurrencyTest::testParallelCallbacksShareOneEventAndOneAllocation"/>
+   <test id="Coleza\Tests\MariaDb\FinancialConcurrencyTest::testParallelQueueClaimsNeverReturnSameJob"/>
+   <test id="Coleza\Tests\MariaDb\FinancialConcurrencyTest::testTokenLookupUsesAUniqueMariaDbIndex"/>
+   <test id="Coleza\Tests\MariaDb\FinancialConcurrencyTest::testSchemaSetupCannotImplicitlyCommitAnApplicationTransaction"/>
+   <test id="Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest::testDomainPricingUpdatesOnlyMatchingOperationYearAndCurrency"/>
+   <test id="Coleza\Tests\MariaDb\SqlPortabilityCloseoutTest::testDomainContactsRepeatWithoutReplacingOtherContacts"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testConcurrentDocumentsFromFourOrganizationsAreUnique#0"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testConcurrentDocumentsFromFourOrganizationsAreUnique#1"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testDifferentOrganizationsCanCreateDocumentsWithUnambiguousNumbers"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testDoctorDoesNotCreateTablesOrCommitAnApplicationTransaction"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testDoctorReadsInstalledCronAndActualQueue"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testApplicationSchemaInstallsMigrationsAndRepeatsWithoutDataLoss"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testLegacyDocumentAndCounterSurviveGlobalNumberMigration"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testUnsupportedPrefixIsRejectedBeforeAnyTableIsCreated"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testLegacyDoctorCronHistoryIsPreservedWithoutInventingSuccess"/>
+   <test id="Coleza\Tests\MariaDb\InstallationAcceptanceTest::testFailedCronIsNotHealthyEvenWhenRecent"/>
+   <test id="Coleza\Tests\MariaDb\DocumentPersistenceTest::testQuotePersistsItemsAndTurkishContentAcrossConnections"/>
+   <test id="Coleza\Tests\MariaDb\DocumentPersistenceTest::testProformaPersistsItemsAndAmounts"/>
+   <test id="Coleza\Tests\MariaDb\DocumentPersistenceTest::testAnnouncementPersistsAndPublishes"/>
+   <test id="Coleza\Tests\MariaDb\DocumentPersistenceTest::testParallelDocumentNumbersAreUniqueAndPreserveLegacyCounter"/>
+   <test id="Coleza\Tests\MariaDb\DocumentPersistenceTest::testDocumentMigrationPreservesExistingRowsAndCanBeRepeated"/>
+   <test id="Coleza\Tests\MariaDb\DocumentPersistenceTest::testDocumentMigrationCompletesAPartialSchema"/>
+   <test id="Coleza\Tests\MariaDb\DocumentPersistenceTest::testItemWriteFailureDoesNotLeaveAParentDocument#0"/>
+   <test id="Coleza\Tests\MariaDb\DocumentPersistenceTest::testItemWriteFailureDoesNotLeaveAParentDocument#1"/>
+   <test id="Coleza\Tests\MariaDb\DocumentPersistenceTest::testConstructorCannotCommitAnExistingTransaction#0"/>
+   <test id="Coleza\Tests\MariaDb\DocumentPersistenceTest::testConstructorCannotCommitAnExistingTransaction#1"/>
+   <test id="Coleza\Tests\MariaDb\DocumentPersistenceTest::testConstructorCannotCommitAnExistingTransaction#2"/>
+   <test id="Coleza\Tests\MariaDb\DocumentPersistenceTest::testConstructorCannotCommitAnExistingTransaction#3"/>
+  </group>
+ </groups>
+</testSuite>

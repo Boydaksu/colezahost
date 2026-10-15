@@ -24,6 +24,8 @@ final class InvoiceApplicationService
     {
         return $this->authorization->run($authUserId, function () use ($command, $authUserId, $isAdmin): Invoice {
             $isAdmin = $this->authorization->hasSystemPermission($authUserId, 'invoices.manage');
+            $this->authorization->requireSystem($authUserId,'invoices.manage');
+            if($command->orderId!==null){throw new ValidationException(['order'=>['Order invoices use the frozen-order command.']]);}
             $this->authorization->resource($authUserId, $command->userId, $command->organizationId, 'invoices.manage', 'org.billing.manage');
 
             // Invoice generation is an admin/system privileged action or client self-checkout action
@@ -45,6 +47,16 @@ final class InvoiceApplicationService
             return $this->invoiceService->createInvoice($invoiceData, $command->items);
 
         }, 'command.createInvoice');
+    }
+
+    public function createForOrder(int $orderId,int $actor): Invoice
+    {
+        return $this->authorization->run($actor,function()use($orderId,$actor):Invoice{
+            $orders=new \Coleza\Domain\Commerce\Orders\OrderService($this->invoiceService->connection());$order=$orders->findOrderById($orderId);
+            if($order===null){throw new ResourceNotFoundException('Order not found.');}
+            $this->authorization->resource($actor,$order->getUserId(),$order->getOrganizationId(),'invoices.manage','org.billing.manage');
+            return $this->invoiceService->createInvoiceFromOrder($order);
+        },'command.order_invoice_created');
     }
 
     public function getInvoice(int $invoiceId, ?int $authUserId = null, bool $isAdmin = false): Invoice

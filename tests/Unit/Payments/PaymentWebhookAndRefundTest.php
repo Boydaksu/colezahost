@@ -69,10 +69,12 @@ final class PaymentWebhookAndRefundTest extends TestCase
                     'product_name' => 'Starter Hosting',
                     'billing_cycle' => 'monthly',
                     'currency_code' => 'TRY',
-                    'price_minor' => 10000,
+                    'unit_price_minor' => 10000,
                 ],
             ]
         );
+
+        self::assertSame(10000,$order->getTotalMinor());
 
         // 2. Create invoice linked to order
         $invoice = $this->invoiceService->createInvoice(

@@ -140,9 +140,14 @@ final class TaxService
         return $row ? $this->hydrateTaxClass($row) : null;
     }
 
+    public function requireDefaultTaxClass(): TaxClass
+    {
+        $rows=$this->db->select('SELECT * FROM tax_classes WHERE is_default=1'.$this->db->forUpdate());
+        if(count($rows)!==1){throw new ValidationException(['tax'=>['Exactly one configured default tax class required.']]);}return $this->hydrateTaxClass($rows[0]);
+    }
     public function getDefaultTaxClass(): TaxClass
     {
-        $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE is_default = 1', $this->classesTable));
+        $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE is_default = 1', $this->classesTable) . $this->db->forUpdate());
         if ($row === null) {
             return $this->createTaxClass([
                 'code' => TaxClass::DEFAULT_STANDARD,
@@ -203,7 +208,7 @@ final class TaxService
      */
     public function findZoneForLocation(string $countryCode, ?string $stateCode = null): ?TaxZone
     {
-        $rows = $this->db->select(sprintf('SELECT * FROM %s ORDER BY is_global ASC, id ASC', $this->zonesTable));
+        $rows = $this->db->select(sprintf('SELECT * FROM %s ORDER BY is_global ASC, id ASC', $this->zonesTable) . $this->db->forUpdate());
         $globalZone = null;
 
         foreach ($rows as $row) {
@@ -293,7 +298,7 @@ final class TaxService
      */
     public function getCustomerExemption(int $customerId): array
     {
-        $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE customer_id = ?', $this->exemptionsTable), [$customerId]);
+        $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE customer_id = ?', $this->exemptionsTable) . $this->db->forUpdate(), [$customerId]);
         if ($row === null) {
             return ['is_exempt' => false, 'tax_number' => null, 'reason' => null];
         }
@@ -325,6 +330,7 @@ final class TaxService
         ?string $stateCode = null,
         ?int $customerId = null
     ): TaxCalculationResult {
+        if($amountMinor<0){throw new ValidationException(['amount'=>['Negative taxable amounts are invalid.']]);}
         // 1. Check customer exemption
         if ($customerId !== null) {
             $exemption = $this->getCustomerExemption($customerId);
@@ -352,46 +358,23 @@ final class TaxService
             'SELECT * FROM %s WHERE tax_class_id = ? AND tax_zone_id = ? AND is_active = 1 ORDER BY priority ASC, id ASC',
             $this->ratesTable
         );
-        $rows = $this->db->select($sql, [$taxClassId, $zone->getId()]);
+        $rows = $this->db->select($sql . $this->db->forUpdate(), [$taxClassId, $zone->getId()]);
 
         if (empty($rows)) {
             return new TaxCalculationResult($amountMinor, 0, $amountMinor, false, null, []);
         }
 
-        $taxLines = [];
-        $totalTax = 0;
-        $finalSubtotal = $amountMinor;
-        $finalTotal = $amountMinor;
-
-        foreach ($rows as $row) {
-            $taxRate = $this->hydrateTaxRate($row);
-            $breakdown = $taxRate->compute($amountMinor);
-
-            if ($taxRate->isInclusive()) {
-                $finalSubtotal = $breakdown['net_minor'];
-                $finalTotal = $breakdown['gross_minor'];
-            } else {
-                $finalSubtotal = $breakdown['net_minor'];
-                $finalTotal = $breakdown['gross_minor'];
-            }
-
-            $totalTax += $breakdown['tax_minor'];
-            $taxLines[] = [
-                'name' => $taxRate->getName(),
-                'rate_percent' => $taxRate->getRatePercent(),
-                'tax_minor' => $breakdown['tax_minor'],
-                'is_inclusive' => $taxRate->isInclusive(),
-            ];
+        $rates=[];$inclusiveRate=0.0;
+        foreach($rows as$row){$rate=$this->hydrateTaxRate($row);$percent=$rate->getRatePercent();if(!is_finite($percent)||$percent<0){throw new ValidationException(['tax'=>['Invalid stored tax rate.']]);}$rates[]=$rate;if($rate->isInclusive()){$inclusiveRate+=$percent;}}
+        $net=$inclusiveRate>0?(int)round($amountMinor/(1+$inclusiveRate/100)):$amountMinor;
+        $inclusiveTax=$amountMinor-$net;$taxLines=[];$totalTax=0;$inclusiveIndexes=[];$remainders=[];$distributed=0;
+        foreach($rates as$rate){$percent=$rate->getRatePercent();$tax=$rate->isInclusive()?($inclusiveRate>0?(int)floor($inclusiveTax*$percent/$inclusiveRate):0):(int)round($net*$percent/100);
+            $i=count($taxLines);if($rate->isInclusive()){$inclusiveIndexes[]=$i;$remainders[$i]=$inclusiveRate>0?$inclusiveTax*$percent/$inclusiveRate-$tax:0;$distributed+=$tax;}
+            $taxLines[]=['name'=>$rate->getName(),'rate_percent'=>$percent,'tax_minor'=>$tax,'is_inclusive'=>$rate->isInclusive()];$totalTax+=$tax;
         }
-
-        return new TaxCalculationResult(
-            subtotalMinor: $finalSubtotal,
-            taxTotalMinor: $totalTax,
-            totalMinor: $finalTotal,
-            isExempt: false,
-            exemptionReason: null,
-            taxLines: $taxLines
-        );
+        arsort($remainders,SORT_NUMERIC);foreach(array_keys($remainders)as$i){if($distributed===$inclusiveTax){break;}$taxLines[$i]['tax_minor']++;$distributed++;$totalTax++;}
+        $total=$net+$totalTax;if($total>2147483647){throw new ValidationException(['amount'=>['Taxed total exceeds monetary storage range.']]);}
+        return new TaxCalculationResult($net,$totalTax,$total,false,null,$taxLines);
     }
 
     private function hydrateTaxClass(array $row): TaxClass

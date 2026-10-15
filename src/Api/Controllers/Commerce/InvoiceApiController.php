@@ -53,7 +53,10 @@ final class InvoiceApiController
             metadata: $metadata
         );
 
-        $invoice = $this->invoiceAppService->createInvoice($command, $userId, $isAdmin);
+        if($orderId!==null){
+            if($items!==[]||$orgId!==null||(array_key_exists('currency_code',$requestData)||array_key_exists('user_id',$requestData))||$dueDate!==null){throw new ValidationException(['invoice'=>['Order invoices use the saved order without amount or owner overrides.']]);}
+            $invoice=$this->invoiceAppService->createForOrder($orderId,$userId);
+        }else{$invoice=$this->invoiceAppService->createInvoice($command,$userId,$isAdmin);}
 
         return ApiResponse::success([
             'invoice_id' => $invoice->getId(),

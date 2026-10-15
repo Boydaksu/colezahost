@@ -63,6 +63,12 @@ final class CommerceApiAndApplicationLayerTest extends TestCase
             $this->db->insert('users',['id'=>$id,'email'=>"user{$id}@example.test",'name'=>'Fixture','password_hash'=>password_hash('Original123!',PASSWORD_BCRYPT,['cost'=>4]),'is_active'=>1]);
         }
         $interactive = new \Coleza\Application\Identity\AuthenticationService($this->db,\Coleza\Tests\Support\SecretFixtureKey::encryptor());
+        $catalog = new \Coleza\Domain\Catalog\Services\CatalogService($this->db);$catalog->ensureTables();
+        $group=$catalog->createProductGroup(['name'=>'Hosting','slug'=>'hosting']);
+        $pricing=new \Coleza\Domain\Pricing\Services\PricingService($this->db,null,$catalog);$pricing->ensureTables();
+        foreach([12000,20000] as $i=>$price){$product=$catalog->createProduct(['group_id'=>$group->getId(),'name'=>'Product '.($i+1),'slug'=>'product-'.($i+1)]);$pricing->setPricePoint(['target_id'=>$product->getId(),'currency_code'=>'TRY','cycle'=>'monthly','price_minor'=>$price]);}
+        $tax=new \Coleza\Domain\Tax\Services\TaxService($this->db);$tax->ensureTables();$tax->createTaxClass(['code'=>'standard','name'=>'Standard','is_default'=>true]);
+        $rbac=new \Coleza\Domain\Identity\Rbac\RbacService($this->db);$rbac->ensureTables();$role=$rbac->findOrCreateRole('billing');$rbac->grantPermission($role,'invoices.manage');$rbac->assignRole(1,'billing');
         // Application Services
         $orderApp = new OrderApplicationService($this->orderService);
         $invoiceApp = new InvoiceApplicationService($this->invoiceService);
@@ -100,12 +106,8 @@ final class CommerceApiAndApplicationLayerTest extends TestCase
             'currency_code' => 'TRY',
             'items' => [
                 [
-                    'product_type' => 'shared_hosting',
                     'product_id' => 1,
-                    'product_name' => 'Web Pro',
                     'billing_cycle' => 'monthly',
-                    'currency_code' => 'TRY',
-                    'price_minor' => 12000,
                 ],
             ],
         ], $clientAuth);
@@ -141,12 +143,8 @@ final class CommerceApiAndApplicationLayerTest extends TestCase
         $createRes = $this->orderController->create([
             'items' => [
                 [
-                    'product_type' => 'vps',
                     'product_id' => 2,
-                    'product_name' => 'Cloud Server',
                     'billing_cycle' => 'monthly',
-                    'currency_code' => 'TRY',
-                    'price_minor' => 20000,
                 ],
             ],
         ], $aliceAuth);
@@ -164,11 +162,11 @@ final class CommerceApiAndApplicationLayerTest extends TestCase
 
         // 1. Create invoice
         $createRes = $this->invoiceController->create([
-            'currency_code' => 'TRY',
+            'currency_code' => 'TRY', 'user_id' => 20,
             'items' => [
                 ['description' => 'Managed Backup', 'unit_amount_minor' => 4500, 'tax_rate_percent' => 0.0],
             ],
-        ], $clientAuth);
+        ], ['user_id'=>1,'is_admin'=>true]);
 
         $this->assertSame('success', $createRes['status']);
         $this->assertSame(201, $createRes['code']);
@@ -194,14 +192,7 @@ final class CommerceApiAndApplicationLayerTest extends TestCase
     {
         $clientAuth = ['user_id' => 30, 'is_admin' => false];
 
-        // Create an invoice
-        $invRes = $this->invoiceController->create([
-            'currency_code' => 'TRY',
-            'items' => [
-                ['description' => 'Domain Registration', 'unit_amount_minor' => 3000, 'tax_rate_percent' => 0.0],
-            ],
-        ], $clientAuth);
-        $invoiceId = (int) $invRes['data']['invoice_id'];
+        $invoiceId = (int)$this->invoiceService->createInvoice(['user_id'=>30,'currency_code'=>'TRY'],[['description'=>'Domain Registration','unit_amount_minor'=>3000]])->getId();
 
         // 1. Initiate Checkout via Gateway
         $checkoutRes = $this->paymentController->checkout([

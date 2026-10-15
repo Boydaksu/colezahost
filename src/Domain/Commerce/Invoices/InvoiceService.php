@@ -11,6 +11,7 @@ use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Database\PdoSchema;
 use Coleza\Foundation\Exceptions\ValidationException;
 use RuntimeException;
+use Coleza\Domain\Commerce\CommerceAmounts as Amounts;
 
 final class InvoiceService
 {
@@ -106,6 +107,10 @@ final class InvoiceService
      */
     public function createInvoice(array $invoiceData, array $itemsData): Invoice
     {
+        return $this->createInvoiceChecked($invoiceData,$itemsData,false);
+    }
+    private function createInvoiceChecked(array $invoiceData,array $itemsData,bool $allocated): Invoice
+    {
         $userId = (int)($invoiceData['user_id'] ?? 0);
         if ($userId <= 0) {
             throw new ValidationException(['user_id' => 'Valid user_id is required.'], 'Invalid invoice user');
@@ -146,14 +151,14 @@ final class InvoiceService
 
         foreach ($itemsData as $itemData) {
             $desc = trim((string)($itemData['description'] ?? 'Item'));
-            $qty = max(1, (int)($itemData['quantity'] ?? 1));
-            $unitAmount = (int)($itemData['unit_amount_minor'] ?? 0);
-            $subtotal = isset($itemData['subtotal_minor']) ? (int)$itemData['subtotal_minor'] : ($qty * $unitAmount);
-            $taxAmount = max(0, (int)($itemData['tax_amount_minor'] ?? 0));
-            $total = isset($itemData['total_minor']) ? (int)$itemData['total_minor'] : ($subtotal + $taxAmount);
-
-            $subtotalMinor += $subtotal;
-            $taxTotalMinor += $taxAmount;
+            $qty = Amounts::integer($itemData['quantity'] ?? 1,'quantity',1);
+            $unitAmount = Amounts::integer($itemData['unit_amount_minor'] ?? 0,'unit_amount_minor');
+            $basis=Amounts::multiply($unitAmount,$qty);
+            $subtotal=Amounts::integer($itemData['subtotal_minor']??$basis,'subtotal_minor');
+            $taxAmount=Amounts::integer($itemData['tax_amount_minor']??0,'tax_amount_minor');
+            $total=Amounts::add($subtotal,$taxAmount);
+            if((!$allocated&&$subtotal!==$basis)||(array_key_exists('total_minor',$itemData)&&Amounts::integer($itemData['total_minor'],'total_minor')!==$total)){throw new ValidationException(['items'=>['Invoice line amounts do not reconcile.']]);}
+            $subtotalMinor=Amounts::add($subtotalMinor,$subtotal);$taxTotalMinor=Amounts::add($taxTotalMinor,$taxAmount);
 
             $processedItems[] = [
                 'description' => $desc,
@@ -169,7 +174,7 @@ final class InvoiceService
             ];
         }
 
-        $totalMinor = $subtotalMinor + $taxTotalMinor;
+        $totalMinor = Amounts::add($subtotalMinor,$taxTotalMinor);
 
         // 2. Snapshot taxes
         $taxSnapshot = [
@@ -297,27 +302,27 @@ final class InvoiceService
      */
     public function createInvoiceFromOrder(Order $order, ?string $dueDate = null): Invoice
     {
-        $itemsData = [];
-        foreach ($order->getItems() as $oItem) {
-            $itemSubtotal = $oItem->getTotalMinor();
-            $itemTax = 0;
-            if ($order->getSubtotalMinor() > 0 && $order->getTaxTotalMinor() > 0) {
-                $itemTax = (int)round(($itemSubtotal / $order->getSubtotalMinor()) * $order->getTaxTotalMinor());
-            }
+        $this->assertCreationStorage();
+        return $this->db->transaction(function()use($order,$dueDate):Invoice{
+            $stored=(new \Coleza\Domain\Commerce\Orders\OrderService($this->db))->findOrderById($order->getId());
+            if($stored===null){throw new ValidationException(['order'=>['Persisted order required for invoicing.']]);}
+            $existing=$this->db->select('SELECT id FROM invoices WHERE order_id=?'.$this->db->forUpdate(),[$stored->getId()]);
+            if(count($existing)>1){throw new ValidationException(['order'=>['Multiple legacy order invoices require explicit reconciliation.']]);}
+            if($existing!==[]){$invoice=$this->findInvoiceById((int)$existing[0]['id']);if($invoice->getUserId()!==$stored->getUserId()||$invoice->getOrganizationId()!==$stored->getOrganizationId()||$invoice->getCurrencyCode()!==$stored->getCurrencyCode()||$invoice->getTotalMinor()!==$stored->getTotalMinor()){throw new ValidationException(['order'=>['Order invoice binding is inconsistent.']]);}return $invoice;}
+            return $this->invoiceFromFrozenOrder($stored,$dueDate);
+        });
+    }
+    private function invoiceFromFrozenOrder(Order $order,?string $dueDate): Invoice
+    {
+        $itemsData=[];$weights=array_map(static fn($item):int=>$item->getTotalMinor(),$order->getItems());
+        if(array_sum($weights)!==$order->getSubtotalMinor()||Amounts::add($order->getSubtotalMinor(),$order->getTaxTotalMinor())!==$order->getTotalMinor()){throw new ValidationException(['order'=>['Order snapshot does not reconcile.']]);}
+        $snapshots=array_map(static fn($item)=>$item->getMetadata()['commerce_tax_snapshot']['line_tax_minor']??null,$order->getItems());
+        $validSnapshots=count(array_filter($snapshots,'is_int'))===count($snapshots)&&array_sum($snapshots)===$order->getTaxTotalMinor();
+        if(array_sum($weights)===0){$weights=array_map(static fn($item):int=>Amounts::multiply(Amounts::add($item->getUnitPriceMinor(),$item->getUnitSetupFeeMinor()),$item->getQuantity()),$order->getItems());}
+        $taxes=$validSnapshots?$snapshots:Amounts::allocate($order->getTaxTotalMinor(),$weights);
+        foreach($order->getItems()as$i=>$item){$net=$item->getTotalMinor();$tax=$taxes[$i];$itemsData[]=['description'=>$item->getProductName(),'quantity'=>$item->getQuantity(),'unit_amount_minor'=>Amounts::add($item->getUnitPriceMinor(),$item->getUnitSetupFeeMinor()),'subtotal_minor'=>$net,'tax_amount_minor'=>$tax,'total_minor'=>Amounts::add($net,$tax),'order_item_id'=>$item->getId(),'metadata'=>$item->getMetadata(),'tax_snapshot'=>['source'=>'frozen_order','order_id'=>$order->getId(),'order_item_id'=>$item->getId(),'allocated_tax_minor'=>$tax]];}
 
-            $itemsData[] = [
-                'description' => $oItem->getProductName(),
-                'quantity' => $oItem->getQuantity(),
-                'unit_amount_minor' => $oItem->getUnitPriceMinor() + $oItem->getUnitSetupFeeMinor(),
-                'subtotal_minor' => $itemSubtotal,
-                'tax_amount_minor' => $itemTax,
-                'total_minor' => $itemSubtotal + $itemTax,
-                'order_item_id' => $oItem->getId(),
-                'metadata' => $oItem->getMetadata(),
-            ];
-        }
-
-        return $this->createInvoice(
+        return $this->createInvoiceChecked(
             [
                 'user_id' => $order->getUserId(),
                 'organization_id' => $order->getOrganizationId(),
@@ -325,7 +330,8 @@ final class InvoiceService
                 'currency_code' => $order->getCurrencyCode(),
                 'due_date' => $dueDate ?? date('Y-m-d', strtotime('+7 days')),
             ],
-            $itemsData
+            $itemsData,
+            true
         );
     }
 

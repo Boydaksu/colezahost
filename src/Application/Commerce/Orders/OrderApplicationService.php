@@ -33,16 +33,18 @@ final class OrderApplicationService
                 throw new ValidationException(['items' => 'Order must contain at least one item.'], 'Empty order items');
             }
 
-            $orderData = [
-                'user_id' => $command->userId,
-                'organization_id' => $command->organizationId,
-                'currency_code' => $command->currencyCode,
-                'metadata' => $command->metadata,
-            ];
-
-            return $this->orderService->createOrder($orderData, $command->items);
-
+            return (new CatalogOrderPricing($this->orderService->connection()))->create($command);
         }, 'command.createOrder');
+    }
+
+    public function createManualOrder(CreateOrderCommand $command,string $reason,int $actor): Order
+    {
+        return $this->authorization->run($actor,function()use($command,$reason,$actor):Order{
+            $this->authorization->requireSystem($actor,'orders.price_override');
+            if(trim($reason)===''||strlen($reason)>500){throw new ValidationException(['reason'=>['Manual pricing requires a reason.']]);}
+            (new \Coleza\Domain\Identity\Audit\AuditLogger($this->orderService->connection()))->log($actor,'command.manual_order_pricing',payload:['reason'=>$reason]);
+            return $this->orderService->createOrder(['user_id'=>$command->userId,'organization_id'=>$command->organizationId,'currency_code'=>$command->currencyCode],$command->items);
+        },'command.manual_order_created');
     }
 
     public function getOrder(int $orderId, ?int $authUserId = null, bool $isAdmin = false): Order
