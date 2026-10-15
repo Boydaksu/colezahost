@@ -36,7 +36,7 @@ final class GenericStagingMappingValidationTest extends TestCase
         $pdo = new PDO('sqlite::memory:');
         $this->db = new Connection($pdo, 'sqlite');
 
-        $this->stagingRepo = new DatabaseStagingRepository($this->db);
+        $this->stagingRepo = new DatabaseStagingRepository($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $this->mappingEngine = new GenericMappingEngine();
         $this->validationEngine = new CanonicalValidationEngine();
         $this->pipeline = new StagingPipelineService(

@@ -134,7 +134,7 @@ final class RestoreWizardAndDisasterRecoveryTest extends TestCase
         $this->assertSame('DISASTER-RECOVERY-KEY-999', file_get_contents($this->tempFreshAppDir . '/app_license.txt'));
     }
 
-    public static function keyRestoreCases(): array { return [['correct'], ['wrong'], ['missing'], ['corrupt'], ['unbound'], ['encrypted-wrong'], ['queue-corrupt'], ['queue-legacy']]; }
+    public static function keyRestoreCases(): array { return [['correct'], ['wrong'], ['missing'], ['corrupt'], ['unbound'], ['encrypted-wrong'], ['queue-corrupt'], ['queue-legacy'], ['staging-owner'], ['staging-legacy'], ['staging-diagnostics']]; }
     #[\PHPUnit\Framework\Attributes\DataProvider('keyRestoreCases')]
     public function testBoundRestoreRequiresTheApplicationKeyAndDeepCipherVerification(string $case): void
     {
@@ -143,11 +143,16 @@ final class RestoreWizardAndDisasterRecoveryTest extends TestCase
         $key = \Coleza\Tests\Support\SecretFixtureKey::encryptor();
         (new \Coleza\Domain\Vault\VaultService($source, $key))->setSecret('provider:restore', 'token', 'restore-synthetic-secret');
         (new \Coleza\Foundation\Queue\DatabaseQueue($source, new \Coleza\Domain\Vault\QueuePayloadStore($source, $key)))->push(new \Coleza\Tests\Support\QueueSecretJob(['password' => 'restore-synthetic-queue-secret']));
+        $staging=new \Coleza\Domain\Migration\Staging\DatabaseStagingRepository($source,$key);
+        $staged=\Coleza\Domain\Migration\Staging\StagingRecord::createNew('restore','csv','client','7',['password'=>'synthetic-restore-staging']);$staged->markTransformed('client',['token'=>'synthetic-restore-canonical']);$staging->save($staged);
         (new \Coleza\Domain\Vault\KeyLifecycleService($source, $key))->initialize(true);
         if ($case === 'corrupt') { $source->statement("UPDATE vault_secrets SET encrypted_value = 'enc:v1:broken'"); }
         if ($case === 'unbound') { $source->statement('DELETE FROM system_settings WHERE setting_key = ?', [\Coleza\Domain\Vault\KeyBinding::SETTING]); }
         if ($case === 'queue-corrupt') { $source->statement("UPDATE jobs SET queue = 'tampered'"); }
         if ($case === 'queue-legacy') { $source->statement('UPDATE jobs SET payload = ?', [serialize(new \Coleza\Tests\Support\QueueSecretJob())]); }
+        if ($case==='staging-owner') { $source->statement("UPDATE migration_staging_records SET source_system='tampered'"); }
+        if ($case==='staging-legacy') { $source->statement("UPDATE migration_staging_records SET raw_payload_json='{}'"); }
+        if ($case==='staging-diagnostics') { $source->statement('UPDATE migration_staging_records SET quarantine_reason=?',['Echoed synthetic-restore-staging']); }
         $file = $this->tempWorkDir . '/verified-asset.txt'; file_put_contents($file, 'asset');
         $adapter = new LocalBackupStorageAdapter($this->tempStorageDir);
         $archiveEncrypted = $case === 'encrypted-wrong';
@@ -161,6 +166,7 @@ final class RestoreWizardAndDisasterRecoveryTest extends TestCase
             if ($case === 'correct') {
                 self::assertSame('restore-synthetic-secret', (new \Coleza\Domain\Vault\VaultService($this->freshHostingDb, $key))->getSecret('provider:restore', 'token'));
                 self::assertSame('restore-synthetic-queue-secret', (new \Coleza\Foundation\Queue\DatabaseQueue($this->freshHostingDb, new \Coleza\Domain\Vault\QueuePayloadStore($this->freshHostingDb, $key)))->pop()->getJob()->data['password']);
+                self::assertSame(['password'=>'synthetic-restore-staging'],(new \Coleza\Domain\Migration\Staging\DatabaseStagingRepository($this->freshHostingDb,$key))->find($staged->getId())->getRawPayload());
                 self::assertFileExists($this->tempFreshAppDir . '/verified-asset.txt');
             } else {
                 self::assertFileDoesNotExist($this->tempFreshAppDir . '/verified-asset.txt');

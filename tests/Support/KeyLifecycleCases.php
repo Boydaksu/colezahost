@@ -69,6 +69,29 @@ trait KeyLifecycleCases
             }
         }
     }
+    public function testStagingRawCanonicalSurviveRotationAndRejectAllOldWriters(): void
+    {
+        [$lifecycle,$key]=$this->lifecycleFixture();$repo=new \Coleza\Domain\Migration\Staging\DatabaseStagingRepository($this->db,$key);
+        $record=\Coleza\Domain\Migration\Staging\StagingRecord::createNew('batch','csv','client','7',['password'=>'synthetic-rotation-raw','amount'=>1.0]);$record->markTransformed('client',['token'=>'synthetic-rotation-canonical']);$repo->save($record);$lifecycle->initialize(true);
+        [$file,$newKey]=$this->replacementFile();$owners=$this->db->select('SELECT * FROM migration_staging_records');$result=$lifecycle->rotateToFile($file,dirname(__DIR__,2),true);self::assertSame($owners,$this->db->select('SELECT * FROM migration_staging_records'));
+        $beforeAudit=$this->db->select('SELECT * FROM security_audit_logs');self::assertSame($result['counts'],(new KeyLifecycleService($this->db,$newKey))->verify()['counts']);self::assertSame($beforeAudit,$this->db->select('SELECT * FROM security_audit_logs'));
+        $fresh=new \Coleza\Domain\Migration\Staging\DatabaseStagingRepository($this->db,$newKey);$loaded=$fresh->find($record->getId());self::assertSame($record->getRawPayload(),$loaded->getRawPayload());self::assertSame($record->getCanonicalPayload(),$loaded->getCanonicalPayload());
+        foreach ([fn()=>$repo->find($record->getId()),fn()=>$repo->getBatchRecords('batch'),fn()=>$repo->save($record),fn()=>$repo->updateStatus($record->getId(),\Coleza\Domain\Migration\Staging\StagingRecordStatus::FAILED)] as $action) {
+            $before=[$this->db->select('SELECT * FROM migration_staging_records'),$this->db->select('SELECT * FROM vault_secrets'),$this->db->select('SELECT * FROM security_audit_logs')];$rejected=false;try { $action(); }catch (\RuntimeException) { $rejected=true; }
+            self::assertTrue($rejected);self::assertSame($before,[$this->db->select('SELECT * FROM migration_staging_records'),$this->db->select('SELECT * FROM vault_secrets'),$this->db->select('SELECT * FROM security_audit_logs')]);
+        }
+        $loaded->markTransformed('contact',['token'=>'synthetic-post-rotation-token']);$fresh->save($loaded);self::assertSame('contact',$fresh->find($record->getId())->getCanonicalEntityType());
+    }
+    public static function stagingInventoryFailures(): array { return [['legacy'],['owner'],['diagnostics']]; }
+    #[\PHPUnit\Framework\Attributes\DataProvider('stagingInventoryFailures')]
+    public function testStagingLegacyOwnerAndDiagnosticFailuresStopReadOnlyVerifyAndRotation(string $case): void
+    {
+        [$lifecycle,$key]=$this->lifecycleFixture();$repo=new \Coleza\Domain\Migration\Staging\DatabaseStagingRepository($this->db,$key);
+        $record=\Coleza\Domain\Migration\Staging\StagingRecord::createNew('batch','csv','client','7',['password'=>'synthetic-inventory-raw']);$record->markTransformed('client',['token'=>'synthetic-inventory-canonical']);$repo->save($record);$lifecycle->initialize(true);
+        match ($case) { 'legacy'=>$this->db->statement('UPDATE migration_staging_records SET raw_payload_json=?',['{"password":"legacy"}']), 'owner'=>$this->db->statement("UPDATE migration_staging_records SET canonical_entity_type='tampered'"), 'diagnostics'=>$this->db->statement('UPDATE migration_staging_records SET quarantine_reason=?',['Echoed synthetic-inventory-raw']) };
+        [$file]=$this->replacementFile();$before=[$this->db->select('SELECT * FROM migration_staging_records'),$this->db->select('SELECT * FROM vault_secrets'),$this->db->select('SELECT * FROM system_settings'),$this->db->select('SELECT * FROM security_audit_logs')];
+        foreach ([fn()=>$lifecycle->verify(),fn()=>$lifecycle->rotateToFile($file,dirname(__DIR__,2),true)] as $action) { $rejected=false;try { $action(); }catch (\RuntimeException) { $rejected=true; }self::assertTrue($rejected);self::assertSame($before,[$this->db->select('SELECT * FROM migration_staging_records'),$this->db->select('SELECT * FROM vault_secrets'),$this->db->select('SELECT * FROM system_settings'),$this->db->select('SELECT * FROM security_audit_logs')]); }
+    }
     private function replacementFile(): array
     {
         $directory = sys_get_temp_dir() . '/coleza-keylife-test-' . bin2hex(random_bytes(12));

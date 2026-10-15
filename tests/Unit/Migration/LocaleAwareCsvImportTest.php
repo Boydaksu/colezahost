@@ -31,7 +31,7 @@ final class LocaleAwareCsvImportTest extends TestCase
         $pdo = new PDO('sqlite::memory:');
         $this->db = new Connection($pdo, 'sqlite');
 
-        $this->stagingRepo = new DatabaseStagingRepository($this->db);
+        $this->stagingRepo = new DatabaseStagingRepository($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $mappingEngine = new GenericMappingEngine();
         $valEngine = new CanonicalValidationEngine();
         $pipeline = new StagingPipelineService($this->stagingRepo, $mappingEngine, $valEngine);

@@ -20,7 +20,7 @@ final class WhmcsContactPersistenceTest extends MariaDbTestCase
 {
     public function testContactMembershipIsPortableRepeatableAndPreservesExistingRoles(): void
     {
-        $repo = new DatabaseStagingRepository($this->db);
+        $repo = new DatabaseStagingRepository($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $mapping = new GenericMappingEngine();
         $identities = new AdoptedIdentityRepository($this->db);
         $resolver = new ProviderIdentityResolver();

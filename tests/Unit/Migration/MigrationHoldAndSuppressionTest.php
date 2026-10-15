@@ -299,7 +299,7 @@ final class MigrationHoldAndSuppressionTest extends TestCase
         $whmcsDb->statement("INSERT INTO tblaccounts VALUES (1, 1, 1, 'stripe', '2023-01-02', 'Payment for INV-100', 25.0, 0.5, 0.0, 'ch_test123', 30, 0)");
 
         // Staging and adoption setup on target DB
-        $stagingRepo = new DatabaseStagingRepository($this->db);
+        $stagingRepo = new DatabaseStagingRepository($this->db, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $mappingEngine = new GenericMappingEngine();
         $validationEngine = new CanonicalValidationEngine();
         $stagingPipeline = new StagingPipelineService($stagingRepo, $mappingEngine, $validationEngine);

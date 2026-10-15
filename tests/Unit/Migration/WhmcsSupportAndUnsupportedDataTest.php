@@ -46,7 +46,7 @@ final class WhmcsSupportAndUnsupportedDataTest extends TestCase
         $this->targetDb = new Connection($targetPdo, 'sqlite');
 
         // 3. Staging and validation
-        $this->stagingRepo = new DatabaseStagingRepository($this->targetDb);
+        $this->stagingRepo = new DatabaseStagingRepository($this->targetDb, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $this->mappingEngine = new GenericMappingEngine();
         $this->validationEngine = new CanonicalValidationEngine();
         $this->stagingPipeline = new StagingPipelineService(

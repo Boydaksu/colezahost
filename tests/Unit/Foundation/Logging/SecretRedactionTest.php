@@ -118,4 +118,23 @@ final class SecretRedactionTest extends \PHPUnit\Framework\TestCase
         $output = \Coleza\Foundation\Security\SecretRedactor::message('{"password":"synthetic-remote-generated-secret"}', ['password' => 'password']);
         self::assertStringNotContainsString('synthetic-remote-generated-secret', $output);
     }
+
+    public function testBalancedEmbeddedJsonPreservesBenignAnnotationsAndSuffix(): void
+    {
+        $message='Invoice references unmigrated client [99]. Review mapping.';
+        self::assertSame($message, \Coleza\Foundation\Security\SecretRedactor::text($message));
+        $safe=\Coleza\Foundation\Security\SecretRedactor::text('Remote: {"password":"synthetic-fragment-secret","note":"[literal]"} status=failed');
+        self::assertStringNotContainsString('synthetic-fragment-secret',$safe);
+        self::assertStringContainsString('status=failed',$safe);
+        self::assertStringNotContainsString('synthetic-fragment-secret',\Coleza\Foundation\Security\SecretRedactor::text('Remote: {"password":"synthetic-fragment-secret"'));
+    }
+
+    public function testNumericJsonPanIsMaskedWithoutHidingOrdinaryRecordIds(): void
+    {
+        $redactor=\Coleza\Foundation\Security\SecretRedactor::class;
+        self::assertSame($redactor::MASK,$redactor::sanitize(['value'=>4111111111111111])['value']);
+        self::assertStringNotContainsString('4111111111111111',$redactor::text('Remote [4111111111111111] status=failed'));
+        self::assertStringContainsString('status=failed',$redactor::text('Remote [4111111111111111] status=failed'));
+        self::assertSame('Client [99] unmigrated',$redactor::text('Client [99] unmigrated'));
+    }
 }

@@ -210,8 +210,15 @@ final class StagingRecord implements JsonSerializable
         ];
     }
 
-    public function jsonSerialize(): array
+    /** Diagnostic/export view; operational import code uses the explicit payload getters/toArray. */
+    public function toDiagnosticArray(): array
     {
-        return $this->toArray();
+        $data=$this->toArray();$safe=StagingSecretStore::diagnostics($this->validationErrors,$this->quarantineReason,$this->rawPayload,$this->canonicalPayload);
+        $data['raw_payload']=\Coleza\Foundation\Security\SecretRedactor::MASK;
+        $data['canonical_payload']=$this->canonicalPayload===null?null:\Coleza\Foundation\Security\SecretRedactor::MASK;
+        $data['validation_errors']=$safe['validation_errors'];$data['quarantine_reason']=$safe['quarantine_reason'];
+        return \Coleza\Foundation\Security\SecretRedactor::diagnostic($data,['source'=>$this->rawPayload,'canonical'=>$this->canonicalPayload]);
     }
+    public function __debugInfo(): array { return $this->toDiagnosticArray(); }
+    public function jsonSerialize(): array { return $this->toDiagnosticArray(); }
 }

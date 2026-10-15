@@ -1,0 +1,30 @@
+{
+  "reference_commit": "051513d74b1a223e125cda8fd4366e93a577f9de",
+  "files": {
+    "src/Domain/Migration/Staging/DatabaseStagingRepository.php": "b9f53e1fdb79fc15d67fd4af9fce4f0c626dcc1639bcac16f2b8304c162dbb2a",
+    "src/Domain/Migration/Staging/StagingRecord.php": "efb3a79a0700b724c4274fa12d6e3ebef02fa58716fc8a163016726e462fb8d0",
+    "src/Domain/Migration/Staging/StagingSecretStore.php": "efdbaf5cea192c0358ca6de65dfa8a1959aaabf43aecbd99508b743ce09d3ecb",
+    "src/Domain/Vault/KeyLifecycleService.php": "7ecc8ca01b646cae86cbeea020874de659a4c40aaf2e9515be1969c3104f7042",
+    "src/Foundation/Bootstrap/CoreServiceProvider.php": "db22961358361e16696d755a398b239b7008300de62c3a8141ca572d7deff049",
+    "src/Foundation/Security/SecretRedactor.php": "268f2ae7c5398915555df2d55858ebbb656cd2da773321d9604f8e12bbd5b01a",
+    "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php": "ce9ca500ec1f0fff435c3211baef2c637b239714cf45b924f421b659f866cf94",
+    "tests/MariaDb/StagingSecretTest.php": "c093ab1ab2f4aa07b1eb470f9eb81f9f45878c17f960a89f21bd74359c33d3cb",
+    "tests/MariaDb/WhmcsContactPersistenceTest.php": "a534836579a374eadaa33665c144a847b2e2c66ee881dd76dacc6ac241d07d5d",
+    "tests/MariaDb/fixtures/financial-worker.php": "667de755f3ccd97d58db58edd9304dbe424a8a9402fa0c6d5a6571ebb586a6c5",
+    "tests/Support/KeyLifecycleCases.php": "d05d6d5bfb4ffe8d94c46a0ff93bb7e01f5ab926985dfc846ecc50ef300c10ee",
+    "tests/Support/StagingSecretCases.php": "337ec6d0ee863b4525b473ea89384ea1f859dd02ddf2a1e449bed7ecce6e6beb",
+    "tests/Unit/Backup/RestoreWizardAndDisasterRecoveryTest.php": "e3ec358789d03f9664bdc08acc9078dd5e09e2aee0341d9e03b5be5c5ef5f311",
+    "tests/Unit/Foundation/Logging/SecretRedactionTest.php": "88acbee9b1197beebe87acc1ffffb1c40885cfdc1bfcad21029546e851ee38f3",
+    "tests/Unit/Installer/FreshInstallMigrationModeTest.php": "29df82af71429a778e69c599f90569340187a98052485f640fa013a254cd4cad",
+    "tests/Unit/Migration/CutoverAndGoldenMigrationE2ETest.php": "89590ed43433a38c3a3d14c8c3b52776d79c2ccef06875c05b636ef7caadbf51",
+    "tests/Unit/Migration/DryRunConflictCheckpointResumeTest.php": "539b86e0115784ce9f7b8c9455a541577acf37e77d064d5d96f1f222cd7e0cf8",
+    "tests/Unit/Migration/GenericStagingMappingValidationTest.php": "62ae1270be5de5a006f82c3e1e8b48178bcca4991d471d0045e2703809ada10f",
+    "tests/Unit/Migration/LocaleAwareCsvImportTest.php": "adbe1d3d170de4502ede0c5b9fade834bbb9c5cacaa209495e5a9cc6f6e31ab5",
+    "tests/Unit/Migration/MigrationHoldAndSuppressionTest.php": "fc37ba05c07c92ef18e1b9a22e3d2cff8cdd2051a90d017300991dc986be53de",
+    "tests/Unit/Migration/WhmcsCoreEntitiesMigrationTest.php": "94aac980132262511d52079342a14d05496cd1a9fdd3a74b07b23038921051a3",
+    "tests/Unit/Migration/WhmcsFinancialReconciliationMigrationTest.php": "a1cec714e35d963b66510c5db7c7a31a4967b35d44b2bd51a42b284ce1af725c",
+    "tests/Unit/Migration/WhmcsSupportAndUnsupportedDataTest.php": "3346a932ab505555ff05572b7cb4b8aeb9386514e8adbeeca3cc554f7173d62e",
+    "tests/Unit/Security/StagingSecretTest.php": "f6258af596dce64faf87562ea6f0dd342282fe00b38b84c948dc63c8837b551b",
+    "tools/staging-secret-maintenance.php": "41855f0685120715a0443f4bbd30158e37eac165ecc9149926c162d6d1120427"
+  }
+}

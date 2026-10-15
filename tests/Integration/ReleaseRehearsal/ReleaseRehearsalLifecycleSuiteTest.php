@@ -377,7 +377,7 @@ final class ReleaseRehearsalLifecycleSuiteTest extends TestCase
         $this->seedWhmcsSourceDataset($whmcsDb);
 
         // Setup Target Pipeline Components
-        $stagingRepo = new DatabaseStagingRepository($targetDb);
+        $stagingRepo = new DatabaseStagingRepository($targetDb, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $mappingEngine = new GenericMappingEngine();
         $validationEngine = new CanonicalValidationEngine();
         $stagingPipeline = new StagingPipelineService($stagingRepo, $mappingEngine, $validationEngine);

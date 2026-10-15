@@ -57,6 +57,8 @@ final class FreshInstallMigrationModeTest extends TestCase
 {
     use \Coleza\Tests\Support\InstallerKeyFixture;
     private string $tempLockFile;
+    private string $migrationKeyFile;
+    private array $migrationKeyEnvironment=[];
     private Connection $freshTargetDb;
     private Connection $whmcsSourceDb;
     private WhmcsReadOnlyConnector $whmcsConnector;
@@ -84,7 +86,13 @@ final class FreshInstallMigrationModeTest extends TestCase
         $this->seedSourceWhmcsDatabase();
 
         // 3. Setup Migration Pipeline Components
-        $stagingRepo = new DatabaseStagingRepository($this->freshTargetDb);
+        $directory=sys_get_temp_dir().'/coleza-installer-key-test-'.bin2hex(random_bytes(12));$this->installerKeyDirectories[]=$directory;
+        $this->migrationKeyFile=$directory.'/application.key';
+        \Coleza\Domain\Vault\PrivateKeyFile::provision($this->migrationKeyFile,dirname(__DIR__,3));
+        $key=\Coleza\Domain\Vault\ApplicationKey::encryptor(\Coleza\Domain\Vault\PrivateKeyFile::load($this->migrationKeyFile,dirname(__DIR__,3)));
+        foreach (['APP_KEY','APP_KEY_FILE'] as $name) { $this->migrationKeyEnvironment[$name]=[getenv($name),$_ENV[$name]??null,$_SERVER[$name]??null];putenv($name);unset($_ENV[$name],$_SERVER[$name]); }
+        putenv('APP_KEY_FILE='.$this->migrationKeyFile);
+        $stagingRepo = new DatabaseStagingRepository($this->freshTargetDb, $key);
         $mappingEngine = new GenericMappingEngine();
         $validationEngine = new CanonicalValidationEngine();
         $stagingPipeline = new StagingPipelineService($stagingRepo, $mappingEngine, $validationEngine);
@@ -185,6 +193,7 @@ final class FreshInstallMigrationModeTest extends TestCase
 
     protected function tearDown(): void
     {
+        foreach ($this->migrationKeyEnvironment as $name=>[$env,$arrayEnv,$serverEnv]) { $env===false?putenv($name):putenv($name.'='.$env);unset($_ENV[$name],$_SERVER[$name]);if ($arrayEnv!==null) { $_ENV[$name]=$arrayEnv; }if ($serverEnv!==null) { $_SERVER[$name]=$serverEnv; } }
         $this->cleanupInstallerKeys();
         if (file_exists($this->tempLockFile)) {
             unlink($this->tempLockFile);
@@ -261,6 +270,8 @@ final class FreshInstallMigrationModeTest extends TestCase
         $dbSetup = new DatabaseSetupService();
         $dbSetup->initializeCoreSchema($this->freshTargetDb);
 
+        $this->installer->setupApplicationKey($this->migrationKeyFile,true);
+
         // 2. Setup Super Admin
         $this->installer->setupAdmin(new AdminSetupDto(
             email: 'admin@myhost.net',
@@ -321,7 +332,7 @@ final class FreshInstallMigrationModeTest extends TestCase
         $this->assertSame(InstallationStep::COMPLETED, $this->installer->getCurrentStep());
 
         // 6. Finalize installation
-        $this->configureInstallerKey($this->installer);
+        $this->installer->setupApplicationKey($this->migrationKeyFile,true);
         $summary = $this->installer->finalizeInstallation([
             'installation_mode' => InstallationMode::MIGRATION->value,
             'imported_records' => $migResult->getTotalMigrated(),

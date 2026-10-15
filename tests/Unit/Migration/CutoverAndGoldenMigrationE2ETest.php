@@ -93,7 +93,7 @@ final class CutoverAndGoldenMigrationE2ETest extends TestCase
         $this->seedWhmcsGoldenDataset();
 
         // 3. Setup Target Infrastructure & Pipeline
-        $this->stagingRepo = new DatabaseStagingRepository($this->targetDb);
+        $this->stagingRepo = new DatabaseStagingRepository($this->targetDb, \Coleza\Tests\Support\SecretFixtureKey::encryptor());
         $this->mappingEngine = new GenericMappingEngine();
         $this->validationEngine = new CanonicalValidationEngine();
         $this->stagingPipeline = new StagingPipelineService($this->stagingRepo, $this->mappingEngine, $this->validationEngine);

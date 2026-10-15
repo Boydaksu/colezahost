@@ -116,6 +116,9 @@ final class CoreServiceProvider implements ServiceProviderInterface
             return new \Coleza\Foundation\Idempotency\IdempotencyManager($c->get(\Coleza\Foundation\Database\Connection::class));
         });
 
+        $container->singleton(\Coleza\Domain\Migration\Staging\DatabaseStagingRepository::class, static fn(Container $c) => new \Coleza\Domain\Migration\Staging\DatabaseStagingRepository($c->get(\Coleza\Foundation\Database\Connection::class), $c->get(\Coleza\Domain\Vault\Encryptor::class)));
+        $container->singleton(\Coleza\Domain\Migration\Staging\StagingRepositoryInterface::class, static fn(Container $c) => $c->get(\Coleza\Domain\Migration\Staging\DatabaseStagingRepository::class));
+
         // Bind DatabaseQueue and QueueInterface
         $container->singleton(\Coleza\Foundation\Queue\DatabaseQueue::class, static function (Container $c): \Coleza\Foundation\Queue\DatabaseQueue {
             return new \Coleza\Foundation\Queue\DatabaseQueue($c->get(\Coleza\Foundation\Database\Connection::class), new \Coleza\Domain\Vault\QueuePayloadStore($c->get(\Coleza\Foundation\Database\Connection::class), $c->get(\Coleza\Domain\Vault\Encryptor::class)));

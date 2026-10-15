@@ -29,6 +29,7 @@ final class KeyLifecycleService
         foreach (\Coleza\Domain\Vault\QueuePayloadStore::requirements() as $table => $_) {
             if (KeyBinding::tableExists($db, $table) && $db->selectOne("SELECT 1 FROM {$table} LIMIT 1") !== null) { return true; }
         }
+        if (KeyBinding::tableExists($db, \Coleza\Domain\Migration\Staging\StagingSecretStore::TABLE) && $db->selectOne('SELECT 1 FROM migration_staging_records LIMIT 1')!==null) { return true; }
         return KeyBinding::tableExists($db, 'system_settings') && $db->selectOne("SELECT 1 FROM system_settings WHERE setting_value IS NOT NULL AND setting_value <> '' AND (setting_key = 'mail.password' OR is_encrypted = 1) LIMIT 1") !== null;
     }
 
@@ -55,6 +56,7 @@ final class KeyLifecycleService
         foreach (\Coleza\Domain\Domains\DomainSecretStore::requirements() as $table => $columns) {
             if (KeyBinding::tableExists($this->db, $table)) { SecretStorageUpgrade::assertStorage($this->db, [$table => $columns]); }
         }
+        if (KeyBinding::tableExists($this->db, \Coleza\Domain\Migration\Staging\StagingSecretStore::TABLE)) { \Coleza\Domain\Migration\Staging\StagingSecretStore::assertOwnerSchema($this->db); }
     }
 
     private function maintenance(bool $confirmed): void
@@ -205,6 +207,19 @@ final class KeyLifecycleService
                 }
                 \Coleza\Domain\Vault\QueuePayloadStore::validate($identities[$scope]);
                 $counts['references']++;
+            }
+        }
+        if (KeyBinding::tableExists($this->db, \Coleza\Domain\Migration\Staging\StagingSecretStore::TABLE)) {
+            foreach ($this->db->select('SELECT * FROM migration_staging_records ORDER BY id'.$suffix) as $row) {
+                $stagingPlain=['canonical_payload_json'=>null];
+                foreach (['raw_payload_json','canonical_payload_json'] as $column) {
+                    if ($column==='canonical_payload_json' && $row[$column]===null) { continue; }
+                    $key=\Coleza\Domain\Migration\Staging\StagingSecretStore::key($row,$column);
+                    $scope=VaultService::scope(['namespace'=>\Coleza\Domain\Migration\Staging\StagingSecretStore::NAMESPACE,'secret_key'=>$key]);
+                    if (!hash_equals(VaultReferenceStore::reference($key),$row[$column]) || !isset($identities[$scope])) { throw new \RuntimeException('Staging data needs explicit legacy upgrade or owner reconciliation.'); }
+                    $stagingPlain[$column]=\Coleza\Domain\Migration\Staging\StagingSecretStore::decode($identities[$scope]);$counts['references']++;
+                }
+                \Coleza\Domain\Migration\Staging\StagingSecretStore::validateDiagnostics($row,$stagingPlain['raw_payload_json'],$stagingPlain['canonical_payload_json']);
             }
         }
         $privacy = ($this->privacyVerifier ?? new \Coleza\Domain\Privacy\Integrity\PrivacyIntegrityVerifier($this->db))->forDatabase($this->db);

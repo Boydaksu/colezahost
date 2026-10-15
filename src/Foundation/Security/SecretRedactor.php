@@ -52,6 +52,7 @@ final class SecretRedactor
             }
             return $safe;
         }
+        if (is_int($value) && preg_match('/^[0-9]{13,19}$/D', (string) $value)) { return self::MASK; }
         // Never execute arbitrary JsonSerializable/Stringable hooks or expose public properties/exception traces.
         if (is_object($value)) { return $value instanceof \Throwable ? '[exception]' : '[object]'; }
         if (is_resource($value)) { return '[resource]'; }
@@ -71,7 +72,10 @@ final class SecretRedactor
         // Embedded JSON must be decoded too: regex cannot recognize escaped field names.
         if (preg_match('/[\{\[]\s*(?:["{\[0-9-]|true\b|false\b|null\b)/', $text, $fragment, PREG_OFFSET_CAPTURE) && $fragment[0][1] > 0) {
             $offset = $fragment[0][1];
-            return self::text(substr($text, 0, $offset), $depth + 1) . self::text(substr($text, $offset), $depth + 1);
+            $tail = substr($text, $offset); $end = self::jsonFragmentEnd($tail);
+            $prefix = self::text(substr($text, 0, $offset), $depth + 1);
+            if ($end === null) { return $prefix . self::MASK; }
+            return $prefix . self::text(substr($tail, 0, $end), $depth + 1) . self::text(substr($tail, $end), $depth + 1);
         }
         $text = preg_replace_callback('/([?&])([^?&#=\s]+)=([^&#\s]*)/', static function (array $match): string {
             $name = rawurldecode(rawurldecode($match[2]));
@@ -86,6 +90,28 @@ final class SecretRedactor
         $text = preg_replace('~-----BEGIN (?:(?:RSA|EC|DSA|OPENSSH|ENCRYPTED) )?PRIVATE KEY-----[\s\S]*?(?:-----END (?:(?:RSA|EC|DSA|OPENSSH|ENCRYPTED) )?PRIVATE KEY-----|$)~', self::MASK, $text) ?? self::MASK;
         $text = preg_replace('~\beyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\b~', self::MASK, $text) ?? self::MASK;
         return preg_replace('/(?<![a-zA-Z0-9])(?:[0-9][ -]?){12,18}[0-9](?![a-zA-Z0-9])/', self::MASK, $text) ?? self::MASK;
+    }
+
+    /** Find only the balanced JSON fragment, preserving ordinary diagnostic suffixes. */
+    private static function jsonFragmentEnd(string $text): ?int
+    {
+        $stack=[]; $quoted=false; $escaped=false;
+        for ($i=0,$length=strlen($text);$i<$length;$i++) {
+            $char=$text[$i];
+            if ($quoted) {
+                if ($escaped) { $escaped=false; continue; }
+                if ($char==='\\') { $escaped=true; continue; }
+                if ($char==='"') { $quoted=false; }
+                continue;
+            }
+            if ($char==='"') { $quoted=true; continue; }
+            if ($char==='{' || $char==='[') { $stack[]=$char==='{'?'}':']'; if (count($stack)>64) { return null; } continue; }
+            if ($char==='}' || $char===']') {
+                if (array_pop($stack)!==$char) { return null; }
+                if ($stack===[]) { return $i+1; }
+            }
+        }
+        return null;
     }
 
     public static function message(string|\Stringable $message, array $context = []): string

@@ -326,6 +326,12 @@ try {
         case 'callback':
             $result['callback'] = (new Coleza\Domain\Commerce\Payments\Gateways\PaymentWebhookHandler($db, $payments))->handleIyzicoCallback($gateway, ['token' => 'parallel-token'])->getStatus();
             break;
+        case 'stagingDuplicate':
+            $staging=new Coleza\Domain\Migration\Staging\DatabaseStagingRepository($db,\Coleza\Tests\Support\SecretFixtureKey::encryptor());
+            $staged=Coleza\Domain\Migration\Staging\StagingRecord::createNew('batch','csv','client','7',['password'=>'synthetic-worker-'.(int)$argv[2],'amount'=>1.0]);
+            $staged->markTransformed('client',['token'=>'synthetic-canonical-'.(int)$argv[2]]);$staging->save($staged);
+            $result['id']=$staged->getId();$result['canonical']=$staging->find($staged->getId())->getCanonicalPayload();
+            break;
         case 'queue':
             $result['jobs'] = [];
             for ($i = 0; $i < 8; $i++) {

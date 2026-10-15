@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Security\StagingSecretTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Security\StagingSecretTest.php" tests="2" assertions="2" errors="0" failures="2" skipped="0" time="0.006469">
+    <testcase name="testRawAndCanonicalSecretsAreEncryptedAndRestartExactly" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\StagingSecretCases.php" line="7" class="Coleza\Tests\Unit\Security\StagingSecretTest" classname="Coleza.Tests.Unit.Security.StagingSecretTest" assertions="1" time="0.005940">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Security\StagingSecretTest::testRawAndCanonicalSecretsAreEncryptedAndRestartExactly&#13;
+Failed asserting that '[{"id":1,"batch_id":"batch","source_system":"csv","source_entity_type":"client","source_entity_id":"7","raw_payload_json":"{\"password\":\"synthetic-staging-password\",\"opaque\":\"synthetic-staging-opaque\",\"amount\":1,\"bytes\":\"a\\u0000b\"}","status":"transformed","canonical_entity_type":"client","canonical_payload_json":"{\"token\":\"synthetic-canonical-token\",\"amount\":1}","validation_errors_json":"[]","quarantine_reason":null,"target_entity_id":null,"processed_at":null,"created_at":"2026-10-15 09:51:23"}]' [ASCII](length: 520) does not contain "synthetic-staging-opaque" [ASCII](length: 24).
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\StagingSecretCases.php:13</failure>
+    </testcase>
+    <testcase name="testValidationAndQuarantineDiagnosticsDoNotEchoPayloadSecrets" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\StagingSecretCases.php" line="17" class="Coleza\Tests\Unit\Security\StagingSecretTest" classname="Coleza.Tests.Unit.Security.StagingSecretTest" assertions="1" time="0.000529">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Security\StagingSecretTest::testValidationAndQuarantineDiagnosticsDoNotEchoPayloadSecrets&#13;
+Failed asserting that '{"validation_errors_json":"[\"Remote said synthetic-staging-echo\"]","quarantine_reason":"Echoed synthetic-staging-echo"}' [ASCII](length: 121) does not contain "synthetic-staging-echo" [ASCII](length: 22).
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\StagingSecretCases.php:21</failure>
+    </testcase>
+  </testsuite>
+</testsuites>
