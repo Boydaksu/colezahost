@@ -162,11 +162,13 @@ final class EnterpriseBackupService
                 $rows = $db->select("SELECT * FROM `{$tableName}`");
                 foreach ($rows as $row) {
                     $keys = array_keys($row);
-                    $escapedValues = array_map(function ($val) {
+                    $escapedValues = array_map(function ($val) use ($db) {
                         if ($val === null) {
                             return 'NULL';
                         }
-                        return "'" . addslashes((string) $val) . "'";
+                        $quoted = $db->getPdo()->quote((string) $val);
+                        if ($quoted === false) { throw new \RuntimeException('Cannot quote backup database value.'); }
+                        return $quoted;
                     }, array_values($row));
 
                     $dump .= sprintf(

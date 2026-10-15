@@ -8,7 +8,7 @@ use Coleza\Domain\Identity\Audit\AuditLogger;
 /** Explicit maintenance on canonical storage; no DDL, no key file replacement, no environment mutation. */
 final class KeyLifecycleService
 {
-    public function __construct(private Connection $db, private Encryptor $encryptor) {}
+    public function __construct(private Connection $db, private Encryptor $encryptor, private ?\Coleza\Domain\Privacy\Integrity\PrivacyIntegrityVerifier $privacyVerifier = null) {}
 
     public static function requiresVerification(Connection $db): bool
     {
@@ -186,6 +186,8 @@ final class KeyLifecycleService
                 }
             }
         }
+        $privacy = ($this->privacyVerifier ?? new \Coleza\Domain\Privacy\Integrity\PrivacyIntegrityVerifier($this->db))->forDatabase($this->db);
+        if ($privacy->required()) { $privacy->verify(); }
         return ['plans' => $plans, 'counts' => $counts];
     }
 }

@@ -35,6 +35,11 @@ final class PrivacyLegacyMaintenance
             $this->evidence->key($entry['purpose']); // Validate all required keys before transaction/file effects.
         }
         return $this->db->transaction(function () use ($entries, $expectedSha256, $provenance, $legacyTombstoneFile): int {
+            $keys = [];
+            foreach ($entries as $entry) { $keys[$entry['purpose']] = $this->evidence->key($entry['purpose']); }
+            foreach (PrivacyKeyBinding::rows($this->db, lock: true) as $binding) {
+                if (isset($keys[$binding['purpose']])) { PrivacyKeyBinding::validate($binding, $binding['purpose'], $keys[$binding['purpose']]); }
+            }
             $proofs = [];
             foreach ($entries as $entry) {
                 if ($entry['source'] !== 'database') { continue; }

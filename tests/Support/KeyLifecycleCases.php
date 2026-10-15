@@ -260,4 +260,27 @@ trait KeyLifecycleCases
         $this->db->insert('system_settings', ['setting_key' => 'cron.token', 'setting_value' => $cron::HASH_PREFIX . hash('sha256', ''), 'is_encrypted' => 0]);
         self::assertFalse($cron->validateCronToken($this->db, '')); self::assertFalse($cron->validateCronToken($this->db, '   '));
     }
+
+    public function testPrivacyKeysRemainIndependentDuringApplicationRotationAndTamperBlocksIt(): void
+    {
+        [, $applicationKey] = $this->lifecycleFixture();
+        $keys = ['tombstone' => PrivacyFixtureKeys::tombstone(), 'email' => PrivacyFixtureKeys::email(), 'redaction' => PrivacyFixtureKeys::redaction()];
+        $writer = new \Coleza\Domain\Privacy\Tombstone\PrivacyTombstoneService($this->db, secretKey: $keys['tombstone'], salt: $keys['email']);
+        $writer->recordTombstone(7, 'subject@example.test');
+        (new \Coleza\Domain\Privacy\Redaction\RedactionAuditService($this->db, secretKey: $keys['redaction']))->recordAudit(7, 'users', 'DELETE', 1, ['email'], 'before', 'after');
+        $privacy = new \Coleza\Domain\Privacy\Integrity\PrivacyIntegrityVerifier($this->db, $keys);
+        $lifecycle = new KeyLifecycleService($this->db, $applicationKey, $privacy); $lifecycle->initialize(true);
+        $before = [];
+        foreach (['privacy_tombstones', 'privacy_redaction_audits', 'privacy_key_bindings'] as $table) { $before[$table] = $this->db->select("SELECT * FROM {$table} ORDER BY 1"); }
+        [$file, $replacement] = $this->replacementFile(); $lifecycle->rotateToFile($file, dirname(__DIR__, 2), true);
+        foreach ($before as $table => $rows) { self::assertSame($rows, $this->db->select("SELECT * FROM {$table} ORDER BY 1")); }
+        self::assertSame(1, $privacy->verify()['counts']['tombstones']);
+        $writer->recordTombstone(8, 'second@example.test'); // Application rotation must not retire an independent privacy key.
+        $fresh = new KeyLifecycleService($this->db, $replacement, $privacy); $fresh->verify();
+        $this->db->statement('UPDATE privacy_redaction_audits SET audited_by=999 WHERE user_id=7');
+        $caught = false; try { $fresh->verify(); } catch (\RuntimeException) { $caught = true; } self::assertTrue($caught);
+        $unchanged = $this->lifecycleRows(); [$anotherFile] = $this->replacementFile();
+        $caught = false; try { $fresh->rotateToFile($anotherFile, dirname(__DIR__, 2), true); } catch (\RuntimeException) { $caught = true; }
+        self::assertTrue($caught); self::assertSame($unchanged, $this->lifecycleRows());
+    }
 }

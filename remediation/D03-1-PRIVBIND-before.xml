@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Privacy\PrivacyBindingTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Privacy\PrivacyBindingTest.php" tests="2" assertions="2" errors="0" failures="2" skipped="0" time="0.580299">
+    <testcase name="testDifferentTombstoneKeyCannotWriteAnotherUser" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacyBindingCases.php" line="10" class="Coleza\Tests\Unit\Privacy\PrivacyBindingTest" classname="Coleza.Tests.Unit.Privacy.PrivacyBindingTest" assertions="1" time="0.520478">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Privacy\PrivacyBindingTest::testDifferentTombstoneKeyCannotWriteAnotherUser&#13;
+Different key wrote a second user into the existing installation.
+Failed asserting that false is true.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacyBindingCases.php:15</failure>
+    </testcase>
+    <testcase name="testDifferentRedactionKeyCannotWriteAnotherAudit" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacyBindingCases.php" line="18" class="Coleza\Tests\Unit\Privacy\PrivacyBindingTest" classname="Coleza.Tests.Unit.Privacy.PrivacyBindingTest" assertions="1" time="0.059821">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Privacy\PrivacyBindingTest::testDifferentRedactionKeyCannotWriteAnotherAudit&#13;
+Different key wrote another audit into the existing installation.
+Failed asserting that false is true.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\PrivacyBindingCases.php:23</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

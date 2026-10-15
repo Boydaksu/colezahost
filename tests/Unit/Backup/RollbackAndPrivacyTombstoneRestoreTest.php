@@ -168,4 +168,43 @@ final class RollbackAndPrivacyTombstoneRestoreTest extends TestCase
         $this->assertSame('Alice Smith', $aliceRow['name']);
         $this->assertSame('alice@example.com', $aliceRow['email']);
     }
+
+    public function testWrongPrivacyKeyBlocksSuccessAndFileCopyAfterSqlImport(): void
+    {
+        $this->db->insert('users', ['id' => 7, 'name' => 'Synthetic subject', 'email' => 'subject@example.test', 'status' => 'active']);
+        $keys = ['tombstone' => \Coleza\Tests\Support\PrivacyFixtureKeys::tombstone(), 'email' => \Coleza\Tests\Support\PrivacyFixtureKeys::email()];
+        (new PrivacyTombstoneService($this->db, secretKey: $keys['tombstone'], salt: $keys['email']))->recordTombstone(7, 'subject@example.test');
+        $adapter = new LocalBackupStorageAdapter($this->tempStorageDir);
+        $file = $this->tempWorkDir . '/privacy-gate.txt'; file_put_contents($file, 'new preserved version');
+        $backup = (new EnterpriseBackupService($this->tempWorkDir, $this->db, '1.0.0'))->createBackup(BackupScope::FULL, $adapter, filePaths: [$file]);
+        self::assertArrayHasKey('manifest', $backup);
+        $destination = $this->tempAppDir . '/privacy-gate.txt'; file_put_contents($destination, 'existing version');
+        $target = new Connection(new PDO('sqlite::memory:'));
+        $keys['tombstone'] = \Coleza\Tests\Support\PrivacyFixtureKeys::redaction();
+        $verifier = new \Coleza\Domain\Privacy\Integrity\PrivacyIntegrityVerifier($this->db, $keys);
+        $result = (new RestoreWizardService($this->tempWorkDir . '/privacy_wrong_restore', privacyVerifier: $verifier))->executeRestore($backup['manifest']->getBackupId(), $adapter, $target, $this->tempAppDir);
+        self::assertFalse($result->isSuccess()); self::assertSame(0, $result->getFilesRestored());
+        self::assertStringContainsString('Privacy key', $result->getErrorMessage());
+        self::assertSame('existing version', file_get_contents($destination));
+        // SQL import is deliberately observable; this gate does not claim to roll back the whole dump.
+        self::assertSame('active', $target->selectOne('SELECT status FROM users WHERE id=7')['status']);
+    }
+    public function testInjectedReconcilerIsReboundToActualRestoreTarget(): void
+    {
+        $this->db->insert('users', ['id' => 7, 'name' => 'Synthetic source', 'email' => 'subject@example.test', 'status' => 'active']);
+        $keys = ['tombstone' => \Coleza\Tests\Support\PrivacyFixtureKeys::tombstone(), 'email' => \Coleza\Tests\Support\PrivacyFixtureKeys::email()];
+        $file = $this->tempWorkDir . '/target-tombstones.json'; $store = new FileTombstoneStore($file, $keys['tombstone']);
+        $writer = new PrivacyTombstoneService($this->db, $store, secretKey: $keys['tombstone'], salt: $keys['email']); $writer->recordTombstone(7, 'subject@example.test', reason: "DPO's \\ archive \"quoted\"; approved", metadata: ['count' => 1.0, 'path' => 'C:\\synthetic']);
+        $sourcePrivacy = $this->db->select('SELECT * FROM privacy_tombstones');
+        $source = $this->db->select('SELECT * FROM users');
+        $adapter = new LocalBackupStorageAdapter($this->tempStorageDir);
+        $backup = (new EnterpriseBackupService($this->tempWorkDir, $this->db, '1.0.0'))->createBackup(BackupScope::FULL, $adapter);
+        self::assertArrayHasKey('manifest', $backup); $target = new Connection(new PDO('sqlite::memory:'));
+        $reconciler = new BackupRestoreReconciliationService($this->db, $writer);
+        $result = (new RestoreWizardService($this->tempWorkDir . '/privacy_target_restore', reconciliationService: $reconciler))->executeRestore($backup['manifest']->getBackupId(), $adapter, $target, $this->tempAppDir);
+        self::assertTrue($result->isSuccess(), $result->getErrorMessage() ?? ''); self::assertSame([7], $result->getReconciliationReport()->getScrubbedUserIds());
+        self::assertSame('erased', $target->selectOne('SELECT status FROM users WHERE id=7')['status']);
+        self::assertSame($source, $this->db->select('SELECT * FROM users'));
+        self::assertSame($sourcePrivacy, $target->select('SELECT * FROM privacy_tombstones'));
+    }
 }

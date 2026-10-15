@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Coleza\Domain\Privacy\Tombstone;
 
-use Coleza\Domain\Audit\AuditLogger;
+use Coleza\Domain\Identity\Audit\AuditLogger;
 use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Exceptions\ValidationException;
 use DateTimeImmutable;
@@ -22,6 +22,12 @@ final class BackupRestoreReconciliationService
         private readonly ?AuditLogger $auditLogger = null
     ) {
     }
+
+    public function forDatabase(Connection $db): self
+    {
+        return new self($db, $this->tombstoneService->forDatabase($db), $this->auditLogger === null ? null : new AuditLogger($db));
+    }
+    public function verifier(Connection $db): \Coleza\Domain\Privacy\Integrity\PrivacyIntegrityVerifier { return $this->tombstoneService->verifier($db); }
 
     /**
      * Reapplies privacy tombstones against restored operational database.

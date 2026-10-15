@@ -55,6 +55,7 @@ final class DatabaseSetupService
         (new \Coleza\Domain\Identity\LegacyIdentitySchema($connection))->preflight();
         (new \Coleza\Domain\Migration\Adoption\LegacyAdoptionUpgrade($connection))->upgrade();
         $result = $this->initializeCoreSchema($connection);
+        \Coleza\Domain\Privacy\Integrity\PrivacyKeyBinding::ensure($connection);
         $result['migrations_applied'] = (new \Coleza\Foundation\Database\Migrator($connection))->migrate(dirname(__DIR__, 3) . '/database/migrations');
         return $result;
     }

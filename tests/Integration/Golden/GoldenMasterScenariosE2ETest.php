@@ -922,7 +922,8 @@ final class GoldenMasterScenariosE2ETest extends TestCase
 
         // Time T2: Disaster strikes! Live database is destroyed and restored from T0 backup
         $restoreWizard = new RestoreWizardService(
-            temporaryExtractDir: $this->tempWorkDir . '/restore_t2_tmp'
+            temporaryExtractDir: $this->tempWorkDir . '/restore_t2_tmp',
+            privacyVerifier: $tombstoneService->verifier($db)
         );
 
         $restoreResult = $restoreWizard->executeRestore(
@@ -933,9 +934,10 @@ final class GoldenMasterScenariosE2ETest extends TestCase
         );
         $this->assertTrue($restoreResult->isSuccess());
 
-        // Immediately after DB restore (before reconciliation), User 42 would be resurrected with PII:
-        $resurrectedUsers = $db->select("SELECT * FROM users WHERE id = 42");
-        $this->assertSame('Original PII Name', $resurrectedUsers[0]['name']);
+        // Restore may report success only after verified tombstones have scrubbed PII.
+        $restoredUsers = $db->select("SELECT * FROM users WHERE id = 42");
+        $this->assertSame('erased', $restoredUsers[0]['status']);
+        $this->assertSame(1, $restoreResult->getReconciliationReport()->getResurrectedUsersReScrubbed());
 
         // Time T3: Mandatory Post-Restore Reconciliation Engine runs
         $reconService = new BackupRestoreReconciliationService(
@@ -943,8 +945,8 @@ final class GoldenMasterScenariosE2ETest extends TestCase
             tombstoneService: $tombstoneService
         );
         $report = $reconService->reconcileAfterBackupRestore();
-        $this->assertSame(1, $report->getResurrectedUsersDetected());
-        $this->assertSame(1, $report->getResurrectedUsersReScrubbed());
+        $this->assertSame(0, $report->getResurrectedUsersDetected());
+        $this->assertSame(0, $report->getResurrectedUsersReScrubbed());
 
         // Post-reconciliation verification: PII was scrubbed, tombstone upheld!
         $scrubbedUsers = $db->select("SELECT * FROM users WHERE id = 42");

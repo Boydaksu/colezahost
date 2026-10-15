@@ -1,0 +1,23 @@
+{
+  "reference_commit": "4ec72349a58dbfa53d54cd6811b5f42dd6630f10",
+  "files": {
+    "src/Domain/Backup/EnterpriseBackupService.php": "c1bfd302a4ebb320103c227dd005fa0beaa3ba767a29668809b55bc561c10fc4",
+    "src/Domain/Backup/RestoreWizardService.php": "6bbcb8e659eebb2c4cf2d191e353faffdcbc3a201f2e5d14337a920acfa21de0",
+    "src/Domain/Installer/DatabaseSetupService.php": "7b464ccc2060c5f265ff830accadecfd4dd35ad36124c5b85941408ccf598b43",
+    "src/Domain/Privacy/Integrity/PrivacyIntegrityVerifier.php": "97be8752e30faef83505062a109898af5263b5d054270d88750c01cbfb993104",
+    "src/Domain/Privacy/Integrity/PrivacyKeyBinding.php": "658629fac97e3d57c585a9a8a9ae19cc1fe8ce9eb849e5b32341fcde011afe82",
+    "src/Domain/Privacy/Integrity/PrivacyLegacyEvidenceStore.php": "a52ff0c1c37a005df7f78ea7e937651ba7537db859da3081ee402d486b487c76",
+    "src/Domain/Privacy/Integrity/PrivacyLegacyMaintenance.php": "b0b0a0246aad9269817305e014c7c12de3f4e480a1afe2ebdefb6546efdfdec2",
+    "src/Domain/Privacy/Redaction/RedactionAuditService.php": "8f0ea295d7f16aa4caece3f47eb2da9fc2fd89fd8bde8778bf98c976c8f8f4b5",
+    "src/Domain/Privacy/Tombstone/BackupRestoreReconciliationService.php": "6db9c959f9830a7d22fcacc6dbc15abf6f0e321493c14746b1ae3183ff08930e",
+    "src/Domain/Privacy/Tombstone/PrivacyTombstoneService.php": "1758814669b5649111fa23bbb1755a5a1385dd1215f9bc1ba77c8301b6816dd3",
+    "src/Domain/Vault/KeyLifecycleService.php": "1a176103a208af41bb7cc02407b4fd525e113564c2020533bee36cd047ebce72",
+    "tests/Integration/Golden/GoldenMasterScenariosE2ETest.php": "a352cbd63b0e618ae7f2e133da0d56be9ea4c1e2cc773ccd8a71c599ce9ed0aa",
+    "tests/MariaDb/PrivacyBindingTest.php": "ec3fbe5dcebaed618f9604d0257d1817bf6e4f98cdc240ed06402fdf799b27f5",
+    "tests/Support/KeyLifecycleCases.php": "dd2c3f2d8ac64ecaab5cd60f79859bd05a64ae94734e3721101285b517cf885d",
+    "tests/Support/PrivacyBindingCases.php": "665bba13648f3ec86f0706767e74aaa5ec04fe96ceb64ca0280deec89e647b92",
+    "tests/Unit/Backup/RollbackAndPrivacyTombstoneRestoreTest.php": "ac47ef6d1b9181acf73ea23603a9fc277d05ee15754a2d606bcc1f773cebab9f",
+    "tests/Unit/Privacy/PrivacyBindingTest.php": "f0522c42f78fd6a36f96fbbd5f7ac72577d47698f82bcf60f001d83e2c40d114",
+    "tools/privacy-key-maintenance.php": "32ced0cd88cde74202aa627ca9957faceeb2aaa5165fb4b2a454dd5a8a6e3115"
+  }
+}

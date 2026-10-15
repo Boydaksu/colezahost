@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Coleza\Domain\Privacy\Redaction;
 
-use Coleza\Domain\Audit\AuditLogger;
+use Coleza\Domain\Identity\Audit\AuditLogger;
 use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Exceptions\ValidationException;
 use DateTimeImmutable;
@@ -23,7 +23,9 @@ final class RedactionAuditService
 
     public function getSecretKey(): string
     {
-        return \Coleza\Domain\Privacy\Integrity\PrivacySigningKey::resolve('redaction', $this->secretKey);
+        $key = \Coleza\Domain\Privacy\Integrity\PrivacySigningKey::resolve('redaction', $this->secretKey);
+        \Coleza\Domain\Privacy\Integrity\PrivacyKeyBinding::check($this->db, ['redaction' => $key]);
+        return $key;
     }
 
     public function ensureTables(): void
@@ -79,52 +81,64 @@ final class RedactionAuditService
     ): RedactionAuditRecord {
         $key = $this->getSecretKey();
         $this->ensureTables();
+        \Coleza\Domain\Privacy\Integrity\PrivacyKeyBinding::ensure($this->db);
 
         if ($userId <= 0) {
             throw new ValidationException(['user_id' => ['User ID must be positive.']], 'Invalid user ID.');
         }
 
-        $now = (new DateTimeImmutable())->format('Y-m-d H:i:s');
-        $record = RedactionAuditRecord::create(
-            userId: $userId,
-            domainName: $domainName,
-            actionType: $actionType,
-            recordsAffected: $recordsAffected,
-            redactedFields: $redactedFields,
-            preChecksum: $preChecksum,
-            postChecksum: $postChecksum,
-            verifiedClean: $verifiedClean,
-            auditedBy: $auditedBy,
-            auditedAt: $now,
-            secretKey: $key
-        );
+        \Coleza\Domain\Vault\SecretStorageUpgrade::assertStorage($this->db, ['privacy_redaction_audits' => ['id','user_id','domain_name','action_type','records_affected','redacted_fields','pre_checksum','post_checksum','verified_clean','audited_at','audited_by','audit_signature']]);
+        return $this->db->transaction(function () use ($key, $userId, $domainName, $actionType, $recordsAffected, $redactedFields, $preChecksum, $postChecksum, $verifiedClean, $auditedBy): RedactionAuditRecord {
+            \Coleza\Domain\Privacy\Integrity\PrivacyKeyBinding::guard($this->db, ['redaction' => $key], function () use ($key): void {
+                foreach ($this->db->select('SELECT * FROM privacy_redaction_audits ORDER BY id') as $row) {
+                    $record = RedactionAuditRecord::fromArray($row);
+                    $store = $this->legacyEvidence ?? \Coleza\Domain\Privacy\Integrity\PrivacyLegacyEvidenceStore::configured();
+                    $record = $store?->redaction($record) ?? $record;
+                    if (!$record->verifySignature($key)) { throw new \RuntimeException('Existing privacy audits require independent legacy approval or key reconciliation.'); }
+                }
+            });
+            $now = (new DateTimeImmutable())->format('Y-m-d H:i:s');
+            $record = RedactionAuditRecord::create(
+                userId: $userId,
+                domainName: $domainName,
+                actionType: $actionType,
+                recordsAffected: $recordsAffected,
+                redactedFields: $redactedFields,
+                preChecksum: $preChecksum,
+                postChecksum: $postChecksum,
+                verifiedClean: $verifiedClean,
+                auditedBy: $auditedBy,
+                auditedAt: $now,
+                secretKey: $key
+            );
 
-        $this->db->insert($this->tableName, [
-            'user_id' => $record->getUserId(),
-            'domain_name' => $record->getDomainName(),
-            'action_type' => $record->getActionType(),
-            'records_affected' => $record->getRecordsAffected(),
-            'redacted_fields' => json_encode($record->getRedactedFields(), JSON_THROW_ON_ERROR | JSON_PRESERVE_ZERO_FRACTION | JSON_UNESCAPED_SLASHES),
-            'pre_checksum' => $record->getPreChecksum(),
-            'post_checksum' => $record->getPostChecksum(),
-            'verified_clean' => $record->isVerifiedClean() ? 1 : 0,
-            'audited_at' => $record->getAuditedAt(),
-            'audited_by' => $record->getAuditedBy(),
-            'audit_signature' => $record->getAuditSignature(),
-        ]);
+            $this->db->insert($this->tableName, [
+                'user_id' => $record->getUserId(),
+                'domain_name' => $record->getDomainName(),
+                'action_type' => $record->getActionType(),
+                'records_affected' => $record->getRecordsAffected(),
+                'redacted_fields' => json_encode($record->getRedactedFields(), JSON_THROW_ON_ERROR | JSON_PRESERVE_ZERO_FRACTION | JSON_UNESCAPED_SLASHES),
+                'pre_checksum' => $record->getPreChecksum(),
+                'post_checksum' => $record->getPostChecksum(),
+                'verified_clean' => $record->isVerifiedClean() ? 1 : 0,
+                'audited_at' => $record->getAuditedAt(),
+                'audited_by' => $record->getAuditedBy(),
+                'audit_signature' => $record->getAuditSignature(),
+            ]);
 
-        $this->auditLogger?->log(
-            actorUserId: $auditedBy,
-            eventType: 'PRIVACY_DOMAIN_REDACTION_AUDITED',
-            targetResource: 'user:' . $userId . ':domain:' . $domainName,
-            payload: [
-                'records_affected' => $recordsAffected,
-                'fields' => $redactedFields,
-                'verified_clean' => $verifiedClean,
-            ]
-        );
+            $this->auditLogger?->log(
+                actorUserId: $auditedBy,
+                eventType: 'PRIVACY_DOMAIN_REDACTION_AUDITED',
+                targetResource: 'user:' . $userId . ':domain:' . $domainName,
+                payload: [
+                    'records_affected' => $recordsAffected,
+                    'fields' => $redactedFields,
+                    'verified_clean' => $verifiedClean,
+                ]
+            );
 
-        return $record;
+            return $record;
+        });
     }
 
     /**

@@ -9,13 +9,14 @@ use Coleza\Domain\Privacy\Redaction\RedactionAuditRecord;
 /** Nonsecret, signed out-of-band evidence survives a database rollback/restore. */
 final class PrivacyLegacyEvidenceStore
 {
+    private array $resolvedKeys = [];
     public function __construct(private readonly string $path, #[\SensitiveParameter] private readonly array $keys = []) {}
     public static function configured(): ?self
     {
         $path = PrivacySigningKey::environment('PRIVACY_LEGACY_EVIDENCE_FILE');
         return $path === '' ? null : new self($path);
     }
-    public function key(string $purpose): string { return PrivacySigningKey::resolve($purpose, $this->keys[$purpose] ?? null); }
+    public function key(string $purpose): string { return $this->resolvedKeys[$purpose] ??= PrivacySigningKey::resolve($purpose, $this->keys[$purpose] ?? null); }
     private function path(): void
     {
         if (!preg_match('~^(?:[A-Za-z]:[\\\\/]|/)~', $this->path) || is_link($this->path) || is_link(dirname($this->path))) {
@@ -55,6 +56,14 @@ final class PrivacyLegacyEvidenceStore
             if ($json === false) { throw new \RuntimeException('Cannot read privacy evidence.'); }
             return $this->decode($json);
         } finally { flock($handle, LOCK_UN); fclose($handle); }
+    }
+    public function proofs(): array
+    {
+        $proofs = $this->read();
+        foreach ($proofs as $proof) {
+            if (!PrivacyLegacyAttestation::verifyProof($proof, $this->key($proof['purpose']))) { throw new \RuntimeException('Independent privacy evidence signature failed.'); }
+        }
+        return array_values($proofs);
     }
     public function find(string $purpose, string $subject): ?array
     {

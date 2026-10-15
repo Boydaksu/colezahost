@@ -26,7 +26,8 @@ final class RestoreWizardService
         private string $temporaryExtractDir,
         private ?BackupEncryptionService $encryptionService = null,
         private ?\Coleza\Domain\Privacy\Tombstone\BackupRestoreReconciliationService $reconciliationService = null,
-        private ?\Coleza\Domain\Vault\Encryptor $applicationEncryptor = null
+        private ?\Coleza\Domain\Vault\Encryptor $applicationEncryptor = null,
+        private ?\Coleza\Domain\Privacy\Integrity\PrivacyIntegrityVerifier $privacyVerifier = null
     ) {
         if (!is_dir($temporaryExtractDir)) {
             mkdir($temporaryExtractDir, 0755, true);
@@ -206,10 +207,16 @@ final class RestoreWizardService
                 }
             }
 
+            $privacy = $this->privacyVerifier?->forDatabase($targetDb)
+                ?? $this->reconciliationService?->verifier($targetDb)
+                ?? new \Coleza\Domain\Privacy\Integrity\PrivacyIntegrityVerifier($targetDb);
+            $privacyRequired = $privacy->required();
+            $privacyResult = $privacyRequired ? $privacy->verify() : null;
+
             // A matching archive passphrase does not prove the restored application's data key.
             if (\Coleza\Domain\Vault\KeyLifecycleService::requiresVerification($targetDb)) {
                 $key = $this->applicationEncryptor ?? \Coleza\Domain\Vault\ApplicationKey::encryptor(\Coleza\Domain\Vault\ApplicationKey::configured());
-                (new \Coleza\Domain\Vault\KeyLifecycleService($targetDb, $key))->verify();
+                (new \Coleza\Domain\Vault\KeyLifecycleService($targetDb, $key, $privacy))->verify();
             }
 
             // 6. Restore Preserved Files
@@ -234,7 +241,9 @@ final class RestoreWizardService
             // 7. Privacy Tombstone Reconciliation (Constitution Rule & Golden G08)
             $reconciliationReport = null;
             if ($this->reconciliationService !== null) {
-                $reconciliationReport = $this->reconciliationService->reconcileAfterBackupRestore();
+                $reconciliationReport = $this->reconciliationService->forDatabase($targetDb)->reconcileAfterBackupRestore();
+            } elseif (($privacyResult['counts']['tombstones'] ?? 0) > 0) {
+                $reconciliationReport = $privacy->reconciliation()->reconcileAfterBackupRestore();
             }
 
             return new RestoreResult(
