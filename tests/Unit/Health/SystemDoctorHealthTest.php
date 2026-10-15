@@ -118,8 +118,8 @@ final class SystemDoctorHealthTest extends TestCase
     {
         $backupAdapter = new LocalBackupStorageAdapter($this->tempBackupDir);
         // Seed a sample backup archive
-        file_put_contents($this->tempBackupDir . '/backup_init.manifest.json', '{}');
-        file_put_contents($this->tempBackupDir . '/backup_init.zip', 'content');
+        $probe=$this->tempStorageDir.'/backup-probe.txt';file_put_contents($probe,'Doctor backup probe');
+        (new \Coleza\Domain\Backup\EnterpriseBackupService($this->tempBackupDir.'/work'))->createBackup(\Coleza\Domain\Backup\BackupScope::FILES,$backupAdapter,[$probe]);
 
         // Seed fresh cron
         $this->db->statement("INSERT INTO cron_runs (run_at, status) VALUES (?, 'success')", [date('Y-m-d H:i:s')]);
@@ -148,5 +148,10 @@ final class SystemDoctorHealthTest extends TestCase
         $reportArray = $report->toArray();
         $this->assertTrue($reportArray['is_passing']);
         $this->assertArrayHasKey('system_info', $reportArray);
+    }
+    public function testCorruptBackupCannotBeReportedHealthy(): void
+    {
+        $backupAdapter=new LocalBackupStorageAdapter($this->tempBackupDir);file_put_contents($this->tempBackupDir.'/invalid.manifest.json','{}');file_put_contents($this->tempBackupDir.'/invalid.zip','not-a-backup');
+        $result=(new SystemDoctorService(db:$this->db,storageBasePath:$this->tempStorageDir,backupStorage:$backupAdapter))->checkBackup();self::assertSame(HealthStatus::CRITICAL,$result->getStatus());
     }
 }

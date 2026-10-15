@@ -1,0 +1,31 @@
+{
+  "reference_commit": "2bf8bec43ec271066aa62cc0ecc66ad46aa70b53",
+  "files": {
+    "remediation/D05-1-SONUC.md": "dce8d61958d2d392d01f21c5b878052205824f1f11a8168e2b6ddb513a929e83",
+    "remediation/D05-1-baseline.json": "fcd843e21993271f3a148831d6792b45c02ee5f086e729dc186070ace6e4f108",
+    "remediation/D05-1-before.txt": "029fd3005db88192002fba12c59879b892043f7537828900ab25b0c7842ce761",
+    "remediation/D05-1-before.xml": "5bfb7ee659ee26532417ab0ed66dcd0ec0e409fe5d7d1580189d924572f3c1a9",
+    "remediation/D05-1-discovery.xml": "f346b4f79c5b05bf9602cc936ff3165380fe998ed22be0dd4289582db7f3aa5e",
+    "remediation/D05-1-main.txt": "aa6020d11eb60019e3532a56bcac5c2cc925d9ed50fd4440979eef90d27dacb3",
+    "remediation/D05-1-main.xml": "c7b7722442ce39850770103ff94f7133b94d1e26b77d2ff724c5f7ee3ce2f608",
+    "remediation/D05-1-mariadb.txt": "767c67d9722d2063278f725f092e72b70de9e38977bc7d0012565e7a6aafc324",
+    "remediation/D05-1-mariadb.xml": "0f294e9769c8754c06e0838c642e34384bb67663b39187bac13353bad3ca0005",
+    "remediation/D05-1-summary.json": "c0b3dd904da9e9a07dd35b240bacfd41c34c1a862ee158c272de398dcfe0547d",
+    "remediation/D05-PLAN.md": "c1657019892d9894b6bebe397c791127fab4ad3fbf610edb2c2dd9768d69b7a6",
+    "remediation/PLAN.md": "c1c6777312992433177aff7011fd071881a84a310be826d99606e948a484bcf8",
+    "remediation/state.json": "b083183ee183ba54bf7bd54c66fed52eed02d120593a8c8fcc8c9a4869aceedd",
+    "remediation/verify-d05-publication.py": "78694f964d96c4135c8609377eb55f2e33aa729e6db0ce62c3d0a0e956e31cf0",
+    "src/Domain/Backup/BackupRetentionPolicy.php": "1417d7f8a8393686e7636cf274c430d504ad892980d090ef7c36283797372355",
+    "src/Domain/Backup/EnterpriseBackupService.php": "9932c177af823a4c9a79d1fe7bb250ac83a51905ec06132c6c48c1d75f4cc9bc",
+    "src/Domain/Backup/Storage/BackupPackage.php": "5bf8d4cb858f44590a2cc25392cbeee5a42a7696825c35350894273bbe25a98c",
+    "src/Domain/Backup/Storage/LocalBackupStorageAdapter.php": "174f6d8257147ca0c8f5251132a33d9f06efe9a8e116fce8f13e103ce7e6299a",
+    "src/Domain/Backup/Storage/S3BackupStorageAdapter.php": "508c1d657e7e2c596a80124a171cd3a8a2ee72b8fbd41d481c2bcbb1a7d5828a",
+    "src/Domain/Backup/Storage/SftpBackupStorageAdapter.php": "4066a8b78fb7d7b7d663f52a36b8f155f4a812474fa6d8cdbd985173d96144d5",
+    "tests/Integration/ReleaseRehearsal/ReleaseRehearsalLifecycleSuiteTest.php": "eeeace573e71791c92bbd588d59a4915c4f0ede70617e02b3d737852cf467940",
+    "tests/Integration/SharedHost/SharedHostCompatibilityMatrixTest.php": "0a3593b789df591dbb1f493d70c58d8cc29f6b1b4321ffe4a3e941d88fb98370",
+    "tests/MariaDb/BackupAdmissionTest.php": "c3de0eb1ec12e3d8ab89c8e06c4358bcef571649ba57a76bb02e0f81a4b78e6a",
+    "tests/Unit/Backup/BackupPublicationTest.php": "768b276c02832f19400e380a630d1d7774d40b7d4827d671229f6d9b97da4bdc",
+    "tests/Unit/Backup/EnterpriseBackupLifecycleTest.php": "b84101e1dc87ec0892453b4f7d680d5e2691c77936e5813855d429aa5718fb3e",
+    "tests/Unit/Health/SystemDoctorHealthTest.php": "3715d0075226649568621fdc3c8e4d41b74a3f0d47a99be5349f63f9dcc6720c"
+  }
+}

@@ -27,7 +27,7 @@ final class EnterpriseBackupService
         private ?BackupEncryptionService $encryptionService = null
     ) {
         if (!is_dir($workingDirectory)) {
-            mkdir($workingDirectory, 0755, true);
+            if(!mkdir($workingDirectory, 0700, true)){throw new RuntimeException('Cannot create private backup working directory.');}
         }
     }
 
@@ -53,6 +53,12 @@ final class EnterpriseBackupService
         bool $encrypt = false,
         ?BackupRetentionPolicy $retentionPolicy = null
     ): array {
+        if(($scope===BackupScope::FULL||$scope===BackupScope::DATABASE)&&$this->db===null){throw new RuntimeException('A database connection is required for this backup scope.');}
+        if(($scope===BackupScope::FULL||$scope===BackupScope::DATABASE)&&$this->db->getDriverName()!=='sqlite'){throw new RuntimeException('Consistent MariaDB dump support is required; no database backup was created.');}
+        if($encrypt&&$this->encryptionService===null){throw new RuntimeException('Backup encryption is not configured.');}
+        if($scope===BackupScope::FILES&&$filePaths===[]){throw new RuntimeException('Files-only backup requires explicit source files.');}
+        $names=[];
+        if($scope!==BackupScope::DATABASE){foreach($filePaths as$path){if(!is_string($path)||is_link($path)||!is_file($path)||!is_readable($path)){throw new RuntimeException('Every requested backup file must be a readable regular file; directory support belongs to recursive backup.');}$name=basename($path);if(isset($names[$name])){throw new RuntimeException('Duplicate backup file names require relative-path backup support.');}$names[$name]=true;}}
         $timestamp = date('Ymd_His');
         $backupId = sprintf('backup_%s_%s_%s', $scope->value, $timestamp, bin2hex(random_bytes(4)));
         $tempArchive = rtrim($this->workingDirectory, '/\\') . '/' . $backupId . '.zip';
@@ -69,7 +75,7 @@ final class EnterpriseBackupService
         // 1. Process Database Dump if requested
         if (($scope === BackupScope::FULL || $scope === BackupScope::DATABASE) && $this->db !== null) {
             $sqlDump = $this->dumpDatabase($this->db);
-            $zip->addFromString('database.sql', $sqlDump);
+            if(!$zip->addFromString('database.sql', $sqlDump)){throw new RuntimeException('Cannot add database dump to backup.');}
             $containedFiles['database.sql'] = hash('sha256', $sqlDump);
         }
 
@@ -77,15 +83,15 @@ final class EnterpriseBackupService
         if ($scope === BackupScope::FULL || $scope === BackupScope::FILES) {
             foreach ($filePaths as $path) {
                 if (file_exists($path) && is_file($path)) {
-                    $content = (string) file_get_contents($path);
+                    $content = file_get_contents($path);if($content===false){throw new RuntimeException('Cannot read requested backup file.');}
                     $relName = 'files/' . basename($path);
-                    $zip->addFromString($relName, $content);
+                    if(!$zip->addFromString($relName, $content)){throw new RuntimeException('Cannot add requested backup file.');}
                     $containedFiles[$relName] = hash('sha256', $content);
                 }
             }
         }
 
-        $zip->close();
+        if(!$zip->close()){throw new RuntimeException('Cannot finalize backup archive.');}
 
         // 3. Optional AES-256-GCM Encryption
         $isEncrypted = false;
@@ -120,15 +126,23 @@ final class EnterpriseBackupService
             ]
         );
 
-        file_put_contents($tempManifest, json_encode($manifest->toArray(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-
-        // 5. Transfer to Destination Adapter
-        $destination->store($backupId, $tempArchive, $tempManifest);
-
-        // Clean local temp files if destination is not local or if configured
-        if ($destination->getType() !== BackupDestinationType::LOCAL) {
-            @unlink($tempArchive);
-            @unlink($tempManifest);
+        $manifestJson=json_encode($manifest->toArray(),JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
+        if(file_put_contents($tempManifest,$manifestJson,LOCK_EX)!==strlen($manifestJson)){throw new RuntimeException('Cannot write backup manifest.');}
+        \Coleza\Domain\Backup\Storage\BackupPackage::verify($backupId,$tempArchive,$tempManifest);
+        if($destination->store($backupId,$tempArchive,$tempManifest)!==true){throw new RuntimeException('Backup destination did not accept the package; local files retained.');}
+        $readback=rtrim($this->workingDirectory,'/\\').'/verify_'.bin2hex(random_bytes(12));
+        if(!mkdir($readback,0700)){throw new RuntimeException('Cannot create independent backup read-back directory.');}
+        try{
+            if(!$destination->exists($backupId)||$destination->retrieve($backupId,$readback)!==true){throw new RuntimeException('Backup destination read-back failed; local files retained.');}
+            $returnedArchive=$readback.'/'.$backupId.'.zip';$returnedManifest=$readback.'/'.$backupId.'.manifest.json';
+            \Coleza\Domain\Backup\Storage\BackupPackage::verify($backupId,$returnedArchive,$returnedManifest);
+            if(!hash_equals($checksum,(string)hash_file('sha256',$returnedArchive))||!hash_equals(hash('sha256',$manifestJson),(string)hash_file('sha256',$returnedManifest))){throw new RuntimeException('Destination read-back differs from the source package; local files retained.');}
+        }finally{
+            foreach([$readback.'/'.$backupId.'.zip',$readback.'/'.$backupId.'.manifest.json',$readback.'/.publish.lock']as$file){if(is_file($file)&&!is_link($file)){unlink($file);}}
+            if(count(scandir($readback))===2){rmdir($readback);}
+        }
+        if($destination->getType()!==BackupDestinationType::LOCAL){
+            if(!unlink($tempArchive)||!unlink($tempManifest)){throw new RuntimeException('Verified backup delivered, but local cleanup did not finish.');}
         }
 
         // 6. Apply Retention Policy if provided
@@ -141,6 +155,7 @@ final class EnterpriseBackupService
             'manifest' => $manifest,
             'destination_type' => $destination->getType()->value,
             'encrypted' => $isEncrypted,
+            'verified' => true,
         ];
     }
 

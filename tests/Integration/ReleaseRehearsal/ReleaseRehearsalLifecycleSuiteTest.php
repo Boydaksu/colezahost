@@ -350,8 +350,7 @@ final class ReleaseRehearsalLifecycleSuiteTest extends TestCase
         // 7. System Doctor confirms system is fully HEALTHY post-restore
         $freshDb->statement("CREATE TABLE IF NOT EXISTS cron_runs (id INTEGER PRIMARY KEY, ran_at TIMESTAMP, tasks_executed INT)");
         $freshDb->statement("INSERT INTO cron_runs (ran_at, tasks_executed) VALUES (?, 1)", [date('Y-m-d H:i:s')]);
-        file_put_contents($backupDir . '/backup_init.manifest.json', '{}');
-        file_put_contents($backupDir . '/backup_init.zip', 'content');
+        // Doctor uses the actual verified backup already created and restored above.
 
         $doctor = new SystemDoctorService(db: $freshDb, storageBasePath: $freshAppDir, backupStorage: $backupAdapter);
         $report = $doctor->diagnoseAll();

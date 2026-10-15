@@ -9,7 +9,7 @@ use RuntimeException;
 
 /**
  * Amazon S3 / S3-compatible object storage adapter for backup archives.
- * Supports production AWS SDK/HTTP REST and simulated in-memory store for testing.
+ * Simulation requires explicit opt-in; unimplemented real transport fails closed.
  */
 final class S3BackupStorageAdapter implements BackupStorageAdapterInterface
 {
@@ -22,7 +22,7 @@ final class S3BackupStorageAdapter implements BackupStorageAdapterInterface
      */
     public function __construct(
         private array $s3Config = [],
-        private bool $simulated = true
+        private bool $simulated = false
     ) {
     }
 
@@ -33,7 +33,9 @@ final class S3BackupStorageAdapter implements BackupStorageAdapterInterface
 
     public function store(string $backupId, string $localArchivePath, string $localManifestPath): bool
     {
+        BackupPackage::id($backupId);
         if ($this->simulated) {
+            BackupPackage::verify($backupId,$localArchivePath,$localManifestPath);
             $this->simulatedBuckets[$backupId] = [
                 'archive' => (string) file_get_contents($localArchivePath),
                 'manifest' => file_exists($localManifestPath) ? (string) file_get_contents($localManifestPath) : '',
@@ -41,11 +43,12 @@ final class S3BackupStorageAdapter implements BackupStorageAdapterInterface
             return true;
         }
 
-        return true;
+        throw new RuntimeException('Real backup transport is not configured; operation was not performed.');
     }
 
     public function retrieve(string $backupId, string $localDestinationDir): bool
     {
+        BackupPackage::id($backupId);
         if ($this->simulated) {
             if (!isset($this->simulatedBuckets[$backupId])) {
                 return false;
@@ -66,11 +69,12 @@ final class S3BackupStorageAdapter implements BackupStorageAdapterInterface
             return true;
         }
 
-        return true;
+        throw new RuntimeException('Real backup transport is not configured; operation was not performed.');
     }
 
     public function delete(string $backupId): bool
     {
+        BackupPackage::id($backupId);
         if ($this->simulated) {
             if (isset($this->simulatedBuckets[$backupId])) {
                 unset($this->simulatedBuckets[$backupId]);
@@ -79,16 +83,17 @@ final class S3BackupStorageAdapter implements BackupStorageAdapterInterface
             return false;
         }
 
-        return true;
+        throw new RuntimeException('Real backup transport is not configured; operation was not performed.');
     }
 
     public function exists(string $backupId): bool
     {
+        BackupPackage::id($backupId);
         if ($this->simulated) {
             return isset($this->simulatedBuckets[$backupId]);
         }
 
-        return false;
+        throw new RuntimeException('Real backup transport is not configured; operation was not performed.');
     }
 
     public function listBackups(): array
@@ -97,6 +102,6 @@ final class S3BackupStorageAdapter implements BackupStorageAdapterInterface
             return array_keys($this->simulatedBuckets);
         }
 
-        return [];
+        throw new RuntimeException('Real backup transport is not configured; operation was not performed.');
     }
 }

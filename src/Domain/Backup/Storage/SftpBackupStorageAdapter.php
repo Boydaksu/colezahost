@@ -9,7 +9,7 @@ use RuntimeException;
 
 /**
  * SFTP remote storage adapter for backup archives.
- * Supports production SSH/SFTP environments and mock/simulated streams for testing.
+ * Simulation requires explicit opt-in; unimplemented real transport fails closed.
  */
 final class SftpBackupStorageAdapter implements BackupStorageAdapterInterface
 {
@@ -22,7 +22,7 @@ final class SftpBackupStorageAdapter implements BackupStorageAdapterInterface
      */
     public function __construct(
         private array $connectionConfig = [],
-        private bool $simulated = true
+        private bool $simulated = false
     ) {
     }
 
@@ -33,7 +33,9 @@ final class SftpBackupStorageAdapter implements BackupStorageAdapterInterface
 
     public function store(string $backupId, string $localArchivePath, string $localManifestPath): bool
     {
+        BackupPackage::id($backupId);
         if ($this->simulated) {
+            BackupPackage::verify($backupId,$localArchivePath,$localManifestPath);
             $this->simulatedRemoteFiles[$backupId] = [
                 'archive' => (string) file_get_contents($localArchivePath),
                 'manifest' => file_exists($localManifestPath) ? (string) file_get_contents($localManifestPath) : '',
@@ -41,12 +43,12 @@ final class SftpBackupStorageAdapter implements BackupStorageAdapterInterface
             return true;
         }
 
-        // Production SFTP execution via phpseclib/ext-ssh2
-        return true;
+        throw new RuntimeException('Real SFTP transport is not configured; backup transfer was not performed.');
     }
 
     public function retrieve(string $backupId, string $localDestinationDir): bool
     {
+        BackupPackage::id($backupId);
         if ($this->simulated) {
             if (!isset($this->simulatedRemoteFiles[$backupId])) {
                 return false;
@@ -67,11 +69,12 @@ final class SftpBackupStorageAdapter implements BackupStorageAdapterInterface
             return true;
         }
 
-        return true;
+        throw new RuntimeException('Real backup transport is not configured; operation was not performed.');
     }
 
     public function delete(string $backupId): bool
     {
+        BackupPackage::id($backupId);
         if ($this->simulated) {
             if (isset($this->simulatedRemoteFiles[$backupId])) {
                 unset($this->simulatedRemoteFiles[$backupId]);
@@ -80,16 +83,17 @@ final class SftpBackupStorageAdapter implements BackupStorageAdapterInterface
             return false;
         }
 
-        return true;
+        throw new RuntimeException('Real backup transport is not configured; operation was not performed.');
     }
 
     public function exists(string $backupId): bool
     {
+        BackupPackage::id($backupId);
         if ($this->simulated) {
             return isset($this->simulatedRemoteFiles[$backupId]);
         }
 
-        return false;
+        throw new RuntimeException('Real backup transport is not configured; operation was not performed.');
     }
 
     public function listBackups(): array
@@ -98,6 +102,6 @@ final class SftpBackupStorageAdapter implements BackupStorageAdapterInterface
             return array_keys($this->simulatedRemoteFiles);
         }
 
-        return [];
+        throw new RuntimeException('Real backup transport is not configured; operation was not performed.');
     }
 }

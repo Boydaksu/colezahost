@@ -20,6 +20,7 @@ final class BackupRetentionPolicy
         private int $maxBackupsToKeep = 10,
         private int $retentionDays = 30
     ) {
+        if($maxBackupsToKeep<0||$retentionDays<0){throw new \InvalidArgumentException('Retention limits cannot be negative.');}
     }
 
     public function getMaxBackupsToKeep(): int
@@ -46,46 +47,22 @@ final class BackupRetentionPolicy
             return ['retained' => [], 'pruned' => []];
         }
 
-        // Sort backups newest to oldest
-        usort($backupIds, function (string $a, string $b) use ($manifests) {
-            $timeA = isset($manifests[$a]) ? strtotime($manifests[$a]->getCreatedAt()) : 0;
-            $timeB = isset($manifests[$b]) ? strtotime($manifests[$b]->getCreatedAt()) : 0;
-            return $timeB <=> $timeA;
-        });
-
-        $now = time();
-        $retained = [];
-        $pruned = [];
-
-        foreach ($backupIds as $index => $id) {
-            $manifest = $manifests[$id] ?? null;
-            $shouldPrune = false;
-
-            // 1. Check max count threshold
-            if ($this->maxBackupsToKeep > 0 && ($index + 1) > $this->maxBackupsToKeep) {
-                $shouldPrune = true;
-            }
-
-            // 2. Check retention days threshold
-            if ($this->retentionDays > 0 && $manifest !== null) {
-                $createdTimestamp = strtotime($manifest->getCreatedAt());
-                $ageDays = ($now - $createdTimestamp) / 86400;
-                if ($ageDays > $this->retentionDays) {
-                    $shouldPrune = true;
-                }
-            }
-
-            if ($shouldPrune) {
-                $storage->delete($id);
-                $pruned[] = $id;
-            } else {
-                $retained[] = $id;
-            }
+        // Never classify unknown, malformed or unbound manifest metadata as an old backup.
+        $known=[];$retained=[];$pruned=[];
+        foreach($backupIds as$id){
+            $manifest=$manifests[$id]??null;
+            if(!$manifest instanceof BackupManifest||$manifest->getBackupId()!==$id||$manifest->getFileSizeBytes()<=0||!preg_match('/^[a-f0-9]{64}$/D',$manifest->getSha256Checksum())||strtotime($manifest->getCreatedAt())===false){$retained[]=$id;continue;}
+            $known[]=$id;
         }
-
-        return [
-            'retained' => $retained,
-            'pruned' => $pruned,
-        ];
+        usort($known,static fn(string $a,string $b):int=>strtotime($manifests[$b]->getCreatedAt())<=>strtotime($manifests[$a]->getCreatedAt()));
+        foreach($known as$index=>$id){
+            $tooMany=$this->maxBackupsToKeep>0&&$index>=$this->maxBackupsToKeep;
+            $tooOld=$this->retentionDays>0&&(time()-strtotime($manifests[$id]->getCreatedAt()))/86400>$this->retentionDays;
+            // Always keep the newest known complete copy, even when its age exceeds policy.
+            if($index>0&&($tooMany||$tooOld)){
+                if(!$storage->delete($id)){throw new \RuntimeException('Backup retention deletion failed; pruning stopped.');}$pruned[]=$id;
+            }else{$retained[]=$id;}
+        }
+        return ['retained'=>$retained,'pruned'=>$pruned];
     }
 }

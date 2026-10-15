@@ -164,19 +164,18 @@ final class EnterpriseBackupLifecycleTest extends TestCase
             $id = 'backup_' . $i;
             $mPath = $this->tempWorkDir . '/' . $id . '.manifest.json';
             $zPath = $this->tempWorkDir . '/' . $id . '.zip';
-            file_put_contents($mPath, '{}');
             file_put_contents($zPath, 'dummy');
-
-            $adapter->store($id, $zPath, $mPath);
 
             $manifests[$id] = new BackupManifest(
                 backupId: $id,
                 type: 'full',
                 sourceAppVersion: '1.0.0',
-                fileSizeBytes: 100,
-                sha256Checksum: 'dummy',
+                fileSizeBytes: 5,
+                sha256Checksum: hash('sha256','dummy'),
                 createdAt: date('c', strtotime("-{$i} days"))
             );
+            file_put_contents($mPath,json_encode($manifests[$id]->toArray(),JSON_THROW_ON_ERROR));
+            $adapter->store($id,$zPath,$mPath);
         }
 
         $this->assertCount(5, $adapter->listBackups());

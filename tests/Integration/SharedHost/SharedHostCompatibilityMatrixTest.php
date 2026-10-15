@@ -239,9 +239,9 @@ final class SharedHostCompatibilityMatrixTest extends TestCase
 
         $backupStorageDir = $this->tempDir . DIRECTORY_SEPARATOR . 'backups';
         mkdir($backupStorageDir, 0755, true);
-        file_put_contents($backupStorageDir . '/backup_init.manifest.json', '{}');
-        file_put_contents($backupStorageDir . '/backup_init.zip', 'content');
         $backupAdapter = new LocalBackupStorageAdapter($backupStorageDir);
+        $probe=$this->tempDir.'/backup-probe.txt';file_put_contents($probe,'Shared host backup probe');
+        (new \Coleza\Domain\Backup\EnterpriseBackupService($backupStorageDir.'/work'))->createBackup(\Coleza\Domain\Backup\BackupScope::FILES,$backupAdapter,[$probe]);
 
         $doctor = new SystemDoctorService(
             db: $this->db,

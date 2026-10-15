@@ -1,0 +1,55 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+FFFFFF                                                              6 / 6 (100%)
+
+Time: 00:00.106, Memory: 20.00 MB
+
+There were 6 failures:
+
+1) Coleza\Tests\Unit\Backup\BackupPublicationTest::testFalseStoreNeverReportsSuccessOrDeletesLocalCopy
+Unverified delivery reported success
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupPublicationTest.php:42
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupPublicationTest.php:44
+
+2) Coleza\Tests\Unit\Backup\BackupPublicationTest::testMissingReadbackNeverReportsSuccessOrDeletesLocalCopy
+Unverified delivery reported success
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupPublicationTest.php:42
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupPublicationTest.php:45
+
+3) Coleza\Tests\Unit\Backup\BackupPublicationTest::testCorruptReadbackNeverReportsSuccessOrDeletesLocalCopy
+Unverified delivery reported success
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupPublicationTest.php:42
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupPublicationTest.php:46
+
+4) Coleza\Tests\Unit\Backup\BackupPublicationTest::testUnconfiguredS3DoesNotSilentlySimulateSuccess
+Failed asserting that exception of type "RuntimeException" is thrown.
+
+5) Coleza\Tests\Unit\Backup\BackupPublicationTest::testProductionSftpDoesNotPretendTransferSucceeded
+Failed asserting that exception of type "RuntimeException" is thrown.
+
+6) Coleza\Tests\Unit\Backup\BackupPublicationTest::testDatabaseScopeWithoutDatabaseIsRejected
+Admission must fail before archive operations
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+-Array &0 []
++Array &0 [
++    0 => 'filesize(): stat failed for C:\Users\alici\AppData\Local\Temp/coleza_publication_54a4fd66aebacbd4/work/backup_db_20261015_183627_d30b392c.zip',
++    1 => 'hash_file(C:\Users\alici\AppData\Local\Temp/coleza_publication_54a4fd66aebacbd4/work/backup_db_20261015_183627_d30b392c.zip): Failed to open stream: No such file or directory',
++    2 => 'copy(C:\Users\alici\AppData\Local\Temp/coleza_publication_54a4fd66aebacbd4/work/backup_db_20261015_183627_d30b392c.zip): Failed to open stream: No such file or directory',
++]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupPublicationTest.php:59
+
+FAILURES!
+Tests: 6, Assertions: 6, Failures: 6.

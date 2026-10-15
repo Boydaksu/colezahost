@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Backup\BackupPublicationTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupPublicationTest.php" tests="6" assertions="6" errors="0" failures="6" skipped="0" time="0.104779">
+    <testcase name="testFalseStoreNeverReportsSuccessOrDeletesLocalCopy" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupPublicationTest.php" line="44" class="Coleza\Tests\Unit\Backup\BackupPublicationTest" classname="Coleza.Tests.Unit.Backup.BackupPublicationTest" assertions="1" time="0.040698">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Backup\BackupPublicationTest::testFalseStoreNeverReportsSuccessOrDeletesLocalCopy&#13;
+Unverified delivery reported success
+Failed asserting that false is true.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupPublicationTest.php:42
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupPublicationTest.php:44</failure>
+    </testcase>
+    <testcase name="testMissingReadbackNeverReportsSuccessOrDeletesLocalCopy" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupPublicationTest.php" line="45" class="Coleza\Tests\Unit\Backup\BackupPublicationTest" classname="Coleza.Tests.Unit.Backup.BackupPublicationTest" assertions="1" time="0.014775">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Backup\BackupPublicationTest::testMissingReadbackNeverReportsSuccessOrDeletesLocalCopy&#13;
+Unverified delivery reported success
+Failed asserting that false is true.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupPublicationTest.php:42
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupPublicationTest.php:45</failure>
+    </testcase>
+    <testcase name="testCorruptReadbackNeverReportsSuccessOrDeletesLocalCopy" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupPublicationTest.php" line="46" class="Coleza\Tests\Unit\Backup\BackupPublicationTest" classname="Coleza.Tests.Unit.Backup.BackupPublicationTest" assertions="1" time="0.018076">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Backup\BackupPublicationTest::testCorruptReadbackNeverReportsSuccessOrDeletesLocalCopy&#13;
+Unverified delivery reported success
+Failed asserting that false is true.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupPublicationTest.php:42
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupPublicationTest.php:46</failure>
+    </testcase>
+    <testcase name="testUnconfiguredS3DoesNotSilentlySimulateSuccess" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupPublicationTest.php" line="47" class="Coleza\Tests\Unit\Backup\BackupPublicationTest" classname="Coleza.Tests.Unit.Backup.BackupPublicationTest" assertions="1" time="0.011775">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Backup\BackupPublicationTest::testUnconfiguredS3DoesNotSilentlySimulateSuccess&#13;
+Failed asserting that exception of type "RuntimeException" is thrown.</failure>
+    </testcase>
+    <testcase name="testProductionSftpDoesNotPretendTransferSucceeded" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupPublicationTest.php" line="51" class="Coleza\Tests\Unit\Backup\BackupPublicationTest" classname="Coleza.Tests.Unit.Backup.BackupPublicationTest" assertions="1" time="0.006928">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Backup\BackupPublicationTest::testProductionSftpDoesNotPretendTransferSucceeded&#13;
+Failed asserting that exception of type "RuntimeException" is thrown.</failure>
+    </testcase>
+    <testcase name="testDatabaseScopeWithoutDatabaseIsRejected" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupPublicationTest.php" line="55" class="Coleza\Tests\Unit\Backup\BackupPublicationTest" classname="Coleza.Tests.Unit.Backup.BackupPublicationTest" assertions="1" time="0.012527">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Backup\BackupPublicationTest::testDatabaseScopeWithoutDatabaseIsRejected&#13;
+Admission must fail before archive operations
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+-Array &amp;0 []
++Array &amp;0 [
++    0 =&gt; 'filesize(): stat failed for C:\Users\alici\AppData\Local\Temp/coleza_publication_54a4fd66aebacbd4/work/backup_db_20261015_183627_d30b392c.zip',
++    1 =&gt; 'hash_file(C:\Users\alici\AppData\Local\Temp/coleza_publication_54a4fd66aebacbd4/work/backup_db_20261015_183627_d30b392c.zip): Failed to open stream: No such file or directory',
++    2 =&gt; 'copy(C:\Users\alici\AppData\Local\Temp/coleza_publication_54a4fd66aebacbd4/work/backup_db_20261015_183627_d30b392c.zip): Failed to open stream: No such file or directory',
++]
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupPublicationTest.php:59</failure>
+    </testcase>
+  </testsuite>
+</testsuites>
