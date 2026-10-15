@@ -12,12 +12,14 @@ use Coleza\Domain\Privacy\Redaction\RedactionAuditRecord;
 final class PrivacyIntegrityVerifier
 {
     private array $resolvedKeys = [];
+    private ?TombstoneStoreInterface $restoreStore=null;
     public function __construct(private readonly Connection $db, #[\SensitiveParameter] private readonly array $keys = [],
         private readonly ?TombstoneStoreInterface $store = null, private readonly ?PrivacyLegacyEvidenceStore $legacyEvidence = null) {}
     public function forDatabase(Connection $db): self { return new self($db, $this->keys, $this->store, $this->legacyEvidence); }
     private function key(string $purpose): string { return $this->resolvedKeys[$purpose] ??= PrivacySigningKey::resolve($purpose, $this->keys[$purpose] ?? null); }
     private function fileStore(): ?TombstoneStoreInterface
     {
+        if($this->restoreStore!==null){return $this->restoreStore;}
         if ($this->store !== null) { return $this->store; }
         $path = PrivacySigningKey::environment('PRIVACY_TOMBSTONE_STORE_FILE');
         if ($path === '') { return null; }
@@ -38,6 +40,13 @@ final class PrivacyIntegrityVerifier
         return new PrivacyTombstoneService($this->db, $this->fileStore(), secretKey: $this->key('tombstone'), salt: $this->key('email'), legacyEvidence: $this->legacyEvidence);
     }
     public function reconciliation(): BackupRestoreReconciliationService { return new BackupRestoreReconciliationService($this->db, $this->tombstones()); }
+    public function assertRestoreInventoryAvailable(): void
+    {
+        $store=$this->fileStore();
+        if($store===null){throw new \RuntimeException('Authoritative out-of-band tombstone inventory is required before restoring users.');}
+        $store->assertAvailableForRestore();
+        $this->restoreStore=$store;
+    }
     public function verify(): array
     {
         $this->resolvedKeys = []; // Recheck protected files once per verification, then reuse within this inventory.

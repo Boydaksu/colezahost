@@ -1,0 +1,50 @@
+# D05.3 — tutarlı veritabanı/dosya yedeği ve güvenli geri yükleme
+
+15.10.2026. Başlangıç bc01833d72849c1bd438ccc100f4283289ec8c0d. Birincil kaynak orijinal P17.5–P17.9 ve F11/F12/F20. Sabit dört kabul grubu `D05-3-KABUL.md`. D05.3 yerel uygulama/doğrulaması tamamlandı; D05'te D05.4 ve D05.5 olmak üzere iki adım kaldı. D02/D03/D04 kapanışları ve 26 kanonik migration byte'ları korunur. Üretim/bağımsız kabul açık.
+
+## Regresyon kanıtı
+
+İlk beş vaka / beş failure: klasör yedeğinin reddi; SQLite BLOB/NUL/çok satırlı metnin restore kaybı; yanlış ZIP entry checksum'una rağmen DB importu; manifestte bulunmayan entry'nin inspect tarafından kabulü; unsafe relative path'in başarı sayılması. Son kaynakta aynı beş test geçer; ZIP/security/restore kapsamı genişletilmiştir.
+
+Üç privacy safety testi başlangıç commit'indeki değişmemiş uzlaştırıcı PHP `auto_prepend_file` ile yüklenerek ayrıca çalıştırıldı: üç failure/0 error. Update hatası yutuluyor, aynı e-posta farklı iki ID altında geri geldiğinde sadece ilk kayıt scrub ediliyor, related table scrub başarısızlığı clean sayılıyordu. Önceki class SHA256 baseline içinde, before XML/stdout korunur; çalışma dosyası eski kaynakla değiştirilmedi. Aynı üç test yeni uzlaştırıcıda geçer.
+
+Ara sürümde farklı host session timezone testi 1 failure verdi: TIMESTAMP epoch'u +03:00 → -05:00 taşımada 28800 saniye kayıyordu; DATETIME metni aynıydı. Ek UTC export/import düzeltmesi ve kaynak/hedef session restoration sonrasında bu regresyon da geçti. Ayrı before XML/stdout ve ara source SHA256 kaydı korunur. Son tam testler UTC düzeltmesinden sonraki source byte'larıyla koşuldu.
+
+## Uygulama
+
+LogicalDatabaseDump MariaDB için kendi REPEATABLE READ consistent snapshot transaction'ını açar. Bütün tablolar InnoDB base table olmalıdır. Şemadan önce metadata lock alır, tabloları/supported DB object inventory'sini sonunda yeniden kontrol eder. Satırlar unbuffered fetch ile dosyaya stream edilir. Schema/generated/FK/auto increment, decimal/unsigned bigint/binary/Unicode/null ve sıfır AUTO_INCREMENT kimliği korunur. Session charset/SQL mode/quote/buffering/timezone geri yüklenir. SHOW CREATE'nin backslash default literal davranışı için export SQL mode normalize edilir; gerçek kaynak SQL mode değiştirilmiş bırakılmaz. TIMESTAMP UTC, DATETIME duvar saati olarak korunur; mikro-saniyeler native karşılaştırılır.
+
+SQLite tek snapshot içinde şema/satır/index/AUTOINCREMENT high-water mark export eder. Metin CAST(hex AS TEXT), BLOB hex olarak ayrı tutulur; apostrof/backslash/NUL/çok satırlı içerik SQL kaçışına bağlı değildir. Eksik DB ve çağıranın transaction'ı mutation yapmadan reddedilir. Desteklenmeyen MyISAM/view/trigger/routine/event sessiz eksik yedek üretmez.
+
+BackupFileTree recursive kaynakları önce özel snapshot klasörüne alır. Göreli yollar, açık alias ve boş dizinler korunur. Eksik/değişen/symlink/özel veya case/path çakışması olan kaynak hata verir. ZIP, source dosya handle'larını sonradan açsa da frozen snapshot byte'larını kullanır. Çalışma klasörünün kendi yedeğine tekrar girmesi engellenir. Dizin desteği geldiği için D05.1'in directory rejection fixture'ı kaldırılmış, yerini recursive round-trip ve explicit alias olumlu testleri almıştır; missing/duplicate file rejection korunur.
+
+BackupArchive inspect ve restore'da tam manifest membership, entry SHA256/size ve scope'u doğrular. ZIP generic extract kullanılmaz. Traversal/drive/ADS/backslash, reserved/trailing path, symlink/special entry, case ve file/directory çakışmaları reddedilir; eksik/fazla kayıt DB'ye dokunmadan durur. Opaque encrypted package önce BackupPackage ile, decrypted ZIP içerikleri ayrıca doğrulanır. Böylece source storage adapter'ının yalnız container hash kontrolüne güvenilmez.
+
+SqlStatementReader dosyayı stream ederek quoted semicolon/newline/doubled quote/backslash mode ve yorumları ayırır. Tüm SQL ilk mutation'dan önce lexical/command admission'dan geçer; ikinci stream pass uygulanır. Malformed veya desteklenmeyen komut reddedilir. Format-2 driver/table/row inventory zorunludur; eski inventory'siz/comment-only DB paketleri boş hedefte success olamaz. Eski paket için doğrulanmış kaynaktan re-export gerekir; bunların otomatik dönüştürülmesi yapılmadı.
+
+RestoreWizard varsayılan olarak fresh offline DB ister. Mevcut canlı DB veya caller transaction korunur. Dosyalar sibling private ağaçta hazırlanır; DB import, table/row/FK integrity, uygulama key binding/deep cipher ve privacy kapılarından sonra eski ağaç korunarak rename yapılır. MariaDB DDL geri alınmış gibi gösterilmez; hata gerçek uygulanmış statement sayısını döndürür. Oturum ayarları/fk kontrolü sonunda geri yüklenir. Checkpoint süreç sonlandırma testi gerçek child PHP'nin import sırasında exit etmesini sağlar; journal kalır, eski dosyalar değişmez, source paket korunur ve otomatik replay reddedilir.
+
+Journal hedefin dışında, mutation lock altında, flush/fsync + atomic file publication ile yazılır. OperationalModeManager aynı journal yolu verildiğinde incomplete importu DB schema bootstrap/read yapmadan Recovery görür; müşteri/mutation (super-admin dahil) ve Normal transition bloklanır. Başarılı restore DB'de kalıcı RECOVERY bırakır; otomatik müşteri/cron açılışı yoktur. Aynı journal binding'in bütün gerçek HTTP/CLI/cron/worker girişlerinde yapılması D08 composition sınırıdır.
+
+Kullanıcı içeren yeni backup'ta authoritative dış tombstone inventory importtan önce istenir; restore sırasında kaybolursa boş geçmişe dönülmez. Application key ve privacy imzaları DB/files açılmadan doğrulanır. Reconciliation ID ve bütün aynı-email eşleşmelerini bulur; users/core credentials, consent/session/factor/API ve tanımlı legacy/canonical billing/hosting/support alanlarını scrub eder ve tekrar okur. Yazma/schema/readback hatası yutulmaz; ilgili kullanıcının aggregate'i geri alınır ve Wizard success/files publication yapmaz. Genel ürün PII/retention/legal-hold/diğer domain mapping işi D07'de kalır; bu rapor bütün ürün gizlilik kabulü değildir.
+
+## Son doğrulama
+
+- Tam ana paket: **1992 test / 12842 assertion**, gerçek exit code 0; failure/error/skip sıfır.
+- Gerçek MariaDB 10.11: **96 test / 783 assertion**, exact 8 class discovery/result ID eşitliği; exit code 0 ve failure/error/skip sıfır. Tüm native suite sayılmaz.
+- Ana pakette 23 yeni recovery/archive vaka, 7 SQL lexer vaka, 3 strict privacy vaka; 35 gerçek HTTPS/SFTP transport regresyonu da tekrar geçti.
+- Native BackupAdmission 4 + BackupRecovery 8: gerçek DB/FULL satırlar, raw caller korunması, files-only scope, native typed round-trip/generated/FK/zero ID, iki bağlantıyla snapshot sırasında concurrent commit, MyISAM reject, farklı charset/NO_BACKSLASH mode, orphan FK failure ve session cleanup, trigger ile privacy rollback, farklı saat dilimi/mikro-saniye, 26 migration sonrası fresh DB'ye restore ve post-backup silinmiş kullanıcının tekrar scrub edilmesi.
+- Diğer native sınıflar: InstallationAcceptance 10, KeyLifecycle 29, OperationalModePersistence 18, PrivacyBinding 14, PrivacySigning 11, SqlPortabilityCloseout 2. Geriye kalan bütün native sınıflar bu tur tekrar çalıştırılmadı.
+- Yeni main ZIP/safety vakaları: hash/inventory/path/symlink/case/file-dir collision; nested binary/Unicode/empty dirs; explicit alias; SQLite index/sequence; nonempty DB/caller reject; authoritative inventory eksikliği; gerçek süreç kesintisi/Recovery guard/replay deny; comment-only legacy deny.
+- İlk geniş main denetimi bir fixture'da replacement seçeneğinin yanlış çağrıya bağlanması ve G06 empty authoritative inventory eksikliğini gösterdi. Doğru çağrı ve explicit empty inventory ile G06/G08 tekrar geçti. Gate gevşetilmedi. Yanlış privacy key fixture'ı da mevcut empty external inventory sağlayıp yine yanlış key nedeniyle başarısız olur; deep key negatif beklentileri korunur.
+- Orijinal plan validator ve locked manifest kontrolü, whitespace kontrolü exit 0. 26 migration değiştirilmedi. Source byte'ları son testlerden önce normalize edilip hash'lendi; testler sırasında source/test değişmedi.
+
+## Pratik sınırlar ve kalan sabit plan
+
+İşletim sözleşmesi `D05-3-RESTORE-KULLANIM.md`: tek DB değeri 16 MiB, statement 64 MiB, 100000 entry/toplam 10 GiB uncompressed; sınır aşımı açık hatadır. DB ile file tree ortak transaction değildir; dosya yazarları/DDL maintenance sırasında durdurulmalıdır. Desteklenmeyen engine/custom DB object ve inventory'siz eski DB paketi için ayrı doğrulanmış exporter gerekir. Uzak hesap/bağımsız host kabulü yapılmadı.
+
+Nonempty DB replacement yalnız açık rollback uyumluluk seçeneğidir; mevcut tablolar destructive DDL ile değişebilir, backup'ta olmayan tablolar korunur. Bu yol atomik DB rollback değildir. Update/pre-update orchestration D05.4'te, extension lifecycle D05.5'tedir. Özellikle PreUpdateBackupService'in eski dump'ı henüz ortak LogicalDatabaseDump/verified package hattına bağlanmış sayılmaz; D05.4 ilk işidir. D05.3 başarı durumu update güvenliği veya production_ready iddiası değildir.
+
+Ham before/privacy-before/timezone-before/main/mariadb XML/stdout, native discovery, gerçek exit dosyaları, baseline, summary ve final byte hash manifesti saklanır. Kontrol: `python -X utf8 remediation/verify-d05-recovery.py`, yalnız bu adımın kaydedilmiş source revizyonunda geçerlidir. Main komutu mevcut PHPUnit config'ini; native komutu phpunit-mariadb.xml ve discovery'deki exact sekiz class filter'ını kullanır. Python transport fixture `COLEZA_BACKUP_TEST_PYTHON` ile izole dev ortamına işaret eder. İzole DB portu 33079; normal sunucuya dokunulmaz.
+
+Birincil teknik kaynaklar: [MariaDB consistent snapshot](https://mariadb.com/docs/server/ha-and-performance/standard-replication/enhancements-for-start-transaction-with-consistent-snapshot), [START TRANSACTION/metadata locks](https://mariadb.com/docs/server/reference/sql-statements/transactions/start-transaction), [mariadb-dump constraints](https://mariadb.com/docs/server/clients-and-utilities/backup-restore-and-import-clients/mariadb-dump), [TIMESTAMP session timezone](https://mariadb.com/docs/server/reference/data-types/date-and-time-data-types/timestamp).

@@ -50,7 +50,8 @@ final class RollbackManager
             sourceStorage: $this->backupStorage,
             targetDb: $targetDb,
             targetAppDir: $targetAppDir,
-            decryptionPassphrase: $decryptionPassphrase
+            decryptionPassphrase: $decryptionPassphrase,
+            replaceExistingDatabase: true
         );
     }
 }

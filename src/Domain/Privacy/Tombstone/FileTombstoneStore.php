@@ -10,6 +10,7 @@ use RuntimeException;
 /** Authenticated inventory. Whole read/merge/write is serialized by one file lock. */
 final class FileTombstoneStore implements TombstoneStoreInterface
 {
+    private bool $restoreRequired=false;
     public function __construct(
         private readonly string $filePath,
         #[\SensitiveParameter] private readonly ?string $secretKey = null,
@@ -91,9 +92,16 @@ final class FileTombstoneStore implements TombstoneStoreInterface
 
     public function persist(PrivacyTombstone $tombstone): void { $this->merge([$tombstone->toArray()]); }
 
+    public function assertAvailableForRestore(): void
+    {
+        $this->restoreRequired=true;
+        if(is_link($this->filePath)||!is_file($this->filePath)||!is_readable($this->filePath)){throw new RuntimeException('Authoritative out-of-band tombstone inventory is missing or unsafe.');}
+        $this->loadAll();
+    }
+
     public function loadAll(): array
     {
-        if (!file_exists($this->filePath)) { return []; }
+        if (!file_exists($this->filePath)) { if($this->restoreRequired){throw new RuntimeException('Authoritative tombstone inventory disappeared during restore.');}return []; }
         $key = PrivacySigningKey::resolve('tombstone', $this->secretKey);
         $handle = fopen($this->filePath, 'rb');
         if ($handle === false) { throw new RuntimeException('Cannot open tombstone inventory.'); }

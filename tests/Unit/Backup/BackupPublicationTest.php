@@ -101,7 +101,7 @@ final class BackupPublicationTest extends TestCase
     public function testMissingAndDuplicateRequestedFileNamesFailBeforePackageCreation(): void
     {
         mkdir($this->root.'/a');mkdir($this->root.'/b');file_put_contents($this->root.'/a/same.txt','a');file_put_contents($this->root.'/b/same.txt','b');
-        foreach([[$this->root.'/missing.txt'],[$this->root.'/a'],[$this->root.'/a/same.txt',$this->root.'/b/same.txt']]as$files){try{(new EnterpriseBackupService($this->root.'/work'))->createBackup(BackupScope::FILES,new LocalBackupStorageAdapter($this->root.'/store'),$files);self::fail('Partial file scope accepted');}catch(\RuntimeException){self::assertSame([],glob($this->root.'/work/*.zip'));}}
+        foreach([[$this->root.'/missing.txt'],[$this->root.'/a/same.txt',$this->root.'/b/same.txt']]as$files){try{(new EnterpriseBackupService($this->root.'/work'))->createBackup(BackupScope::FILES,new LocalBackupStorageAdapter($this->root.'/store'),$files);self::fail('Partial file scope accepted');}catch(\RuntimeException){self::assertSame([],glob($this->root.'/work/*.zip'));}}
     }
     public function testEncryptionWithoutKeyFailsBeforePlaintextArchiveIsCreated(): void
     {

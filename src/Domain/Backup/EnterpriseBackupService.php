@@ -41,7 +41,7 @@ final class EnterpriseBackupService
      *
      * @param BackupScope $scope
      * @param BackupStorageAdapterInterface $destination
-     * @param array<int, string> $filePaths Specific files/directories to include if scope is FULL or FILES
+     * @param array<int|string, string> $filePaths Files/directories; string keys supply distinct relative aliases
      * @param bool $encrypt Whether to apply AES-256-GCM encryption
      * @param ?BackupRetentionPolicy $retentionPolicy Optional retention policy to apply immediately
      * @return array{manifest: BackupManifest, destination_type: string, encrypted: bool}
@@ -54,44 +54,37 @@ final class EnterpriseBackupService
         ?BackupRetentionPolicy $retentionPolicy = null
     ): array {
         if(($scope===BackupScope::FULL||$scope===BackupScope::DATABASE)&&$this->db===null){throw new RuntimeException('A database connection is required for this backup scope.');}
-        if(($scope===BackupScope::FULL||$scope===BackupScope::DATABASE)&&$this->db->getDriverName()!=='sqlite'){throw new RuntimeException('Consistent MariaDB dump support is required; no database backup was created.');}
         if($encrypt&&$this->encryptionService===null){throw new RuntimeException('Backup encryption is not configured.');}
         if($scope===BackupScope::FILES&&$filePaths===[]){throw new RuntimeException('Files-only backup requires explicit source files.');}
-        $names=[];
-        if($scope!==BackupScope::DATABASE){foreach($filePaths as$path){if(!is_string($path)||is_link($path)||!is_file($path)||!is_readable($path)){throw new RuntimeException('Every requested backup file must be a readable regular file; directory support belongs to recursive backup.');}$name=basename($path);if(isset($names[$name])){throw new RuntimeException('Duplicate backup file names require relative-path backup support.');}$names[$name]=true;}}
         $timestamp = date('Ymd_His');
         $backupId = sprintf('backup_%s_%s_%s', $scope->value, $timestamp, bin2hex(random_bytes(4)));
         $tempArchive = rtrim($this->workingDirectory, '/\\') . '/' . $backupId . '.zip';
         $tempManifest = rtrim($this->workingDirectory, '/\\') . '/' . $backupId . '.manifest.json';
 
+        $payloadStage = rtrim($this->workingDirectory, '/\\') . '/payload_' . bin2hex(random_bytes(12));
+        if (!mkdir($payloadStage, 0700)) { throw new RuntimeException('Cannot create private backup snapshot directory.'); }
+        try {
+        $database = null;
+        if ($scope === BackupScope::FULL || $scope === BackupScope::DATABASE) {
+            $database = (new LogicalDatabaseDump())->export($this->db, $payloadStage . '/database.sql');
+        }
+        $files = $scope === BackupScope::DATABASE ? [] : (new BackupFileTree())->snapshot($filePaths, $payloadStage, [$this->workingDirectory]);
+        $total=$database===null?0:(int)filesize($payloadStage.'/database.sql');foreach($files as$source){if($source!==null){$total+=(int)filesize($source);}}
+        if($total>10*1024*1024*1024){throw new RuntimeException('Backup payload exceeds the 10 GiB uncompressed limit.');}
         $zip = new ZipArchive();
-        $res = $zip->open($tempArchive, ZipArchive::CREATE | ZipArchive::OVERWRITE);
-        if ($res !== true) {
-            throw new RuntimeException("Failed to create backup ZIP archive: {$tempArchive} (code {$res})");
-        }
-
+        if ($zip->open($tempArchive, ZipArchive::CREATE | ZipArchive::EXCL) !== true) { throw new RuntimeException('Cannot create backup archive.'); }
         $containedFiles = [];
-
-        // 1. Process Database Dump if requested
-        if (($scope === BackupScope::FULL || $scope === BackupScope::DATABASE) && $this->db !== null) {
-            $sqlDump = $this->dumpDatabase($this->db);
-            if(!$zip->addFromString('database.sql', $sqlDump)){throw new RuntimeException('Cannot add database dump to backup.');}
-            $containedFiles['database.sql'] = hash('sha256', $sqlDump);
-        }
-
-        // 2. Process Files if requested
-        if ($scope === BackupScope::FULL || $scope === BackupScope::FILES) {
-            foreach ($filePaths as $path) {
-                if (file_exists($path) && is_file($path)) {
-                    $content = file_get_contents($path);if($content===false){throw new RuntimeException('Cannot read requested backup file.');}
-                    $relName = 'files/' . basename($path);
-                    if(!$zip->addFromString($relName, $content)){throw new RuntimeException('Cannot add requested backup file.');}
-                    $containedFiles[$relName] = hash('sha256', $content);
-                }
+        try {
+            if ($database !== null) {
+                if (!$zip->addFile($payloadStage . '/database.sql', 'database.sql')) { throw new RuntimeException('Cannot add database snapshot.'); }
+                $containedFiles['database.sql'] = (string) hash_file('sha256', $payloadStage . '/database.sql');
             }
-        }
-
-        if(!$zip->close()){throw new RuntimeException('Cannot finalize backup archive.');}
+            foreach ($files as $relative => $source) {
+                $name = 'files/' . $relative;
+                if ($source === null) { if (!$zip->addEmptyDir(rtrim($name, '/'))) { throw new RuntimeException('Cannot preserve backup directory.'); } $containedFiles[$name] = hash('sha256', ''); }
+                else { if (!$zip->addFile($source, $name)) { throw new RuntimeException('Cannot add backup snapshot file.'); } $containedFiles[$name] = (string) hash_file('sha256', $source); }
+            }
+        } finally { if (!$zip->close()) { throw new RuntimeException('Cannot finalize backup archive.'); } }
 
         // 3. Optional AES-256-GCM Encryption
         $isEncrypted = false;
@@ -123,6 +116,8 @@ final class EnterpriseBackupService
                 'encrypted' => $isEncrypted,
                 'encryption_algorithm' => $isEncrypted ? 'aes-256-gcm' : 'none',
                 'destination' => $destination->getType()->value,
+                'database' => $database,
+                'file_layout' => 2,
             ]
         );
 
@@ -157,6 +152,7 @@ final class EnterpriseBackupService
             'encrypted' => $isEncrypted,
             'verified' => true,
         ];
+        } finally { BackupFileTree::removeOwned($payloadStage); }
     }
 
     /** Metadata is admitted to retention only after a complete independent package read-back. */
@@ -183,44 +179,4 @@ final class EnterpriseBackupService
         return $manifests;
     }
 
-    private function dumpDatabase(Connection $db): string
-    {
-        $driver = $db->getDriverName();
-        $dump = "-- Coleza Host Database Dump\n";
-        $dump .= "-- Generated: " . date('c') . "\n\n";
-
-        if ($driver === 'sqlite') {
-            $tables = $db->select("SELECT name, sql FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
-            foreach ($tables as $t) {
-                $tableName = (string) $t['name'];
-                $tableSql = (string) $t['sql'];
-
-                $dump .= "DROP TABLE IF EXISTS `{$tableName}`;\n";
-                $dump .= $tableSql . ";\n";
-
-                $rows = $db->select("SELECT * FROM `{$tableName}`");
-                foreach ($rows as $row) {
-                    $keys = array_keys($row);
-                    $escapedValues = array_map(function ($val) use ($db) {
-                        if ($val === null) {
-                            return 'NULL';
-                        }
-                        $quoted = $db->getPdo()->quote((string) $val);
-                        if ($quoted === false) { throw new \RuntimeException('Cannot quote backup database value.'); }
-                        return $quoted;
-                    }, array_values($row));
-
-                    $dump .= sprintf(
-                        "INSERT INTO `%s` (`%s`) VALUES (%s);\n",
-                        $tableName,
-                        implode('`, `', $keys),
-                        implode(', ', $escapedValues)
-                    );
-                }
-                $dump .= "\n";
-            }
-        }
-
-        return $dump;
-    }
 }

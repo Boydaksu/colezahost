@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="TimestampRestoreRegressionTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\remediation\runtime\TimestampRestoreRegressionTest.php" tests="1" assertions="4" errors="0" failures="1" skipped="0" time="0.384451">
+    <testcase name="testTimestampEpochDoesNotShiftAcrossHostTimezones" file="C:\Users\alici\OneDrive\Desktop\colezahost\remediation\runtime\TimestampRestoreRegressionTest.php" line="5" class="TimestampRestoreRegressionTest" classname="TimestampRestoreRegressionTest" assertions="4" time="0.384451">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">TimestampRestoreRegressionTest::testTimestampEpochDoesNotShiftAcrossHostTimezones&#13;
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+ Array &amp;0 [
+-    'epoch' =&gt; '1792054800.123456',
++    'epoch' =&gt; '1792083600.123456',
+     'wall' =&gt; '2026-10-15 12:00:00.123456',
+ ]
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\remediation\runtime\TimestampRestoreRegressionTest.php:12</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

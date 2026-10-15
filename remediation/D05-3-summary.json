@@ -1,0 +1,60 @@
+{
+  "phase": "D05",
+  "step": "D05.3",
+  "status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
+  "reference_commit": "bc01833d72849c1bd438ccc100f4283289ec8c0d",
+  "before": {
+    "tests": 5,
+    "failures": 5,
+    "errors": 0
+  },
+  "privacy_original_before": {
+    "tests": 3,
+    "failures": 3,
+    "errors": 0
+  },
+  "timezone_intermediate_before": {
+    "tests": 1,
+    "failures": 1,
+    "errors": 0
+  },
+  "main": {
+    "tests": 1992,
+    "assertions": 12842
+  },
+  "protocol": {
+    "tests": 35,
+    "assertions": 127
+  },
+  "recovery": {
+    "tests": 23,
+    "assertions": 53
+  },
+  "sql_reader": {
+    "tests": 7,
+    "assertions": 8
+  },
+  "privacy_safety": {
+    "tests": 3,
+    "assertions": 11
+  },
+  "mariadb": {
+    "tests": 96,
+    "assertions": 783
+  },
+  "main_exit": 0,
+  "mariadb_exit": 0,
+  "native_classes": 8,
+  "full_mariadb_current_source": false,
+  "remaining_steps": [
+    "D05.4",
+    "D05.5"
+  ],
+  "mariadb_dump_implemented": true,
+  "staged_fresh_target_restore_implemented": true,
+  "nonempty_database_restore_atomic": false,
+  "entrypoint_journal_binding": "PENDING_D08",
+  "external_host_acceptance": "PENDING_D09",
+  "production_ready": false,
+  "independent_acceptance": "PENDING"
+}

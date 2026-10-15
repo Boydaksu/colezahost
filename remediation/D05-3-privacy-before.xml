@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Privacy\PrivacyRecoverySafetyTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Privacy\PrivacyRecoverySafetyTest.php" tests="3" assertions="3" errors="0" failures="3" skipped="0" time="0.013510">
+    <testcase name="testWriteFailureCannotBeCountedAsSuccessfulRescrub" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Privacy\PrivacyRecoverySafetyTest.php" line="18" class="Coleza\Tests\Unit\Privacy\PrivacyRecoverySafetyTest" classname="Coleza.Tests.Unit.Privacy.PrivacyRecoverySafetyTest" assertions="1" time="0.010442">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Privacy\PrivacyRecoverySafetyTest::testWriteFailureCannotBeCountedAsSuccessfulRescrub&#13;
+Failed asserting that exception of type "RuntimeException" is thrown.</failure>
+    </testcase>
+    <testcase name="testEmailReappearanceUnderMultipleDifferentIdsIsFullyScrubbed" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Privacy\PrivacyRecoverySafetyTest.php" line="23" class="Coleza\Tests\Unit\Privacy\PrivacyRecoverySafetyTest" classname="Coleza.Tests.Unit.Privacy.PrivacyRecoverySafetyTest" assertions="1" time="0.001655">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Privacy\PrivacyRecoverySafetyTest::testEmailReappearanceUnderMultipleDifferentIdsIsFullyScrubbed&#13;
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'erased'
++'active'
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Privacy\PrivacyRecoverySafetyTest.php:26</failure>
+    </testcase>
+    <testcase name="testRelatedTableFailureRollsBackUserScrubAndDoesNotReportClean" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Privacy\PrivacyRecoverySafetyTest.php" line="29" class="Coleza\Tests\Unit\Privacy\PrivacyRecoverySafetyTest" classname="Coleza.Tests.Unit.Privacy.PrivacyRecoverySafetyTest" assertions="1" time="0.001412">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Privacy\PrivacyRecoverySafetyTest::testRelatedTableFailureRollsBackUserScrubAndDoesNotReportClean&#13;
+Related scrub failure was silently ignored
+Failed asserting that false is true.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Privacy\PrivacyRecoverySafetyTest.php:34</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

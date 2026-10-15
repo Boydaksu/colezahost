@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Backup\BackupRecoveryIntegrityTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupRecoveryIntegrityTest.php" tests="5" assertions="5" errors="0" failures="5" skipped="0" time="0.300589">
+    <testcase name="testRecursiveDirectoryRoundTripKeepsDistinctNamesAndEmptyDirectories" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupRecoveryIntegrityTest.php" line="18" class="Coleza\Tests\Unit\Backup\BackupRecoveryIntegrityTest" classname="Coleza.Tests.Unit.Backup.BackupRecoveryIntegrityTest" assertions="1" time="0.016840">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Backup\BackupRecoveryIntegrityTest::testRecursiveDirectoryRoundTripKeepsDistinctNamesAndEmptyDirectories&#13;
+Every requested backup file must be a readable regular file; directory support belongs to recursive backup.
+Failed asserting that 'Every requested backup file must be a readable regular file; directory support belongs to recursive backup.' is null.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupRecoveryIntegrityTest.php:26</failure>
+    </testcase>
+    <testcase name="testSqliteBinaryAndMultilineTextSurviveBackupRestore" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupRecoveryIntegrityTest.php" line="28" class="Coleza\Tests\Unit\Backup\BackupRecoveryIntegrityTest" classname="Coleza.Tests.Unit.Backup.BackupRecoveryIntegrityTest" assertions="1" time="0.103266">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Backup\BackupRecoveryIntegrityTest::testSqliteBinaryAndMultilineTextSurviveBackupRestore&#13;
+SQLSTATE[HY000]: General error: 1 unrecognized token: "'line;"
+Failed asserting that false is true.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupRecoveryIntegrityTest.php:34</failure>
+    </testcase>
+    <testcase name="testWrongEntryChecksumBlocksDatabaseImport" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupRecoveryIntegrityTest.php" line="36" class="Coleza\Tests\Unit\Backup\BackupRecoveryIntegrityTest" classname="Coleza.Tests.Unit.Backup.BackupRecoveryIntegrityTest" assertions="1" time="0.063488">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Backup\BackupRecoveryIntegrityTest::testWrongEntryChecksumBlocksDatabaseImport&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupRecoveryIntegrityTest.php:40</failure>
+    </testcase>
+    <testcase name="testUnlistedArchiveEntryBlocksInspection" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupRecoveryIntegrityTest.php" line="42" class="Coleza\Tests\Unit\Backup\BackupRecoveryIntegrityTest" classname="Coleza.Tests.Unit.Backup.BackupRecoveryIntegrityTest" assertions="1" time="0.044610">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Backup\BackupRecoveryIntegrityTest::testUnlistedArchiveEntryBlocksInspection&#13;
+Manifest omitted archive payload but inspection accepted it
+Failed asserting that false is true.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupRecoveryIntegrityTest.php:46</failure>
+    </testcase>
+    <testcase name="testUnsafeArchivePathCannotReachTarget" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupRecoveryIntegrityTest.php" line="48" class="Coleza\Tests\Unit\Backup\BackupRecoveryIntegrityTest" classname="Coleza.Tests.Unit.Backup.BackupRecoveryIntegrityTest" assertions="1" time="0.072385">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Backup\BackupRecoveryIntegrityTest::testUnsafeArchivePathCannotReachTarget&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupRecoveryIntegrityTest.php:52</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -1,0 +1,41 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+FFFFF                                                               5 / 5 (100%)
+
+Time: 00:00.302, Memory: 20.00 MB
+
+There were 5 failures:
+
+1) Coleza\Tests\Unit\Backup\BackupRecoveryIntegrityTest::testRecursiveDirectoryRoundTripKeepsDistinctNamesAndEmptyDirectories
+Every requested backup file must be a readable regular file; directory support belongs to recursive backup.
+Failed asserting that 'Every requested backup file must be a readable regular file; directory support belongs to recursive backup.' is null.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupRecoveryIntegrityTest.php:26
+
+2) Coleza\Tests\Unit\Backup\BackupRecoveryIntegrityTest::testSqliteBinaryAndMultilineTextSurviveBackupRestore
+SQLSTATE[HY000]: General error: 1 unrecognized token: "'line;"
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupRecoveryIntegrityTest.php:34
+
+3) Coleza\Tests\Unit\Backup\BackupRecoveryIntegrityTest::testWrongEntryChecksumBlocksDatabaseImport
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupRecoveryIntegrityTest.php:40
+
+4) Coleza\Tests\Unit\Backup\BackupRecoveryIntegrityTest::testUnlistedArchiveEntryBlocksInspection
+Manifest omitted archive payload but inspection accepted it
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupRecoveryIntegrityTest.php:46
+
+5) Coleza\Tests\Unit\Backup\BackupRecoveryIntegrityTest::testUnsafeArchivePathCannotReachTarget
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\BackupRecoveryIntegrityTest.php:52
+
+FAILURES!
+Tests: 5, Assertions: 5, Failures: 5.

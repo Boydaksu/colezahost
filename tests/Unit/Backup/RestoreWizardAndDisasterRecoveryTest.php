@@ -51,6 +51,9 @@ final class RestoreWizardAndDisasterRecoveryTest extends TestCase
 
     protected function tearDown(): void
     {
+        $journal=\Coleza\Domain\Backup\RestoreJournal::path($this->tempFreshAppDir);$state=\Coleza\Domain\Backup\RestoreJournal::read($journal);
+        $previous=$state['previous_directory']??null;if(is_string($previous)&&str_starts_with($previous,$this->tempFreshAppDir.'.previous_')){$this->removeDirectory($previous);}
+        foreach([$journal,$journal.'.lock']as$path){if(is_file($path)){unlink($path);}}
         $this->removeDirectory($this->tempWorkDir);
         $this->removeDirectory($this->tempStorageDir);
         $this->removeDirectory($this->tempFreshAppDir);
@@ -161,7 +164,9 @@ final class RestoreWizardAndDisasterRecoveryTest extends TestCase
         try {
             putenv('APP_KEY'); putenv('APP_KEY_FILE');
             $restoreKey = match ($case) { 'wrong', 'encrypted-wrong' => \Coleza\Domain\Vault\ApplicationKey::encryptor(\Coleza\Domain\Vault\ApplicationKey::generate()), 'missing' => null, default => $key };
-            $result = (new RestoreWizardService($this->tempWorkDir, applicationEncryptor: $restoreKey))->executeRestore($backup['manifest']->getBackupId(), $adapter, $this->freshHostingDb, $this->tempFreshAppDir, $archiveEncrypted ? 'synthetic-archive-passphrase' : null);
+            $inventoryPath=$this->tempWorkDir.'/authoritative-empty-tombstones.json';file_put_contents($inventoryPath,'[]');
+            $privacy=new \Coleza\Domain\Privacy\Integrity\PrivacyIntegrityVerifier($this->freshHostingDb,['tombstone'=>\Coleza\Tests\Support\PrivacyFixtureKeys::tombstone(),'email'=>\Coleza\Tests\Support\PrivacyFixtureKeys::email()],new \Coleza\Domain\Privacy\Tombstone\FileTombstoneStore($inventoryPath,\Coleza\Tests\Support\PrivacyFixtureKeys::tombstone()));
+            $result = (new RestoreWizardService($this->tempWorkDir, applicationEncryptor: $restoreKey,privacyVerifier:$privacy))->executeRestore($backup['manifest']->getBackupId(), $adapter, $this->freshHostingDb, $this->tempFreshAppDir, $archiveEncrypted ? 'synthetic-archive-passphrase' : null);
             self::assertSame($case === 'correct', $result->isSuccess(), $result->getErrorMessage() ?? '');
             if ($case === 'correct') {
                 self::assertSame('restore-synthetic-secret', (new \Coleza\Domain\Vault\VaultService($this->freshHostingDb, $key))->getSecret('provider:restore', 'token'));

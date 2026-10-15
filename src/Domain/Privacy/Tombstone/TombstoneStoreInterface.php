@@ -11,6 +11,8 @@ namespace Coleza\Domain\Privacy\Tombstone;
  */
 interface TombstoneStoreInterface
 {
+    /** Missing external inventory must never be interpreted as an empty deletion history during restore. */
+    public function assertAvailableForRestore(): void;
     /**
      * Persist a tombstone in the out-of-band storage.
      */

@@ -1,0 +1,32 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+FFF                                                                 3 / 3 (100%)
+
+Time: 00:00.014, Memory: 20.00 MB
+
+There were 3 failures:
+
+1) Coleza\Tests\Unit\Privacy\PrivacyRecoverySafetyTest::testWriteFailureCannotBeCountedAsSuccessfulRescrub
+Failed asserting that exception of type "RuntimeException" is thrown.
+
+2) Coleza\Tests\Unit\Privacy\PrivacyRecoverySafetyTest::testEmailReappearanceUnderMultipleDifferentIdsIsFullyScrubbed
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'erased'
++'active'
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Privacy\PrivacyRecoverySafetyTest.php:26
+
+3) Coleza\Tests\Unit\Privacy\PrivacyRecoverySafetyTest::testRelatedTableFailureRollsBackUserScrubAndDoesNotReportClean
+Related scrub failure was silently ignored
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Privacy\PrivacyRecoverySafetyTest.php:34
+
+FAILURES!
+Tests: 3, Assertions: 3, Failures: 3.

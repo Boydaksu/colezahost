@@ -1,0 +1,26 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+F                                                                   1 / 1 (100%)
+
+Time: 00:00.386, Memory: 20.00 MB
+
+There was 1 failure:
+
+1) TimestampRestoreRegressionTest::testTimestampEpochDoesNotShiftAcrossHostTimezones
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+ Array &0 [
+-    'epoch' => '1792054800.123456',
++    'epoch' => '1792083600.123456',
+     'wall' => '2026-10-15 12:00:00.123456',
+ ]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\remediation\runtime\TimestampRestoreRegressionTest.php:12
+
+FAILURES!
+Tests: 1, Assertions: 4, Failures: 1.

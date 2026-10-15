@@ -25,9 +25,11 @@ final class OperationalModeManager
 
     public function __construct(
         private Connection $db,
-        private ?string $lockFilePath = null
+        private ?string $lockFilePath = null,
+        private ?string $restoreJournalPath = null
     ) {
         $this->assertCaller();
+        if($this->restoreActive()){return;}
         self::ensureSchema($this->db);
     }
 
@@ -69,6 +71,7 @@ final class OperationalModeManager
         string $reason = '',
         array $whitelistIps = []
     ): void {
+        if($this->restoreActive()){throw new RuntimeException('Unfinished restore blocks operational mode transitions.');}
         $this->assertCaller();
         if ($this->lockFilePath !== null && $this->db->getPdo()->inTransaction()) {
             throw new \LogicException('A file-backed mode transition requires its own transaction; caller commit is outside this service.');
@@ -108,6 +111,7 @@ final class OperationalModeManager
         ?string $clientIp = null,
         bool $isSuperAdmin = false
     ): void {
+        if($this->restoreActive()&&($isWriteOperation||$isCustomerContext)){throw OperationModeRestrictionException::customerBlockedInRecovery();}
         $status = $this->getModeStatus();
         $mode = OperationalMode::from($status['mode']);
 
@@ -228,6 +232,7 @@ final class OperationalModeManager
 
     private function readState(bool $checkFile = true, bool $current = false): array
     {
+        if($this->restoreActive()){return ['mode'=>OperationalMode::RECOVERY,'reason'=>'Unfinished restore requires recovery','activated_at'=>'','whitelist_ips'=>[]];}
         $keys = [self::SETTING_KEY_MODE, self::SETTING_KEY_REASON, self::SETTING_KEY_ACTIVATED_AT, self::SETTING_KEY_WHITELIST_IPS];
         $rows = $this->db->select('SELECT * FROM system_settings WHERE setting_key IN (?, ?, ?, ?)' . ($current ? $this->db->forUpdate() : ''), $keys);
         $values = [];
@@ -264,5 +269,12 @@ final class OperationalModeManager
             fclose($handle); $handle = null;
             if (!@rename($temporary, $this->lockFilePath)) { throw new RuntimeException('Operational mode cache publication failed.'); }
         } finally { if (is_resource($handle)) { fclose($handle); } if (is_file($temporary)) { unlink($temporary); } }
+    }
+
+    private function restoreActive(): bool
+    {
+        if($this->restoreJournalPath===null){return false;}
+        $state=\Coleza\Domain\Backup\RestoreJournal::read($this->restoreJournalPath);
+        return $state!==null&&$state['state']!=='complete';
     }
 }

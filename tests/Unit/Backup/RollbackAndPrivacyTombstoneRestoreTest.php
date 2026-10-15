@@ -52,6 +52,9 @@ final class RollbackAndPrivacyTombstoneRestoreTest extends TestCase
 
     protected function tearDown(): void
     {
+        $journal=\Coleza\Domain\Backup\RestoreJournal::path($this->tempAppDir);$state=\Coleza\Domain\Backup\RestoreJournal::read($journal);
+        $previous=$state['previous_directory']??null;if(is_string($previous)&&str_starts_with($previous,$this->tempAppDir.'.previous_')){$this->removeDirectory($previous);}
+        foreach([$journal,$journal.'.lock']as$path){if(is_file($path)){unlink($path);}}
         $this->removeDirectory($this->tempWorkDir);
         $this->removeDirectory($this->tempStorageDir);
         $this->removeDirectory($this->tempAppDir);
@@ -145,7 +148,7 @@ final class RollbackAndPrivacyTombstoneRestoreTest extends TestCase
             targetAppDir: $this->tempAppDir
         );
 
-        $this->assertTrue($restoreResult->isSuccess());
+        $this->assertTrue($restoreResult->isSuccess(),$restoreResult->getErrorMessage()??'');
 
         // 4. Verify Constitution Rule: Privacy Tombstone must re-scrub resurrected user 42
         $reconcileReport = $restoreResult->getReconciliationReport();
@@ -181,7 +184,8 @@ final class RollbackAndPrivacyTombstoneRestoreTest extends TestCase
         $destination = $this->tempAppDir . '/privacy-gate.txt'; file_put_contents($destination, 'existing version');
         $target = new Connection(new PDO('sqlite::memory:'));
         $keys['tombstone'] = \Coleza\Tests\Support\PrivacyFixtureKeys::redaction();
-        $verifier = new \Coleza\Domain\Privacy\Integrity\PrivacyIntegrityVerifier($this->db, $keys);
+        $emptyInventory=$this->tempWorkDir.'/authoritative-empty.json';file_put_contents($emptyInventory,'[]');
+        $verifier = new \Coleza\Domain\Privacy\Integrity\PrivacyIntegrityVerifier($this->db, $keys,new FileTombstoneStore($emptyInventory,$keys['tombstone']));
         $result = (new RestoreWizardService($this->tempWorkDir . '/privacy_wrong_restore', privacyVerifier: $verifier))->executeRestore($backup['manifest']->getBackupId(), $adapter, $target, $this->tempAppDir);
         self::assertFalse($result->isSuccess()); self::assertSame(0, $result->getFilesRestored());
         self::assertStringContainsString('Privacy key', $result->getErrorMessage());

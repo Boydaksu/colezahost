@@ -45,123 +45,50 @@ final class BackupRestoreReconciliationService
         // 3. Retrieve all authoritative tombstones
         $tombstones = $this->tombstoneService->getAllTombstones();
 
-        $resurrectedCount = 0;
-        $rescrubbedCount = 0;
-        $scrubbedUserIds = [];
-
-        foreach ($tombstones as $userId => $tombstone) {
-            // Check by User ID
-            $userRow = null;
-            try {
-                $userRow = $this->db->selectOne("SELECT * FROM users WHERE id = :id", ['id' => $userId]);
-            } catch (\Throwable) {
-                // Table might not exist or columns different
-            }
-
-            // Also check by email hash if direct ID was not found or if email resurrected under different ID
-            if ($userRow === null) {
-                try {
-                    $allUsers = $this->db->select("SELECT id, email, status FROM users");
-                    foreach ($allUsers as $u) {
-                        if (isset($u['email']) && $this->tombstoneService->matchesTombstoneEmail($tombstone, (string) $u['email'])) {
-                            $userRow = $this->db->selectOne("SELECT * FROM users WHERE id = :id", ['id' => $u['id']]);
-                            break;
-                        }
-                    }
-                } catch (\Throwable) {
-                    // Ignore
-                }
-            }
-
-            if ($userRow !== null) {
-                $targetId = (int) $userRow['id'];
-                $isResurrected = false;
-
-                // Check if user contains resurrected plaintext PII
-                $status = strtolower((string) ($userRow['status'] ?? ''));
-                $name = (string) ($userRow['name'] ?? '');
-                $email = (string) ($userRow['email'] ?? '');
-
-                if ($status !== 'erased' || !str_starts_with($name, '[Anonymized User #') || !str_starts_with($email, 'erased_')) {
-                    $isResurrected = true;
-                }
-
-                // Check if active consents exist for this user
-                try {
-                    $consents = $this->db->select(
-                        "SELECT id FROM privacy_consents WHERE user_id = :uid",
-                        ['uid' => $targetId]
-                    );
-                    if (!empty($consents)) {
-                        $isResurrected = true;
-                    }
-                } catch (\Throwable) {
-                    // Ignore
-                }
-
-                if ($isResurrected) {
-                    $resurrectedCount++;
-
-                    // Re-apply anonymization & PII scrub
-                    $pseudoName = sprintf('[Anonymized User #%d]', $targetId);
-                    $hashPrefix = substr($tombstone->getErasureChecksum(), 0, 8);
-                    $pseudoEmail = sprintf('erased_%d_%s@anonymized.local', $targetId, $hashPrefix !== '' ? $hashPrefix : 'rescrub');
-
-                    try {
-                        $this->db->statement(
-                            "UPDATE users
-                             SET name = :name, email = :email, status = 'erased',
-                                 phone = NULL, address = NULL, tax_number = NULL,
-                                 two_factor_secret = NULL, password_hash = 'ERASED'
-                             WHERE id = :id",
-                            [
-                                'name' => $pseudoName,
-                                'email' => $pseudoEmail,
-                                'id' => $targetId,
-                            ]
-                        );
-                    } catch (\Throwable) {
-                        try {
-                            $this->db->statement(
-                                "UPDATE users SET name = :name, email = :email, status = 'erased' WHERE id = :id",
-                                ['name' => $pseudoName, 'email' => $pseudoEmail, 'id' => $targetId]
-                            );
-                        } catch (\Throwable) {
-                            // Ignore
-                        }
-                    }
-
-                    // Delete resurrected privacy consents
-                    try {
-                        $this->db->statement("DELETE FROM privacy_consents WHERE user_id = :uid", ['uid' => $targetId]);
-                    } catch (\Throwable) {
-                        // Ignore
-                    }
-
-                    $rescrubbedCount++;
-                    $scrubbedUserIds[] = $targetId;
-                }
+        $resurrectedCount = 0; $rescrubbedCount = 0; $scrubbedUserIds = [];
+        $columns = $this->columns('users');
+        foreach (['id','name','email','status'] as $required) { if (!in_array($required,$columns,true)) { throw new \RuntimeException('Restored users schema cannot be verified for privacy reconciliation.'); } }
+        $targets = [];
+        foreach ($this->db->select('SELECT * FROM users ORDER BY id') as $user) {
+            foreach ($tombstones as $tombstone) {
+                if ((int)$user['id'] === $tombstone->getUserId() || $this->tombstoneService->matchesTombstoneEmail($tombstone,(string)$user['email'])) { $targets[(int)$user['id']]=$tombstone; break; }
             }
         }
-
-        // 4. Verification Check: Scan again to confirm zero resurrected PII remains
-        $isClean = true;
-        foreach ($tombstones as $userId => $tombstone) {
-            try {
-                $checkRow = $this->db->selectOne("SELECT id, name, email, status FROM users WHERE id = :id", ['id' => $userId]);
-                if ($checkRow !== null) {
-                    if (
-                        strtolower((string) $checkRow['status']) !== 'erased' ||
-                        !str_starts_with((string) $checkRow['name'], '[Anonymized User #')
-                    ) {
-                        $isClean = false;
-                        break;
-                    }
+        foreach ($targets as $targetId => $tombstone) {
+            $this->db->transaction(function () use ($targetId,$tombstone,$columns,&$resurrectedCount,&$rescrubbedCount,&$scrubbedUserIds): void {
+                $values=['name'=>'[Anonymized User #'.$targetId.']','email'=>'erased_'.$targetId.'_'.substr($tombstone->getErasureChecksum(),0,8).'@anonymized.local','status'=>'erased',
+                    'phone'=>null,'address'=>null,'tax_number'=>null,'two_factor_secret'=>null,'password_hash'=>'ERASED','first_name'=>null,'last_name'=>null,'is_active'=>0,'email_verified_at'=>null];
+                $values=array_intersect_key($values,array_flip($columns));
+                $user=$this->db->selectOne('SELECT * FROM users WHERE id=?',[$targetId]);$changed=false;
+                foreach($values as$key=>$value){if($user[$key]!==$value){$changed=true;}}
+                $this->db->update('users',$values,'id=:id',['id'=>$targetId]);
+                foreach(['privacy_consents','sessions','user_two_factor','user_recovery_codes','user_trusted_devices','two_factor_login_steps','api_keys']as$table){
+                    if(!\Coleza\Domain\Vault\KeyBinding::tableExists($this->db,$table)){continue;}
+                    $childColumns=$this->columns($table);if(!in_array('user_id',$childColumns,true)){throw new \RuntimeException('Privacy recovery cannot identify restored authentication/consent owner.');}
+                    if($this->db->affectingStatement('DELETE FROM `'.$table.'` WHERE user_id=?',[$targetId])>0){$changed=true;}
                 }
-            } catch (\Throwable) {
-                // Ignore
-            }
+                $redactions=[
+                    'payment_methods'=>['token'=>'ERASED','card_last4'=>'0000','card_brand'=>'ERASED','billing_name'=>'ERASED','is_active'=>0],
+                    'billing_profiles'=>['company_name'=>'[Anonymized]','tax_number'=>null,'tax_office'=>null,'address'=>'[Anonymized]','city'=>null,'state'=>null,'postal_code'=>null,'phone'=>null],
+                    'hosting_services'=>['username'=>'erased_user','password_encrypted'=>'ERASED','contact_email'=>'erased@anonymized.local'],
+                    'support_tickets'=>['subject'=>'[Redacted]','customer_email'=>'erased@anonymized.local','status'=>'closed','metadata_json'=>'{}'],
+                    'support_messages'=>['message'=>'[Personal content redacted under right to erasure]','ip_address'=>'127.0.0.1'],
+                    'support_ticket_messages'=>['message'=>'[Personal content redacted under right to erasure]','metadata_json'=>'{}'],
+                ];
+                foreach($redactions as$table=>$redacted){
+                    if(!\Coleza\Domain\Vault\KeyBinding::tableExists($this->db,$table)){continue;}$childColumns=$this->columns($table);
+                    if(!in_array('user_id',$childColumns,true)){throw new \RuntimeException('Privacy recovery requires an explicit owner mapping for restored related tables.');}
+                    $redacted=array_intersect_key($redacted,array_flip($childColumns));if($redacted===[]){throw new \RuntimeException('Privacy recovery has no verified redaction mapping for a restored related table.');}
+                    foreach($this->db->select('SELECT * FROM `'.$table.'` WHERE user_id=?',[$targetId])as$row){foreach($redacted as$key=>$value){if((string)$row[$key] !== (string)$value || ($row[$key]===null)!==($value===null)){$changed=true;}}}
+                    $this->db->update('`'.$table.'`',$redacted,'user_id=:uid',['uid'=>$targetId]);
+                    foreach($this->db->select('SELECT * FROM `'.$table.'` WHERE user_id=?',[$targetId])as$row){foreach($redacted as$key=>$value){if((string)$row[$key] !== (string)$value || ($row[$key]===null)!==($value===null)){throw new \RuntimeException('Privacy recovery related-field verification failed.');}}}
+                }
+                $verified=$this->db->selectOne('SELECT * FROM users WHERE id=?',[$targetId]);
+                foreach($values as$key=>$value){if($verified[$key]!==$value){throw new \RuntimeException('Privacy recovery user verification failed.');}}
+                if($changed){$resurrectedCount++;$rescrubbedCount++;$scrubbedUserIds[]=$targetId;}
+            });
         }
+        $isClean=true;
 
         $now = (new DateTimeImmutable())->format('Y-m-d H:i:s');
         $auditDigest = hash('sha256', sprintf(
@@ -197,6 +124,12 @@ final class BackupRestoreReconciliationService
             reconciledAt: $now,
             auditDigest: $auditDigest
         );
+    }
+
+    private function columns(string $table): array
+    {
+        if($this->db->getDriverName()==='sqlite'){return array_column($this->db->select('PRAGMA table_info(`'.$table.'`)'),'name');}
+        return array_column($this->db->select('SHOW COLUMNS FROM `'.$table.'`'),'Field');
     }
 
     /**

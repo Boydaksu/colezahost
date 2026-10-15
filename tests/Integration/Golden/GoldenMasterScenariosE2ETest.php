@@ -802,7 +802,9 @@ final class GoldenMasterScenariosE2ETest extends TestCase
         $this->assertSame(OperationalMode::RECOVERY, $opManager->getCurrentMode());
 
         // Step 3: Execute Rollback / Restore Wizard
-        $restoreWizard = new RestoreWizardService($this->tempWorkDir . '/restore_extract');
+        $emptyInventory=$this->tempWorkDir.'/g06-authoritative-empty.json';file_put_contents($emptyInventory,'[]');
+        $privacy=new \Coleza\Domain\Privacy\Integrity\PrivacyIntegrityVerifier($db,['tombstone'=>\Coleza\Tests\Support\PrivacyFixtureKeys::tombstone(),'email'=>\Coleza\Tests\Support\PrivacyFixtureKeys::email()],new FileTombstoneStore($emptyInventory,\Coleza\Tests\Support\PrivacyFixtureKeys::tombstone()));
+        $restoreWizard = new RestoreWizardService($this->tempWorkDir . '/restore_extract',privacyVerifier:$privacy);
         $rollbackManager = new RollbackManager($restoreWizard, $localAdapter);
 
         $restoreResult = $rollbackManager->executeRollback(
@@ -930,7 +932,8 @@ final class GoldenMasterScenariosE2ETest extends TestCase
             backupId: $backupId,
             sourceStorage: $localAdapter,
             targetDb: $db,
-            targetAppDir: $appDir
+            targetAppDir: $appDir,
+            replaceExistingDatabase: true
         );
         $this->assertTrue($restoreResult->isSuccess());
 

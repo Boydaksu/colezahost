@@ -20,12 +20,13 @@ final class BackupAdmissionTest extends \Coleza\Tests\Support\MariaDbTestCase
     }
     public static function databaseScopes(): array {return [[BackupScope::DATABASE],[BackupScope::FULL]];}
     #[\PHPUnit\Framework\Attributes\DataProvider('databaseScopes')]
-    public function testUnsupportedMariaDbDumpCannotPublishEmptyDatabaseBackup(BackupScope $scope): void
+    public function testMariaDbScopePublishesActualRowsInsteadOfCommentOnlyDump(BackupScope $scope): void
     {
         $this->db->statement('CREATE TABLE backup_source (id INT PRIMARY KEY,value TEXT)');$this->db->insert('backup_source',['id'=>1,'value'=>"O'Reilly İstanbul"]);
-        try{(new EnterpriseBackupService($this->backupRoot.'/work',$this->db))->createBackup($scope,new LocalBackupStorageAdapter($this->backupRoot.'/store'),[$this->backupRoot.'/source.txt']);self::fail('Comment-only MariaDB dump accepted');}catch(\RuntimeException){self::assertSame([],glob($this->backupRoot.'/work/*.zip'));self::assertSame([],glob($this->backupRoot.'/store/*.manifest.json'));self::assertSame("O'Reilly İstanbul",$this->db->selectOne('SELECT value FROM backup_source')['value']);}
+        $result=(new EnterpriseBackupService($this->backupRoot.'/work',$this->db))->createBackup($scope,new LocalBackupStorageAdapter($this->backupRoot.'/store'),[$this->backupRoot.'/source.txt']);
+        self::assertTrue($result['verified']);self::assertSame(['rows'=>1],$result['manifest']->getMetadata()['database']['tables']['backup_source']);$zip=new \ZipArchive();self::assertTrue($zip->open($this->backupRoot.'/work/'.$result['manifest']->getBackupId().'.zip'));$dump=$zip->getFromName('database.sql');$zip->close();self::assertStringContainsString(bin2hex("O'Reilly İstanbul"),$dump);self::assertStringContainsString('INSERT INTO `backup_source`',$dump);self::assertSame("O'Reilly İstanbul",$this->db->selectOne('SELECT value FROM backup_source')['value']);
     }
-    public function testRejectedDumpPreservesCallerTransactionAndDoesNoDatabaseWork(): void
+    public function testSnapshotAdmissionPreservesCallerTransactionAndDoesNoDatabaseWork(): void
     {
         $this->db->statement('CREATE TABLE backup_marker (id INT PRIMARY KEY)');$this->db->getPdo()->beginTransaction();
         try{$this->db->insert('backup_marker',['id'=>1]);$this->db->enableQueryLog();$this->db->flushQueryLog();
