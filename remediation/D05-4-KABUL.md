@@ -1,0 +1,12 @@
+# D05.4 sabit kabul listesi
+
+Kaynak: orijinal master plan P17.3/P17.4/P17.9, F11/F13 ve D05-PLAN.md. Bu dört kontrol D05.4'ün mevcut kapsamını açar; yeni faz değildir. D05.4 ancak dördü de doğrulandığında kapanır.
+
+1. **Güncelleme öncesi gerçek yedek:** PreUpdateBackupService ortak consistent database snapshot, recursive file snapshot, çakışmasız paket kimliği, doğrulanmış teslim ve bağımsız tam içerik okumasını kullanır. DB zorunludur; eksik/çakışan dosya sessiz atlanmaz. Format-2 envanteri olmayan eski paket geçerli recovery kanıtı sayılmaz. SQLite ve gerçek MariaDB'de bu hizmetin ürettiği paketten geri yükleme doğrulanır.
+2. **Tek imzalı paket ve zorunlu yedek kapısı:** Manifest ve dosyalar bir kez dondurulup imza/hash/path/tam üyelik/sürüm/modül uyumluluğu kontrol edilir. Doğrulama sonrası kaynak değişimi etkisiz kalır. `requireBackup=false` üzerinden atlama kapatılır; doğru DB ve hedef uygulama ağacının yedeklendiği bağlanır. Etkiden önce hata testleri geçer.
+3. **Gerçek migration:** Yalnız doğrulanmış paket migration'ları gerçek runner/kalıcı ledger üzerinden uygulanır. Mevcut transaction/tekrar/yarım DDL/hata senaryoları korunur; migration sayısı gerçek tamamlanan işi gösterir. MariaDB DDL transaction rollback ile geri alınmış sayılmaz.
+4. **Staged dosya geçişi ve rollback:** Uygulama ağacı ayrı yerde hazırlanır; exclusive lock, dışarıda kalıcı kesinti journal'ı, health/version kapıları, eski dosya ağacını koruma, kesinti ve tekrar giriş testleri vardır. Migration/yayınlama hatasında doğrulanmış yedek ve eski dosyalar üzerinden gerçek recovery/rollback uygulanır; rollback başarısızlığı gizlenmez. Privacy/key kapıları korunur; sistem kendiliğinden Normal moda açılmaz.
+
+İlerleme ve test sonuçları D05-4-PREBACKUP-SONUC.md ve state.json içindedir. Şu an ilk kontrol tamamlanmıştır; diğer üç kontrol açıktır. Özellikle mevcut updater'ın yedek atlama seçeneği, sayım yapan migration döngüsü ve doğrudan dosya kopyalaması bu teslimde değişmedi. Dolayısıyla D05.4 tamamlandı veya güncelleme güvenli biçimde kullanıma hazır denmez.
+
+Ortak yedek hizmeti kaynakların açıkça seçilmesini ister; bu kontrolde boş dosya listesi bütün uygulama ağacının yedeklendiği anlamına gelmez. Dosya yazarları ve DDL için maintenance gerekliliği sürer. Unsupported engine/custom DB object ve legacy inventory'siz paketler açık hata verir. Harici host/hesap kabulü D09, ürünün HTTP/CLI/cron/worker journal bağlaması D08 kapsamındadır.

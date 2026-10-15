@@ -51,8 +51,19 @@ final class EnterpriseBackupService
         BackupStorageAdapterInterface $destination,
         array $filePaths = [],
         bool $encrypt = false,
-        ?BackupRetentionPolicy $retentionPolicy = null
+        ?BackupRetentionPolicy $retentionPolicy = null,
+        ?string $preUpdateTargetVersion = null
     ): array {
+        if ($preUpdateTargetVersion !== null) {
+            if ($scope !== BackupScope::FULL || $encrypt || $retentionPolicy !== null) {
+                throw new RuntimeException('Pre-update backups require a full unencrypted snapshot without automatic retention.');
+            }
+            foreach ([$this->appVersion, $preUpdateTargetVersion] as $version) {
+                if (!preg_match('/^[0-9]+\.[0-9]+\.[0-9]+(?:-[A-Za-z0-9.-]+)?(?:\+[A-Za-z0-9.-]+)?$/D', $version) || strlen($version) > 100) {
+                    throw new RuntimeException('Invalid pre-update application version.');
+                }
+            }
+        }
         if(($scope===BackupScope::FULL||$scope===BackupScope::DATABASE)&&$this->db===null){throw new RuntimeException('A database connection is required for this backup scope.');}
         if($encrypt&&$this->encryptionService===null){throw new RuntimeException('Backup encryption is not configured.');}
         if($scope===BackupScope::FILES&&$filePaths===[]){throw new RuntimeException('Files-only backup requires explicit source files.');}
@@ -106,7 +117,7 @@ final class EnterpriseBackupService
 
         $manifest = new BackupManifest(
             backupId: $backupId,
-            type: $scope->value,
+            type: $preUpdateTargetVersion === null ? $scope->value : 'pre_update',
             sourceAppVersion: $this->appVersion,
             fileSizeBytes: $fileSize,
             sha256Checksum: $checksum,
@@ -118,7 +129,10 @@ final class EnterpriseBackupService
                 'destination' => $destination->getType()->value,
                 'database' => $database,
                 'file_layout' => 2,
-            ]
+            ] + ($preUpdateTargetVersion === null ? [] : [
+                'target_version' => $preUpdateTargetVersion,
+                'reason' => 'Mandatory pre-update safety seal',
+            ])
         );
 
         $manifestJson=json_encode($manifest->toArray(),JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);

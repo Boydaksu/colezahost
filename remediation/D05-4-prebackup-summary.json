@@ -1,0 +1,34 @@
+{
+  "phase": "D05",
+  "step": "D05.4",
+  "checkpoint": "pre_update_backup",
+  "status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
+  "reference_commit": "7d6010c2b02a20a682ce0b381748ea4da3c8ffa1",
+  "before": {
+    "tests": 9,
+    "failures": 7,
+    "errors": 0
+  },
+  "main": {
+    "tests": 2002,
+    "assertions": 12864
+  },
+  "native": {
+    "tests": 99,
+    "assertions": 804
+  },
+  "main_exit": 0,
+  "native_exit": 0,
+  "native_classes": 9,
+  "full_mariadb_current_source": false,
+  "d05_4_complete": false,
+  "completed_gates": 1,
+  "total_gates": 4,
+  "remaining_gates": [
+    "signed_package_and_backup_gate",
+    "real_migrations",
+    "staged_publication_and_rollback"
+  ],
+  "production_ready": false,
+  "independent_acceptance": "PENDING"
+}

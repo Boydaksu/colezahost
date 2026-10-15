@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Backup\PreUpdateRecoverySafetyTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\PreUpdateRecoverySafetyTest.php" tests="9" assertions="12" errors="0" failures="7" skipped="0" time="0.199374">
+    <testcase name="testMissingRequestedFileStopsPublication" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\PreUpdateRecoverySafetyTest.php" line="40" class="Coleza\Tests\Unit\Backup\PreUpdateRecoverySafetyTest" classname="Coleza.Tests.Unit.Backup.PreUpdateRecoverySafetyTest" assertions="2" time="0.033869">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Backup\PreUpdateRecoverySafetyTest::testMissingRequestedFileStopsPublication&#13;
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+-Array &amp;0 []
++Array &amp;0 [
++    0 =&gt; 'C:\Users\alici\AppData\Local\Temp/coleza_preupdate_f46c0e338f5a3ad9dbac7287/backups/pre_update_v1_0_0_to_v1_1_0_20261015_200825.manifest.json',
++]
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\PreUpdateRecoverySafetyTest.php:43</failure>
+    </testcase>
+    <testcase name="testDuplicateBasenamesCannotOverwriteEachOther" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\PreUpdateRecoverySafetyTest.php" line="45" class="Coleza\Tests\Unit\Backup\PreUpdateRecoverySafetyTest" classname="Coleza.Tests.Unit.Backup.PreUpdateRecoverySafetyTest" assertions="1" time="0.028510">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Backup\PreUpdateRecoverySafetyTest::testDuplicateBasenamesCannotOverwriteEachOther&#13;
+Failed asserting that exception of type "RuntimeException" is thrown.</failure>
+    </testcase>
+    <testcase name="testRapidBackupsNeverReplaceAnExistingPair" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\PreUpdateRecoverySafetyTest.php" line="51" class="Coleza\Tests\Unit\Backup\PreUpdateRecoverySafetyTest" classname="Coleza.Tests.Unit.Backup.PreUpdateRecoverySafetyTest" assertions="1" time="0.011584">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Backup\PreUpdateRecoverySafetyTest::testRapidBackupsNeverReplaceAnExistingPair&#13;
+Failed asserting that two strings are not identical.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\PreUpdateRecoverySafetyTest.php:55</failure>
+    </testcase>
+    <testcase name="testRecursiveFilesAndDatabaseActuallyRestore" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\PreUpdateRecoverySafetyTest.php" line="59" class="Coleza\Tests\Unit\Backup\PreUpdateRecoverySafetyTest" classname="Coleza.Tests.Unit.Backup.PreUpdateRecoverySafetyTest" assertions="2" time="0.007255">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Backup\PreUpdateRecoverySafetyTest::testRecursiveFilesAndDatabaseActuallyRestore&#13;
+Failed asserting that null is identical to 2.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\PreUpdateRecoverySafetyTest.php:64</failure>
+    </testcase>
+    <testcase name="testInnerChecksumCannotBeIgnoredEvenWhenOuterHashMatches" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\PreUpdateRecoverySafetyTest.php" line="74" class="Coleza\Tests\Unit\Backup\PreUpdateRecoverySafetyTest" classname="Coleza.Tests.Unit.Backup.PreUpdateRecoverySafetyTest" assertions="1" time="0.021354">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Backup\PreUpdateRecoverySafetyTest::testInnerChecksumCannotBeIgnoredEvenWhenOuterHashMatches&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\PreUpdateRecoverySafetyTest.php:79</failure>
+    </testcase>
+    <testcase name="testLegacyCommentOnlyDatabaseIsNotRecoveryEvidence" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\PreUpdateRecoverySafetyTest.php" line="81" class="Coleza\Tests\Unit\Backup\PreUpdateRecoverySafetyTest" classname="Coleza.Tests.Unit.Backup.PreUpdateRecoverySafetyTest" assertions="1" time="0.038104">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Backup\PreUpdateRecoverySafetyTest::testLegacyCommentOnlyDatabaseIsNotRecoveryEvidence&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\PreUpdateRecoverySafetyTest.php:88</failure>
+    </testcase>
+    <testcase name="testDatabaseIsMandatory" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\PreUpdateRecoverySafetyTest.php" line="29" class="Coleza\Tests\Unit\Backup\PreUpdateRecoverySafetyTest" classname="Coleza.Tests.Unit.Backup.PreUpdateRecoverySafetyTest" assertions="1" time="0.054747">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Backup\PreUpdateRecoverySafetyTest::testDatabaseIsMandatory&#13;
+Failed asserting that exception of type "RuntimeException" is thrown.</failure>
+    </testcase>
+    <testcase name="testVersionCannotBecomeAPath" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\PreUpdateRecoverySafetyTest.php" line="35" class="Coleza\Tests\Unit\Backup\PreUpdateRecoverySafetyTest" classname="Coleza.Tests.Unit.Backup.PreUpdateRecoverySafetyTest" assertions="1" time="0.002488"/>
+    <testcase name="testLookupRejectsTraversalBeforeReadingOutsideStorage" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\PreUpdateRecoverySafetyTest.php" line="90" class="Coleza\Tests\Unit\Backup\PreUpdateRecoverySafetyTest" classname="Coleza.Tests.Unit.Backup.PreUpdateRecoverySafetyTest" assertions="2" time="0.001463"/>
+  </testsuite>
+</testsuites>

@@ -1,0 +1,27 @@
+{
+  "reference_commit": "7d6010c2b02a20a682ce0b381748ea4da3c8ffa1",
+  "files": {
+    "remediation/D05-4-KABUL.md": "02b7785c0e4ad4b77b52b9c8b05beb2f3bca6b1c8bb3894e76bca4cbe19a21fe",
+    "remediation/D05-4-PREBACKUP-SONUC.md": "aabe244a381a97702a954db1dca7b60b3b9e62cf4b601f75fe99cac4cf71ed73",
+    "remediation/D05-4-prebackup-baseline.json": "bce19444db606e5f9bcb9b0f0c892a1e6ee4ac747d5aea28157391dffc0f10ad",
+    "remediation/D05-4-prebackup-before.exit": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "remediation/D05-4-prebackup-before.txt": "acb101296e5bc0e9ee310ed709a747cc5175876d4430a4b248ad37088bb703a7",
+    "remediation/D05-4-prebackup-before.xml": "922635ca49cc11c25581032096620743c0b89d455eb2f5672936b385033fcb85",
+    "remediation/D05-4-prebackup-checks.json": "e68838747ef17dff60036c457eb704d96029338fa65a142825766527b895f07e",
+    "remediation/D05-4-prebackup-discovery.xml": "4a95794005f51f7a959e6a1ffe3cff9ebc1ac8e87607dc1c3fd3220516b34f75",
+    "remediation/D05-4-prebackup-main.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "remediation/D05-4-prebackup-main.txt": "4b5af4b75c84ad3985626f544bee393abef9e380c6a2ea96e47b18f5acfb4dbd",
+    "remediation/D05-4-prebackup-main.xml": "e0fb1a15b232dbfc609293482e0d66703010d18208bc4603f231e3867fadb865",
+    "remediation/D05-4-prebackup-native.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "remediation/D05-4-prebackup-native.txt": "c4dec64e618ab27c1e7d25154b5ec41337442ae91dcbc8b8634eea0debb87811",
+    "remediation/D05-4-prebackup-native.xml": "46cf906dcdba91c8ee4391687f3fa9a0e1948356934ea77cca415fe860166e4b",
+    "remediation/D05-4-prebackup-summary.json": "7722d65b00a355ed5afab1cac41c926454309c90ed62896f56d8a2a661e383b7",
+    "remediation/D05-PLAN.md": "90504d193fce52f087048fb3e1cb2925e8da8eb50fcf6837315f64eeba913218",
+    "remediation/state.json": "96cd8b451fc88a89b4a637f9c66c59d9b8705b6cfda9190051afc0d685fba49c",
+    "remediation/verify-d05-preupdate-backup.py": "d94fb0469104bf189cb3e04db67d1577b2f61bbabc6f08a550eb0dfee613604c",
+    "src/Domain/Backup/EnterpriseBackupService.php": "b5a51d266a8a80d3a8e64b6ad859fb5cf1faa040b65f437d71006f0e21175ffc",
+    "src/Domain/Backup/PreUpdateBackupService.php": "c258a6c2bc23ace067fc68bae22db1ffb7e1a48eed7bbb0669797b1889ecdc45",
+    "tests/MariaDb/PreUpdateRecoveryTest.php": "e0f1b8f9391c67902bfb69a8a8973225c7b6b1d142719061ad5dc5e934c7feaa",
+    "tests/Unit/Backup/PreUpdateRecoverySafetyTest.php": "379fce35de9a5e188afe92a44b170af66cb6ddeb002f1ab7da7d7f07dd21c06b"
+  }
+}

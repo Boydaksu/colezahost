@@ -1,0 +1,51 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+FFFFFFF..                                                           9 / 9 (100%)
+
+Time: 00:00.202, Memory: 20.00 MB
+
+There were 7 failures:
+
+1) Coleza\Tests\Unit\Backup\PreUpdateRecoverySafetyTest::testMissingRequestedFileStopsPublication
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+-Array &0 []
++Array &0 [
++    0 => 'C:\Users\alici\AppData\Local\Temp/coleza_preupdate_f46c0e338f5a3ad9dbac7287/backups/pre_update_v1_0_0_to_v1_1_0_20261015_200825.manifest.json',
++]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\PreUpdateRecoverySafetyTest.php:43
+
+2) Coleza\Tests\Unit\Backup\PreUpdateRecoverySafetyTest::testDuplicateBasenamesCannotOverwriteEachOther
+Failed asserting that exception of type "RuntimeException" is thrown.
+
+3) Coleza\Tests\Unit\Backup\PreUpdateRecoverySafetyTest::testRapidBackupsNeverReplaceAnExistingPair
+Failed asserting that two strings are not identical.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\PreUpdateRecoverySafetyTest.php:55
+
+4) Coleza\Tests\Unit\Backup\PreUpdateRecoverySafetyTest::testRecursiveFilesAndDatabaseActuallyRestore
+Failed asserting that null is identical to 2.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\PreUpdateRecoverySafetyTest.php:64
+
+5) Coleza\Tests\Unit\Backup\PreUpdateRecoverySafetyTest::testInnerChecksumCannotBeIgnoredEvenWhenOuterHashMatches
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\PreUpdateRecoverySafetyTest.php:79
+
+6) Coleza\Tests\Unit\Backup\PreUpdateRecoverySafetyTest::testLegacyCommentOnlyDatabaseIsNotRecoveryEvidence
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Backup\PreUpdateRecoverySafetyTest.php:88
+
+7) Coleza\Tests\Unit\Backup\PreUpdateRecoverySafetyTest::testDatabaseIsMandatory
+Failed asserting that exception of type "RuntimeException" is thrown.
+
+FAILURES!
+Tests: 9, Assertions: 12, Failures: 7.
