@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Domain\Identity\CommandAuthorizationTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Identity\CommandAuthorizationTest.php" tests="5" assertions="5" errors="0" failures="5" skipped="0" time="0.025588">
+    <testcase name="testAnonymousInvoiceReadIsDenied" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommandAuthorizationCases.php" line="21" class="Coleza\Tests\Unit\Domain\Identity\CommandAuthorizationTest" classname="Coleza.Tests.Unit.Domain.Identity.CommandAuthorizationTest" assertions="1" time="0.011767">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Identity\CommandAuthorizationTest::testAnonymousInvoiceReadIsDenied&#13;
+Failed asserting that exception of type "Coleza\Foundation\Exceptions\AuthorizationException" is thrown.</failure>
+    </testcase>
+    <testcase name="testCallerAdminFlagDoesNotAuthorizeForeignInvoice" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommandAuthorizationCases.php" line="27" class="Coleza\Tests\Unit\Domain\Identity\CommandAuthorizationTest" classname="Coleza.Tests.Unit.Domain.Identity.CommandAuthorizationTest" assertions="1" time="0.003517">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Identity\CommandAuthorizationTest::testCallerAdminFlagDoesNotAuthorizeForeignInvoice&#13;
+Failed asserting that exception of type "Coleza\Foundation\Exceptions\AuthorizationException" is thrown.</failure>
+    </testcase>
+    <testcase name="testOrganizationWildcardNeverGrantsSystemFinancialPermission" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommandAuthorizationCases.php" line="33" class="Coleza\Tests\Unit\Domain\Identity\CommandAuthorizationTest" classname="Coleza.Tests.Unit.Domain.Identity.CommandAuthorizationTest" assertions="1" time="0.003803">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Identity\CommandAuthorizationTest::testOrganizationWildcardNeverGrantsSystemFinancialPermission&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommandAuthorizationCases.php:36</failure>
+    </testcase>
+    <testcase name="testPermissionWildcardRequiresNamespaceBoundary" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommandAuthorizationCases.php" line="38" class="Coleza\Tests\Unit\Domain\Identity\CommandAuthorizationTest" classname="Coleza.Tests.Unit.Domain.Identity.CommandAuthorizationTest" assertions="1" time="0.000647">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Identity\CommandAuthorizationTest::testPermissionWildcardRequiresNamespaceBoundary&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommandAuthorizationCases.php:41</failure>
+    </testcase>
+    <testcase name="testImpersonationCannotReassignForeignSession" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommandAuthorizationCases.php" line="43" class="Coleza\Tests\Unit\Domain\Identity\CommandAuthorizationTest" classname="Coleza.Tests.Unit.Domain.Identity.CommandAuthorizationTest" assertions="1" time="0.005853">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Identity\CommandAuthorizationTest::testImpersonationCannotReassignForeignSession&#13;
+Failed asserting that exception of type "Coleza\Foundation\Exceptions\ValidationException" is thrown.</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

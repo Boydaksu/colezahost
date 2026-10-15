@@ -14,7 +14,7 @@ use Coleza\Foundation\Exceptions\ValidationException;
 use Coleza\Foundation\Security\RequestBudget;
 
 /** The only interactive session issuer: password checks alone never authenticate a session. */
-final class AuthenticationService
+final class AuthenticationService implements \Coleza\Domain\Identity\Session\AuthenticatedSessionVerifier
 {
     private AuthService $credentials;
     private DatabaseSessionHandler $sessions;
@@ -30,6 +30,7 @@ final class AuthenticationService
         $this->two = new TwoFactorService($db, new TotpEngine(), $hasher, $encryptor);
         $this->rbac = new RbacService($db); $this->audit = new AuditLogger($db); $this->budget = new RequestBudget($db);
     }
+    public function usesConnection(Connection $db): bool { return $this->db === $db; }
     public function prepare(): void
     {
         $this->credentials->ensureTables(installation: false); $this->two->ensureTables(installation: false);

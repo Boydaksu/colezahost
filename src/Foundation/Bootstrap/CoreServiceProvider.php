@@ -235,8 +235,19 @@ final class CoreServiceProvider implements ServiceProviderInterface
             return new \Coleza\Domain\Identity\Impersonation\ImpersonationService(
                 $c->get(\Coleza\Domain\Identity\Session\DatabaseSessionHandler::class),
                 $c->get(\Coleza\Domain\Identity\Rbac\RbacService::class),
-                $c->get(\Coleza\Domain\Identity\Audit\AuditLogger::class)
+                $c->get(\Coleza\Domain\Identity\Audit\AuditLogger::class),
+                $c->get(\Coleza\Application\Identity\AuthenticationService::class)
             );
+        });
+
+        $container->singleton(\Coleza\Application\Identity\RoleAdministrationService::class, static function (Container $c): \Coleza\Application\Identity\RoleAdministrationService {
+            return new \Coleza\Application\Identity\RoleAdministrationService($c->get(\Coleza\Foundation\Database\Connection::class), $c->get(\Coleza\Application\Identity\AuthenticationService::class), $c->get(\Coleza\Domain\Identity\Impersonation\ImpersonationService::class));
+        });
+        $container->singleton(\Coleza\Application\Identity\SessionCommerceService::class, static function (Container $c): \Coleza\Application\Identity\SessionCommerceService {
+            return new \Coleza\Application\Identity\SessionCommerceService($c->get(\Coleza\Foundation\Database\Connection::class), $c->get(\Coleza\Application\Identity\AuthenticationService::class), $c->get(\Coleza\Domain\Identity\Impersonation\ImpersonationService::class));
+        });
+        $container->singleton(\Coleza\Application\Support\SupportApplicationService::class, static function (Container $c): \Coleza\Application\Support\SupportApplicationService {
+            return new \Coleza\Application\Support\SupportApplicationService($c->get(\Coleza\Foundation\Database\Connection::class), $c->get(\Coleza\Application\Identity\AuthenticationService::class), $c->get(\Coleza\Domain\Identity\Impersonation\ImpersonationService::class));
         });
 
         // Bind Translator

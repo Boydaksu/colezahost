@@ -1,0 +1,32 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+FFFFF                                                               5 / 5 (100%)
+
+Time: 00:00.029, Memory: 22.00 MB
+
+There were 5 failures:
+
+1) Coleza\Tests\Unit\Domain\Identity\CommandAuthorizationTest::testAnonymousInvoiceReadIsDenied
+Failed asserting that exception of type "Coleza\Foundation\Exceptions\AuthorizationException" is thrown.
+
+2) Coleza\Tests\Unit\Domain\Identity\CommandAuthorizationTest::testCallerAdminFlagDoesNotAuthorizeForeignInvoice
+Failed asserting that exception of type "Coleza\Foundation\Exceptions\AuthorizationException" is thrown.
+
+3) Coleza\Tests\Unit\Domain\Identity\CommandAuthorizationTest::testOrganizationWildcardNeverGrantsSystemFinancialPermission
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommandAuthorizationCases.php:36
+
+4) Coleza\Tests\Unit\Domain\Identity\CommandAuthorizationTest::testPermissionWildcardRequiresNamespaceBoundary
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommandAuthorizationCases.php:41
+
+5) Coleza\Tests\Unit\Domain\Identity\CommandAuthorizationTest::testImpersonationCannotReassignForeignSession
+Failed asserting that exception of type "Coleza\Foundation\Exceptions\ValidationException" is thrown.
+
+FAILURES!
+Tests: 5, Assertions: 5, Failures: 5.

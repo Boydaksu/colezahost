@@ -33,6 +33,8 @@ final class PaymentService
     ) {
     }
 
+    public function connection(): \Coleza\Foundation\Database\Connection { return $this->db; }
+
     public function ensureTables(): void
     {
         if ($this->db->getDriverName() === 'mysql' && $this->db->inTransaction()) {

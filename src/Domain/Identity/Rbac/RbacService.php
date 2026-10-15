@@ -81,13 +81,14 @@ final class RbacService
      */
     public function findOrCreateRole(string $name, string $scope = 'system', ?string $description = null): int
     {
-        $this->ensureTables();
+        $this->prepare();
         $row = $this->db->selectOne(
-            sprintf('SELECT id FROM %s WHERE name = :name', $this->rolesTable),
+            sprintf('SELECT id, scope FROM %s WHERE name = :name', $this->rolesTable),
             ['name' => $name]
         );
 
         if ($row !== null) {
+            if ($row['scope'] !== $scope) { throw new ValidationException(['role' => ['Role scope does not match assignment.']]); }
             return (int) $row['id'];
         }
 
@@ -104,7 +105,7 @@ final class RbacService
      */
     public function grantPermission(int $roleId, string $permissionName): void
     {
-        $this->ensureTables();
+        $this->prepare();
         $existing = $this->db->selectOne(
             sprintf('SELECT role_id FROM %s WHERE role_id = :rid AND permission_name = :p', $this->rolePermissionsTable),
             ['rid' => $roleId, 'p' => $permissionName]
@@ -126,7 +127,7 @@ final class RbacService
         if ($orgId !== null && $orgId <= 0) {
             throw new ValidationException(['organization_id' => 'Organization ID must be positive.'], 'Invalid organization scope');
         }
-        $this->ensureTables();
+        $this->prepare();
         $roleId = $this->findOrCreateRole($roleName, $orgId !== null ? 'organization' : 'system');
 
         $existing = $this->db->selectOne(
@@ -153,7 +154,7 @@ final class RbacService
      */
     public function hasPermission(int $userId, string $permission, ?int $orgId = null): bool
     {
-        $this->ensureTables();
+        $this->prepare();
         return $this->hasPermissionFromInitializedSchema($userId, $permission, $orgId);
     }
 
@@ -162,13 +163,15 @@ final class RbacService
     {
 
         $sql = sprintf(
-            'SELECT rp.permission_name 
+            'SELECT rp.permission_name, ur.organization_id, r.scope
              FROM %s ur
              JOIN %s rp ON rp.role_id = ur.role_id
-             WHERE ur.user_id = :uid 
+             JOIN %s r ON r.id = ur.role_id
+             WHERE ur.user_id = :uid
                AND (%s)',
             $this->userRolesTable,
             $this->rolePermissionsTable,
+            $this->rolesTable,
             $orgId === null ? 'ur.organization_id = 0' : '(ur.organization_id = :oid OR ur.organization_id = 0)'
         );
 
@@ -180,7 +183,14 @@ final class RbacService
         $rows = $this->db->select($sql . $this->db->forUpdate(), $params);
 
         foreach ($rows as $row) {
+            $organizationRole = $row['scope'] === 'organization' && $orgId !== null && $orgId > 0 && (int)$row['organization_id'] === $orgId;
+            $systemRole = $row['scope'] === 'system' && (int)$row['organization_id'] === 0;
+            if (!$systemRole && !$organizationRole) { continue; }
+            if ($organizationRole && (!str_starts_with($permission, 'org.') || !$this->currentMembership($userId, $orgId))) { continue; }
             $perm = (string) $row['permission_name'];
+            if ($organizationRole && !str_starts_with($perm, 'org.')) { continue; }
+            if ($systemRole && str_starts_with($permission, 'org.') && $perm !== '*') { continue; }
+
 
             // Universal superadmin wildcard
             if ($perm === '*') {
@@ -215,5 +225,14 @@ final class RbacService
                 'Access Denied: Missing required permission.'
             );
         }
+    }
+    private function currentMembership(int $userId, int $orgId): bool
+    {
+        $prefix=substr($this->rolesTable,0,-strlen('roles'));
+        $table=$prefix.'organization_members';$orgs=$prefix.'organizations';
+        if (!\Coleza\Domain\Vault\KeyBinding::tableExists($this->db,$table) || !\Coleza\Domain\Vault\KeyBinding::tableExists($this->db,$orgs)) { return false; }
+        $row=$this->db->selectOne("SELECT o.*,m.role FROM {$orgs} o JOIN {$table} m ON m.organization_id=o.id WHERE o.id=? AND m.user_id=?".$this->db->forUpdate(),[$orgId,$userId]);
+        if ($row===null || (array_key_exists('status',$row) && $row['status']!=='active')) { return false; }
+        return $row['role']==='owner' ? (int)$row['owner_user_id']===$userId : (int)$row['owner_user_id']!==$userId && in_array($row['role'],['admin','member','billing','technical'],true);
     }
 }

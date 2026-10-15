@@ -69,6 +69,9 @@ final class RbacServiceTest extends TestCase
         $this->rbac->grantPermission($roleId, 'org.services.*');
         $this->rbac->assignRole($orgMemberId, 'org_manager', orgId: $orgId);
 
+        (new \Coleza\Domain\Identity\Organization\OrganizationService($this->connection))->ensureTables();
+        $this->connection->insert('organizations',['id'=>$orgId,'name'=>'Fixture','slug'=>'fixture','owner_user_id'=>$orgMemberId]);
+        $this->connection->insert('organization_members',['organization_id'=>$orgId,'user_id'=>$orgMemberId,'role'=>'owner']);
         // Within organization 42, user has access to wildcard children
         $this->assertTrue($this->rbac->hasPermission($orgMemberId, 'org.services.create', orgId: $orgId));
         $this->assertTrue($this->rbac->hasPermission($orgMemberId, 'org.services.restart', orgId: $orgId));

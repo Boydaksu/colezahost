@@ -15,44 +15,58 @@ use RuntimeException;
 
 final class QuoteApplicationService
 {
+    private \Coleza\Application\Identity\CommandAuthorizer $authorization;
+
     public function __construct(
         private QuoteService $quoteService,
         private ?OrderService $orderService = null
     ) {
+        $this->authorization = new \Coleza\Application\Identity\CommandAuthorizer($this->quoteService->connection());
     }
 
     public function getQuote(int $quoteId, ?int $authUserId = null, bool $isAdmin = false): Quote
     {
-        $quote = $this->quoteService->find($quoteId);
-        if ($quote === null) {
-            throw new ResourceNotFoundException("Quote {$quoteId} not found.");
-        }
+        return $this->authorization->run($authUserId, function () use ($quoteId, $authUserId, $isAdmin): Quote {
+            $isAdmin = $this->authorization->hasSystemPermission($authUserId, 'quotes.view');
 
-        if (!$isAdmin && $authUserId !== null && $quote->getUserId() !== $authUserId) {
-            throw new AuthorizationException('Forbidden: You do not have access to this quote.');
-        }
+            $quote = $this->quoteService->find($quoteId);
+            if ($quote === null) {
+                throw new ResourceNotFoundException("Quote {$quoteId} not found.");
+            }
 
-        return $quote;
+            $this->authorization->resource($authUserId, $quote->getUserId(), $quote->getOrganizationId(), 'quotes.view', 'org.quotes.view');
+
+
+            return $quote;
+
+        }, null);
     }
 
     public function acceptQuote(int $quoteId, string $ipAddress, ?int $authUserId = null, bool $isAdmin = false): Order
     {
-        $quote = $this->getQuote($quoteId, $authUserId, $isAdmin);
+        return $this->authorization->run($authUserId, function () use ($quoteId, $ipAddress, $authUserId, $isAdmin): Order {
+            $isAdmin = $this->authorization->hasSystemPermission($authUserId, 'quotes.manage');
 
-        if ($quote->getStatus() === QuoteStatus::DRAFT) {
-            $quote = $this->quoteService->sendQuote($quote->getId());
-        }
+            $quote = $this->getQuote($quoteId, $authUserId, $isAdmin);
 
-        if ($quote->getStatus() === QuoteStatus::SENT) {
-            $quote = $this->quoteService->acceptQuote($quote->getId(), $ipAddress);
-        }
+            $this->authorization->resource($authUserId, $quote->getUserId(), $quote->getOrganizationId(), 'quotes.manage', 'org.quotes.manage');
 
-        if ($this->orderService === null) {
-            throw new RuntimeException('OrderService required to convert quote to order.');
-        }
+            if ($quote->getStatus() === QuoteStatus::DRAFT) {
+                $quote = $this->quoteService->sendQuote($quote->getId());
+            }
 
-        $conversion = $this->quoteService->convertToOrder($quote->getId(), $this->orderService, $ipAddress);
+            if ($quote->getStatus() === QuoteStatus::SENT) {
+                $quote = $this->quoteService->acceptQuote($quote->getId(), $ipAddress);
+            }
 
-        return $conversion['order'];
+            if ($this->orderService === null) {
+                throw new RuntimeException('OrderService required to convert quote to order.');
+            }
+
+            $conversion = $this->quoteService->convertToOrder($quote->getId(), $this->orderService, $ipAddress);
+
+            return $conversion['order'];
+
+        }, 'command.acceptQuote');
     }
 }

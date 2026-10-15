@@ -14,6 +14,8 @@ final class AuditLogger
     {
     }
 
+    public function connection(): \Coleza\Foundation\Database\Connection { return $this->db; }
+
     public function ensureTable(): void
     {
         // Keep legacy SQLite transactional bootstrap used by migration 9.

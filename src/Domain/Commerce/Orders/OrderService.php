@@ -24,6 +24,8 @@ final class OrderService
     ) {
     }
 
+    public function connection(): \Coleza\Foundation\Database\Connection { return $this->db; }
+
     public function ensureTables(): void
     {
         $driver = $this->db->getDriverName();
@@ -253,7 +255,7 @@ final class OrderService
 
     public function findOrderById(int $id): ?Order
     {
-        $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE id = ?', $this->ordersTable), [$id]);
+        $row = $this->db->selectOne(sprintf('SELECT * FROM %s WHERE id = ?', $this->ordersTable) . $this->db->forUpdate(), [$id]);
         return $row ? $this->hydrateOrder($row) : null;
     }
 

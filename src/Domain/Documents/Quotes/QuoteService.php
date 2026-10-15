@@ -48,6 +48,12 @@ final class QuoteService
      * @param string|null $notes
      * @return Quote
      */
+    public function connection(): \Coleza\Foundation\Database\Connection
+    {
+        if ($this->pdo === null) { throw new \LogicException('Authorized quote commands require persistent storage.'); }
+        return new \Coleza\Foundation\Database\Connection($this->pdo, (string)$this->pdo->getAttribute(\PDO::ATTR_DRIVER_NAME));
+    }
+
     public function createQuote(
         int $userId,
         array $itemsData,
@@ -155,8 +161,8 @@ final class QuoteService
         }
 
         $nextVersion = $parent->getVersion() + 1;
-        $formattedValidUntil = $validUntil !== null 
-            ? date('Y-m-d', strtotime($validUntil) ?: time()) 
+        $formattedValidUntil = $validUntil !== null
+            ? date('Y-m-d', strtotime($validUntil) ?: time())
             : $parent->getValidUntil();
 
         $computedItems = [];
@@ -464,7 +470,7 @@ final class QuoteService
             return $this->memoryQuotes[$quoteId] ?? null;
         }
 
-        $stmt = $this->pdo->prepare('SELECT * FROM quotes WHERE id = :id');
+        $stmt = $this->pdo->prepare('SELECT * FROM quotes WHERE id = :id' . ($this->pdo->inTransaction() && $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'mysql' ? ' FOR UPDATE' : ''));
         $stmt->execute([':id' => $quoteId]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 

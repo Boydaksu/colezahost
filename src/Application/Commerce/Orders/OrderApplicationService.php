@@ -13,45 +13,55 @@ use Coleza\Foundation\Exceptions\ValidationException;
 
 final class OrderApplicationService
 {
+    private \Coleza\Application\Identity\CommandAuthorizer $authorization;
+
     public function __construct(
         private OrderService $orderService
     ) {
+        $this->authorization = new \Coleza\Application\Identity\CommandAuthorizer($this->orderService->connection());
     }
 
     public function createOrder(CreateOrderCommand $command, ?int $authUserId = null, bool $isAdmin = false): Order
     {
-        // Permission check: regular user can only create order for themselves
-        if (!$isAdmin && $authUserId !== null && $command->userId !== $authUserId) {
-            throw new AuthorizationException('Cannot create order for another user.');
-        }
+        return $this->authorization->run($authUserId, function () use ($command, $authUserId, $isAdmin): Order {
+            $isAdmin = $this->authorization->hasSystemPermission($authUserId, 'orders.manage');
+            $this->authorization->resource($authUserId, $command->userId, $command->organizationId, 'orders.manage', 'org.orders.manage');
 
-        if (empty($command->items)) {
-            throw new ValidationException(['items' => 'Order must contain at least one item.'], 'Empty order items');
-        }
+            // Permission check: regular user can only create order for themselves
 
-        $orderData = [
-            'user_id' => $command->userId,
-            'organization_id' => $command->organizationId,
-            'currency_code' => $command->currencyCode,
-            'metadata' => $command->metadata,
-        ];
+            if (empty($command->items)) {
+                throw new ValidationException(['items' => 'Order must contain at least one item.'], 'Empty order items');
+            }
 
-        return $this->orderService->createOrder($orderData, $command->items);
+            $orderData = [
+                'user_id' => $command->userId,
+                'organization_id' => $command->organizationId,
+                'currency_code' => $command->currencyCode,
+                'metadata' => $command->metadata,
+            ];
+
+            return $this->orderService->createOrder($orderData, $command->items);
+
+        }, 'command.createOrder');
     }
 
     public function getOrder(int $orderId, ?int $authUserId = null, bool $isAdmin = false): Order
     {
-        $order = $this->orderService->findOrderById($orderId);
-        if ($order === null) {
-            throw new ResourceNotFoundException("Order {$orderId} not found.");
-        }
+        return $this->authorization->run($authUserId, function () use ($orderId, $authUserId, $isAdmin): Order {
+            $isAdmin = $this->authorization->hasSystemPermission($authUserId, 'orders.view');
 
-        // IDOR protection: non-admin can only access own orders
-        if (!$isAdmin && $authUserId !== null && $order->getUserId() !== $authUserId) {
-            throw new AuthorizationException('Forbidden: You do not have access to this order.');
-        }
+            $order = $this->orderService->findOrderById($orderId);
+            if ($order === null) {
+                throw new ResourceNotFoundException("Order {$orderId} not found.");
+            }
 
-        return $order;
+            $this->authorization->resource($authUserId, $order->getUserId(), $order->getOrganizationId(), 'orders.view', 'org.orders.view');
+
+            // IDOR protection: non-admin can only access own orders
+
+            return $order;
+
+        }, null);
     }
 
     /**
@@ -59,17 +69,32 @@ final class OrderApplicationService
      */
     public function listUserOrders(int $userId, ?int $authUserId = null, bool $isAdmin = false): array
     {
-        if (!$isAdmin && $authUserId !== null && $userId !== $authUserId) {
-            throw new AuthorizationException('Forbidden: Cannot list orders for another user.');
-        }
+        return $this->authorization->run($authUserId, function () use ($userId, $authUserId, $isAdmin): array {
+            $isAdmin = $this->authorization->hasSystemPermission($authUserId, 'orders.view');
 
-        return $this->orderService->listOrdersForUser($userId);
+            if (!$isAdmin && $authUserId !== null && $userId !== $authUserId) {
+                throw new AuthorizationException('Forbidden: Cannot list orders for another user.');
+            }
+
+            $rows = $this->orderService->listOrdersForUser($userId);
+            return array_values(array_filter($rows, function ($row) use ($authUserId): bool {
+                try { $this->authorization->resource($authUserId, $row->getUserId(), $row->getOrganizationId(), 'orders.view', 'org.orders.view'); return true; }
+                catch (AuthorizationException) { return false; }
+            }));
+
+        }, null);
     }
 
     public function cancelOrder(int $orderId, ?string $reason = null, ?int $authUserId = null, bool $isAdmin = false): Order
     {
-        $order = $this->getOrder($orderId, $authUserId, $isAdmin);
+        return $this->authorization->run($authUserId, function () use ($orderId, $reason, $authUserId, $isAdmin): Order {
+            $isAdmin = $this->authorization->hasSystemPermission($authUserId, 'orders.manage');
 
-        return $this->orderService->transitionOrderStatus($order->getId(), OrderStateMachine::STATUS_CANCELLED);
+            $order = $this->getOrder($orderId, $authUserId, $isAdmin);
+
+            $this->authorization->resource($authUserId, $order->getUserId(), $order->getOrganizationId(), 'orders.manage', 'org.orders.manage');
+            return $this->orderService->transitionOrderStatus($order->getId(), OrderStateMachine::STATUS_CANCELLED);
+
+        }, 'command.cancelOrder');
     }
 }

@@ -24,7 +24,7 @@ final class TicketPermissionService
 
             // Department scoping for agents with assigned departments
             $agentDepts = $user->getDepartmentIds();
-            if (count($agentDepts) > 0 && !in_array($ticket->getDepartmentId(), $agentDepts, true)) {
+            if (!in_array($ticket->getDepartmentId(), $agentDepts, true) && !$user->hasPermission('tickets.all_departments')) {
                 return false;
             }
 
@@ -141,8 +141,9 @@ final class TicketPermissionService
         }
 
         if ($user->isStaff()) {
-            // Staff sees all tickets
-            return [];
+            if (!$user->hasPermission('tickets.view')) { return ['user_id' => -1]; }
+            if ($user->hasPermission('tickets.all_departments')) { return []; }
+            return $user->getDepartmentIds() === [] ? ['user_id' => -1] : ['department_ids' => $user->getDepartmentIds()];
         }
 
         if ($user->getActiveOrganizationId() !== null) {

@@ -57,10 +57,16 @@ final class CommerceApiAndApplicationLayerTest extends TestCase
 
         $this->quoteService = new QuoteService($this->pdo, null, null, null);
 
+        $sessions = new \Coleza\Domain\Identity\Session\DatabaseSessionHandler($this->db);
+        (new \Coleza\Domain\Identity\Auth\AuthService($this->db, new \Coleza\Domain\Identity\Security\PasswordHasher(), $sessions))->ensureTables();
+        foreach ([1,10,11,12,20,30,40,50,51,99] as $id) {
+            $this->db->insert('users',['id'=>$id,'email'=>"user{$id}@example.test",'name'=>'Fixture','password_hash'=>password_hash('Original123!',PASSWORD_BCRYPT,['cost'=>4]),'is_active'=>1]);
+        }
+        $interactive = new \Coleza\Application\Identity\AuthenticationService($this->db,\Coleza\Tests\Support\SecretFixtureKey::encryptor());
         // Application Services
         $orderApp = new OrderApplicationService($this->orderService);
         $invoiceApp = new InvoiceApplicationService($this->invoiceService);
-        $paymentApp = new PaymentApplicationService($this->paymentService, $this->invoiceService);
+        $paymentApp = new PaymentApplicationService($this->paymentService, $this->invoiceService, $interactive);
         $quoteApp = new QuoteApplicationService($this->quoteService, $this->orderService);
 
         // API Controllers
@@ -263,10 +269,17 @@ final class CommerceApiAndApplicationLayerTest extends TestCase
             $this->assertStringContainsString('administrative staff', $e->getMessage());
         }
 
+        $rbac=new \Coleza\Domain\Identity\Rbac\RbacService($this->db);$role=$rbac->findOrCreateRole('finance');$rbac->grantPermission($role,'payments.refund');$rbac->assignRole(1,'finance');
+        $interactive=new \Coleza\Application\Identity\AuthenticationService($this->db,\Coleza\Tests\Support\SecretFixtureKey::encryptor());
+        $pending=$interactive->beginLogin('user1@example.test','Original123!','127.0.0.1');$setup=$interactive->beginEnrollment($pending['challenge']);
+        $login=$interactive->confirmEnrollment($pending['challenge'],(new \Coleza\Domain\Identity\TwoFactor\TotpEngine())->generateCode($setup['secret']));
+        $proof=$interactive->beginStepUp($login['session_id'],'payments.refund:'.$payment->getId());
+        $interactive->proveStepUp($login['session_id'],'payments.refund:'.$payment->getId(),$proof,'Original123!',$login['recovery_codes'][0],true);
+        $adminAuth['session_id']=$login['session_id'];
         // Admin issues refund -> SUT succeeds
         $adminRefundRes = $this->paymentController->refund(
             (int) $payment->getId(),
-            ['amount_minor' => 5000, 'reason' => 'Customer approved refund'],
+            ['amount_minor' => 5000, 'reason' => 'Customer approved refund','step_up_token'=>$proof],
             null,
             $adminAuth
         );

@@ -47,6 +47,13 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'commandImpersonate':
+            $interactive = new Coleza\Application\Identity\AuthenticationService($db, Coleza\Tests\Support\SecretFixtureKey::encryptor());
+            $impersonation = new Coleza\Domain\Identity\Impersonation\ImpersonationService(new Coleza\Domain\Identity\Session\DatabaseSessionHandler($db), new Coleza\Domain\Identity\Rbac\RbacService($db), new Coleza\Domain\Identity\Audit\AuditLogger($db), $interactive);
+            $arguments = json_decode($argv[5], true, flags: JSON_THROW_ON_ERROR);
+            try { $result['session'] = $impersonation->startImpersonation($arguments['session'], 1, 2, 'Concurrent test', stepUpToken: $arguments['proof']); $result['accepted'] = true; }
+            catch (Coleza\Foundation\Exceptions\ValidationException) { $result['status'] = 'rejected'; $result['accepted'] = false; }
+            break;
         case 'authenticationComplete':
         case 'authenticationStepUp':
             $interactive = new Coleza\Application\Identity\AuthenticationService($db, Coleza\Tests\Support\SecretFixtureKey::encryptor());

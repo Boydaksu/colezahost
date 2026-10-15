@@ -150,7 +150,10 @@ final class PaymentApiController
             amountMinor: $amountMinor,
             reason: $reason,
             gateway: $gateway,
-            isAdmin: $isAdmin
+            isAdmin: $isAdmin,
+            authUserId: (int) ($authContext['user_id'] ?? 0),
+            sessionId: isset($authContext['session_id']) ? (string) $authContext['session_id'] : null,
+            stepUpToken: isset($requestData['step_up_token']) ? (string) $requestData['step_up_token'] : null
         );
 
         return ApiResponse::success([

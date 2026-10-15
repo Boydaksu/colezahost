@@ -20,6 +20,8 @@ final class DatabaseSessionHandler
         if ($lifetimeSeconds < 1) { throw new \InvalidArgumentException("Session lifetime must be positive."); }
     }
 
+    public function connection(): \Coleza\Foundation\Database\Connection { return $this->db; }
+
     public function ensureTable(bool $installation = true): void
     {
         if (ApiSessionSchema::installed($this->db, $this->table, $installation)) { return; }

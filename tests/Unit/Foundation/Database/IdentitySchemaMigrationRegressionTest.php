@@ -29,6 +29,11 @@ final class IdentitySchemaMigrationRegressionTest extends TestCase
         self::assertSame([], $runner->migrate(dirname(__DIR__, 4) . '/database/migrations'));
         $rbac = new RbacService($db);
         self::assertTrue($rbac->hasPermission(7, 'payments.manage'));
+        // A preserved RBAC assignment only authorizes a live organization member.
+        foreach ([8, 9] as $id) { $db->insert('users', ['id'=>$id,'email'=>"member{$id}@example.test",'password_hash'=>'unused','name'=>'Fixture','is_active'=>1]); }
+        $db->insert('organizations',['id'=>10,'name'=>'Fixture','slug'=>'fixture','owner_user_id'=>9]);
+        $db->insert('organization_members',['organization_id'=>10,'user_id'=>9,'role'=>'owner']);
+        $db->insert('organization_members',['organization_id'=>10,'user_id'=>8,'role'=>'member']);
         self::assertTrue($rbac->hasPermission(8, 'org.services.view', 10));
         self::assertFalse($rbac->hasPermission(8, 'org.services.view', 11));
         self::assertSame(2, (int) $db->selectOne('SELECT COUNT(*) AS n FROM user_roles')['n']);

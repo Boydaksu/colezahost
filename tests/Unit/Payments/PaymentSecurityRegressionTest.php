@@ -28,6 +28,8 @@ final class PaymentSecurityRegressionTest extends TestCase
     protected function setUp(): void
     {
         $this->db = new Connection(new \PDO('sqlite::memory:'));
+        (new \Coleza\Domain\Identity\Auth\AuthService($this->db,new \Coleza\Domain\Identity\Security\PasswordHasher(),new \Coleza\Domain\Identity\Session\DatabaseSessionHandler($this->db)))->ensureTables();
+        $this->db->insert('users',['id'=>7,'email'=>'owner@example.test','password_hash'=>'unused','name'=>'Owner','is_active'=>1]);
         $this->invoices = new InvoiceService($this->db);
         $this->invoices->ensureTables();
         $this->payments = new PaymentService($this->db, $this->invoices);

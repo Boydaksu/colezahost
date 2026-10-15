@@ -76,7 +76,7 @@ final class SupportUserContext
         foreach ($this->permissions as $p) {
             if (str_ends_with($p, '.*')) {
                 $prefix = substr($p, 0, -2);
-                if (str_starts_with($permission, $prefix)) {
+                if (str_starts_with($permission, $prefix . '.')) {
                     return true;
                 }
             }

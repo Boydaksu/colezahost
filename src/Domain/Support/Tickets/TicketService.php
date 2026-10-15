@@ -658,6 +658,18 @@ final class TicketService
             $bindings['user_id'] = (int) $filters['user_id'];
         }
 
+        if (array_key_exists('department_ids', $filters)) {
+            $ids = $filters['department_ids'];
+            if (!is_array($ids) || $ids === []) { $conditions[] = '1 = 0'; }
+            else {
+                $params = [];
+                foreach (array_values($ids) as $index => $id) {
+                    if (!is_int($id) || $id < 1) { throw new \InvalidArgumentException('Invalid department scope.'); }
+                    $key = 'department_scope_' . $index; $params[] = ':' . $key; $bindings[$key] = $id;
+                }
+                $conditions[] = 'department_id IN (' . implode(', ', $params) . ')';
+            }
+        }
         if (!empty($filters['department_id'])) {
             $conditions[] = 'department_id = :dep_id';
             $bindings['dep_id'] = (int) $filters['department_id'];
