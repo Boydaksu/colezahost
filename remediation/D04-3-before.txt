@@ -1,0 +1,41 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+FFFFFF                                                              6 / 6 (100%)
+
+Time: 00:00.064, Memory: 22.00 MB
+
+There were 6 failures:
+
+1) Coleza\Tests\Integration\Commerce\CommerceFlowTest::testOrderAndInvoiceListsHaveConstantQueryBudget
+Failed asserting that 13 is equal to 2 or is less than 2.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommerceFlowCases.php:32
+
+2) Coleza\Tests\Integration\Commerce\CommerceFlowTest::testPaymentListsHaveConstantQueryBudget
+Failed asserting that 25 is equal to 3 or is less than 3.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommerceFlowCases.php:38
+
+3) Coleza\Tests\Integration\Commerce\CommerceFlowTest::testUnpaidOrderCannotCreateService
+Failed asserting that exception of type "Coleza\Foundation\Exceptions\ValidationException" is thrown.
+
+4) Coleza\Tests\Integration\Commerce\CommerceFlowTest::testPaidOrderServiceCreationIsIdempotent
+Failed asserting that 2 is identical to 1.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommerceFlowCases.php:46
+
+5) Coleza\Tests\Integration\Commerce\CommerceFlowTest::testEachPaidOrderUnitCreatesOneService
+Failed asserting that actual size 1 matches expected size 3.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommerceFlowCases.php:50
+
+6) Coleza\Tests\Integration\Commerce\CommerceFlowTest::testInvoicePaymentListIncludesPendingAndAllocatedPayments
+Failed asserting that actual size 1 matches expected size 2.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommerceFlowCases.php:55
+
+FAILURES!
+Tests: 6, Assertions: 12, Failures: 6.

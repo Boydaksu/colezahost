@@ -137,6 +137,7 @@ final class PaymentApplicationService
             return $this->paymentService->recordPayment([
                 'user_id' => $command->userId,
                 'invoice_id' => $command->invoiceId,
+                'organization_id' => $invoice->getOrganizationId(),
                 'amount_minor' => $command->amountMinor,
                 'currency_code' => $command->currencyCode,
                 'payment_method' => $command->paymentMethod,
@@ -175,7 +176,7 @@ final class PaymentApplicationService
     public function listUserPayments(int $userId, ?int $authUserId = null, bool $isAdmin = false): array
     {
         return $this->authorization->run($authUserId, function () use ($userId, $authUserId, $isAdmin): array {
-            $isAdmin = $this->authorization->hasSystemPermission($authUserId, 'payments.view');
+            $isAdmin = $userId!==$authUserId && $this->authorization->hasSystemPermission($authUserId, 'payments.view');
 
             $this->requireAuthenticatedUser($authUserId);
             if (!$isAdmin && $authUserId !== null && $userId !== $authUserId) {
@@ -183,11 +184,7 @@ final class PaymentApplicationService
             }
 
             $rows = $this->paymentService->listPaymentsForUser($userId);
-            return array_values(array_filter($rows, function ($row) use ($authUserId): bool {
-                $organization = $row->getInvoiceId() === null ? null : $this->invoiceService->findInvoiceById($row->getInvoiceId())?->getOrganizationId();
-                try { $this->authorization->resource($authUserId, $row->getUserId(), $organization, 'payments.view', 'org.billing.view'); return true; }
-                catch (AuthorizationException) { return false; }
-            }));
+            return \Coleza\Application\Commerce\CommerceListVisibility::filter($rows,$this->authorization,$authUserId,'payments.view','org.billing.view');
 
         }, null);
     }

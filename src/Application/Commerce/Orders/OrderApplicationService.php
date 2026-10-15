@@ -72,17 +72,14 @@ final class OrderApplicationService
     public function listUserOrders(int $userId, ?int $authUserId = null, bool $isAdmin = false): array
     {
         return $this->authorization->run($authUserId, function () use ($userId, $authUserId, $isAdmin): array {
-            $isAdmin = $this->authorization->hasSystemPermission($authUserId, 'orders.view');
+            $isAdmin = $userId!==$authUserId && $this->authorization->hasSystemPermission($authUserId, 'orders.view');
 
             if (!$isAdmin && $authUserId !== null && $userId !== $authUserId) {
                 throw new AuthorizationException('Forbidden: Cannot list orders for another user.');
             }
 
             $rows = $this->orderService->listOrdersForUser($userId);
-            return array_values(array_filter($rows, function ($row) use ($authUserId): bool {
-                try { $this->authorization->resource($authUserId, $row->getUserId(), $row->getOrganizationId(), 'orders.view', 'org.orders.view'); return true; }
-                catch (AuthorizationException) { return false; }
-            }));
+            return \Coleza\Application\Commerce\CommerceListVisibility::filter($rows,$this->authorization,$authUserId,'orders.view','org.orders.view');
 
         }, null);
     }

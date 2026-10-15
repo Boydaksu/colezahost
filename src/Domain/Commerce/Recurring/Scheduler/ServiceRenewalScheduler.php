@@ -33,9 +33,11 @@ final class ServiceRenewalScheduler
 
         $dueServices = $this->serviceService->findServicesDueForRenewal($referenceDate, $policy->getLeadDays(), $policy->isAutoRenewOnly());
 
+        $periods=array_map(static fn(Service $service):array=>['service_id'=>$service->getId(),'period_start'=>BillingPeriod::computePeriod($service->getNextDueDate(),$service->getBillingCycle())['start']],$dueServices);
+        $existing=$this->renewalInvoiceService->existingPeriods($periods);
         $results = [];
         foreach ($dueServices as $service) {
-            $results[] = $this->evaluateAndGenerateForService($service, $policy, $referenceDate);
+            $results[] = $this->evaluateService($service,$policy,$referenceDate,isset($existing[$service->getId().':'.$service->getNextDueDate()]));
         }
 
         $durationMs = (microtime(true) - $start) * 1000;
@@ -49,11 +51,13 @@ final class ServiceRenewalScheduler
     /**
      * Evaluate and generate a renewal invoice for a single service.
      */
-    public function evaluateAndGenerateForService(
-        Service $service,
-        RenewalPolicy $policy,
-        string $referenceDate
-    ): RenewalExecutionResult {
+    public function evaluateAndGenerateForService(Service $service,RenewalPolicy $policy,string $referenceDate): RenewalExecutionResult
+    {
+        return $this->evaluateService($service,$policy,$referenceDate,null);
+    }
+
+    private function evaluateService(Service $service,RenewalPolicy $policy,string $referenceDate,?bool $alreadyGenerated): RenewalExecutionResult
+    {
         $serviceId = (int) $service->getId();
 
         if(\Coleza\Domain\Pricing\Entities\PriceCycle::getMonths($service->getBillingCycle())<=0||!BillingPeriod::isDueForRenewal($service->getNextDueDate(),$referenceDate,$policy->getLeadDays())){return RenewalExecutionResult::skipped($serviceId,'Service is outside the recurring renewal window');}
@@ -65,7 +69,7 @@ final class ServiceRenewalScheduler
 
         // 2. Check period and idempotency
         $period = BillingPeriod::computePeriod($service->getNextDueDate(), $service->getBillingCycle());
-        if ($this->renewalInvoiceService->isRenewalAlreadyGenerated($serviceId, $period['start'])) {
+        if ($alreadyGenerated ?? $this->renewalInvoiceService->isRenewalAlreadyGenerated($serviceId, $period['start'])) {
             return RenewalExecutionResult::skipped($serviceId, "Renewal invoice already exists for period {$period['start']}");
         }
 

@@ -439,34 +439,8 @@ final class PaymentService
      */
     public function listPaymentsForInvoice(int $invoiceId): array
     {
-        $allocRows = $this->db->select(
-            sprintf('SELECT DISTINCT payment_id FROM %s WHERE invoice_id = ?', $this->paymentAllocationsTable),
-            [$invoiceId]
-        );
-
-        $paymentIds = array_column($allocRows, 'payment_id');
-        if (empty($paymentIds)) {
-            // Also check payments directly referencing invoice_id
-            $directRows = $this->db->select(
-                sprintf('SELECT id FROM %s WHERE invoice_id = ?', $this->paymentsTable),
-                [$invoiceId]
-            );
-            $paymentIds = array_column($directRows, 'id');
-        }
-
-        if (empty($paymentIds)) {
-            return [];
-        }
-
-        $payments = [];
-        foreach (array_unique($paymentIds) as $pid) {
-            $p = $this->findPaymentById((int)$pid);
-            if ($p !== null) {
-                $payments[] = $p;
-            }
-        }
-
-        return $payments;
+        $rows=$this->db->select('SELECT p.* FROM payments p WHERE p.invoice_id=? OR EXISTS (SELECT 1 FROM payment_allocations a WHERE a.payment_id=p.id AND a.invoice_id=?) ORDER BY p.id DESC'.$this->db->forUpdate(),[$invoiceId,$invoiceId]);
+        return $this->hydratePaymentList($rows);
     }
 
     /**
@@ -483,8 +457,8 @@ final class PaymentService
         }
         $sql .= ' ORDER BY id DESC';
 
-        $rows = $this->db->select($sql, $params);
-        return array_map([$this, 'hydratePayment'], $rows);
+        $rows = $this->db->select($sql . $this->db->forUpdate(), $params);
+        return $this->hydratePaymentList($rows);
     }
 
     /**
@@ -559,10 +533,22 @@ final class PaymentService
     /**
      * @param array<string, mixed> $row
      */
-    private function hydratePayment(array $row): Payment
+    private function hydratePaymentList(array $rows): array
+    {
+        if($rows===[]){return [];}
+        $allocations=[];$refunds=[];
+        foreach(array_chunk(array_column($rows,'id'),500)as$ids){
+            $marks=implode(',',array_fill(0,count($ids),'?'));
+            foreach($this->db->select('SELECT * FROM payment_allocations WHERE payment_id IN ('.$marks.') ORDER BY id'.$this->db->forUpdate(),$ids)as$row){$allocations[(int)$row['payment_id']][]=$row;}
+            foreach($this->db->select('SELECT payment_id,SUM(amount_minor) AS total_refunded FROM refunds WHERE payment_id IN ('.$marks.') GROUP BY payment_id'.$this->db->forUpdate(),$ids)as$row){$refunds[(int)$row['payment_id']]=(int)$row['total_refunded'];}
+        }
+        return array_map(fn(array $row):Payment=>$this->hydratePayment($row,$allocations[(int)$row['id']]??[],$refunds[(int)$row['id']]??0),$rows);
+    }
+
+    private function hydratePayment(array $row,?array $allocRows=null,?int $refundedAmountMinor=null): Payment
     {
         $paymentId = (int)$row['id'];
-        $allocRows = $this->db->select(
+        $allocRows ??= $this->db->select(
             sprintf('SELECT * FROM %s WHERE payment_id = ? ORDER BY id ASC', $this->paymentAllocationsTable) . $this->db->forUpdate(),
             [$paymentId]
         );
@@ -583,11 +569,13 @@ final class PaymentService
 
         $meta = !empty($row['metadata_json']) ? json_decode((string)$row['metadata_json'], true) : [];
 
+        if($refundedAmountMinor===null){
         $refundRow = $this->db->selectOne(
             sprintf('SELECT COALESCE(SUM(amount_minor), 0) AS total_refunded FROM %s WHERE payment_id = ?', $this->refundsTable) . $this->db->forUpdate(),
             [$paymentId]
         );
         $refundedAmountMinor = $refundRow ? (int)$refundRow['total_refunded'] : 0;
+        }
 
         return new Payment(
             id: $paymentId,

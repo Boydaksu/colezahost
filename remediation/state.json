@@ -3,19 +3,19 @@
   "reference_report": "review/INCELEME.md",
   "plan": "remediation/PLAN.md",
   "phase": "D04",
-  "step": "D04.2",
+  "step": "D04.3",
   "status": "IN_PROGRESS",
-  "step_status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
+  "step_status": "D04_IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED_D05_READY",
   "independent_acceptance": "PENDING",
   "production_ready": false,
-  "next_step": "D04.3",
-  "next_phase": "D04",
+  "next_step": "D05",
+  "next_phase": "D05",
   "tests": {
-    "main_total": 1865,
-    "main_assertions": 12456,
-    "mariadb_total": 132,
-    "mariadb_assertions": 1216,
-    "mariadb_scope": "Exact 9 affected classes: renewal/commerce integrity, command authorization, financial concurrency, SQL portability, installation, documents, automation lifecycle/persistence; full native not rerun",
+    "main_total": 1884,
+    "main_assertions": 12552,
+    "mariadb_total": 157,
+    "mariadb_assertions": 1451,
+    "mariadb_scope": "Exact 10 affected classes: canonical manual commerce flow/query budgets, renewal/commerce integrity, command authorization, financial concurrency, SQL portability, installation, documents, automation lifecycle/persistence; full native not rerun",
     "full_mariadb_current_source": false,
     "last_full_mariadb": {
       "reference_commit": "0d2e3e08d4c121a146f298f77b4bc6b008b6f66e",
@@ -23,8 +23,8 @@
       "assertions": 5399,
       "evidence": "remediation/D02-CLOSEOUT-summary.json"
     },
-    "total": 1997,
-    "assertions": 13672,
+    "total": 2041,
+    "assertions": 14003,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -39,18 +39,15 @@
     "F26": "PARTIAL_READ_ONLY_CANONICAL_DOCTOR_IMPLEMENTED_REMOTE_PROVIDER_AND_CRON_WRITER_OPEN",
     "F14": "PARTIAL_DURABLE_AUTOMATION_EVIDENCE_AND_PROVIDER_LIFECYCLE_BOUNDARY_IMPLEMENTED_REAL_PROVIDER_COMMAND_BINDING_RECOVERY_AND_ENTRYPOINTS_OPEN",
     "F17": "CANONICAL_ANALYTICS_REPORTING_IMPLEMENTED_PENDING_REVIEW_HISTORICAL_SCOPE_AND_ENTRYPOINT_ACCEPTANCE_OPEN",
-    "F30": "PARTIAL_PRODUCTION_SCHEMA_ANALYTICS_GOLDEN_AND_EXISTING_ADMIN_PERFORMANCE_BUDGET_VERIFIED_REAL_PROVIDER_END_TO_END_ACCEPTANCE_OPEN",
+    "F30": "PARTIAL_CANONICAL_ANALYTICS_AND_MANUAL_COMMERCE_FLOW_LIST_AND_BATCH_BUDGETS_LOCAL_VERIFIED_REAL_PROVIDER_BROWSER_REFERENCE_HOST_AND_RELEASE_ACCEPTANCE_OPEN_D06_D08_D09",
     "F21": "PARTIAL_SUPPORT_SCHEMA_AND_CURRENT_ACTOR_ORGANIZATION_DEPARTMENT_COMMAND_SCOPE_IMPLEMENTED_LOCAL_VERIFIED_FULL_STORAGE_RECOVERY_AND_D07_D08_PRODUCT_FLOW_ACCEPTANCE_OPEN",
     "F08": "EXPLICIT_RUNTIME_KEY_PRIVATE_FILE_INSTALLER_BINDING_ATOMIC_ROTATION_OLD_WRITER_FENCING_AND_RESTORE_KEY_GATE_LOCAL_VERIFIED_PENDING_INDEPENDENT_REVIEW",
     "F09": "INVENTORIED_SECRET_STORAGE_DIAGNOSTIC_EXPORT_AND_LEGACY_PATHS_IMPLEMENTED_LOCAL_VERIFIED_PENDING_INDEPENDENT_REVIEW",
-    "F07": "CUSTOMER_SERVER_PRICE_BOUNDARY_AND_ORDER_INVOICE_MONETARY_INTEGRITY_LOCAL_VERIFIED_END_TO_END_COMMERCE_ACCEPTANCE_REMAINS_D04_3_D08_D09",
-    "F15": "RENEWAL_GENERATION_AND_PAID_PERIOD_RECEIPT_IMPLEMENTED_LOCAL_NATIVE_VERIFIED_FULL_COMMERCE_FLOW_AND_PERFORMANCE_ACCEPTANCE_REMAINS_D04_3_D08_D09"
+    "F07": "SERVER_CATALOG_PRICE_AND_MONETARY_INTEGRITY_WITH_CANONICAL_MANUAL_APPLICATION_FLOW_LOCAL_VERIFIED_HTTP_AND_INDEPENDENT_ACCEPTANCE_OPEN_D08_D09",
+    "F15": "RENEWAL_AND_PAID_PERIOD_RECEIPT_WITH_MANUAL_APPROVAL_FLOW_LOCAL_NATIVE_VERIFIED_HTTP_PROVIDER_INTEGRATION_AND_INDEPENDENT_ACCEPTANCE_OPEN_D06_D08_D09"
   },
-  "remaining_steps": [
-    "D04.3"
-  ],
+  "remaining_steps": [],
   "remaining_phases": [
-    "D04",
     "D05",
     "D06",
     "D07",
@@ -88,16 +85,19 @@
       "next_phase": "D04"
     },
     "D04": {
-      "status": "IN_PROGRESS",
+      "status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
       "plan": "remediation/D04-PLAN.md",
       "completed_steps": [
         "D04.1",
-        "D04.2"
-      ],
-      "remaining_steps": [
+        "D04.2",
         "D04.3"
       ],
-      "independent_acceptance": "PENDING"
+      "remaining_steps": [],
+      "independent_acceptance": "PENDING",
+      "date": "2026-10-15",
+      "closure": "remediation/D04-CLOSURE.md",
+      "evidence": "remediation/D04-3-summary.json",
+      "next_phase": "D05"
     }
   },
   "d03_plan": "remediation/D03-PLAN.md",
@@ -194,6 +194,13 @@
       "evidence": "remediation/D04-2-SONUC.md",
       "independent_acceptance": "PENDING",
       "scope": "Persisted service owner/currency/price/period and current state; atomic one-period invoice generation and one-time paid settlement receipt; partial/foreign/unrelated/replayed invoice rejection; caller rollback, concurrent generate/settle/mixed tests; payment-context automation uses same bound period command"
+    },
+    "D04.3": {
+      "status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
+      "date": "2026-10-15",
+      "evidence": "remediation/D04-3-SONUC.md",
+      "independent_acceptance": "PENDING",
+      "scope": "Real catalog/customer order/frozen invoice/pending manual payment/current staff approval/allocation/unit fulfillment/manual activation/renewal paid receipt Application flow; canonical 26-migration MariaDB acceptance; constant/chunked list and scheduler skip budgets; current ownership, audit/caller rollback and four-process approval/fulfillment checks"
     }
   },
   "d03_staging_storage_evidence": "remediation/D03-1-STAGING-SONUC.md",
@@ -204,5 +211,7 @@
   "d03_closure": "remediation/D03-CLOSURE.md",
   "d04_plan": "remediation/D04-PLAN.md",
   "d04_pricing_evidence": "remediation/D04-1-SONUC.md",
-  "d04_renewal_evidence": "remediation/D04-2-SONUC.md"
+  "d04_renewal_evidence": "remediation/D04-2-SONUC.md",
+  "d04_flow_evidence": "remediation/D04-3-SONUC.md",
+  "d04_closure": "remediation/D04-CLOSURE.md"
 }

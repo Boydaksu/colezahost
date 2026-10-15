@@ -72,6 +72,19 @@ final class RenewalInvoiceService
         return $rows[0]??null;
     }
 
+    /** Read-only batch hint. Missing entries still go through the locked generation command. */
+    public function existingPeriods(array $periods): array
+    {
+        $found=[];
+        foreach(array_chunk($periods,200)as$chunk){
+            $clauses=[];$params=[];
+            foreach($chunk as$period){$clauses[]='(service_id=? AND period_start=?)';$params[]=\Coleza\Domain\Commerce\CommerceAmounts::integer($period['service_id'],'service_id',1);BillingPeriod::date($period['period_start']);$params[]=$period['period_start'];}
+            if($clauses===[]){continue;}
+            foreach($this->db->select('SELECT service_id,period_start FROM renewal_records WHERE '.implode(' OR ',$clauses).$this->db->forUpdate(),$params)as$row){$found[(int)$row['service_id'].':'.$row['period_start']]=true;}
+        }
+        return $found;
+    }
+
     private function assertStorage(): void
     {
         $tables=['invoices'=>['id','user_id','organization_id','currency_code','status','total_minor','paid_amount_minor'],'invoice_items'=>['id','invoice_id','service_id','metadata_json'],'services'=>['id','user_id','organization_id','status','auto_renew','billing_cycle','next_due_date','recurring_amount_minor','currency_code','lock_version'], 'renewal_records'=>['id','service_id','user_id','organization_id','billing_cycle','period_start','period_end','invoice_id']];

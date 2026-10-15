@@ -6,6 +6,7 @@ use Coleza\Foundation\Exceptions\ValidationException;
 final class CommerceAmounts
 {
     public const MAX=2147483647;
+    public const MAX_ORDER_UNITS=1000;
     public static function integer(mixed $value,string $field,int $min=0): int
     {
         if(is_string($value)&&preg_match('/^(0|[1-9][0-9]*)$/D',$value)&&strlen($value)<=10&&strcmp(str_pad($value,10,'0',STR_PAD_LEFT),(string)self::MAX)<=0){$value=(int)$value;}

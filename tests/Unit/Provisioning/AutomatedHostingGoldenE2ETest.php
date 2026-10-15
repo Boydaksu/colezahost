@@ -63,7 +63,7 @@ final class AutomatedHostingGoldenE2ETest extends TestCase
         $this->invoiceService = new InvoiceService($this->db);
         $this->invoiceService->ensureTables();
 
-        $this->paymentService = new PaymentService($this->db, $this->invoiceService);
+        $this->paymentService = new PaymentService($this->db, $this->invoiceService, $this->orderService);
         $this->paymentService->ensureTables();
 
         $this->serviceService = new ServiceService($this->db);

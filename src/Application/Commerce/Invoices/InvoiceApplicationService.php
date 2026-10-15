@@ -84,17 +84,14 @@ final class InvoiceApplicationService
     public function listUserInvoices(int $userId, ?int $authUserId = null, bool $isAdmin = false): array
     {
         return $this->authorization->run($authUserId, function () use ($userId, $authUserId, $isAdmin): array {
-            $isAdmin = $this->authorization->hasSystemPermission($authUserId, 'invoices.view');
+            $isAdmin = $userId!==$authUserId && $this->authorization->hasSystemPermission($authUserId, 'invoices.view');
 
             if (!$isAdmin && $authUserId !== null && $userId !== $authUserId) {
                 throw new AuthorizationException('Forbidden: Cannot list invoices for another user.');
             }
 
             $rows = $this->invoiceService->listInvoicesForUser($userId);
-            return array_values(array_filter($rows, function ($row) use ($authUserId): bool {
-                try { $this->authorization->resource($authUserId, $row->getUserId(), $row->getOrganizationId(), 'invoices.view', 'org.billing.view'); return true; }
-                catch (AuthorizationException) { return false; }
-            }));
+            return \Coleza\Application\Commerce\CommerceListVisibility::filter($rows,$this->authorization,$authUserId,'invoices.view','org.billing.view');
 
         }, null);
     }

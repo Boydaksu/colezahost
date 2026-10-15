@@ -8,4 +8,4 @@ Birincil kaynak: orijinal ZIP P05, P06 ve P11; remediation/PLAN.md F07/F15/F30. 
 | D04.2 | Yenileme ve ödeme tekrarları | Aynı hizmet/dönem için tek fatura; paid invoice replay tek uzatma; owner/dönem/state kilidi ve concurrent/caller failure kabulü. |
 | D04.3 | Gerçek ticaret akışı ve sorgu bütçesi | Katalog fiyatı → sipariş → fatura → ödeme → yenileme kalıcı akışı; sahte fiyat/boş servis bağımlılığı olmayan fixture; listeleme/batch sorgu bütçeleri, snapshot geçmişi ve F30 performans kabulü. |
 
-D04.1 ve D04.2 yerel uygulama ve doğrulama tamamlandı (D04-1-SONUC.md, D04-2-SONUC.md). Sıradaki ve D04'te kalan tek adım D04.3. Kapsam dışı yeni özellik eklenmez; yeni bulunan kusur ilgili üç işin içinde kaydedilir. Bu iki adımın kapanışı D04 veya bağımsız ürün kabulü anlamına gelmez. Sağlayıcı dış etkileri D06, HTTP/composition D08 sınırını korur.
+D04.1, D04.2 ve D04.3 yerel uygulama ve doğrulama tamamlandı. Kapanış D04-CLOSURE.md; son kanıt D04-3-SONUC.md. D04'te kalan yerel uygulama adımı yok; sonraki faz D05. Bağımsız ürün/production kabulü açık. Sağlayıcı dış etkileri D06, HTTP/composition D08, reference-host/release kabulü D09 sınırını korur.

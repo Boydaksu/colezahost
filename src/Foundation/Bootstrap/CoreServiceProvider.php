@@ -250,6 +250,10 @@ final class CoreServiceProvider implements ServiceProviderInterface
             return new \Coleza\Application\Support\SupportApplicationService($c->get(\Coleza\Foundation\Database\Connection::class), $c->get(\Coleza\Application\Identity\AuthenticationService::class), $c->get(\Coleza\Domain\Identity\Impersonation\ImpersonationService::class));
         });
 
+        $container->singleton(\Coleza\Application\Commerce\ManualCommerceApplicationService::class,static function(Container $c): \Coleza\Application\Commerce\ManualCommerceApplicationService {
+            return new \Coleza\Application\Commerce\ManualCommerceApplicationService($c->get(\Coleza\Foundation\Database\Connection::class));
+        });
+
         // Bind Translator
         $container->singleton(\Coleza\Foundation\Localization\Translator::class, static function (): \Coleza\Foundation\Localization\Translator {
             return new \Coleza\Foundation\Localization\Translator(__DIR__ . '/../../../config/lang', 'tr_TR');

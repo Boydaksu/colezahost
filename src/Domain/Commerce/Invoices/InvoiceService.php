@@ -353,11 +353,11 @@ final class InvoiceService
     public function listInvoicesForUser(int $userId): array
     {
         $rows = $this->db->select(
-            sprintf('SELECT * FROM %s WHERE user_id = ? ORDER BY id DESC', $this->invoicesTable),
+            sprintf('SELECT * FROM %s WHERE user_id = ? ORDER BY id DESC', $this->invoicesTable) . $this->db->forUpdate(),
             [$userId]
         );
 
-        return array_map([$this, 'hydrateInvoice'], $rows);
+        return $this->hydrateInvoiceList($rows);
     }
 
     /**
@@ -458,10 +458,21 @@ final class InvoiceService
     /**
      * @param array<string, mixed> $row
      */
-    private function hydrateInvoice(array $row): Invoice
+    private function hydrateInvoiceList(array $rows): array
+    {
+        if($rows===[]){return [];}
+        $items=[];
+        foreach(array_chunk(array_column($rows,'id'),500)as$ids){
+            $sql='SELECT * FROM invoice_items WHERE invoice_id IN ('.implode(',',array_fill(0,count($ids),'?')).') ORDER BY id';
+            foreach($this->db->select($sql.$this->db->forUpdate(),$ids)as$item){$items[(int)$item['invoice_id']][]=$item;}
+        }
+        return array_map(fn(array $row):Invoice=>$this->hydrateInvoice($row,$items[(int)$row['id']]??[]),$rows);
+    }
+
+    private function hydrateInvoice(array $row, ?array $itemRows = null): Invoice
     {
         $invoiceId = (int)$row['id'];
-        $itemRows = $this->db->select(sprintf('SELECT * FROM %s WHERE invoice_id = ?', $this->invoiceItemsTable) . $this->db->forUpdate(), [$invoiceId]);
+        $itemRows ??= $this->db->select(sprintf('SELECT * FROM %s WHERE invoice_id = ?', $this->invoiceItemsTable) . $this->db->forUpdate(), [$invoiceId]);
 
         $items = [];
         foreach ($itemRows as $iRow) {

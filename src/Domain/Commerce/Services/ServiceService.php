@@ -224,29 +224,51 @@ final class ServiceService
      *
      * @return array<Service>
      */
+    /** Provider evidence cannot be bypassed by a local manual command. Caller must hold the transaction. */
+    public function requireManualService(int $serviceId): Service
+    {
+        if(!$this->db->getPdo()->inTransaction()){throw new \LogicException('Manual service guard requires a transaction.');}
+        $service=$this->findServiceById($serviceId)??throw new \RuntimeException('Service not found.');
+        $placements=$this->db->select('SELECT id FROM service_placements WHERE service_id=?'.$this->db->forUpdate(),[$serviceId]);
+        if($placements!==[]||!empty($service->getUsername())||!empty($service->getServerName())||!empty($service->getIpAddress())||!empty($service->getPasswordEncrypted())){throw new ServiceProviderLifecycleRequiredException();}
+        return $service;
+    }
+
     public function createServicesFromOrder(Order $order): array
     {
-        $services = [];
-        foreach ($order->getItems() as $item) {
-            $metadata = $item->getMetadata();
-            $domain = $metadata['domain'] ?? null;
-
-            $service = $this->createService([
-                'user_id' => $order->getUserId(),
-                'organization_id' => $order->getOrganizationId(),
-                'order_id' => $order->getId(),
-                'order_item_id' => $item->getId(),
-                'product_id' => $item->getProductId(),
-                'billing_cycle' => $item->getCycle(),
-                'recurring_amount_minor' => $item->getUnitPriceMinor(),
-                'currency_code' => $order->getCurrencyCode(),
-                'registration_date' => date('Y-m-d'),
-                'domain' => $domain,
-                'metadata' => $metadata,
-            ]);
-            $services[] = $service;
-        }
-        return $services;
+        $tables=['services'=>['id','user_id','organization_id','order_id','order_item_id','product_id','metadata_json'],'service_sequences'=>['date_prefix','last_number'],'orders'=>['id','status','user_id','organization_id','total_minor'],'order_items'=>['id','order_id','quantity','unit_price_minor'],'invoices'=>['id','order_id','status','user_id','organization_id','currency_code','total_minor','paid_amount_minor']];
+        if(!\Coleza\Foundation\Database\PdoSchema::useInstalledSchema($this->db,$tables)){throw new ValidationException(['installation'=>['Install commerce storage before fulfillment.']]);}
+        if($this->db->getDriverName()==='mysql'){foreach(array_keys($tables)as$table){$row=$this->db->selectOne('SELECT ENGINE FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name=?',[$table]);if(strcasecmp((string)$row['ENGINE'],'InnoDB')!==0){throw new \LogicException('Transactional fulfillment storage required.');}}}
+        return $this->db->transaction(function()use($order):array{
+            $stored=(new \Coleza\Domain\Commerce\Orders\OrderService($this->db))->findOrderById((int)$order->getId());
+            if($stored===null||!in_array($stored->getStatus(),['active','completed'],true)){throw new ValidationException(['order'=>['A current paid order is required.']]);}
+            $invoices=$this->db->select('SELECT * FROM invoices WHERE order_id=?'.$this->db->forUpdate(),[$stored->getId()]);
+            $invoice=$invoices[0]??null;
+            if(count($invoices)!==1||$invoice['status']!=='paid'||(int)$invoice['paid_amount_minor']!==$stored->getTotalMinor()||(int)$invoice['total_minor']!==$stored->getTotalMinor()||(int)$invoice['user_id']!==$stored->getUserId()||($invoice['organization_id']===null?null:(int)$invoice['organization_id'])!==$stored->getOrganizationId()||$invoice['currency_code']!==$stored->getCurrencyCode()){throw new ValidationException(['invoice'=>['One fully paid invoice matching the order is required.']]);}
+            $existing=$this->db->select('SELECT * FROM services WHERE order_id=? ORDER BY id'.$this->db->forUpdate(),[$stored->getId()]);
+            $byItem=[];foreach($existing as$row){$byItem[(int)$row['order_item_id']][]=$row;}
+            $itemIds=array_map(static fn($item):int=>(int)$item->getId(),$stored->getItems());
+            if(array_diff(array_keys($byItem),$itemIds)!==[]){throw new ValidationException(['services'=>['Legacy service bindings require reconciliation.']]);}
+            $units=0;foreach($stored->getItems()as$item){$units+=\Coleza\Domain\Commerce\CommerceAmounts::integer($item->getQuantity(),'quantity',1);}
+            if($units>\Coleza\Domain\Commerce\CommerceAmounts::MAX_ORDER_UNITS){throw new ValidationException(['quantity'=>['Manual fulfillment supports at most 1000 units per order; split the order.']]);}
+            foreach($stored->getItems()as$item){
+                $rows=$byItem[(int)$item->getId()]??[];
+                if($rows!==[]){
+                    if(count($rows)!==$item->getQuantity()){throw new ValidationException(['services'=>['Partial legacy fulfillment requires reconciliation.']]);}
+                    $unitIds=[];
+                    foreach($rows as$row){$metadata=json_decode((string)($row['metadata_json']??'{}'),true,flags:JSON_THROW_ON_ERROR);$unitIds[]=$metadata['commerce_order_unit']??($item->getQuantity()===1?1:0);
+                        if((int)$row['user_id']!==$stored->getUserId()||($row['organization_id']===null?null:(int)$row['organization_id'])!==$stored->getOrganizationId()||(int)$row['product_id']!==$item->getProductId()){throw new ValidationException(['services'=>['Existing service owner or product mismatch.']]);}
+                    }
+                    sort($unitIds);if($unitIds!==range(1,$item->getQuantity())){throw new ValidationException(['services'=>['Existing unit identities require reconciliation.']]);}
+                    continue;
+                }
+                for($unit=1;$unit<=$item->getQuantity();$unit++){
+                    $metadata=$item->getMetadata();$metadata['commerce_order_unit']=$unit;
+                    $this->createService(['user_id'=>$stored->getUserId(),'organization_id'=>$stored->getOrganizationId(),'order_id'=>$stored->getId(),'order_item_id'=>$item->getId(),'product_id'=>$item->getProductId(),'billing_cycle'=>$item->getCycle(),'recurring_amount_minor'=>$item->getUnitPriceMinor(),'currency_code'=>$stored->getCurrencyCode(),'registration_date'=>date('Y-m-d'),'domain'=>$metadata['domain']??null,'metadata'=>$metadata]);
+                }
+            }
+            return $this->hydrateServices($this->db->select('SELECT * FROM services WHERE order_id=? ORDER BY id'.$this->db->forUpdate(),[$stored->getId()]));
+        });
     }
 
     /**

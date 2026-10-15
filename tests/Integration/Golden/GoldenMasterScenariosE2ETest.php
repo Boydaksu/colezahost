@@ -166,7 +166,7 @@ final class GoldenMasterScenariosE2ETest extends TestCase
         $invoiceService = new InvoiceService($db);
         $invoiceService->ensureTables();
 
-        $paymentService = new PaymentService($db, $invoiceService);
+        $paymentService = new PaymentService($db, $invoiceService, $orderService);
         $paymentService->ensureTables();
 
         $serviceService = new ServiceService($db);
@@ -249,7 +249,7 @@ final class GoldenMasterScenariosE2ETest extends TestCase
         $invoiceService = new InvoiceService($db);
         $invoiceService->ensureTables();
 
-        $paymentService = new PaymentService($db, $invoiceService);
+        $paymentService = new PaymentService($db, $invoiceService, $orderService);
         $paymentService->ensureTables();
 
         $serviceService = new ServiceService($db);

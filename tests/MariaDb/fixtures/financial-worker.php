@@ -47,6 +47,14 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'commerceFulfill':
+            $orders=new Coleza\Domain\Commerce\Orders\OrderService($db);
+            $services=(new Coleza\Domain\Commerce\Services\ServiceService($db))->createServicesFromOrder($orders->findOrderById($id));
+            $result['service_ids']=array_map(static fn($service)=>$service->getId(),$services);
+            break;
+        case 'manualFlowApprove':
+            $result['payment_status']=(new Coleza\Application\Commerce\ManualCommerceApplicationService($db))->approvePayment($id,3)->getStatus();
+            break;
         case 'renewalGenerate':
         case 'renewalSettle':
         case 'renewalMixed':

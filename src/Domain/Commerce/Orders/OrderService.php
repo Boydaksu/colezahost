@@ -311,18 +311,29 @@ final class OrderService
         }
 
         $sql .= ' ORDER BY id DESC';
-        $rows = $this->db->select($sql, $params);
+        $rows = $this->db->select($sql . $this->db->forUpdate(), $params);
 
-        return array_map([$this, 'hydrateOrder'], $rows);
+        return $this->hydrateOrderList($rows);
     }
 
     /**
      * @param array<string, mixed> $row
      */
-    private function hydrateOrder(array $row): Order
+    private function hydrateOrderList(array $rows): array
+    {
+        if($rows===[]){return [];}
+        $items=[];
+        foreach(array_chunk(array_column($rows,'id'),500)as$ids){
+            $sql='SELECT * FROM order_items WHERE order_id IN ('.implode(',',array_fill(0,count($ids),'?')).') ORDER BY id';
+            foreach($this->db->select($sql.$this->db->forUpdate(),$ids)as$item){$items[(int)$item['order_id']][]=$item;}
+        }
+        return array_map(fn(array $row):Order=>$this->hydrateOrder($row,$items[(int)$row['id']]??[]),$rows);
+    }
+
+    private function hydrateOrder(array $row, ?array $itemRows = null): Order
     {
         $orderId = (int)$row['id'];
-        $itemRows = $this->db->select(sprintf('SELECT * FROM %s WHERE order_id = ?', $this->orderItemsTable), [$orderId]);
+        $itemRows ??= $this->db->select(sprintf('SELECT * FROM %s WHERE order_id = ?', $this->orderItemsTable) . $this->db->forUpdate(), [$orderId]);
 
         $items = [];
         foreach ($itemRows as $iRow) {

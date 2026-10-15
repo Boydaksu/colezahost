@@ -1,0 +1,44 @@
+{
+  "phase": "D04",
+  "step": "D04.3",
+  "phase_status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
+  "status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
+  "reference_commit": "3cf5165e0e1b02cd75a5a011a98e48d27add0ba1",
+  "before": {
+    "tests": 6,
+    "failures": 6,
+    "errors": 0
+  },
+  "batch_before": {
+    "tests": 1,
+    "failures": 1,
+    "errors": 0
+  },
+  "main": {
+    "tests": 1884,
+    "assertions": 12552
+  },
+  "mariadb": {
+    "tests": 157,
+    "assertions": 1451
+  },
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "native_classes": 10,
+  "full_mariadb_current_source": false,
+  "query_budgets": {
+    "order_list_100": 2,
+    "invoice_list_100": 2,
+    "payment_list_100": 3,
+    "personal_application_list_100_each": 30,
+    "existing_renewal_periods_100": 6,
+    "invoice_list_501": 3,
+    "payment_list_501": 5
+  },
+  "canonical_migration_count": 26,
+  "remaining_steps": [],
+  "next_phase": "D05",
+  "production_ready": false,
+  "independent_acceptance": "PENDING"
+}

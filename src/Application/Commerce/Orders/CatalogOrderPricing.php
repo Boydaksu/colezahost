@@ -25,6 +25,7 @@ final class CatalogOrderPricing
                 $unknown=array_diff(array_keys($item),['product_id','cycle','billing_cycle','quantity','option_sub_ids','addon_ids','domain']);if($unknown!==[]){throw new ValidationException(['items'=>['Only product, cycle, quantity, options, addons and domain may be submitted.']]);}
                 $product=Amounts::integer($item['product_id']??0,'product_id',1);$qty=Amounts::integer($item['quantity']??1,'quantity',1);$quantities[$product]=Amounts::add($quantities[$product]??0,$qty);
             }
+            if(array_sum($quantities)>Amounts::MAX_ORDER_UNITS){throw new ValidationException(['quantity'=>['An order supports at most 1000 service units; split the order before payment.']]);}
             // Stable product lock ordering prevents cross-product checkout deadlocks.
             $catalog->lockPurchaseProducts(array_keys($quantities));
             $tax->requireDefaultTaxClass();

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Integration\Commerce\CommerceFlowTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Commerce\CommerceFlowTest.php" tests="1" assertions="4" errors="0" failures="1" skipped="0" time="0.052841">
+    <testcase name="testRenewalSchedulerSkips100ExistingPeriodsWithinSixQueries" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommerceFlowCases.php" line="115" class="Coleza\Tests\Integration\Commerce\CommerceFlowTest" classname="Coleza.Tests.Integration.Commerce.CommerceFlowTest" assertions="4" time="0.052841">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Commerce\CommerceFlowTest::testRenewalSchedulerSkips100ExistingPeriodsWithinSixQueries&#13;
+Failed asserting that 103 is equal to 6 or is less than 6.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommerceFlowCases.php:120</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

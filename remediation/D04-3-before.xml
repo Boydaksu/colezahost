@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Integration\Commerce\CommerceFlowTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Commerce\CommerceFlowTest.php" tests="6" assertions="12" errors="0" failures="6" skipped="0" time="0.061969">
+    <testcase name="testOrderAndInvoiceListsHaveConstantQueryBudget" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommerceFlowCases.php" line="29" class="Coleza\Tests\Integration\Commerce\CommerceFlowTest" classname="Coleza.Tests.Integration.Commerce.CommerceFlowTest" assertions="4" time="0.036207">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Commerce\CommerceFlowTest::testOrderAndInvoiceListsHaveConstantQueryBudget&#13;
+Failed asserting that 13 is equal to 2 or is less than 2.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommerceFlowCases.php:32</failure>
+    </testcase>
+    <testcase name="testPaymentListsHaveConstantQueryBudget" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommerceFlowCases.php" line="35" class="Coleza\Tests\Integration\Commerce\CommerceFlowTest" classname="Coleza.Tests.Integration.Commerce.CommerceFlowTest" assertions="4" time="0.011910">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Commerce\CommerceFlowTest::testPaymentListsHaveConstantQueryBudget&#13;
+Failed asserting that 25 is equal to 3 or is less than 3.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommerceFlowCases.php:38</failure>
+    </testcase>
+    <testcase name="testUnpaidOrderCannotCreateService" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommerceFlowCases.php" line="40" class="Coleza\Tests\Integration\Commerce\CommerceFlowTest" classname="Coleza.Tests.Integration.Commerce.CommerceFlowTest" assertions="1" time="0.004063">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Commerce\CommerceFlowTest::testUnpaidOrderCannotCreateService&#13;
+Failed asserting that exception of type "Coleza\Foundation\Exceptions\ValidationException" is thrown.</failure>
+    </testcase>
+    <testcase name="testPaidOrderServiceCreationIsIdempotent" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommerceFlowCases.php" line="44" class="Coleza\Tests\Integration\Commerce\CommerceFlowTest" classname="Coleza.Tests.Integration.Commerce.CommerceFlowTest" assertions="1" time="0.003480">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Commerce\CommerceFlowTest::testPaidOrderServiceCreationIsIdempotent&#13;
+Failed asserting that 2 is identical to 1.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommerceFlowCases.php:46</failure>
+    </testcase>
+    <testcase name="testEachPaidOrderUnitCreatesOneService" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommerceFlowCases.php" line="48" class="Coleza\Tests\Integration\Commerce\CommerceFlowTest" classname="Coleza.Tests.Integration.Commerce.CommerceFlowTest" assertions="1" time="0.003152">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Commerce\CommerceFlowTest::testEachPaidOrderUnitCreatesOneService&#13;
+Failed asserting that actual size 1 matches expected size 3.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommerceFlowCases.php:50</failure>
+    </testcase>
+    <testcase name="testInvoicePaymentListIncludesPendingAndAllocatedPayments" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommerceFlowCases.php" line="52" class="Coleza\Tests\Integration\Commerce\CommerceFlowTest" classname="Coleza.Tests.Integration.Commerce.CommerceFlowTest" assertions="1" time="0.003156">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Commerce\CommerceFlowTest::testInvoicePaymentListIncludesPendingAndAllocatedPayments&#13;
+Failed asserting that actual size 1 matches expected size 2.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\CommerceFlowCases.php:55</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

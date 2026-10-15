@@ -175,6 +175,10 @@ final class ServiceLifecycleTest extends TestCase
             ]
         );
 
+        $invoices=new \Coleza\Domain\Commerce\Invoices\InvoiceService($this->db);$invoices->ensureTables();
+        $payments=new \Coleza\Domain\Commerce\Payments\PaymentService($this->db,$invoices,$this->orderService);$payments->ensureTables();
+        $invoice=$invoices->createInvoiceFromOrder($order);$payment=$payments->recordPayment(['user_id'=>$userId,'invoice_id'=>$invoice->getId(),'currency_code'=>'USD','amount_minor'=>$invoice->getTotalMinor(),'payment_method'=>'bank_transfer']);$payments->approveManualPayment($payment->getId());
+        $order=$this->orderService->findOrderById($order->getId());
         $services = $this->serviceService->createServicesFromOrder($order);
         $this->assertCount(2, $services);
 
