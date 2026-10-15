@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Domain\Identity\OrganizationAuthorizationTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Identity\OrganizationAuthorizationTest.php" tests="3" assertions="3" errors="0" failures="3" skipped="0" time="0.294079">
+    <testcase name="testInvitationCannotUseSuppliedEmailToJoinAsAnotherAccount" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\OrganizationAuthorizationCases.php" line="24" class="Coleza\Tests\Unit\Domain\Identity\OrganizationAuthorizationTest" classname="Coleza.Tests.Unit.Domain.Identity.OrganizationAuthorizationTest" assertions="1" time="0.291643">
+      <failure type="PHPUnit\Framework\AssertionFailedError">Coleza\Tests\Unit\Domain\Identity\OrganizationAuthorizationTest::testInvitationCannotUseSuppliedEmailToJoinAsAnotherAccount&#13;
+Forged email accepted
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\OrganizationAuthorizationCases.php:28</failure>
+    </testcase>
+    <testcase name="testOwnerRoleCannotBeGrantedByInvitation" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\OrganizationAuthorizationCases.php" line="31" class="Coleza\Tests\Unit\Domain\Identity\OrganizationAuthorizationTest" classname="Coleza.Tests.Unit.Domain.Identity.OrganizationAuthorizationTest" assertions="1" time="0.001179">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Identity\OrganizationAuthorizationTest::testOwnerRoleCannotBeGrantedByInvitation&#13;
+Failed asserting that exception of type "Coleza\Foundation\Exceptions\ValidationException" is thrown.</failure>
+    </testcase>
+    <testcase name="testSwitchCannotTakeOverAnotherUsersSession" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\OrganizationAuthorizationCases.php" line="37" class="Coleza\Tests\Unit\Domain\Identity\OrganizationAuthorizationTest" classname="Coleza.Tests.Unit.Domain.Identity.OrganizationAuthorizationTest" assertions="1" time="0.001257">
+      <failure type="PHPUnit\Framework\AssertionFailedError">Coleza\Tests\Unit\Domain\Identity\OrganizationAuthorizationTest::testSwitchCannotTakeOverAnotherUsersSession&#13;
+Foreign session changed
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\OrganizationAuthorizationCases.php:41</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

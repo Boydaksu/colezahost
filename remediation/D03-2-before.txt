@@ -1,0 +1,26 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+FFF                                                                 3 / 3 (100%)
+
+Time: 00:00.316, Memory: 20.00 MB
+
+There were 3 failures:
+
+1) Coleza\Tests\Unit\Domain\Identity\OrganizationAuthorizationTest::testInvitationCannotUseSuppliedEmailToJoinAsAnotherAccount
+Forged email accepted
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\OrganizationAuthorizationCases.php:28
+
+2) Coleza\Tests\Unit\Domain\Identity\OrganizationAuthorizationTest::testOwnerRoleCannotBeGrantedByInvitation
+Failed asserting that exception of type "Coleza\Foundation\Exceptions\ValidationException" is thrown.
+
+3) Coleza\Tests\Unit\Domain\Identity\OrganizationAuthorizationTest::testSwitchCannotTakeOverAnotherUsersSession
+Foreign session changed
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\OrganizationAuthorizationCases.php:41
+
+FAILURES!
+Tests: 3, Assertions: 3, Failures: 3.

@@ -1,0 +1,23 @@
+{
+  "reference_commit": "ee2dd00b30fbd981361c8447f9477b07ec317db8",
+  "status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
+  "independent_acceptance": "PENDING",
+  "production_ready": false,
+  "before": {
+    "tests": 3,
+    "failures": 3,
+    "errors": 0
+  },
+  "results": {
+    "main": {
+      "tests": 1799,
+      "assertions": 12242
+    },
+    "native": {
+      "tests": 137,
+      "assertions": 960
+    }
+  },
+  "full_native_rerun": false,
+  "next_step": "D03.3"
+}

@@ -22,6 +22,10 @@ final class OrganizationServiceTest extends TestCase
         $pdo = new PDO('sqlite::memory:');
         $this->connection = new Connection($pdo, 'sqlite');
         $this->sessionHandler = new DatabaseSessionHandler($this->connection);
+        (new \Coleza\Domain\Identity\Auth\AuthService($this->connection, new \Coleza\Domain\Identity\Security\PasswordHasher(), $this->sessionHandler))->ensureTables();
+        foreach ([1, 2, 3, 5, 10, 99] as $id) {
+            $this->connection->insert('users', ['id' => $id, 'email' => $id === 2 ? 'member@acme.com' : "user{$id}@example.test", 'name' => 'Fixture', 'password_hash' => 'unused', 'is_active' => 1, 'email_verified_at' => '2026-01-01 00:00:00']);
+        }
         $this->orgService = new OrganizationService($this->connection, $this->sessionHandler);
     }
 
@@ -58,7 +62,8 @@ final class OrganizationServiceTest extends TestCase
 
         $sessionData = $this->sessionHandler->read($sessionId);
         $this->assertSame($orgId, $sessionData['active_organization_id']);
-        $this->assertSame('owner', $sessionData['active_organization_role']);
+        $this->assertArrayNotHasKey('active_organization_role', $sessionData);
+        $this->assertSame('owner', $this->orgService->resolveActiveOrganization($sessionId, $userId)['role']);
     }
 
     public function testSwitchToUnauthorizedOrganizationFails(): void

@@ -47,6 +47,24 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'organizationDemoteInvite':
+        case 'organizationRemoveSelect':
+        case 'organizationAccept':
+        case 'organizationInvite':
+            $organization = new Coleza\Domain\Identity\Organization\OrganizationService($db, new Coleza\Domain\Identity\Session\DatabaseSessionHandler($db));
+            try {
+                if ($action === 'organizationDemoteInvite') {
+                    if ((int) $argv[2] === 0) { $organization->changeMemberRole(1, $id, 4, 'member'); }
+                    else { $organization->inviteMember(4, $id, 'member@example.test'); }
+                }
+                elseif ($action === 'organizationRemoveSelect') {
+                    if ((int) $argv[2] === 0) { $organization->removeMember(1, $id, 2); }
+                    else { $organization->switchOrganization('member-session', 2, $id); }
+                }
+                elseif ($action === 'organizationAccept') { $organization->acceptInvitation($id, 'member@example.test', $argv[5]); $result['accepted'] = true; }
+                else { $result['token'] = $organization->inviteMember(1, $id, 'member@example.test'); }
+            } catch (Coleza\Foundation\Exceptions\ValidationException) { $result['status'] = 'rejected'; $result['accepted'] = false; }
+            break;
         case 'keyRotationRace':
         case 'keyStaleWriter':
             $result['kind'] = $action === 'keyRotationRace' && (int) $argv[2] === 0 ? 'rotate' : 'write';

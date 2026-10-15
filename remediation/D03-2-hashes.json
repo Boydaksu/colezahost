@@ -1,0 +1,27 @@
+{
+  "reference_commit": "ee2dd00b30fbd981361c8447f9477b07ec317db8",
+  "files": {
+    "remediation/D03-2-SONUC.md": "e0c448918a6da2b349d5c967d4bf7b00cbdcfdabd9ebd80b6d0ea000b983b350",
+    "remediation/D03-2-baseline.json": "9cd24eaa6d290b5d0e997fa863a78a01c5f364cab61faf229e29e034aa6eecf3",
+    "remediation/D03-2-before.txt": "1eb4fff4e5a5c1b22932908f7d79cf3c8b6a2a2c0805d5435ea7fed009998cc4",
+    "remediation/D03-2-before.xml": "b94e9fd9f03fa747cc66b277e19244a1f5ae3f0d3456bf7051f928dc739f972e",
+    "remediation/D03-2-main.txt": "d73d0b1199fca4c7236b734b357b514c81418b9755a1d07932a8cca251864072",
+    "remediation/D03-2-main.xml": "2e622091c159950fe2052e85cd9f68889c7d27546208ed6e0550eb2906802343",
+    "remediation/D03-2-native-discovery.txt": "d8a5ceb206a6f0e58f042ca64796c24aed6ca260fbae1b45fdd33d95775c5237",
+    "remediation/D03-2-native-discovery.xml": "08b88d027237d699b84c55e6e42d0bf6c8ec3806254acb275c565afef3bfe3ab",
+    "remediation/D03-2-native.txt": "68f6c165219d9d33d9a5d381ec70f6cafddcb3e677819acf7b925c0af91c33b2",
+    "remediation/D03-2-native.xml": "e314d89c3385bf6b2f723c75af8788f0bb98c07c22169cef643f88999ee27afc",
+    "remediation/D03-2-summary.json": "7410f9a4086b436b908d6a9c2c88f758a76411f0a11df49f4ab4b1e2dfb678f9",
+    "remediation/D03-PLAN.md": "ee4752b5022ec8db51cdbbbb055a3ba5c4b16be4a89553cc3a632da7a8aa9c2d",
+    "remediation/PLAN.md": "43f71234b1f6b5c691b851e27472b48d0c49a7d0632e4a4bac9c2f00a408ca44",
+    "remediation/state.json": "7ed0f1d5bfb7e5e19684f6f94d5ac3ea48d43a5b2635845ef8d8562942e84bf4",
+    "remediation/verify-d03-organizations.py": "ec733fcef2558dbe800fa3b7ed299082b95c9033ca16af91c3398dbaf74d4ad3",
+    "src/Domain/Identity/Organization/OrganizationService.php": "1218b93e987e7c2e97722731fc342ac2e9b20246af4f0535b91857bd8e333812",
+    "src/Domain/Identity/Session/DatabaseSessionHandler.php": "8524c23de1d7aaba5a69570ddd7d0653a359bef735fe0ae4ef79023ac6918e60",
+    "tests/MariaDb/OrganizationAuthorizationTest.php": "2350aafd48a7310af65a50ed59a05273703166483cfb54a12675dff4b703e1ac",
+    "tests/MariaDb/fixtures/financial-worker.php": "ff71dd9ef8c80f517e2f909d0786ac8c0020723368ba7998de13ce33467a7418",
+    "tests/Support/OrganizationAuthorizationCases.php": "92974c6b4abdd11bd76107eb53f5a257d3bff4199ae17d5aa63fdc1e7a6a7feb",
+    "tests/Unit/Domain/Identity/OrganizationAuthorizationTest.php": "03095947fc94d7f63a7f49970ef57f15d8c12daaffcb61ff5a065301899b5df1",
+    "tests/Unit/Domain/Identity/OrganizationServiceTest.php": "893658a285b1174aa5531eaeb406dd86e4bd8c3f2b1e64470eefe52e495b68a8"
+  }
+}

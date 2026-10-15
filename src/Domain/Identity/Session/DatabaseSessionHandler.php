@@ -129,6 +129,26 @@ final class DatabaseSessionHandler
         $this->ensureTable(installation: false);
         SessionRevocationSchema::prepare($this->db);
     }
+    public function usesConnection(Connection $db): bool { return $this->db === $db; }
+
+    /** Update only an existing, live session owned by the authenticated user. Never mint or reassign it. */
+    public function mutateOwned(string $sessionId, int $userId, callable $callback): void
+    {
+        $this->validateId($sessionId); $this->prepareLifecycle();
+        SessionRevocationSchema::run($this->db, function () use ($sessionId, $userId, $callback): void {
+            $revoked = $this->db->selectOne('SELECT session_id FROM session_revocations WHERE session_id = ?' . IdentityPersistence::lock($this->db), [$sessionId]);
+            $row = $this->db->selectOne('SELECT * FROM sessions WHERE id = ?' . IdentityPersistence::lock($this->db), [$sessionId]);
+            if ($userId < 1 || $revoked !== null || $row === null || (int) $row['user_id'] !== $userId || (int) $row['last_activity'] < time() - $this->lifetimeSeconds) {
+                throw new ValidationException(['session' => ['Current owned session required.']]);
+            }
+            try { $payload = json_decode((string) $row['payload'], true, flags: JSON_THROW_ON_ERROR); }
+            catch (\JsonException) { throw new ValidationException(['session' => ['Invalid session data.']]); }
+            if (!is_array($payload)) { throw new ValidationException(['session' => ['Invalid session data.']]); }
+            $updated = $callback($payload);
+            if (!is_array($updated)) { throw new \LogicException('Session mutation must return an array.'); }
+            $this->db->update('sessions', ['payload' => json_encode($updated, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES)], 'id = :id', ['id' => $sessionId]);
+        });
+    }
     private function validateId(string $id): void
     {
         if ($id === '' || strlen($id) > 128 || str_contains($id, "\0")) { throw new \InvalidArgumentException('Invalid session ID.'); }

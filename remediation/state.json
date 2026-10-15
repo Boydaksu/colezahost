@@ -3,19 +3,19 @@
   "reference_report": "review/INCELEME.md",
   "plan": "remediation/PLAN.md",
   "phase": "D03",
-  "step": "D03.2",
+  "step": "D03.3",
   "status": "IN_PROGRESS",
-  "step_status": "D03_1_IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED_D03_2_READY",
+  "step_status": "D03_2_IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED_D03_3_READY",
   "independent_acceptance": "PENDING",
   "production_ready": false,
-  "next_step": "D03.2",
+  "next_step": "D03.3",
   "next_phase": "D04",
   "tests": {
-    "main_total": 1782,
-    "main_assertions": 12122,
-    "mariadb_total": 247,
-    "mariadb_assertions": 1736,
-    "mariadb_scope": "D03.1 closeout: exact 18 native classes covering staging/contact, Vault/provider schema, provisioning/automation/domain/queue, SMTP/TOTP, key lifecycle, privacy signing/legacy/binding/install, egress/API/history and SQL/install; full native not rerun",
+    "main_total": 1799,
+    "main_assertions": 12242,
+    "mariadb_total": 137,
+    "mariadb_assertions": 960,
+    "mariadb_scope": "Exact five native classes: organization authorization, identity lifecycle, API/session persistence, installation acceptance and legacy identity upgrade; full native not rerun",
     "full_mariadb_current_source": false,
     "last_full_mariadb": {
       "reference_commit": "0d2e3e08d4c121a146f298f77b4bc6b008b6f66e",
@@ -23,8 +23,8 @@
       "assertions": 5399,
       "evidence": "remediation/D02-CLOSEOUT-summary.json"
     },
-    "total": 2029,
-    "assertions": 13858,
+    "total": 1936,
+    "assertions": 13202,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -45,7 +45,6 @@
     "F09": "INVENTORIED_SECRET_STORAGE_DIAGNOSTIC_EXPORT_AND_LEGACY_PATHS_IMPLEMENTED_LOCAL_VERIFIED_PENDING_INDEPENDENT_REVIEW"
   },
   "remaining_steps": [
-    "D03.2",
     "D03.3",
     "D03.4"
   ],
@@ -87,9 +86,7 @@
   "d03_vault_evidence": "remediation/D03-1-VAULT-SONUC.md",
   "d03_keyfile_evidence": "remediation/D03-1-KEYFILE-SONUC.md",
   "d03_key_lifecycle_status": "IMPLEMENTED_LOCAL_VERIFIED",
-  "d03_1_remaining_buckets": [
-    "GENERAL_SECRET_CONFIG_LOG_EXPORT_AUDIT"
-  ],
+  "d03_1_remaining_buckets": [],
   "d03_key_lifecycle_evidence": "remediation/D03-1-KEYLIFE-SONUC.md",
   "d05_recovery_debt": [
     "Non-atomic dump import and staged target recovery acceptance",
@@ -142,8 +139,16 @@
       "evidence": "remediation/D03-1-STAGING-SONUC.md",
       "independent_acceptance": "PENDING",
       "scope": "Inventoried key, encrypted secret/carrier storage, legacy maintenance and diagnostic/export implementation; full HTTP/actor/provider/recovery/product acceptance stays in owning phases"
+    },
+    "D03.2": {
+      "status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
+      "date": "2026-10-15",
+      "evidence": "remediation/D03-2-SONUC.md",
+      "independent_acceptance": "PENDING",
+      "scope": "Current active actor and verified invitation email, assignable roles, owner protection, membership mutation, current session selection resolution, aggregate audit/savepoints, parallel consumption/replacement and stale authorization rejection; authenticated HTTP principal and product command context integration retain D03.4/D08 boundaries"
     }
   },
   "d03_staging_storage_evidence": "remediation/D03-1-STAGING-SONUC.md",
-  "d03_1_closure": "remediation/D03-1-CLOSURE.md"
+  "d03_1_closure": "remediation/D03-1-CLOSURE.md",
+  "d03_organization_evidence": "remediation/D03-2-SONUC.md"
 }
