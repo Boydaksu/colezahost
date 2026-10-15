@@ -18,7 +18,7 @@ final class PrivacyExportPackage
         array $data,
         private readonly string $checksum
     ) {
-        $this->data = \Coleza\Foundation\Security\SecretRedactor::sanitize($data);
+        $this->data = \Coleza\Foundation\Security\SecretRedactor::diagnostic($data);
     }
 
     /**
@@ -26,7 +26,7 @@ final class PrivacyExportPackage
      */
     public static function create(int $userId, array $data, ?DateTimeImmutable $generatedAt = null): self
     {
-        $data = \Coleza\Foundation\Security\SecretRedactor::sanitize($data);
+        $data = \Coleza\Foundation\Security\SecretRedactor::diagnostic($data);
         $timestamp = $generatedAt ?? new DateTimeImmutable();
         $payload = [
             'schema' => 'colezahost_gdpr_export_v1',

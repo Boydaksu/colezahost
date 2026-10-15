@@ -95,7 +95,7 @@ final class PaymentGatewayHealthCheck implements HealthCheckInterface
                 $meta
             );
         } catch (Throwable $e) {
-            return HealthCheckResult::unhealthy($this->name(), 'Gateway health probe error: ' . $e->getMessage());
+            return HealthCheckResult::unhealthy($this->name(), 'Gateway health probe failed.', ['exception_class' => get_class($e)]);
         }
     }
 }

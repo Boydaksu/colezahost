@@ -5,17 +5,17 @@
   "phase": "D03",
   "step": "D03.1",
   "status": "IN_PROGRESS",
-  "step_status": "D03_1_PRIVACY_BINDING_WRITER_FENCE_AND_APP_ROTATION_RESTORE_VERIFICATION_LOCAL_VERIFIED_COMPREHENSIVE_ACCEPTANCE_OPEN",
+  "step_status": "D03_1_DIAGNOSTIC_AND_LEGACY_EXPORT_ACCEPTANCE_LOCAL_VERIFIED_QUEUE_AND_MIGRATION_STAGING_PROTECTION_OPEN",
   "independent_acceptance": "PENDING",
   "production_ready": false,
   "next_step": "D03.1",
   "next_phase": "D04",
   "tests": {
-    "main_total": 1717,
-    "main_assertions": 11831,
-    "mariadb_total": 82,
-    "mariadb_assertions": 607,
-    "mariadb_scope": "D03.1 privacy binding: PrivacyBinding/PrivacySigning/PrivacyLegacy/PrivacyMigrationInstall/KeyLifecycle/SqlPortabilityCloseout; six-class exact filtered discovery; full native not rerun",
+    "main_total": 1733,
+    "main_assertions": 11884,
+    "mariadb_total": 54,
+    "mariadb_assertions": 385,
+    "mariadb_scope": "D03.1 bounded secret acceptance: SecretAcceptance/FinancialConcurrency/SqlPortabilityCloseout/PrivacyBinding/ProvisioningSecret/SecretEgress; six exact native classes; full native not rerun",
     "full_mariadb_current_source": false,
     "last_full_mariadb": {
       "reference_commit": "0d2e3e08d4c121a146f298f77b4bc6b008b6f66e",
@@ -23,8 +23,8 @@
       "assertions": 5399,
       "evidence": "remediation/D02-CLOSEOUT-summary.json"
     },
-    "total": 1799,
-    "assertions": 12438,
+    "total": 1787,
+    "assertions": 12269,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -42,7 +42,7 @@
     "F30": "PARTIAL_PRODUCTION_SCHEMA_ANALYTICS_GOLDEN_AND_EXISTING_ADMIN_PERFORMANCE_BUDGET_VERIFIED_REAL_PROVIDER_END_TO_END_ACCEPTANCE_OPEN",
     "F21": "PARTIAL_SUPPORT_SCHEMA_ASSIGNMENT_CONVERSATION_CALLER_AND_PRE_EFFECT_DEPENDENCY_CHECKS_IMPLEMENTED_REAL_CONTEXT_COMMAND_SCOPE_AND_STORAGE_RECOVERY_OPEN",
     "F08": "EXPLICIT_RUNTIME_KEY_PRIVATE_FILE_INSTALLER_BINDING_ATOMIC_ROTATION_OLD_WRITER_FENCING_AND_RESTORE_KEY_GATE_LOCAL_VERIFIED_PENDING_INDEPENDENT_REVIEW",
-    "F09": "SHARED_EGRESS_OPERATIONAL_CARRIERS_PRIVACY_SIGNING_LEGACY_AND_KEY_BINDING_LOCAL_VERIFIED_COMPREHENSIVE_ACCEPTANCE_OPEN"
+    "F09": "DIAGNOSTICS_LEGACY_EXPORT_AND_PRIOR_PRIVACY_VAULT_PATHS_LOCAL_VERIFIED_QUEUE_AND_MIGRATION_STAGING_PLAINTEXT_STORAGE_OPEN"
   },
   "remaining_steps": [
     "D03.1",
@@ -105,10 +105,13 @@
       "COMPREHENSIVE_SINK_LEGACY_EXPORT_AND_RESPONSE_ACCEPTANCE"
     ],
     "provisioning_storage": "IMPLEMENTED_LOCAL_VERIFIED",
-    "operational_carriers_remaining": [],
+    "operational_carriers_remaining": [
+      "jobs/failed_jobs payload",
+      "migration staging raw/canonical JSON"
+    ],
     "automation_storage": "IMPLEMENTED_LOCAL_VERIFIED",
     "domain_storage": "IMPLEMENTED_LOCAL_VERIFIED",
-    "operational_carriers": "INVENTORIED_PATHS_IMPLEMENTED_LOCAL_VERIFIED",
+    "operational_carriers": "PREVIOUS_THREE_INVENTORIED_PATHS_IMPLEMENTED_TWO_ADDITIONAL_PLAINTEXT_PATHS_CONFIRMED_OPEN",
     "privacy_signing_new_records": "IMPLEMENTED_LOCAL_VERIFIED",
     "privacy_legacy_and_key_lifecycle": "IMPLEMENTED_LOCAL_VERIFIED",
     "privacy_remaining_details": [
@@ -116,7 +119,14 @@
     ],
     "privacy_legacy_integrity": "IMPLEMENTED_LOCAL_VERIFIED",
     "privacy_key_lifecycle": "IMPLEMENTED_LOCAL_VERIFIED",
-    "privacy_key_lifecycle_scope": "Immutable purpose binding, current writer fence and independent verification in application-key lifecycle/restore; does not implement privacy-purpose key rotation"
+    "privacy_key_lifecycle_scope": "Immutable purpose binding, current writer fence and independent verification in application-key lifecycle/restore; does not implement privacy-purpose key rotation",
+    "acceptance_diagnostics": "IMPLEMENTED_LOCAL_VERIFIED",
+    "acceptance_legacy_export": "IMPLEMENTED_LOCAL_VERIFIED_LEGACY_PHYSICAL_RETENTION_REQUIRES_POLICY",
+    "acceptance_remaining": [
+      "Q1_QUEUE_PAYLOAD_PROTECTION",
+      "Q2_MIGRATION_STAGING_PAYLOAD_PROTECTION"
+    ],
+    "acceptance_scope": "Query diagnostics, notification history, API error/route diagnostics, health/provisioning/worker diagnostics, privacy five-table scan completeness, safe and unsafe legacy export acceptance; no arbitrary unlabelled DLP or whole-product HTTP/actor/retention acceptance"
   },
   "d03_egress_evidence": "remediation/D03-1-EGRESS-SONUC.md",
   "d03_provisioning_storage_evidence": "remediation/D03-1-PROVSTORE-SONUC.md",
@@ -125,5 +135,6 @@
   "d03_privacy_signing_evidence": "remediation/D03-1-PRIVSIG-SONUC.md",
   "d03_privacy_legacy_evidence": "remediation/D03-1-PRIVLEG-SONUC.md",
   "d03_privacy_binding_evidence": "remediation/D03-1-PRIVBIND-SONUC.md",
-  "d05_sqlite_literal_quoting": "PDO_QUOTED_PRIVACY_JSON_APOSTROPHE_BACKSLASH_ROUND_TRIP_LOCAL_VERIFIED_FULL_RECOVERY_OPEN"
+  "d05_sqlite_literal_quoting": "PDO_QUOTED_PRIVACY_JSON_APOSTROPHE_BACKSLASH_ROUND_TRIP_LOCAL_VERIFIED_FULL_RECOVERY_OPEN",
+  "d03_secret_acceptance_evidence": "remediation/D03-1-ACCEPT-SONUC.md"
 }

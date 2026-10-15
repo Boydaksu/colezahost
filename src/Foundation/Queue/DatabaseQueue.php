@@ -89,9 +89,9 @@ final class DatabaseQueue implements QueueInterface
         return $this->db->transaction(function (Connection $db) use ($queue, $now, $expirationCutoff): ?QueueJob {
             $row = $db->selectOne(
                 sprintf(
-                    'SELECT id, payload, attempts FROM %s 
-                     WHERE queue = :q 
-                       AND available_at <= :now 
+                    'SELECT id, payload, attempts FROM %s
+                     WHERE queue = :q
+                       AND available_at <= :now
                        AND (reserved_at IS NULL OR reserved_at < :cutoff)
                      ORDER BY id ASC LIMIT 1' . ($db->getDriverName() === 'mysql' ? ' FOR UPDATE SKIP LOCKED' : ''),
                     $this->jobsTable
@@ -154,14 +154,7 @@ final class DatabaseQueue implements QueueInterface
                 $db->insert($this->failedJobsTable, [
                     'queue' => $job->getQueue(),
                     'payload' => serialize($job->getJob()),
-                    'exception' => sprintf(
-                        "[%s] %s in %s:%d\nStack trace:\n%s",
-                        get_class($exception),
-                        $exception->getMessage(),
-                        $exception->getFile(),
-                        $exception->getLine(),
-                        $exception->getTraceAsString()
-                    ),
+                    'exception' => get_class($exception), // Never persist exception messages, trace arguments or file paths.
                 ]);
 
                 $db->delete($this->jobsTable, 'id = :id', ['id' => $job->getId()]);

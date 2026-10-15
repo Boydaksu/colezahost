@@ -12,12 +12,13 @@ class ProviderException extends RuntimeException
      * @param array<string, mixed> $context
      */
     public function __construct(
-        string $message,
+        #[\SensitiveParameter] string $message,
         private string $errorCode = 'PROVIDER_ERROR',
-        private array $context = [],
+        #[\SensitiveParameter] private array $context = [],
         ?\Throwable $previous = null
     ) {
-        parent::__construct($message, 0, $previous);
+        $this->context = \Coleza\Foundation\Security\SecretRedactor::diagnostic($context);
+        parent::__construct(\Coleza\Foundation\Security\SecretRedactor::message($message, $context), 0, $previous);
     }
 
     public function getErrorCode(): string

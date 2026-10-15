@@ -71,11 +71,11 @@ final class WebhookQueueHealthCheck implements HealthCheckInterface
                 $meta
             );
         } catch (Throwable $e) {
-            // If table doesn't exist yet, it's fresh/unprovisioned
-            return HealthCheckResult::healthy(
+            // An unavailable measurement cannot establish a healthy queue.
+            return HealthCheckResult::unhealthy(
                 $this->name(),
-                'Webhook deliveries table not initialized yet.',
-                ['error' => $e->getMessage()]
+                'Webhook queue verification unavailable.',
+                ['exception_class' => get_class($e)]
             );
         }
     }

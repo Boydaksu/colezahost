@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Security\SecretAcceptanceTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Security\SecretAcceptanceTest.php" tests="5" assertions="7" errors="0" failures="5" skipped="0" time="0.607106">
+    <testcase name="testQueryDiagnosticsDoNotRetainBoundOrInlineSecrets" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretAcceptanceCases.php" line="6" class="Coleza\Tests\Unit\Security\SecretAcceptanceTest" classname="Coleza.Tests.Unit.Security.SecretAcceptanceTest" assertions="3" time="0.452470">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Security\SecretAcceptanceTest::testQueryDiagnosticsDoNotRetainBoundOrInlineSecrets&#13;
+Failed asserting that '[{"query":"SELECT 'synthetic-unlabelled-secret' AS value","bindings":[],"time_ms":0.13589859008789062},{"query":"SELECT ? AS value","bindings":["synthetic-bound-secret"],"time_ms":0.008106231689453125}]' [ASCII](length: 202) does not contain "synthetic-unlabelled-secret" [ASCII](length: 27).
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretAcceptanceCases.php:11</failure>
+    </testcase>
+    <testcase name="testNotificationHistoryDoesNotPersistOrExposeDeliverySecrets" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretAcceptanceCases.php" line="14" class="Coleza\Tests\Unit\Security\SecretAcceptanceTest" classname="Coleza.Tests.Unit.Security.SecretAcceptanceTest" assertions="1" time="0.042592">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Security\SecretAcceptanceTest::testNotificationHistoryDoesNotPersistOrExposeDeliverySecrets&#13;
+Failed asserting that '[{"id":1,"user_id":null,"channel":"email","template_key":null,"subject":"Reset notification","recipient":"subject@example.test","status":"failed","message_id":null,"error":"Remote echoed synthetic-notification-secret","sent_at":"2026-10-15T08:42:17+00:00","metadata_json":"{\"token\":\"synthetic-notification-secret\"}"}]' [ASCII](length: 321) does not contain "synthetic-notification-secret" [ASCII](length: 29).
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretAcceptanceCases.php:18</failure>
+    </testcase>
+    <testcase name="testIncompletePrivacyScanCannotReportCompliant" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretAcceptanceCases.php" line="20" class="Coleza\Tests\Unit\Security\SecretAcceptanceTest" classname="Coleza.Tests.Unit.Security.SecretAcceptanceTest" assertions="1" time="0.001320">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Security\SecretAcceptanceTest::testIncompletePrivacyScanCannotReportCompliant&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretAcceptanceCases.php:23</failure>
+    </testcase>
+    <testcase name="testProviderExceptionCannotExposeItsKnownSecretContext" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretAcceptanceCases.php" line="25" class="Coleza\Tests\Unit\Security\SecretAcceptanceTest" classname="Coleza.Tests.Unit.Security.SecretAcceptanceTest" assertions="1" time="0.000609">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Security\SecretAcceptanceTest::testProviderExceptionCannotExposeItsKnownSecretContext&#13;
+Failed asserting that 'Remote echoed synthetic-provider-secret' [ASCII](length: 39) does not contain "synthetic-provider-secret" [ASCII](length: 25).
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretAcceptanceCases.php:28</failure>
+    </testcase>
+    <testcase name="testApiHistoryMasksResetTokenPathSegments" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretAcceptanceCases.php" line="31" class="Coleza\Tests\Unit\Security\SecretAcceptanceTest" classname="Coleza.Tests.Unit.Security.SecretAcceptanceTest" assertions="1" time="0.110115">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Security\SecretAcceptanceTest::testApiHistoryMasksResetTokenPathSegments&#13;
+Failed asserting that '[{"id":1,"key_id":7,"method":"GET","path":"\/api\/password-reset\/synthetic-route-secret","status_code":200,"duration_ms":3,"ip_address":null,"request_id":null,"created_at":"2026-10-15 08:42:18"}]' [ASCII](length: 196) does not contain "synthetic-route-secret" [ASCII](length: 22).
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\SecretAcceptanceCases.php:35</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

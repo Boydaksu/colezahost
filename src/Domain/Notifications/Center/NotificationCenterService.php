@@ -374,6 +374,9 @@ final class NotificationCenterService
         ?string $error = null,
         array $metadata = []
     ): NotificationLog {
+        $safe = new NotificationLog(null, $userId, $channel, $templateKey, $subject, $recipient, $status, $messageId, $error, metadata: $metadata);
+        $subject = $safe->getSubject(); $recipient = $safe->getRecipient(); $status = $safe->getStatus();
+        $templateKey = $safe->getTemplateKey(); $messageId = $safe->getMessageId(); $error = $safe->getError(); $metadata = $safe->getMetadata();
         $now = date('c');
 
         if ($this->pdo === null) {

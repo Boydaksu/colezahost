@@ -19,6 +19,9 @@ final class HealthCheckResult
         private string $message = '',
         private array $meta = []
     ) {
+        $this->message = \Coleza\Foundation\Security\SecretRedactor::message($message, $meta);
+        $this->meta = \Coleza\Foundation\Security\SecretRedactor::diagnostic($meta);
+        $this->name = \Coleza\Foundation\Security\SecretRedactor::text($name);
     }
 
     public static function healthy(string $name, string $message = '', array $meta = []): self

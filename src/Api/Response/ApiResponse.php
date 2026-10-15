@@ -64,12 +64,12 @@ final class ApiResponse
         $payload = [
             'status' => 'error',
             'code' => $status,
-            'error_code' => $errorCode,
-            'message' => $message,
+            'error_code' => preg_match('/^[A-Z][A-Z0-9_]{0,63}$/D', $errorCode) ? $errorCode : 'INTERNAL_ERROR',
+            'message' => $status >= 500 ? 'An internal error occurred.' : \Coleza\Foundation\Security\SecretRedactor::message($message, $errors),
         ];
 
         if (!empty($errors)) {
-            $payload['errors'] = $errors;
+            $payload['errors'] = $status >= 500 ? [] : \Coleza\Foundation\Security\SecretRedactor::diagnostic($errors);
         }
 
         return $payload;

@@ -23,6 +23,18 @@ final class SecretRedactor
 
     public static function sanitize(mixed $value): mixed { return self::walk($value, 0); }
 
+    /** Removes known sensitive values echoed in sibling diagnostic fields too. */
+    public static function diagnostic(mixed $value, array $context = []): mixed
+    {
+        $context = array_merge($context, is_array($value) ? $value : []);
+        $safe = self::sanitize($value);
+        $scrub = function (mixed $item) use (&$scrub, $context): mixed {
+            if (is_array($item)) { return array_map($scrub, $item); }
+            return is_string($item) ? self::message($item, $context) : $item;
+        };
+        return $scrub($safe);
+    }
+
     private static function walk(mixed $value, int $depth): mixed
     {
         if ($depth > self::MAX_DEPTH) { return self::MASK; }
@@ -104,6 +116,14 @@ final class SecretRedactor
     public static function route(string $uri): string
     {
         $path = parse_url($uri, PHP_URL_PATH);
-        return is_string($path) && $path !== '' ? self::text($path) : '/';
+        if (!is_string($path) || $path === '') { return '/'; }
+        $segments = explode('/', $path); $maskNext = false;
+        foreach ($segments as &$segment) {
+            $marker = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', rawurldecode(rawurldecode($segment))) ?? '');
+            if ($maskNext && $segment !== '') { $segment = self::MASK; $maskNext = false; continue; }
+            $maskNext = in_array($marker, ['passwordreset', 'resetpassword', 'reset', 'verifyemail', 'emailverification', 'verification', 'recovery', 'otp', 'tokens', 'token'], true);
+        }
+        unset($segment);
+        return self::text(implode('/', $segments));
     }
 }

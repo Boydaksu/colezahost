@@ -30,7 +30,7 @@ final class DatabaseHealthCheck implements HealthCheckInterface
 
             return HealthCheckResult::unhealthy($this->name(), 'Database query returned unexpected result.');
         } catch (Throwable $e) {
-            return HealthCheckResult::unhealthy($this->name(), 'Database probe failed: ' . $e->getMessage());
+            return HealthCheckResult::unhealthy($this->name(), 'Database probe failed.', ['exception_class' => get_class($e)]);
         }
     }
 }

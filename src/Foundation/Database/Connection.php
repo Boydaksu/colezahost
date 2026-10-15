@@ -322,8 +322,8 @@ final class Connection
 
         if ($this->loggingQueries) {
             $this->queryLog[] = [
-                'query' => $query,
-                'bindings' => $bindings,
+                'query' => SqlDiagnostics::statement($query),
+                'bindings' => array_fill_keys(array_keys($bindings), \Coleza\Foundation\Security\SecretRedactor::MASK),
                 'time_ms' => (microtime(true) - $start) * 1000.0,
             ];
         }

@@ -38,7 +38,7 @@ final class StorageHealthCheck implements HealthCheckInterface
             $this->storage->delete($testFile);
             return HealthCheckResult::healthy($this->name(), 'Storage read/write verified.');
         } catch (Throwable $e) {
-            return HealthCheckResult::unhealthy($this->name(), 'Storage probe failed: ' . $e->getMessage());
+            return HealthCheckResult::unhealthy($this->name(), 'Storage probe failed.', ['exception_class' => get_class($e)]);
         }
     }
 }

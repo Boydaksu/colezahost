@@ -30,7 +30,7 @@ final class ProvisioningErrorClassifier
         return self::classify(
             message: $exception->getMessage(),
             errorCode: (string)$exception->getCode(),
-            rawResponse: ['exception' => get_class($exception), 'trace' => $exception->getTraceAsString()]
+            rawResponse: ['exception' => get_class($exception)]
         );
     }
 

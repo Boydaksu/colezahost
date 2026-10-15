@@ -33,8 +33,8 @@ final class QueueWorker
             $this->logger?->info(sprintf('Queue job [%s] on queue [%s] processed successfully.', $job->getId(), $queue));
             return true;
         } catch (Throwable $e) {
-            $this->logger?->error(sprintf('Queue job [%s] failed: %s', $job->getId(), $e->getMessage()), [
-                'exception' => $e,
+            $this->logger?->error(sprintf('Queue job [%s] failed.', $job->getId()), [
+                'exception_class' => get_class($e),
                 'job_id' => $job->getId(),
                 'attempts' => $job->getAttempts(),
             ]);

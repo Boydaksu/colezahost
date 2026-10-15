@@ -89,7 +89,8 @@ final class SmtpHealthCheck implements HealthCheckInterface
                 'from_email' => $config->getFromEmail(),
             ]);
         } catch (Throwable $e) {
-            return HealthCheckResult::unhealthy($this->name(), 'SMTP reachability probe failed: ' . $e->getMessage(), [
+            return HealthCheckResult::unhealthy($this->name(), 'SMTP reachability probe failed.', [
+                'exception_class' => get_class($e),
                 'host' => $host,
                 'port' => $port,
             ]);

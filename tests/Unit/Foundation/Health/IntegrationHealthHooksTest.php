@@ -102,7 +102,7 @@ final class IntegrationHealthHooksTest extends TestCase
         $this->assertStringContainsString('sandbox/test mode', $result->getMessage());
         $this->assertTrue($result->getMeta()['is_test_mode']);
         // Masked key in meta, raw key hidden
-        $this->assertSame('sand***', $result->getMeta()['masked_api_key']);
+        $this->assertSame(\Coleza\Foundation\Security\SecretRedactor::MASK, $result->getMeta()['masked_api_key']);
     }
 
     public function testPaymentGatewayHealthCheckLiveHealthy(): void

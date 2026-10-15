@@ -24,6 +24,10 @@ final class NotificationLog
         private ?string $sentAt = null,
         private array $metadata = []
     ) {
+        foreach (['subject', 'recipient', 'status', 'templateKey', 'messageId', 'error'] as $field) {
+            if ($this->$field !== null) { $this->$field = \Coleza\Foundation\Security\SecretRedactor::message($this->$field, $metadata); }
+        }
+        $this->metadata = \Coleza\Foundation\Security\SecretRedactor::diagnostic($metadata);
         $this->sentAt ??= date('c');
     }
 

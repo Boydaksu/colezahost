@@ -8,6 +8,6 @@ final class LogSanitizer
 {
     public static function sanitize(array $context): array
     {
-        return \Coleza\Foundation\Security\SecretRedactor::sanitize($context);
+        return \Coleza\Foundation\Security\SecretRedactor::diagnostic($context);
     }
 }

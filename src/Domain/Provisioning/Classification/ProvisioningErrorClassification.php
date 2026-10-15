@@ -19,6 +19,9 @@ final class ProvisioningErrorClassification
         private bool $requiresAdminIntervention = false,
         private array $rawDetails = []
     ) {
+        $this->clientSafeMessage = \Coleza\Foundation\Security\SecretRedactor::message($clientSafeMessage, $rawDetails);
+        $this->adminActionableMessage = \Coleza\Foundation\Security\SecretRedactor::message($adminActionableMessage, $rawDetails);
+        $this->rawDetails = \Coleza\Foundation\Security\SecretRedactor::diagnostic($rawDetails);
         if ($this->retryable === null) {
             $this->retryable = ProvisioningErrorCategory::isRetryable($this->category);
         }

@@ -142,17 +142,21 @@ final class RedactionAuditService
     }
 
     /**
-     * Conducts an independent compliance scan across all sensitive domain tables
-     * to guarantee that an erased user retains zero residual plaintext PII.
+     * Scans the five explicitly listed legacy privacy tables.
+     * Missing/unreadable tables fail verification; this is not whole-product compliance.
      */
     public function scanForUnredactedPii(int $userId): RedactionScanReport
     {
+        if ($userId <= 0) {
+            throw new ValidationException(['user_id' => ['User ID must be positive.']], 'Invalid user ID.');
+        }
         $tablesScanned = 0;
         $violations = [];
+        $unverifiedTables = [];
 
         // 1. Users Table
         try {
-            $user = $this->db->selectOne("SELECT * FROM users WHERE id = :id", ['id' => $userId]);
+            $user = $this->db->selectOne("SELECT id, status, name, phone, tax_number, password_hash FROM users WHERE id = :id", ['id' => $userId]);
             $tablesScanned++;
             if ($user !== null) {
                 if (strtolower((string) ($user['status'] ?? '')) !== 'erased') {
@@ -172,12 +176,13 @@ final class RedactionAuditService
                 }
             }
         } catch (\Throwable) {
-            // Ignore
+            $unverifiedTables[] = 'users';
+            $violations[] = 'users: verification unavailable';
         }
 
         // 2. Payment Methods Table
         try {
-            $methods = $this->db->select("SELECT * FROM payment_methods WHERE user_id = :uid", ['uid' => $userId]);
+            $methods = $this->db->select("SELECT id, token, card_last4 FROM payment_methods WHERE user_id = :uid", ['uid' => $userId]);
             $tablesScanned++;
             foreach ($methods as $m) {
                 if (($m['token'] ?? '') !== 'ERASED' || ($m['card_last4'] ?? '') !== '0000') {
@@ -185,12 +190,13 @@ final class RedactionAuditService
                 }
             }
         } catch (\Throwable) {
-            // Ignore
+            $unverifiedTables[] = 'payment_methods';
+            $violations[] = 'payment_methods: verification unavailable';
         }
 
         // 3. Billing Profiles Table
         try {
-            $profiles = $this->db->select("SELECT * FROM billing_profiles WHERE user_id = :uid", ['uid' => $userId]);
+            $profiles = $this->db->select("SELECT id, tax_number, phone FROM billing_profiles WHERE user_id = :uid", ['uid' => $userId]);
             $tablesScanned++;
             foreach ($profiles as $p) {
                 if (!empty($p['tax_number']) || !empty($p['phone'])) {
@@ -198,12 +204,13 @@ final class RedactionAuditService
                 }
             }
         } catch (\Throwable) {
-            // Ignore
+            $unverifiedTables[] = 'billing_profiles';
+            $violations[] = 'billing_profiles: verification unavailable';
         }
 
         // 4. Hosting Services Table
         try {
-            $services = $this->db->select("SELECT * FROM hosting_services WHERE user_id = :uid", ['uid' => $userId]);
+            $services = $this->db->select("SELECT id, password_encrypted FROM hosting_services WHERE user_id = :uid", ['uid' => $userId]);
             $tablesScanned++;
             foreach ($services as $s) {
                 if (($s['password_encrypted'] ?? '') !== 'ERASED') {
@@ -211,18 +218,20 @@ final class RedactionAuditService
                 }
             }
         } catch (\Throwable) {
-            // Ignore
+            $unverifiedTables[] = 'hosting_services';
+            $violations[] = 'hosting_services: verification unavailable';
         }
 
         // 5. Privacy Consents Table
         try {
-            $consents = $this->db->select("SELECT * FROM privacy_consents WHERE user_id = :uid", ['uid' => $userId]);
+            $consents = $this->db->select("SELECT user_id FROM privacy_consents WHERE user_id = :uid", ['uid' => $userId]);
             $tablesScanned++;
             if (!empty($consents)) {
                 $violations[] = 'privacy_consents: active consent records exist for erased subject';
             }
         } catch (\Throwable) {
-            // Ignore
+            $unverifiedTables[] = 'privacy_consents';
+            $violations[] = 'privacy_consents: verification unavailable';
         }
 
         $now = (new DateTimeImmutable())->format('Y-m-d H:i:s');
@@ -236,7 +245,8 @@ final class RedactionAuditService
             violationDetails: $violations,
             isCompliant: $isCompliant,
             scannedAt: $now,
-            scanDigest: $digest
+            scanDigest: $digest,
+            unverifiedTables: $unverifiedTables
         );
     }
 
