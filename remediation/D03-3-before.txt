@@ -1,0 +1,24 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+FFF                                                                 3 / 3 (100%)
+
+Time: 00:00.017, Memory: 20.00 MB
+
+There were 3 failures:
+
+1) Coleza\Tests\Unit\Domain\Identity\AuthenticationBoundaryTest::testDisabledTwoFactorCannotSupplySuccessfulProof
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AuthenticationBoundaryCases.php:23
+
+2) Coleza\Tests\Unit\Domain\Identity\AuthenticationBoundaryTest::testDeviceTrustCannotBeMintedWithoutFreshSecondFactor
+Failed asserting that exception of type "Coleza\Foundation\Exceptions\ValidationException" is thrown.
+
+3) Coleza\Tests\Unit\Domain\Identity\AuthenticationBoundaryTest::testAdminPolicyCannotBeDisabledByCallerBoolean
+Failed asserting that exception of type "Coleza\Foundation\Exceptions\ValidationException" is thrown.
+
+FAILURES!
+Tests: 3, Assertions: 3, Failures: 3.

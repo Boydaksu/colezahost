@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Domain\Identity\AuthenticationBoundaryTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Identity\AuthenticationBoundaryTest.php" tests="3" assertions="3" errors="0" failures="3" skipped="0" time="0.013828">
+    <testcase name="testDisabledTwoFactorCannotSupplySuccessfulProof" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AuthenticationBoundaryCases.php" line="21" class="Coleza\Tests\Unit\Domain\Identity\AuthenticationBoundaryTest" classname="Coleza.Tests.Unit.Domain.Identity.AuthenticationBoundaryTest" assertions="1" time="0.009048">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Identity\AuthenticationBoundaryTest::testDisabledTwoFactorCannotSupplySuccessfulProof&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AuthenticationBoundaryCases.php:23</failure>
+    </testcase>
+    <testcase name="testDeviceTrustCannotBeMintedWithoutFreshSecondFactor" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AuthenticationBoundaryCases.php" line="25" class="Coleza\Tests\Unit\Domain\Identity\AuthenticationBoundaryTest" classname="Coleza.Tests.Unit.Domain.Identity.AuthenticationBoundaryTest" assertions="1" time="0.003251">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Identity\AuthenticationBoundaryTest::testDeviceTrustCannotBeMintedWithoutFreshSecondFactor&#13;
+Failed asserting that exception of type "Coleza\Foundation\Exceptions\ValidationException" is thrown.</failure>
+    </testcase>
+    <testcase name="testAdminPolicyCannotBeDisabledByCallerBoolean" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\AuthenticationBoundaryCases.php" line="30" class="Coleza\Tests\Unit\Domain\Identity\AuthenticationBoundaryTest" classname="Coleza.Tests.Unit.Domain.Identity.AuthenticationBoundaryTest" assertions="1" time="0.001529">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Identity\AuthenticationBoundaryTest::testAdminPolicyCannotBeDisabledByCallerBoolean&#13;
+Failed asserting that exception of type "Coleza\Foundation\Exceptions\ValidationException" is thrown.</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

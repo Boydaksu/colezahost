@@ -57,6 +57,25 @@ final class RbacService
         (new RbacSchema($this->db, $prefix))->ensure();
     }
 
+    /** Runtime preflight; never execute implicit-commit DDL in an application transaction. */
+    public function prepare(): void
+    {
+        $requirements = [$this->rolesTable => ['id', 'name', 'scope'], $this->rolePermissionsTable => ['role_id', 'permission_name'], $this->userRolesTable => ['user_id', 'role_id', 'organization_id']];
+        if (!\Coleza\Foundation\Database\PdoSchema::useInstalledSchema($this->db, $requirements)) { $this->ensureTables(); }
+        if ($this->db->getDriverName() === 'mysql') {
+            foreach (array_keys($requirements) as $table) {
+                $row = $this->db->selectOne('SELECT ENGINE FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = ?', [$table]);
+                if ($row === null || strcasecmp((string) $row['ENGINE'], 'InnoDB') !== 0) { throw new \LogicException('Transactional RBAC storage required.'); }
+            }
+        }
+    }
+    public function usesConnection(Connection $db): bool { return $this->db === $db; }
+    public function isSystemActor(int $userId): bool
+    {
+        $this->prepare();
+        return $this->db->selectOne("SELECT ur.user_id FROM {$this->userRolesTable} ur JOIN {$this->rolesTable} r ON r.id = ur.role_id WHERE ur.user_id = ? AND ur.organization_id = 0 AND r.scope = 'system'" . $this->db->forUpdate(), [$userId]) !== null;
+    }
+
     /**
      * Seed or get role ID.
      */

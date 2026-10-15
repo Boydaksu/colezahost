@@ -132,7 +132,7 @@ final class TwoFactorService
         $this->ensureTables(installation: false); TwoFactorLoginSchema::prepare($this->db);
         return IdentityPersistence::run($this->db, function () use ($userId, $code): bool {
             $record = $this->stateForUpdate($userId);
-            if ($record === null || (int) $record['is_enabled'] !== 1) { return true; }
+            if ($record === null || (int) $record['is_enabled'] !== 1) { return false; }
             $step = $this->totpEngine->matchingStep((string) $record['secret'], $code);
             if ($step === null) { return false; }
             $used = $this->db->selectOne('SELECT last_used_step FROM two_factor_login_steps WHERE user_id = ?' . IdentityPersistence::lock($this->db), [$userId]);
@@ -151,12 +151,13 @@ final class TwoFactorService
             return $this->db->update('user_recovery_codes', ['used_at' => date('Y-m-d H:i:s')], 'id = :id AND used_at IS NULL', ['id' => $records[0]['id']]) === 1;
         });
     }
-    public function trustDevice(int $userId, ?string $ip = null, ?string $userAgent = null, int $ttlSeconds = 2592000): string
+    public function trustDevice(int $userId, ?string $ip = null, ?string $userAgent = null, int $ttlSeconds = 2592000, ?string $verificationCode = null): string
     {
         IdentityPersistence::expiresAt($ttlSeconds); $this->ensureTables(installation: false); $plain = bin2hex(random_bytes(32));
-        IdentityPersistence::run($this->db, function () use ($userId, $ip, $userAgent, $ttlSeconds, $plain): void {
+        IdentityPersistence::run($this->db, function () use ($userId, $ip, $userAgent, $ttlSeconds, $plain, $verificationCode): void {
             $state = $this->stateForUpdate($userId);
             if ($state === null || (int) $state['is_enabled'] !== 1) { throw new ValidationException(['two_factor' => ['Active 2FA required before trusting a device.']]); }
+            if ($verificationCode === null || !$this->verifyLoginCode($userId, $verificationCode)) { throw new ValidationException(['two_factor' => ['Fresh second factor required to trust a device.']]); }
             $this->db->insert('user_trusted_devices', ['user_id' => $userId, 'device_token_hash' => hash('sha256', $plain), 'ip_address' => $ip, 'user_agent' => $userAgent, 'expires_at' => IdentityPersistence::expiresAt($ttlSeconds)]);
         });
         return $plain;
@@ -185,8 +186,11 @@ final class TwoFactorService
      * Enforce Admin 2FA Policy according to Security Constitution.
      * Throws exception if user is an admin without 2FA enabled.
      */
-    public function enforceAdmin2FaPolicy(int $userId, bool $isAdmin): void
+    public function enforceAdmin2FaPolicy(int $userId, bool $isAdmin = false): void
     {
+        if (\Coleza\Domain\Vault\KeyBinding::tableExists($this->db, 'roles')) {
+            $isAdmin = $isAdmin || (new \Coleza\Domain\Identity\Rbac\RbacService($this->db))->isSystemActor($userId);
+        }
         if ($isAdmin && !$this->isEnabled($userId)) {
             throw new ValidationException(
                 ['two_factor' => ['Mandatory 2FA policy enforced for administrator accounts. Setup 2FA before proceeding.']],

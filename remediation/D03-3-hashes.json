@@ -1,0 +1,33 @@
+{
+  "reference_commit": "9913a0a18749f48024bfc198b70ecd1e4deadc82",
+  "files": {
+    "remediation/D03-3-SONUC.md": "bbdfa9c9f3bc50dbea4655204c37cee76f17ec5447e119aafe738392707ba1b3",
+    "remediation/D03-3-baseline.json": "e2482a9c26cb5da85116a19ca384849bc716da052f906246174d9e86d5a87e45",
+    "remediation/D03-3-before.txt": "9d2b786c253fa50e1fa4651fb631b4c8411a9409d75e8c6bc7516f8544c0234e",
+    "remediation/D03-3-before.xml": "17a1bfadfd784502bc9c8df477632dc41111e761e779f155257afb36328ddbcb",
+    "remediation/D03-3-discovery.txt": "1e82be4e839ed9942fbf11a2234619246ae6fb461a696a2a7e026ea6a981e379",
+    "remediation/D03-3-discovery.xml": "aeee31ab8ce225eaf20b6c56028b5b24456259b01588ebfcf90960d776cba3b9",
+    "remediation/D03-3-main.txt": "2d2ca9e0ed12fe0d3b4dd348ce78b576429afa6145c6c9b5bbec2abbdfd9cadd",
+    "remediation/D03-3-main.xml": "9ebad5ee441ecaff91b419a04ef2703bb66b1c3386e78f249a74139f7b08c5d1",
+    "remediation/D03-3-native.txt": "789b5ca3e778082279feffe3daf59cc91de7e06569b432ba81f5ffed6a81d516",
+    "remediation/D03-3-native.xml": "6cff64436c06a6c78cde07b2bba42b313c688ddb27d460a6213881e0e4add22e",
+    "remediation/D03-3-summary.json": "de491bc55e1ef8ee06cb30a486afcf887a43d4d3d5f132257d73204008b1efb5",
+    "remediation/D03-PLAN.md": "e9114b8c5f741624b5df6f6bba3da6793f5f2a6743815ebd7ab4b2592ab2d737",
+    "remediation/PLAN.md": "2a1cd79c9c7dc74ae0b4ee1504e29442e18877c1274347f2af3f220c16815b76",
+    "remediation/state.json": "f0ce6118e140645876f1584fc166b885d86a85b826e014c0df785649f5f76ae5",
+    "remediation/verify-d03-authentication.py": "a276b6bc67845c42f4eb4797c61f5ce13cbc2898b3d5fde2c7767869e4f5daf7",
+    "src/Api/RateLimit/RateLimiter.php": "fe2c86703e384c9ea4848566c5aba68c9bcdb963f44c68bd2716c0a1d8c0d12f",
+    "src/Application/Identity/AuthenticationService.php": "546c6a74f6ac26e976e0b22cd05edc3b56ee7718738ba9e8e8209472b1cbdb49",
+    "src/Domain/Identity/Rbac/RbacService.php": "fe0cf7334a740f71f819fa283080defa67ce2d0d3806524deac92afa5e6e2b44",
+    "src/Domain/Identity/TwoFactor/TwoFactorService.php": "12ac02d6432ed4df3e52f273c82b356bfd542b81149748add7168b04a7ae4a2b",
+    "src/Foundation/Bootstrap/CoreServiceProvider.php": "f5eed14b6309aecaf5a83385298795d62ceb62e5623ff74dfc74246ef7446224",
+    "src/Foundation/Http/SessionCookie.php": "30969f94527b7fb0b024cb60466b9c1e8e4bf97b04b326e4a63c5a9e95860aa3",
+    "src/Foundation/Security/RequestBudget.php": "698bbed735dc2b4483cd36c43a8b02cdd70843054cb0658ad5226f53bee42c8e",
+    "tests/MariaDb/AuthenticationBoundaryTest.php": "6679a9809aa7bd3e02ed817f2c54d7554d32f713f114575f56abad80538afbad",
+    "tests/MariaDb/fixtures/financial-worker.php": "f3e29a6e3c47e773b5604972cb21d16509a629be948291ae1311344234c650d3",
+    "tests/Support/AuthenticationBoundaryCases.php": "2a60348fed643cf86cd7a84532fbbbe9701b91292eb5bd33e9894c2901aaebb5",
+    "tests/Support/IdentityLifecycleCases.php": "efb5997d850e120506bb335fbbd3fa6bf3cf81084ccb25230b0fe85f09ac164f",
+    "tests/Unit/Domain/Identity/AuthenticationBoundaryTest.php": "de8de4c5f4fa30f7bcde50b6453b338508f652ade421b23b600ce09b9a0c8625",
+    "tests/Unit/Domain/Identity/TwoFactorServiceTest.php": "d8220cb12fb84b950c3a3d69a7cae214d13158baafa6a50f8ec73695ae59a1f8"
+  }
+}

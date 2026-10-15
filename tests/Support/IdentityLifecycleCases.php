@@ -144,7 +144,7 @@ trait IdentityLifecycleCases
     }
     public function testPasswordResetInvalidatesPreviouslyTrustedDevice(): void
     {
-        [$auth, , $id, $two, $totp] = $this->identityFixture(); $setup = $two->beginSetup($id, 'fixture@example.test'); $two->confirmSetup($id, $totp->generateCode($setup['secret'])); $device = $two->trustDevice($id);
+        [$auth, , $id, $two, $totp] = $this->identityFixture(); $setup = $two->beginSetup($id, 'fixture@example.test'); $two->confirmSetup($id, $totp->generateCode($setup['secret'])); $device = $two->trustDevice($id, verificationCode: $totp->generateCode($setup['secret']));
         self::assertTrue($two->isDeviceTrusted($id, $device)); $token = $auth->createPasswordResetToken('fixture@example.test'); $auth->resetPassword('fixture@example.test', $token, 'Replacement123!');
         self::assertFalse($two->isDeviceTrusted($id, $device)); self::assertTrue($two->isEnabled($id));
     }
@@ -177,7 +177,7 @@ trait IdentityLifecycleCases
     public function testMigration26ReplayPreservesSessionsRevocationsAndLoginSteps(): void
     {
         (new DatabaseSessionHandler($this->db))->ensureTable();
-        $this->db->insert('sessions', ['id' => 'legacy', 'user_id' => 7, 'ip_address' => null, 'user_agent' => null, 'payload' => '{"note":"Önceki"}', 'last_activity' => time()]); $before = $this->db->select('SELECT * FROM sessions');
+        $this->db->insert('sessions', ['id' => 'legacy', 'user_id' => 7, 'ip_address' => null, 'user_agent' => null, 'payload' => '{"note":"Ã–nceki"}', 'last_activity' => time()]); $before = $this->db->select('SELECT * FROM sessions');
         $migration = require dirname(__DIR__, 2) . '/database/migrations/2026_10_13_000026_identity_lifecycle.php'; $migration->up($this->db);
         $this->db->insert('session_revocations', ['session_id' => 'revoked', 'revoked_at' => 1234]); $this->db->insert('two_factor_login_steps', ['user_id' => 7, 'last_used_step' => 1234]);
         $migration->up($this->db); self::assertSame($before, $this->db->select('SELECT * FROM sessions')); self::assertCount(1, $this->db->select('SELECT * FROM session_revocations')); self::assertCount(1, $this->db->select('SELECT * FROM two_factor_login_steps'));
@@ -220,7 +220,7 @@ trait IdentityLifecycleCases
     }
     public function testTrustedDeviceExpiresAtExactBoundary(): void
     {
-        [, , $id, $two, $totp] = $this->identityFixture(); $setup = $two->beginSetup($id, 'fixture@example.test'); $two->confirmSetup($id, $totp->generateCode($setup['secret'])); $device = $two->trustDevice($id); $this->db->statement('UPDATE user_trusted_devices SET expires_at = ?', [time()]);
+        [, , $id, $two, $totp] = $this->identityFixture(); $setup = $two->beginSetup($id, 'fixture@example.test'); $two->confirmSetup($id, $totp->generateCode($setup['secret'])); $device = $two->trustDevice($id, verificationCode: $totp->generateCode($setup['secret'])); $this->db->statement('UPDATE user_trusted_devices SET expires_at = ?', [time()]);
         self::assertFalse($two->isDeviceTrusted($id, $device));
     }
     public function testFailedTotpStepInsertDoesNotConsumeChallenge(): void

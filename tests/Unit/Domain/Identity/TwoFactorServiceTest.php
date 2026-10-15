@@ -99,7 +99,7 @@ final class TwoFactorServiceTest extends TestCase
         $userId = 4;
         $setup = $this->twoFactor->beginSetup($userId, 'trusted@coleza.com');
         $this->twoFactor->confirmSetup($userId, $this->totpEngine->generateCode($setup['secret']));
-        $token = $this->twoFactor->trustDevice($userId, '192.168.1.1', 'Mozilla/5.0', ttlSeconds: 3600);
+        $token = $this->twoFactor->trustDevice($userId, '192.168.1.1', 'Mozilla/5.0', ttlSeconds: 3600, verificationCode: $this->totpEngine->generateCode($setup['secret']));
 
         $this->assertTrue($this->twoFactor->isDeviceTrusted($userId, $token));
         $this->assertFalse($this->twoFactor->isDeviceTrusted($userId, 'fake-token'));

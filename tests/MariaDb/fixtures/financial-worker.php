@@ -47,6 +47,16 @@ while ((int) $db->selectOne('SELECT started FROM worker_control WHERE id = 1')['
 $result = ['status' => 'ok'];
 try {
     switch ($action) {
+        case 'authenticationComplete':
+        case 'authenticationStepUp':
+            $interactive = new Coleza\Application\Identity\AuthenticationService($db, Coleza\Tests\Support\SecretFixtureKey::encryptor());
+            $arguments = json_decode($argv[5], true, flags: JSON_THROW_ON_ERROR);
+            try {
+                if ($action === 'authenticationComplete') { $result['login'] = $interactive->completeLogin($arguments['challenge'], $arguments['code'], true); }
+                else { $interactive->consumeStepUp($arguments['session'], 'account.delete', $arguments['token']); }
+                $result['accepted'] = true;
+            } catch (Coleza\Foundation\Exceptions\ValidationException) { $result['status'] = 'rejected'; $result['accepted'] = false; }
+            break;
         case 'organizationDemoteInvite':
         case 'organizationRemoveSelect':
         case 'organizationAccept':

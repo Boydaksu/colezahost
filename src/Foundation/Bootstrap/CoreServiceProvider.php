@@ -184,6 +184,10 @@ final class CoreServiceProvider implements ServiceProviderInterface
             return new \Coleza\Domain\Identity\Session\DatabaseSessionHandler($c->get(\Coleza\Foundation\Database\Connection::class));
         });
 
+        $container->singleton(\Coleza\Application\Identity\AuthenticationService::class, static function (Container $c): \Coleza\Application\Identity\AuthenticationService {
+            return new \Coleza\Application\Identity\AuthenticationService($c->get(\Coleza\Foundation\Database\Connection::class), $c->get(\Coleza\Domain\Vault\Encryptor::class));
+        });
+
         // Bind AuthService
         $container->singleton(\Coleza\Domain\Identity\Auth\AuthService::class, static function (Container $c): \Coleza\Domain\Identity\Auth\AuthService {
             return new \Coleza\Domain\Identity\Auth\AuthService(

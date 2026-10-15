@@ -3,19 +3,19 @@
   "reference_report": "review/INCELEME.md",
   "plan": "remediation/PLAN.md",
   "phase": "D03",
-  "step": "D03.3",
+  "step": "D03.4",
   "status": "IN_PROGRESS",
-  "step_status": "D03_2_IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED_D03_3_READY",
+  "step_status": "D03_3_IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED_D03_4_READY",
   "independent_acceptance": "PENDING",
   "production_ready": false,
-  "next_step": "D03.3",
+  "next_step": "D03.4",
   "next_phase": "D04",
   "tests": {
-    "main_total": 1799,
-    "main_assertions": 12242,
-    "mariadb_total": 137,
-    "mariadb_assertions": 960,
-    "mariadb_scope": "Exact five native classes: organization authorization, identity lifecycle, API/session persistence, installation acceptance and legacy identity upgrade; full native not rerun",
+    "main_total": 1813,
+    "main_assertions": 12283,
+    "mariadb_total": 122,
+    "mariadb_assertions": 762,
+    "mariadb_scope": "Exact four native classes: AuthenticationBoundary, IdentityLifecycle, ApiSessionPersistence, InstallationAcceptance; full native not rerun",
     "full_mariadb_current_source": false,
     "last_full_mariadb": {
       "reference_commit": "0d2e3e08d4c121a146f298f77b4bc6b008b6f66e",
@@ -23,8 +23,8 @@
       "assertions": 5399,
       "evidence": "remediation/D02-CLOSEOUT-summary.json"
     },
-    "total": 1936,
-    "assertions": 13202,
+    "total": 1935,
+    "assertions": 13045,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -45,7 +45,6 @@
     "F09": "INVENTORIED_SECRET_STORAGE_DIAGNOSTIC_EXPORT_AND_LEGACY_PATHS_IMPLEMENTED_LOCAL_VERIFIED_PENDING_INDEPENDENT_REVIEW"
   },
   "remaining_steps": [
-    "D03.3",
     "D03.4"
   ],
   "remaining_phases": [
@@ -146,9 +145,17 @@
       "evidence": "remediation/D03-2-SONUC.md",
       "independent_acceptance": "PENDING",
       "scope": "Current active actor and verified invitation email, assignable roles, owner protection, membership mutation, current session selection resolution, aggregate audit/savepoints, parallel consumption/replacement and stale authorization rejection; authenticated HTTP principal and product command context integration retain D03.4/D08 boundaries"
+    },
+    "D03.3": {
+      "status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
+      "date": "2026-10-15",
+      "evidence": "remediation/D03-3-SONUC.md",
+      "independent_acceptance": "PENDING",
+      "scope": "Interactive password/2FA/enrollment login, durable one-use pending challenges and sessions, live account/admin/factor proof, trusted device proof, purpose/session-bound single-use step-up, durable admission and secure host-only cookie policy; browser route composition remains D08"
     }
   },
   "d03_staging_storage_evidence": "remediation/D03-1-STAGING-SONUC.md",
   "d03_1_closure": "remediation/D03-1-CLOSURE.md",
-  "d03_organization_evidence": "remediation/D03-2-SONUC.md"
+  "d03_organization_evidence": "remediation/D03-2-SONUC.md",
+  "d03_authentication_evidence": "remediation/D03-3-SONUC.md"
 }

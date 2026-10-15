@@ -1,0 +1,17 @@
+{
+  "reference_commit": "9913a0a18749f48024bfc198b70ecd1e4deadc82",
+  "results": {
+    "main": {
+      "tests": 1813,
+      "assertions": 12283
+    },
+    "native": {
+      "tests": 122,
+      "assertions": 762
+    }
+  },
+  "status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
+  "independent_acceptance": "PENDING",
+  "production_ready": false,
+  "next_step": "D03.4"
+}
