@@ -30,14 +30,14 @@ jobs:
           extensions: dom, mbstring, pdo_sqlite, pdo_mysql, simplexml, sodium, xml, xmlwriter, zip
           coverage: none
       - run: composer install --no-interaction --prefer-dist
-      - name: SQLite signed admission, staged publication, migrations and rollback
-        run: vendor/bin/phpunit tests/Unit/Updater tests/Unit/Foundation/Database/MigratorTest.php --colors=never
-      - name: Real MariaDB update, rollback and affected recovery, key and privacy gates
+      - name: SQLite update, extension admission, permissions and recovery
+        run: vendor/bin/phpunit tests/Unit/Updater tests/Unit/Domain/Module tests/Unit/Foundation/Database/MigratorTest.php --colors=never
+      - name: Real MariaDB update, extension lifecycle, recovery, key and privacy gates
         env:
           COLEZA_TEST_MARIADB_DSN: 'mysql:host=127.0.0.1;port=3306;charset=utf8mb4'
           COLEZA_TEST_MARIADB_USER: root
           COLEZA_TEST_MARIADB_PASSWORD: colezahost-ci-test-only
         run: >-
           vendor/bin/phpunit -c phpunit-mariadb.xml
-          --filter '(UpdatePublicationTest|UpdateMigrationTest|BackupAdmissionTest|BackupRecoveryTest|PreUpdateRecoveryTest|SignedUpdateAdmissionTest|ModuleSchemaSafetyTest|InstallationAcceptanceTest|KeyLifecycleTest|OperationalModePersistenceTest|PrivacyBindingTest|PrivacySigningTest|SqlPortabilityCloseoutTest)'
+          --filter '(ExtensionLifecycleTest|UpdatePublicationTest|UpdateMigrationTest|BackupAdmissionTest|BackupRecoveryTest|PreUpdateRecoveryTest|SignedUpdateAdmissionTest|ModuleSchemaSafetyTest|InstallationAcceptanceTest|KeyLifecycleTest|OperationalModePersistenceTest|PrivacyBindingTest|PrivacySigningTest|SqlPortabilityCloseoutTest)'
           --colors=never

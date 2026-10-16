@@ -1,0 +1,32 @@
+{
+  "phase": "D05",
+  "step": "D05.5",
+  "status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
+  "reference_commit": "9abd1aecdee24329d691f9a48c27aa25f410063c",
+  "before": {
+    "tests": 3,
+    "failures": 3,
+    "errors": 0
+  },
+  "main": {
+    "tests": 2155,
+    "assertions": 13497
+  },
+  "native": {
+    "tests": 207,
+    "assertions": 1608
+  },
+  "native_classes": 14,
+  "new_cases_per_database": 43,
+  "full_mariadb_current_source": false,
+  "d05_complete": true,
+  "next_phase": "D06",
+  "production_ready": false,
+  "independent_acceptance": "PENDING",
+  "uploaded_php_execution": false,
+  "migration_grammar": [
+    "create_table"
+  ],
+  "network_acceptance": "Policy contract spies only; real host-owned transports D06",
+  "rollback_policy": "Explicit offline pinned-backup global DB and module-tree recovery; other writers stopped; no automatic Normal activation"
+}

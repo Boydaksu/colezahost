@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Domain\Module\ExtensionLifecycleTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Domain\Module\ExtensionLifecycleTest.php" tests="3" assertions="4" errors="0" failures="3" skipped="0" time="0.084523">
+    <testcase name="testMaximumCoreVersionCannotBeDiscardedByLegacyInstall" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ExtensionLifecycleCases.php" line="140" class="Coleza\Tests\Unit\Domain\Module\ExtensionLifecycleTest" classname="Coleza.Tests.Unit.Domain.Module.ExtensionLifecycleTest" assertions="1" time="0.035404">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Module\ExtensionLifecycleTest::testMaximumCoreVersionCannotBeDiscardedByLegacyInstall&#13;
+Failed asserting that false is true.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ExtensionLifecycleCases.php:144</failure>
+    </testcase>
+    <testcase name="testLegacyModuleAuditFailureRollsBackInventoryInsert" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ExtensionLifecycleCases.php" line="146" class="Coleza\Tests\Unit\Domain\Module\ExtensionLifecycleTest" classname="Coleza.Tests.Unit.Domain.Module.ExtensionLifecycleTest" assertions="2" time="0.011394">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Module\ExtensionLifecycleTest::testLegacyModuleAuditFailureRollsBackInventoryInsert&#13;
+Failed asserting that an array is null.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ExtensionLifecycleCases.php:151</failure>
+    </testcase>
+    <testcase name="testDirectLegacyEnableRejectsInjectedPackageReceipt" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ExtensionLifecycleCases.php" line="153" class="Coleza\Tests\Unit\Domain\Module\ExtensionLifecycleTest" classname="Coleza.Tests.Unit.Domain.Module.ExtensionLifecycleTest" assertions="1" time="0.037726">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Domain\Module\ExtensionLifecycleTest::testDirectLegacyEnableRejectsInjectedPackageReceipt&#13;
+Failed asserting that false is true.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ExtensionLifecycleCases.php:157</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

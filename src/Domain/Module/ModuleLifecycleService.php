@@ -8,6 +8,7 @@ use Coleza\Domain\Identity\Audit\AuditLogger;
 use Coleza\Foundation\Database\Connection;
 use Coleza\Foundation\Database\PdoSchema;
 use Coleza\Foundation\Exceptions\ValidationException;
+use Coleza\Domain\Updater\UpdatePackageManifest;
 
 final class ModuleLifecycleService
 {
@@ -89,6 +90,7 @@ final class ModuleLifecycleService
 
         foreach ($dirs as $dir) {
             $manifestFile = $dir . '/manifest.json';
+            if(file_exists($dir.'/extension.json')){continue;} // Packaged extensions belong to ExtensionInstaller.
             if (file_exists($manifestFile)) {
                 $content = @file_get_contents($manifestFile);
                 if ($content !== false) {
@@ -109,15 +111,17 @@ final class ModuleLifecycleService
     }
 
     /**
-     * Install module: validates manifest, core compatibility, registers in DB.
+     * Trusted built-in registration only. Uploaded packages must use ExtensionInstaller.
      */
     public function install(ModuleManifest $manifest, ?int $actorUserId = null): void
     {
         $this->ensureTable();
         $this->assertTransactionalStorage();
 
-        // Compatibility check
-        if (version_compare($this->coreVersion, $manifest->minCoreVersion, '<')) {
+        $manifest=ModuleManifest::fromArray($manifest->toArray());
+        if (UpdatePackageManifest::compareVersions($this->installedCoreVersion(),$manifest->minCoreVersion)<0
+            ||($manifest->maxCoreVersion!==null&&UpdatePackageManifest::compareVersions($this->installedCoreVersion(),$manifest->maxCoreVersion)>0)
+            ||$manifest->extensionApiVersion!=='1.0.0') {
             throw new ValidationException(
                 ['compatibility' => [sprintf(
                     'Module [%s] requires Coleza Host core version >= %s (Current: %s).',
@@ -128,6 +132,7 @@ final class ModuleLifecycleService
                 'Core version incompatible.'
             );
         }
+        $this->assertDependencies($manifest);
 
         $existing = $this->db->selectOne(
             sprintf('SELECT id FROM %s WHERE module_id = :id', $this->table),
@@ -140,21 +145,24 @@ final class ModuleLifecycleService
             );
         }
 
-        $this->db->insert($this->table, [
-            'module_id' => $manifest->id,
-            'name' => $manifest->name,
-            'version' => $manifest->version,
-            'type' => $manifest->type,
-            'is_enabled' => 0, // Installed disabled by default
-            'manifest' => json_encode($manifest->toArray(), JSON_UNESCAPED_SLASHES),
-        ]);
+        $this->prepareAudit();
+        $this->db->transaction(function()use($manifest,$actorUserId):void{
+            $this->db->insert($this->table, [
+                'module_id' => $manifest->id,
+                'name' => $manifest->name,
+                'version' => $manifest->version,
+                'type' => $manifest->type,
+                'is_enabled' => 0, // Installed disabled by default
+                'manifest' => json_encode($manifest->toArray(), JSON_UNESCAPED_SLASHES),
+            ]);
 
-        $this->auditLogger?->log(
-            actorUserId: $actorUserId ?? 0,
-            eventType: 'MODULE_INSTALLED',
-            targetResource: 'module:' . $manifest->id,
-            payload: ['version' => $manifest->version]
-        );
+            $this->auditLogger?->log(
+                actorUserId: $actorUserId ?? 0,
+                eventType: 'MODULE_INSTALLED',
+                targetResource: 'module:' . $manifest->id,
+                payload: ['version' => $manifest->version]
+            );
+        });
     }
 
     /**
@@ -173,18 +181,29 @@ final class ModuleLifecycleService
             throw new ValidationException(['module' => ['Module is not installed.']]);
         }
 
-        $this->db->update(
-            $this->table,
-            ['is_enabled' => 1, 'updated_at' => date('Y-m-d H:i:s')],
-            'id = :id',
-            ['id' => $record['id']]
-        );
+        $row=$this->db->selectOne('SELECT manifest FROM installed_modules WHERE module_id=?',[$moduleId]);
+        $data=json_decode($row['manifest'],true,flags:JSON_THROW_ON_ERROR);
+        if(array_key_exists('_extension',$data)){throw new \RuntimeException('Packaged extensions must pass installer health and permission admission before enable.');}
+        $manifest=ModuleManifest::fromArray($data);
+        if($manifest->extensionApiVersion!=='1.0.0'||UpdatePackageManifest::compareVersions($this->installedCoreVersion(),$manifest->minCoreVersion)<0||($manifest->maxCoreVersion!==null&&UpdatePackageManifest::compareVersions($this->installedCoreVersion(),$manifest->maxCoreVersion)>0)){
+            throw new ValidationException(['compatibility'=>['Installed module core bounds changed.']]);
+        }
+        $this->assertDependencies($manifest);
+        $this->prepareAudit();
+        $this->db->transaction(function()use($record,$moduleId,$actorUserId):void{
+            $this->db->update(
+                $this->table,
+                ['is_enabled' => 1, 'updated_at' => date('Y-m-d H:i:s')],
+                'id = :id',
+                ['id' => $record['id']]
+            );
 
-        $this->auditLogger?->log(
-            actorUserId: $actorUserId ?? 0,
-            eventType: 'MODULE_ENABLED',
-            targetResource: 'module:' . $moduleId
-        );
+            $this->auditLogger?->log(
+                actorUserId: $actorUserId ?? 0,
+                eventType: 'MODULE_ENABLED',
+                targetResource: 'module:' . $moduleId
+            );
+        });
     }
 
     /**
@@ -203,18 +222,21 @@ final class ModuleLifecycleService
             throw new ValidationException(['module' => ['Module is not installed.']]);
         }
 
-        $this->db->update(
-            $this->table,
-            ['is_enabled' => 0, 'updated_at' => date('Y-m-d H:i:s')],
-            'id = :id',
-            ['id' => $record['id']]
-        );
+        $this->prepareAudit();
+        $this->db->transaction(function()use($record,$moduleId,$actorUserId):void{
+            $this->db->update(
+                $this->table,
+                ['is_enabled' => 0, 'updated_at' => date('Y-m-d H:i:s')],
+                'id = :id',
+                ['id' => $record['id']]
+            );
 
-        $this->auditLogger?->log(
-            actorUserId: $actorUserId ?? 0,
-            eventType: 'MODULE_DISABLED',
-            targetResource: 'module:' . $moduleId
-        );
+            $this->auditLogger?->log(
+                actorUserId: $actorUserId ?? 0,
+                eventType: 'MODULE_DISABLED',
+                targetResource: 'module:' . $moduleId
+            );
+        });
     }
 
     /**
@@ -252,6 +274,26 @@ final class ModuleLifecycleService
         }
 
         return $matching;
+    }
+
+    private function prepareAudit(): void
+    {
+        if($this->auditLogger!==null){
+            if($this->auditLogger->connection()->getPdo()!==$this->db->getPdo()){throw new \LogicException('Module audit database differs from inventory.');}
+            $this->auditLogger->ensureTable();
+        }
+    }
+    private function installedCoreVersion(): string
+    {
+        if(\Coleza\Domain\Vault\KeyBinding::tableExists($this->db,'system_settings')){
+            $row=$this->db->selectOne('SELECT setting_value FROM system_settings WHERE setting_key=?',['system.core_version']);
+            if($row!==null){UpdatePackageManifest::assertVersion($row['setting_value']);return $row['setting_value'];}
+        }
+        return $this->coreVersion;
+    }
+    private function assertDependencies(ModuleManifest $manifest): void
+    {
+        foreach($manifest->dependencies as $id=>$version){$row=$this->db->selectOne('SELECT version,is_enabled FROM installed_modules WHERE module_id=?',[$id]);if($row===null||(int)$row['is_enabled']!==1||UpdatePackageManifest::compareVersions($row['version'],$version)<0){throw new ValidationException(['dependencies'=>['Required module is missing, disabled or outdated.']]);}}
     }
 
     private function assertTransactionalStorage(): void

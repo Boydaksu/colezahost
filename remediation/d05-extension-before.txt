@@ -1,0 +1,28 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+[41;37mF[0m[41;37mF[0m[41;37mF[0m                                                                 3 / 3 (100%)
+
+Time: 00:00.089, Memory: 22.00 MB
+
+There were 3 failures:
+
+1) Coleza\Tests\Unit\Domain\Module\ExtensionLifecycleTest::testMaximumCoreVersionCannotBeDiscardedByLegacyInstall
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ExtensionLifecycleCases.php:144
+
+2) Coleza\Tests\Unit\Domain\Module\ExtensionLifecycleTest::testLegacyModuleAuditFailureRollsBackInventoryInsert
+Failed asserting that an array is null.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ExtensionLifecycleCases.php:151
+
+3) Coleza\Tests\Unit\Domain\Module\ExtensionLifecycleTest::testDirectLegacyEnableRejectsInjectedPackageReceipt
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\ExtensionLifecycleCases.php:157
+
+[37;41mFAILURES![0m
+[37;41mTests: 3[0m[37;41m, Assertions: 4[0m[37;41m, Failures: 3[0m[37;41m.[0m

@@ -37,6 +37,11 @@ final class RestoreWizardService
     {
         return $this->execute($backupId,$sourceStorage,$targetDb,$targetAppDir,null,true,$lease,$context);
     }
+    public function executeExtensionRollback(string $backupId,BackupStorageAdapterInterface $sourceStorage,Connection $targetDb,string $targetAppDir,RecoveryLease $lease,array $context): RestoreResult
+    {
+        if(($context['purpose']??null)!=='extension'){throw new RuntimeException('Extension recovery context required.');}
+        return $this->execute($backupId,$sourceStorage,$targetDb,$targetAppDir,null,true,$lease,$context);
+    }
     private function execute(string $backupId,BackupStorageAdapterInterface $sourceStorage,Connection $targetDb,string $targetAppDir,?string $decryptionPassphrase,bool $replaceExistingDatabase,?RecoveryLease $lease=null,array $context=[]): RestoreResult
     {
         $rollback=$lease!==null;$ownedLease=null;
@@ -47,7 +52,7 @@ final class RestoreWizardService
             $targetAppDir=$this->target($targetAppDir);$journal=RestoreJournal::path($targetAppDir);
             if($rollback){
                 $lease->assertOwns($targetDb,$targetAppDir);$old=RestoreJournal::read($journal);
-                if($old===null||($old['purpose']??null)!=='update'||($old['backup_id']??null)!==$backupId||($old['manifest_sha256']??null)!==($context['manifest_sha256']??null)||($old['database']??null)!==($context['database']??null)){
+                if($old===null||!in_array($old['purpose']??null,['update','extension'],true)||($old['purpose']??null)!==($context['purpose']??null)||($old['backup_id']??null)!==$backupId||($old['manifest_sha256']??null)!==($context['manifest_sha256']??null)||($old['database']??null)!==($context['database']??null)){
                     throw new RuntimeException('Update rollback requires the matching durable update context.');
                 }
             }else{

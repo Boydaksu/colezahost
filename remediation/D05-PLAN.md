@@ -10,8 +10,10 @@ Birincil kaynak: orijinal master plan P17.3–P17.9 ve extension sözleşmeleri;
 | D05.4 | Güncelleme ve rollback | Tek imzalı paket sözleşmesi; zorunlu doğrulanmış pre-update backup; gerçek migration; staged dosya geçişi/hata recovery/rollback. |
 | D05.5 | Güvenli extension kurulumu | Quarantine/path/symlink/zip-bomb/uyumluluk/izinler; migration preview/apply, health ve enable; başarısızlık/recovery matrisi. |
 
-D05.1–D05.4 yerel uygulama/doğrulaması tamamlandı. D05.4'ün dört sabit kontrolü 4/4 kapalı; kapanış D05-4-CLOSURE.md, final kanıt D05-4-PUBLICATION-SONUC.md. **D05 fazında yalnız D05.5 extension lifecycle kaldı.** D05.4 yeniden açılmaz; bağımsız kabul PENDING ve production_ready=false kalır. Bütün ürün girişlerinin fencing/aktivasyonu D08, privacy mapping/retention D07, harici hesap/host ve bağımsız kabul D09 kapsamındadır.
+**D05.1–D05.5 yerel uygulama/doğrulaması tamamlandı; D05 kapalı.** D05-4-CLOSURE.md dört updater kapısını; D05-5-SONUC.md son extension adımını; D05-CLOSURE.md bütün fazı kapatır. Sonraki faz D06. Bağımsız kabul PENDING ve production_ready=false. Ürün girişleri/aktivasyon D08, privacy mapping/retention D07, harici hesap/host kabulü D09'dadır.
 
 D05.2 teknik birincil referansları: [cURL AWS SigV4](https://curl.se/libcurl/c/CURLOPT_AWS_SIGV4.html), [cURL SSH host key SHA-256](https://curl.se/libcurl/c/CURLOPT_SSH_HOST_PUBLIC_KEY_SHA256.html), [AWS ListObjectsV2](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html). Uygulama/yerel protokol kanıtı D05-2-SONUC.md; harici hesap kabulü ayrı ve açıktır.
 
 16.10.2026 D05.4 kapanışı: **4/4 kontrol tamam; sonraki tek D05 adımı D05.5**. Yeni staged publication ve explicit rollback testleri GitHub SQLite/MariaDB kabul işine eklendi. İki rename arasında kesinti açık recovery ile çözülür; atomik DB/files transaction veya canlı boot kabulü iddiası yoktur. Kapsamı büyüten yeni faz eklenmedi.
+
+16.10.2026 D05.5 tamamlandı; kalan D05 adımı yok. Yukarıdaki D05.4 tarihli not önceki durumu gösterir. Güncel kapanış D05-CLOSURE.md.

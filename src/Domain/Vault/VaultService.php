@@ -23,6 +23,10 @@ final class VaultService
     {
         self::ensureSchema($this->db);
     }
+    public function assertConnection(Connection $db): void
+    {
+        if($db->getPdo()!==$this->db->getPdo()){throw new \LogicException('Vault database differs from scoped extension context.');}
+    }
 
     /** Required columns for metadata-only preflight of dependent schemas. */
     public static function schemaRequirements(): array

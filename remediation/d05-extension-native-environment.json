@@ -1,0 +1,9 @@
+{
+  "status": "INTERRUPTED_ENVIRONMENT_ATTEMPT_NOT_FINAL_ACCEPTANCE",
+  "isolated_server_pid_from_prior_turn": 13464,
+  "server_process_running_at_inspection": false,
+  "interrupted_php_process_match": "cache-d05-extension-native AND phpunit-mariadb.xml",
+  "restart_port": 33079,
+  "source_changed_for_retry": false,
+  "retry_policy": "Restart own isolated server and rerun all 207 discovered cases; final evidence uses native.xml/txt/exit only"
+}
