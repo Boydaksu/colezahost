@@ -16,7 +16,7 @@ Referans: `review/INCELEME.md` bulguları F01–F33 ve orijinal master plan. Bu 
 
 Her faz: hedef dosyaları belirle → açığı gösteren test → düzeltme → ilgili regresyonlar → tüm mevcut testler → ham kanıt ve kalan işler. Test beklentisi sırf başarısızlığı gizlemek için değiştirilmez. Gerçek sağlayıcı ve üretim doğrulaması yerel taklitle kapanmış sayılmaz. Gerekli dış erişim/hesap bilgileri ilgili fazda kaydedilir.
 
-Güncel durum: **D06.1 cPanel gerçek transport/yanıt/health yerel olarak tamamlandı.** Sabit plan D06-PLAN.md, kanıt D06-1-SONUC.md. D06'da dört adım kaldı: D06.2 sağlayıcı lifecycle/provisioning; D06.3 otomasyon; D06.4 diğer entegrasyonlar; D06.5 Doctor/kabul matrisi. Sonraki D06.2. D02–D05 yerel kapanışları korunur; D05'in beş adımı ve D05.4'ün dört kontrolü kapalıdır. Üretim, harici sağlayıcı ve bağımsız kabul PENDING. Aşağıdaki tarihli notlar kendi kaynak revizyonlarının geçmişini gösterir.
+Güncel durum: **D06.2 IN_PROGRESS, 2/4 sabit kontrol yerel doğrulandı.** Durable dispatch/capacity ve doğrulanmış atomik aktivasyon tamam; Application actor/owner/paid/risk/lifecycle ve process/protocol acceptance açık. Sabit liste D06-2-KABUL.md, kanıt D06-2-DISPATCH-SONUC.md. D06.1 ve D02–D05 kapalı kalır. D06.3–D06.5 başlamadı; production/harici sağlayıcı/bağımsız kabul PENDING. Aşağıdaki notlar tarihsel revizyonların kanıtlarıdır.
 
 ## CR-D01 / TCR-D01
 

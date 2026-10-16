@@ -121,7 +121,7 @@ final class NoDuplicateRemoteAccountFailureTest extends TestCase
         ]);
     }
 
-    public function testDuplicateDomainFailurePreventsAccountCreationAndReleasesReservation(): void
+    public function testDuplicateDomainFailureRequiresReconciliationAndRetainsCapacity(): void
     {
         $service = $this->serviceService->createService([
             'user_id' => 1,
@@ -156,25 +156,26 @@ final class NoDuplicateRemoteAccountFailureTest extends TestCase
         $this->assertSame(HostingProvisioningStep::REMOTE, $result->getCurrentStep());
         $this->assertSame(ProvisioningErrorCategory::CONFLICT, $result->getClassification()?->getCategory());
 
-        // Capacity reservation must be released (not leaked)
+        // Conflict is not authoritative absence: hold capacity until reconciliation.
         $token = $result->getReservationToken();
         $this->assertNotNull($token);
         $res = $this->reservationService->findReservationByToken($token);
         $this->assertNotNull($res);
-        $this->assertTrue($res->isReleased());
+        $this->assertTrue($res->isCommitted());
 
-        // Placement must be evicted
+        // Placement remains bound while the remote account is uncertain.
         $placement = $this->serviceService->getPlacementForService((int)$service->getId());
-        $this->assertTrue($placement === null || $placement->isEvicted());
+        $this->assertNotNull($placement);
+        $this->assertSame('reserved',$placement->getStatus());
 
         // Service must NOT be activated
         $svc = $this->serviceService->findServiceById((int)$service->getId());
         $this->assertSame(ServiceStateMachine::STATUS_PENDING, $svc->getStatus());
 
-        // Operation status must be failed, NOT retrying
+        // Unknown/conflicting outcomes must not enter automatic retry.
         $op = $this->operationService->findOperationByUuid((string)$result->getOperationUuid());
         $this->assertNotNull($op);
-        $this->assertSame(ProvisioningOperation::STATUS_FAILED, $op->getStatus());
+        $this->assertSame(ProvisioningOperation::STATUS_RECONCILIATION_REQUIRED, $op->getStatus());
     }
 
     public function testDuplicateUsernameFailurePreventsAccountCreation(): void
@@ -212,17 +213,17 @@ final class NoDuplicateRemoteAccountFailureTest extends TestCase
         $this->assertSame(HostingProvisioningStep::REMOTE, $result->getCurrentStep());
         $this->assertSame(ProvisioningErrorCategory::CONFLICT, $result->getClassification()?->getCategory());
 
-        // Capacity reservation must be released
+        // Keep the durable allocation for explicit reconciliation.
         $res = $this->reservationService->findReservationByToken((string)$result->getReservationToken());
-        $this->assertTrue($res->isReleased());
+        $this->assertTrue($res->isCommitted());
 
         // Service remains pending
         $svc = $this->serviceService->findServiceById((int)$service->getId());
         $this->assertSame(ServiceStateMachine::STATUS_PENDING, $svc->getStatus());
 
-        // Operation marked failed (conflict is non-retryable)
+        // A conflict requires explicit reconciliation instead of another create.
         $op = $this->operationService->findOperationByUuid((string)$result->getOperationUuid());
-        $this->assertSame(ProvisioningOperation::STATUS_FAILED, $op->getStatus());
+        $this->assertSame(ProvisioningOperation::STATUS_RECONCILIATION_REQUIRED, $op->getStatus());
     }
 
     public function testSubsequentProvisioningAttemptOnActiveServiceIsIdempotent(): void
@@ -247,7 +248,7 @@ final class NoDuplicateRemoteAccountFailureTest extends TestCase
         ]);
         $this->transport->stageResponse('accountsummary', 200, [
             'metadata' => ['result' => 1, 'reason' => 'OK'],
-            'data' => ['acct' => [['user' => 'idempotent', 'ip' => '192.168.10.55', 'plan' => 'starter']]],
+            'data' => ['acct' => [['user' => 'idempotent', 'domain'=>'idempotent.com','suspended'=>0,'ip' => '192.168.10.55', 'plan' => 'starter']]],
         ]);
 
         $request = new HostingProvisioningRequest(

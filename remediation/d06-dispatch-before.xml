@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Provisioning\HostingDispatchTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Provisioning\HostingDispatchTest.php" tests="12" assertions="16" errors="0" failures="12" skipped="0" time="0.066352">
+    <testcase name="testUnknownRemoteFailureDoesNotFreeCapacityOrAuthorizeSecondCreate" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php" line="44" class="Coleza\Tests\Unit\Provisioning\HostingDispatchTest" classname="Coleza.Tests.Unit.Provisioning.HostingDispatchTest" assertions="2" time="0.027881">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testUnknownRemoteFailureDoesNotFreeCapacityOrAuthorizeSecondCreate&#13;
+Failed asserting that null is not null.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:47</failure>
+    </testcase>
+    <testsuite name="Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testIncompleteOrMismatchedRemoteAccountNeverActivates" tests="5" assertions="5" errors="0" failures="5" skipped="0" time="0.017158">
+      <testcase name="testIncompleteOrMismatchedRemoteAccountNeverActivates with data set &quot;domain&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php" line="38" class="Coleza\Tests\Unit\Provisioning\HostingDispatchTest" classname="Coleza.Tests.Unit.Provisioning.HostingDispatchTest" assertions="1" time="0.003608">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testIncompleteOrMismatchedRemoteAccountNeverActivates with data set "domain"&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:40</failure>
+      </testcase>
+      <testcase name="testIncompleteOrMismatchedRemoteAccountNeverActivates with data set &quot;plan&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php" line="38" class="Coleza\Tests\Unit\Provisioning\HostingDispatchTest" classname="Coleza.Tests.Unit.Provisioning.HostingDispatchTest" assertions="1" time="0.003301">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testIncompleteOrMismatchedRemoteAccountNeverActivates with data set "plan"&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:40</failure>
+      </testcase>
+      <testcase name="testIncompleteOrMismatchedRemoteAccountNeverActivates with data set &quot;suspended&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php" line="38" class="Coleza\Tests\Unit\Provisioning\HostingDispatchTest" classname="Coleza.Tests.Unit.Provisioning.HostingDispatchTest" assertions="1" time="0.003280">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testIncompleteOrMismatchedRemoteAccountNeverActivates with data set "suspended"&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:40</failure>
+      </testcase>
+      <testcase name="testIncompleteOrMismatchedRemoteAccountNeverActivates with data set &quot;ip&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php" line="38" class="Coleza\Tests\Unit\Provisioning\HostingDispatchTest" classname="Coleza.Tests.Unit.Provisioning.HostingDispatchTest" assertions="1" time="0.003514">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testIncompleteOrMismatchedRemoteAccountNeverActivates with data set "ip"&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:40</failure>
+      </testcase>
+      <testcase name="testIncompleteOrMismatchedRemoteAccountNeverActivates with data set &quot;boolean&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php" line="38" class="Coleza\Tests\Unit\Provisioning\HostingDispatchTest" classname="Coleza.Tests.Unit.Provisioning.HostingDispatchTest" assertions="1" time="0.003456">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testIncompleteOrMismatchedRemoteAccountNeverActivates with data set "boolean"&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:40</failure>
+      </testcase>
+    </testsuite>
+    <testcase name="testProcessingOperationBlocksAnotherDispatch" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php" line="50" class="Coleza\Tests\Unit\Provisioning\HostingDispatchTest" classname="Coleza.Tests.Unit.Provisioning.HostingDispatchTest" assertions="1" time="0.003753">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testProcessingOperationBlocksAnotherDispatch&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:53</failure>
+    </testcase>
+    <testcase name="testCallerTransactionIsRejectedBeforeAnyRemoteRequest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php" line="60" class="Coleza\Tests\Unit\Provisioning\HostingDispatchTest" classname="Coleza.Tests.Unit.Provisioning.HostingDispatchTest" assertions="1" time="0.003375">
+      <failure type="PHPUnit\Framework\AssertionFailedError">Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testCallerTransactionIsRejectedBeforeAnyRemoteRequest&#13;
+Caller transaction crossed remote effects.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:63</failure>
+    </testcase>
+    <testcase name="testPasswordIsStoredOnlyInEncryptedOperationPayload" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php" line="65" class="Coleza\Tests\Unit\Provisioning\HostingDispatchTest" classname="Coleza.Tests.Unit.Provisioning.HostingDispatchTest" assertions="2" time="0.003404">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testPasswordIsStoredOnlyInEncryptedOperationPayload&#13;
+Failed asserting that 'fixture-account-password' is null.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:67</failure>
+    </testcase>
+    <testcase name="testLateAuditFailureRollsBackActivationAndPlacementTogether" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php" line="71" class="Coleza\Tests\Unit\Provisioning\HostingDispatchTest" classname="Coleza.Tests.Unit.Provisioning.HostingDispatchTest" assertions="2" time="0.003466">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testLateAuditFailureRollsBackActivationAndPlacementTogether&#13;
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'pending'
++'active'
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:74</failure>
+    </testcase>
+    <testcase name="testServiceChangedDuringRemoteProbeCannotBeActivated" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php" line="76" class="Coleza\Tests\Unit\Provisioning\HostingDispatchTest" classname="Coleza.Tests.Unit.Provisioning.HostingDispatchTest" assertions="1" time="0.003370">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testServiceChangedDuringRemoteProbeCannotBeActivated&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:79</failure>
+    </testcase>
+    <testcase name="testCommittedDispatchCapacityDoesNotExpireDuringRemoteCall" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php" line="81" class="Coleza\Tests\Unit\Provisioning\HostingDispatchTest" classname="Coleza.Tests.Unit.Provisioning.HostingDispatchTest" assertions="2" time="0.003944">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testCommittedDispatchCapacityDoesNotExpireDuringRemoteCall&#13;
+Failed asserting that false is true.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:84</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

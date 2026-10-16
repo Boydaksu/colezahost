@@ -5,17 +5,17 @@
   "phase": "D06",
   "step": "D06.2",
   "status": "IN_PROGRESS",
-  "step_status": "PENDING",
+  "step_status": "IN_PROGRESS",
   "independent_acceptance": "PENDING",
   "production_ready": false,
   "next_step": "D06.2",
   "next_phase": "D06",
   "tests": {
-    "main_total": 2217,
-    "main_assertions": 13578,
-    "mariadb_total": 44,
-    "mariadb_assertions": 396,
-    "mariadb_scope": "Exact 3 affected classes / 44 cases: ProvisioningProbeSafetyTest, ProviderVaultSchemaTest, ProvisioningSecretTest; not the whole native suite",
+    "main_total": 2237,
+    "main_assertions": 13649,
+    "mariadb_total": 64,
+    "mariadb_assertions": 504,
+    "mariadb_scope": "Exact four affected classes / 64 cases: HostingDispatchTest plus ProvisioningProbeSafetyTest, ProviderVaultSchemaTest, ProvisioningSecretTest; not the whole native suite",
     "full_mariadb_current_source": false,
     "last_full_mariadb": {
       "reference_commit": "0d2e3e08d4c121a146f298f77b4bc6b008b6f66e",
@@ -23,8 +23,8 @@
       "assertions": 5399,
       "evidence": "remediation/D02-CLOSEOUT-summary.json"
     },
-    "total": 2261,
-    "assertions": 13974,
+    "total": 2301,
+    "assertions": 14153,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -292,6 +292,19 @@
       "independent_acceptance": "PENDING",
       "external_provider_acceptance": "PENDING",
       "scope": "One real bounded HTTPS WHM request; TLS peer/host and explicit private CA support, no plaintext/bypass/redirect/replay; monotonic latency; strict HTTP/result/version/load evidence; local HTTPS lifecycle/failures and existing provider/reconciliation/secret regressions. Whole provisioning and external sandbox acceptance remain D06.2/D06.4-D06.5."
+    },
+    "D06.2": {
+      "status": "IN_PROGRESS",
+      "completed_gates": 2,
+      "total_gates": 4,
+      "acceptance": "remediation/D06-2-KABUL.md",
+      "evidence": "remediation/D06-2-DISPATCH-SONUC.md",
+      "remaining_gates": [
+        "application_admission_and_lifecycle",
+        "process_protocol_acceptance"
+      ],
+      "independent_acceptance": "PENDING",
+      "scope": "Durable service-serialized create claim and non-expiring capacity before remote dispatch; conservative hold/no second create on uncertain outcome; strict matching remote postcondition and current service/server/capacity/placement; atomic placement/activation/op/audit; encrypted-only generated credential payload; explicit matching reconciliation. Trusted domain workflow only. Application actor/owner/paid/risk and suspend/unsuspend/terminate command binding plus separate-process/parallel/real HTTPS workflow acceptance remain the last two fixed gates."
     }
   },
   "d03_staging_storage_evidence": "remediation/D03-1-STAGING-SONUC.md",
@@ -309,7 +322,7 @@
   "d05_publication_evidence": "remediation/D05-1-SONUC.md",
   "d05_transport_evidence": "remediation/D05-2-SONUC.md",
   "d05_restore_evidence": "remediation/D05-3-SONUC.md",
-  "next_action": "D06.2: provider lifecycle Application ownership/risk/paid-order and durable workflow/retry/reconciliation acceptance",
+  "next_action": "D06.2 fixed gate3: current actor/owner/paid invoice/risk Application admission and provider lifecycle commands; then fixed gate4 independent processes/concurrency/real HTTPS workflow acceptance",
   "d05_4_acceptance": "remediation/D05-4-KABUL.md",
   "d05_preupdate_backup_evidence": "remediation/D05-4-PREBACKUP-SONUC.md",
   "d05_4_gates": {
@@ -349,5 +362,7 @@
   "d05_extension_evidence": "remediation/D05-5-SONUC.md",
   "d05_closure": "remediation/D05-CLOSURE.md",
   "d06_plan": "remediation/D06-PLAN.md",
-  "d06_cpanel_evidence": "remediation/D06-1-SONUC.md"
+  "d06_cpanel_evidence": "remediation/D06-1-SONUC.md",
+  "d06_2_acceptance": "remediation/D06-2-KABUL.md",
+  "d06_dispatch_evidence": "remediation/D06-2-DISPATCH-SONUC.md"
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Coleza\Domain\Provisioning\Workflows;
 use Coleza\Domain\Provisioning\Entities\ProvisioningOperation;
 
-use Coleza\Domain\Commerce\Services\Exceptions\ServiceConcurrencyException;
 use Coleza\Domain\Commerce\Services\ServicePlacement;
 use Coleza\Domain\Commerce\Services\ServiceService;
 use Coleza\Domain\Commerce\Services\ServiceStateMachine;
@@ -17,8 +16,6 @@ use Coleza\Domain\Providers\Registry\ProviderRegistry;
 use Coleza\Domain\Provisioning\Classification\ProvisioningErrorClassifier;
 use Coleza\Domain\Provisioning\Services\ProvisioningOperationService;
 use Coleza\Domain\Servers\Capacity\Services\CapacityReservationService;
-use Coleza\Domain\Servers\Entities\Server;
-use Coleza\Domain\Servers\Placement\PlacementDecision;
 use Coleza\Domain\Servers\Placement\PlacementEngine;
 use Coleza\Domain\Servers\Placement\PlacementRequest;
 use Coleza\Domain\Servers\Services\ServerService;
@@ -42,6 +39,10 @@ final class HostingProvisioningWorkflow
         private ProviderRegistry $providerRegistry,
         private ProvisioningOperationService $operationService
     ) {
+        $connection=$operationService->getConnection();
+        foreach([$serviceService->getConnection(),$serverService->getConnection(),$reservationService->getConnection()] as $candidate){
+            if($candidate!==$connection){throw new \LogicException('Hosting workflow requires one shared Connection instance.');}
+        }
     }
 
     /**
@@ -50,6 +51,8 @@ final class HostingProvisioningWorkflow
      */
     public function execute(HostingProvisioningRequest $request): HostingProvisioningResult
     {
+        $db=$this->operationService->getConnection();
+        if($db->getPdo()->inTransaction()){throw new \LogicException('Provider calls cannot run inside a caller transaction.');}
         $serviceId = $request->getServiceId();
         /** @var array<string> $completedSteps */
         $completedSteps = [];
@@ -69,8 +72,8 @@ final class HostingProvisioningWorkflow
         }
 
         // Idempotency: if already active, treat as completed
-        $held = $this->operationService->findActiveOperationForService($serviceId, ProviderCapability::CREATE_ACCOUNT, ProvisioningOperation::STATUS_RECONCILIATION_REQUIRED);
-        if ($held?->getStatus() === ProvisioningOperation::STATUS_RECONCILIATION_REQUIRED) {
+        $held = $this->operationService->findActiveOperationForService($serviceId, ProviderCapability::CREATE_ACCOUNT);
+        if ($held !== null) {
             return HostingProvisioningResult::failure(serviceId: $serviceId, failedStep: HostingProvisioningStep::VALIDATE,
                 errorMessage: 'Remote outcome requires reconciliation before starting another provisioning workflow.',
                 errorCode: 'RECONCILIATION_REQUIRED', completedSteps: $completedSteps);
@@ -96,9 +99,13 @@ final class HostingProvisioningWorkflow
             );
         }
 
+        foreach($this->operationService->listOperationsForService($serviceId) as $prior){
+            if($prior->getAction()===ProviderCapability::CREATE_ACCOUNT){return HostingProvisioningResult::failure($serviceId,HostingProvisioningStep::VALIDATE,'Previous remote creation requires explicit reconciliation.','RECONCILIATION_REQUIRED');}
+        }
+        $serviceFingerprint=HostingDispatchBinding::service($db,$serviceId);
         // Domain validation
         $domain = trim($request->getDomain() ?? ($service->getDomain() ?? ''));
-        if ($domain === '' || !str_contains($domain, '.') || str_contains($domain, ' ')) {
+        if ($domain === '' || !str_contains($domain, '.') || filter_var($domain,FILTER_VALIDATE_DOMAIN,FILTER_FLAG_HOSTNAME)===false || ($service->getDomain()!==null&&$service->getDomain()!==''&&strcasecmp($domain,$service->getDomain())!==0)) {
             return HostingProvisioningResult::failure(
                 serviceId: $serviceId,
                 failedStep: HostingProvisioningStep::VALIDATE,
@@ -126,8 +133,12 @@ final class HostingProvisioningWorkflow
             );
         }
 
+        if(($service->getUsername()!==null&&$service->getUsername()!==''&&strcasecmp($username,$service->getUsername())!==0)
+            ||($service->getPasswordEncrypted()!==null&&$service->getPasswordEncrypted()!=='')){
+            return HostingProvisioningResult::failure($serviceId,HostingProvisioningStep::VALIDATE,'Existing credential identity requires explicit review.','RECONCILIATION_REQUIRED');
+        }
         // Password resolution
-        $password = $request->getPassword() ?? $service->getPasswordEncrypted();
+        $password = $request->getPassword();
         if ($password === null || $password === '') {
             $password = $this->generateSecurePassword();
         }
@@ -192,275 +203,84 @@ final class HostingProvisioningWorkflow
 
         $serverId = $selectedServer->getId() ?? 0;
 
-        // Queue operation record
-        $op = $this->operationService->queueOperation(
-            serviceId: $serviceId,
-            providerSlug: $request->getProviderSlug(),
-            action: 'create_account',
-            payload: [
-                'username' => $username,
-                'domain' => $domain,
-                'package' => $package,
-                'disk_limit_mb' => $request->getRequiredDiskMb(),
-                'bandwidth_limit_mb' => $request->getRequiredBandwidthMb(),
-            ],
-            serverId: $serverId,
-            correlationId: $request->getCorrelationId()
-        );
-        $opUuid = $op->getOperationUuid();
-
-        // Assign placement record (status: reserved)
-        $this->serviceService->assignPlacement($serviceId, [
-            'server_id' => $serverId,
-            'server_pool_id' => $selectedServer->getServerPoolId(),
-            'location_id' => $selectedServer->getLocationId(),
-            'status' => ServicePlacement::STATUS_RESERVED,
-            'package_identifier' => $package,
-            'disk_limit_mb' => $request->getRequiredDiskMb(),
-            'bandwidth_limit_mb' => $request->getRequiredBandwidthMb(),
-        ]);
-
-        $completedSteps[] = HostingProvisioningStep::PLACE;
-
-        // ====================================================================
-        // STEP 3: RESERVE
-        // ====================================================================
-        $reservationToken = null;
-        try {
-            $reservation = $this->reservationService->reserve(
-                serverId: $serverId,
-                accountsCount: 1,
-                diskMb: $request->getRequiredDiskMb(),
-                bandwidthMb: $request->getRequiredBandwidthMb(),
-                ttlSeconds: 900,
-                serviceId: $serviceId,
-                poolId: $selectedServer->getServerPoolId()
-            );
-            $reservationToken = $reservation->getReservationToken();
-        } catch (Throwable $e) {
-            // Roll back placement
-            $this->serviceService->releasePlacement($serviceId, ServicePlacement::STATUS_EVICTED);
-
-            $classification = ProvisioningErrorClassifier::classifyThrowable($e);
-            $failResult = ProviderOperationResult::failure(
-                operationType: ProviderCapability::CREATE_ACCOUNT,
-                message: "Capacity reservation failed: {$e->getMessage()}",
-                errorCode: 'CAPACITY_RESERVATION_FAILED'
-            );
-            $this->operationService->recordAttempt($opUuid, $failResult, $classification);
-
-            return HostingProvisioningResult::failure(
-                serviceId: $serviceId,
-                failedStep: HostingProvisioningStep::RESERVE,
-                errorMessage: $e->getMessage(),
-                errorCode: 'CAPACITY_RESERVATION_FAILED',
-                completedSteps: $completedSteps,
-                serverId: $serverId,
-                classification: $classification,
-                operationUuid: $opUuid
-            );
+        if($selectedServer->getProviderSlug()!==$request->getProviderSlug()
+            ||($request->getServerPoolId()!==null&&$selectedServer->getServerPoolId()!==$request->getServerPoolId())
+            ||($request->getLocationId()!==null&&$selectedServer->getLocationId()!==$request->getLocationId())
+            ||($request->requiresDedicatedIp()&&$selectedServer->getAssignedIpPool()===[])
+            ||$request->getRequiredDiskMb()<0||$request->getRequiredBandwidthMb()<0){
+            return HostingProvisioningResult::failure($serviceId,HostingProvisioningStep::PLACE,'Selected server does not match placement requirements.','PLACEMENT_REJECTED',$completedSteps);
         }
-
-        $completedSteps[] = HostingProvisioningStep::RESERVE;
-
-        // ====================================================================
-        // STEP 4: REMOTE
-        // ====================================================================
-        try {
-            $provider = $this->providerRegistry->get($request->getProviderSlug());
-            $serverConn = $selectedServer->toServerConnectionDto();
-
-            $createOp = new CreateAccountOperation(
-                serviceId: $serviceId,
-                serviceNumber: $service->getServiceNumber(),
-                username: $username,
-                password: $password,
-                domain: $domain,
-                packageIdentifier: $package,
-                resourceQuotas: [
-                    'disk_limit_mb' => $request->getRequiredDiskMb(),
-                    'bandwidth_limit_mb' => $request->getRequiredBandwidthMb(),
-                ],
-                server: $serverConn,
-                metadata: array_merge($request->getMetadata(), [
-                    'email' => $request->getContactEmail(),
-                    'dedicated_ip' => $request->requiresDedicatedIp() ? 1 : 0,
-                ])
-            );
-
-            $remoteResult = $provider->createAccount($createOp);
-        } catch (Throwable $e) {
-            $classification = ProvisioningErrorClassifier::classifyThrowable($e);
-            $remoteResult = ProviderOperationResult::failure(
-                operationType: ProviderCapability::CREATE_ACCOUNT,
-                message: $e->getMessage(),
-                errorCode: 'PROVIDER_EXCEPTION',
-                data: ['exception' => get_class($e), 'exception_message' => $e->getMessage()]
-            );
-        }
-
-        if (!$remoteResult->isSuccess()) {
-            // COMPENSATION: release capacity reservation and placement
-            try {
-                $this->reservationService->release($reservationToken, 'remote_creation_failed');
-            } catch (Throwable) {
-            }
-            try {
-                $this->serviceService->releasePlacement($serviceId, ServicePlacement::STATUS_EVICTED);
-            } catch (Throwable) {
-            }
-
-            $classification = ProvisioningErrorClassifier::classifyResult($remoteResult);
-            $this->operationService->recordAttempt($opUuid, $remoteResult, $classification);
-
-            return HostingProvisioningResult::failure(
-                serviceId: $serviceId,
-                failedStep: HostingProvisioningStep::REMOTE,
-                errorMessage: $remoteResult->getMessage(),
-                errorCode: $remoteResult->getErrorCode() ?? 'REMOTE_CREATION_FAILED',
-                completedSteps: $completedSteps,
-                serverId: $serverId,
-                reservationToken: $reservationToken,
-                classification: $classification,
-                operationUuid: $opUuid,
-                data: $remoteResult->getData()
-            );
-        }
-
-        $completedSteps[] = HostingProvisioningStep::REMOTE;
-
-        // ====================================================================
-        // STEP 5: VERIFY
-        // ====================================================================
-        $remoteIp = $remoteResult->getData()['ip'] ?? $selectedServer->getIpAddress();
-        $nameservers = [];
-        if (isset($remoteResult->getData()['nameserver'])) {
-            $nameservers[] = (string)$remoteResult->getData()['nameserver'];
-        }
-        if (isset($remoteResult->getData()['nameserver2'])) {
-            $nameservers[] = (string)$remoteResult->getData()['nameserver2'];
-        }
-
-        $verified = false;
-        try {
-            if ($provider instanceof CpanelProvider) {
-                $client = $provider->createClient($selectedServer->toServerConnectionDto());
-                $summary = $client->getAccountSummary($username);
-                if ($summary !== null && strcasecmp((string)($summary['user'] ?? ''), $username) === 0) {
-                    $verified = true;
-                    if (!empty($summary['ip'])) {
-                        $remoteIp = (string)$summary['ip'];
-                    }
-                }
-            } else {
-                $verified = true;
-            }
-        } catch (Throwable) {
-            $verified = false;
-        }
-
-        if (!$verified) {
-            // COMPENSATION on verification failure
-            try {
-                $this->reservationService->release($reservationToken, 'verification_failed');
-            } catch (Throwable) {
-            }
-            try {
-                $this->serviceService->releasePlacement($serviceId, ServicePlacement::STATUS_EVICTED);
-            } catch (Throwable) {
-            }
-
-            $classification = ProvisioningErrorClassifier::classify(
-                'Remote account verification failed after creation.',
-                'VERIFICATION_FAILED'
-            );
-            $verifyFail = ProviderOperationResult::failure(
-                operationType: ProviderCapability::CREATE_ACCOUNT,
-                message: 'Remote account verification failed.',
-                errorCode: 'VERIFICATION_FAILED'
-            );
-            $this->operationService->recordAttempt($opUuid, $verifyFail, $classification);
-
-            return HostingProvisioningResult::failure(
-                serviceId: $serviceId,
-                failedStep: HostingProvisioningStep::VERIFY,
-                errorMessage: 'Remote account verification failed after creation.',
-                errorCode: 'VERIFICATION_FAILED',
-                completedSteps: $completedSteps,
-                serverId: $serverId,
-                reservationToken: $reservationToken,
-                classification: $classification,
-                operationUuid: $opUuid
-            );
-        }
-
-        $completedSteps[] = HostingProvisioningStep::VERIFY;
-
-        // ====================================================================
-        // STEP 6: ACTIVATE
-        // ====================================================================
-        try {
-            // Commit reservation permanently
-            $this->reservationService->commit($reservationToken, $serviceId);
-
-            // Update placement status to placed
-            $this->serviceService->assignPlacement($serviceId, [
-                'server_id' => $serverId,
-                'server_pool_id' => $selectedServer->getServerPoolId(),
-                'location_id' => $selectedServer->getLocationId(),
-                'status' => ServicePlacement::STATUS_PLACED,
-                'package_identifier' => $package,
-                'dedicated_ip' => $remoteIp,
-                'hostname' => $selectedServer->getHostname(),
-                'disk_limit_mb' => $request->getRequiredDiskMb(),
-                'bandwidth_limit_mb' => $request->getRequiredBandwidthMb(),
-            ]);
-
-            // Activate service entity
-            $this->serviceService->activateService($serviceId, [
-                'domain' => $domain,
-                'username' => $username,
-                'password_encrypted' => $password,
-                'server_name' => $selectedServer->getName(),
-                'ip_address' => $remoteIp,
-            ]);
-
-            // Record completed operation in audit log
-            $this->operationService->recordAttempt($opUuid, $remoteResult);
-        } catch (Throwable $e) {
-            $classification = ProvisioningErrorClassifier::classifyThrowable($e);
-            return HostingProvisioningResult::failure(
-                serviceId: $serviceId,
-                failedStep: HostingProvisioningStep::ACTIVATE,
-                errorMessage: "Activation step failed: {$e->getMessage()}",
-                errorCode: 'ACTIVATION_FAILED',
-                completedSteps: $completedSteps,
-                serverId: $serverId,
-                reservationToken: $reservationToken,
-                classification: $classification,
-                operationUuid: $opUuid
-            );
-        }
-
-        $completedSteps[] = HostingProvisioningStep::ACTIVATE;
-
-        return HostingProvisioningResult::success(
-            serviceId: $serviceId,
-            serverId: $serverId,
-            remoteIdentifier: $username,
-            remoteIp: $remoteIp,
-            completedSteps: $completedSteps,
-            reservationToken: $reservationToken,
-            nameservers: $nameservers,
-            operationUuid: $opUuid,
-            data: [
-                'username' => $username,
-                'domain' => $domain,
-                'package' => $package,
-                'server_name' => $selectedServer->getName(),
-                'server_hostname' => $selectedServer->getHostname(),
-            ]
-        );
+        try{
+            $provider=$this->providerRegistry->get($request->getProviderSlug());
+            if(!$provider instanceof CpanelProvider){throw new RuntimeException('No authoritative account verifier is registered for this provider.');}
+            // Resolve an alias to the actual remote package before freezing the dispatch target.
+            $package=$provider->getPackageService()->resolvePackage($provider->createClient($selectedServer->toServerConnectionDto()),$package)->getName();
+        }catch(Throwable $error){return HostingProvisioningResult::failure($serviceId,HostingProvisioningStep::PLACE,'Provider/package admission failed.','PROVIDER_ADMISSION_FAILED',$completedSteps);}
+        $completedSteps[]=HostingProvisioningStep::PLACE;
+        $reservationToken=null;$op=null;
+        try{
+            [$op,$reservationToken]=$this->operationService->localTransaction(function()use($db,$request,$serviceId,$serverId,$selectedServer,$username,$domain,$package,$password,$serviceFingerprint,$service):array{
+                $db->lockRow('services',$serviceId);
+                if(serialize($service)!==serialize($this->serviceService->findServiceById($serviceId))||!hash_equals($serviceFingerprint,HostingDispatchBinding::service($db,$serviceId))){throw new RuntimeException('Service changed during placement.');}
+                foreach($this->operationService->listOperationsForService($serviceId) as $prior){if($prior->getAction()===ProviderCapability::CREATE_ACCOUNT){throw new RuntimeException('A create dispatch already exists.');}}
+                $db->lockRow('servers',$serverId);
+                $freshServer=$this->serverService->findServerById($serverId);
+                if($freshServer===null||!$freshServer->isActive()||$freshServer->getProviderSlug()!==$request->getProviderSlug()
+                    ||serialize($freshServer->toServerConnectionDto())!==serialize($selectedServer->toServerConnectionDto())
+                    ||$freshServer->getServerPoolId()!==$selectedServer->getServerPoolId()||$freshServer->getLocationId()!==$selectedServer->getLocationId()) {throw new RuntimeException('Selected server changed during placement.');}
+                $reservation=$this->reservationService->reserve($serverId,1,$request->getRequiredDiskMb(),$request->getRequiredBandwidthMb(),900,$serviceId,poolId:$selectedServer->getServerPoolId());
+                $token=$reservation->getToken();
+                // Commit the allocation before dispatch so a TTL sweeper cannot free an uncertain remote account.
+                $this->reservationService->commit($token,$serviceId);
+                $this->serviceService->assignPlacement($serviceId,['server_id'=>$serverId,'server_pool_id'=>$selectedServer->getServerPoolId(),'location_id'=>$selectedServer->getLocationId(),
+                    'status'=>ServicePlacement::STATUS_RESERVED,'package_identifier'=>$package,'disk_limit_mb'=>$request->getRequiredDiskMb(),'bandwidth_limit_mb'=>$request->getRequiredBandwidthMb()]);
+                $payload=['username'=>$username,'domain'=>$domain,'package'=>$package,'password'=>$password,'disk_limit_mb'=>$request->getRequiredDiskMb(),'bandwidth_limit_mb'=>$request->getRequiredBandwidthMb(),
+                    '_hosting_dispatch'=>['version'=>1,'service_sha256'=>HostingDispatchBinding::service($db,$serviceId),'server_sha256'=>HostingDispatchBinding::server($db,$serverId),'reservation_token'=>$token]];
+                $queued=$this->operationService->queueOperation($serviceId,$request->getProviderSlug(),ProviderCapability::CREATE_ACCOUNT,$payload,$serverId,correlationId:$request->getCorrelationId());
+                return [$this->operationService->startDispatch($queued),$token];
+            });
+        }catch(Throwable $error){return HostingProvisioningResult::failure($serviceId,HostingProvisioningStep::RESERVE,'Local dispatch preparation failed; no create request was sent.','DISPATCH_PREPARATION_FAILED',$completedSteps,serverId:$serverId);}
+        $completedSteps[]=HostingProvisioningStep::RESERVE;
+        $failure=function(string $step,string $code,?ProviderOperationResult $result=null)use($op,$serviceId,$serverId,$reservationToken,&$completedSteps):HostingProvisioningResult{
+            $result??=ProviderOperationResult::failure(ProviderCapability::CREATE_ACCOUNT,'Remote outcome requires reconciliation.',$code);
+            $this->operationService->holdDispatch($op,$result);
+            return HostingProvisioningResult::failure($serviceId,$step,'Remote outcome requires reconciliation; capacity is retained.',$code,$completedSteps,$serverId,$reservationToken,
+                ProvisioningErrorClassifier::classifyResult($result),$op->getOperationUuid(),['reconciliation_required'=>true]);
+        };
+        try{
+            $createOp=new CreateAccountOperation(serviceId:$serviceId,serviceNumber:$service->getServiceNumber(),username:$username,password:$password,domain:$domain,packageIdentifier:$package,
+                resourceQuotas:['disk_limit_mb'=>$request->getRequiredDiskMb(),'bandwidth_limit_mb'=>$request->getRequiredBandwidthMb()],server:$selectedServer->toServerConnectionDto(),
+                metadata:array_merge($request->getMetadata(),['email'=>$request->getContactEmail(),'dedicated_ip'=>$request->requiresDedicatedIp()?1:0]));
+            $remoteResult=$provider->createAccount($createOp);
+        }catch(Throwable){$remoteResult=ProviderOperationResult::failure(ProviderCapability::CREATE_ACCOUNT,'Remote response is uncertain.','PROVIDER_EXCEPTION');}
+        if(!$remoteResult->isSuccess()){return $failure(HostingProvisioningStep::REMOTE,$remoteResult->getErrorCode()??'REMOTE_CREATION_FAILED',$remoteResult);}
+        $completedSteps[]=HostingProvisioningStep::REMOTE;
+        try{
+            $summary=$provider->createClient($selectedServer->toServerConnectionDto())->getVerifiedAccountSummary($username);
+            if($summary===null||strcasecmp($summary['domain'],$domain)!==0||$summary['plan']!==$package||!in_array($summary['suspended'],[0,'0'],true)
+                ||filter_var($summary['ip'],FILTER_VALIDATE_IP)===false){throw new RuntimeException('Remote account postcondition does not match the frozen dispatch.');}
+        }catch(Throwable){return $failure(HostingProvisioningStep::VERIFY,'VERIFICATION_FAILED');}
+        $completedSteps[]=HostingProvisioningStep::VERIFY;
+        $remoteIp=$summary['ip'];$nameservers=[];
+        foreach(['nameserver','nameserver2'] as $key){$value=$remoteResult->getData()[$key]??null;if(is_string($value)&&$value!==''){$nameservers[]=$value;}}
+        try{
+            $this->operationService->commitReconciliation($op,function(ProvisioningOperation $current)use($db,$serviceId,$serverId,$selectedServer,$package,$remoteIp,$domain,$username,$remoteResult,$request):void{
+                $db->lockRow('servers',$serverId);
+                HostingDispatchBinding::assertCurrent($db,$current,$this->reservationService);
+                $service=$this->serviceService->findServiceById($serviceId);
+                if($service===null||$service->getStatus()!==ServiceStateMachine::STATUS_PENDING){throw new RuntimeException('Service is no longer pending.');}
+                $placement=$this->serviceService->getPlacementForService($serviceId);
+                if($placement===null||$placement->getServerId()!==$serverId||$placement->getStatus()!==ServicePlacement::STATUS_RESERVED||$placement->getPackageIdentifier()!==$package){throw new RuntimeException('Reserved placement changed.');}
+                $this->serviceService->assignPlacement($serviceId,['server_id'=>$serverId,'server_pool_id'=>$selectedServer->getServerPoolId(),'location_id'=>$selectedServer->getLocationId(),
+                    'status'=>ServicePlacement::STATUS_PLACED,'package_identifier'=>$package,'dedicated_ip'=>$remoteIp,'hostname'=>$selectedServer->getHostname(),
+                    'disk_limit_mb'=>$request->getRequiredDiskMb(),'bandwidth_limit_mb'=>$request->getRequiredBandwidthMb()]);
+                $this->serviceService->activateService($serviceId,['domain'=>$domain,'username'=>$username,'server_name'=>$selectedServer->getName(),'ip_address'=>$remoteIp],$service->getLockVersion());
+                $this->operationService->recordAttempt($current->getOperationUuid(),$remoteResult);
+            });
+        }catch(Throwable){return $failure(HostingProvisioningStep::ACTIVATE,'ACTIVATION_FAILED');}
+        $completedSteps[]=HostingProvisioningStep::ACTIVATE;
+        return HostingProvisioningResult::success($serviceId,$serverId,$username,$remoteIp,$completedSteps,$reservationToken,$nameservers,$op->getOperationUuid(),
+            ['username'=>$username,'domain'=>$domain,'package'=>$package,'server_name'=>$selectedServer->getName(),'server_hostname'=>$selectedServer->getHostname()]);
     }
 
     /**

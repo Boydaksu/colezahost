@@ -341,6 +341,7 @@ final class GoldenMasterScenariosE2ETest extends TestCase
                         'domain' => 'goldensite.com',
                         'plan' => 'cloud_starter',
                         'ip' => '185.120.40.22',
+                        'suspended' => 0,
                     ],
                 ],
             ],

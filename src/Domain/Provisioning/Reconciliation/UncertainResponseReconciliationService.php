@@ -57,6 +57,15 @@ final class UncertainResponseReconciliationService
             return $unknown('REMOTE_ACCOUNT_IDENTITY_OR_ACTIVE_STATE_MISMATCH');
         }
         return $this->operationService->commitReconciliation($operation, function (ProvisioningOperation $current) use ($payload, $summary, $server, $username): ReconciliationResult {
+            if(array_key_exists('_hosting_dispatch',$payload)){
+                try{
+                    $db=$this->operationService->getConnection();$db->lockRow('servers',$server->getId());
+                    \Coleza\Domain\Provisioning\Workflows\HostingDispatchBinding::assertCurrent($db,$current,new \Coleza\Domain\Servers\Capacity\Services\CapacityReservationService($db,$this->serverService));
+                }catch(\Throwable){
+                    $result=ReconciliationResult::unknown($current->getOperationUuid(),$current->getServiceId(),'DURABLE_DISPATCH_BINDING_CHANGED');
+                    $this->operationService->recordReconciliationObservation($current,$result);return $result;
+                }
+            }
             $service = $this->serviceService->findServiceById($current->getServiceId());
             if ($service === null || $service->getStatus() !== ServiceStateMachine::STATUS_PENDING
                 || ($service->getDomain() !== null && $service->getDomain() !== '' && strcasecmp($service->getDomain(), $payload['domain']) !== 0)

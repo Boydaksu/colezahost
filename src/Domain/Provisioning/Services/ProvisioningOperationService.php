@@ -36,6 +36,31 @@ final class ProvisioningOperationService
 
     public function getConnection(): Connection { return $this->db; }
 
+    /** Short local preparation; never put a provider request inside this transaction. */
+    public function localTransaction(callable $operation): mixed
+    {
+        return $this->db->transaction(function()use($operation):mixed{
+            \Coleza\Domain\Vault\KeyBinding::guard($this->db,$this->encryptor);
+            return $operation();
+        });
+    }
+    public function startDispatch(ProvisioningOperation $expected): ProvisioningOperation
+    {
+        return $this->commitReconciliation($expected,function(ProvisioningOperation $current):ProvisioningOperation{
+            if($current->getStatus()!==ProvisioningOperation::STATUS_QUEUED){throw new \LogicException('Only a queued operation can start dispatch.');}
+            $this->db->update($this->opsTable,['status'=>ProvisioningOperation::STATUS_PROCESSING,'next_attempt_at'=>null], 'id=:id',['id'=>$current->getId()]);
+            $this->db->insert($this->auditTable,['operation_id'=>$current->getId(),'service_id'=>$current->getServiceId(),'action'=>'dispatch_started','attempt_number'=>$current->getAttemptCount(),'success'=>0,'client_safe_message'=>'Remote dispatch may require reconciliation.','logged_at'=>date('Y-m-d H:i:s')]);
+            return $this->findOperationById($current->getId());
+        });
+    }
+    public function holdDispatch(ProvisioningOperation $expected,ProviderOperationResult $failure): void
+    {
+        $this->commitReconciliation($expected,function(ProvisioningOperation $current)use($failure):void{
+            $this->recordAttempt($current->getOperationUuid(),$failure);
+            $this->db->update($this->opsTable,['status'=>ProvisioningOperation::STATUS_RECONCILIATION_REQUIRED,'next_attempt_at'=>null], 'id=:id',['id'=>$current->getId()]);
+        });
+    }
+
     /** Only local decisions belong in this transaction; the remote read has already finished. */
     public function commitReconciliation(ProvisioningOperation $expected, callable $localDecision): mixed
     {
@@ -318,7 +343,7 @@ final class ProvisioningOperationService
 
     public function findActiveOperationForService(int $serviceId, ?string $action = null, ?string $requiredStatus = null): ?ProvisioningOperation
     {
-        $statuses = [ProvisioningOperation::STATUS_QUEUED, ProvisioningOperation::STATUS_RETRYING, ProvisioningOperation::STATUS_RECONCILIATION_REQUIRED];
+        $statuses = [ProvisioningOperation::STATUS_PROCESSING, ProvisioningOperation::STATUS_QUEUED, ProvisioningOperation::STATUS_RETRYING, ProvisioningOperation::STATUS_RECONCILIATION_REQUIRED];
         if ($requiredStatus !== null) {
             if (!in_array($requiredStatus, $statuses, true)) { throw new \InvalidArgumentException('Unsupported active provisioning state'); }
             $statuses = [$requiredStatus];

@@ -1,0 +1,35 @@
+{
+  "phase": "D06",
+  "step": "D06.2",
+  "checkpoint": "durable_dispatch_and_atomic_activation",
+  "status": "IMPLEMENTED_LOCAL_VERIFIED_CHECKPOINT",
+  "step_status": "IN_PROGRESS",
+  "reference_commit": "079fdc9eb2a701525051debf8dbb3f88ccbffbc2",
+  "before": {
+    "tests": 12,
+    "failures": 12,
+    "errors": 0
+  },
+  "main": {
+    "tests": 2237,
+    "assertions": 13649
+  },
+  "native": {
+    "tests": 64,
+    "assertions": 504
+  },
+  "native_classes": 4,
+  "new_dispatch_cases": 20,
+  "completed_gates": 2,
+  "total_gates": 4,
+  "remaining_gates": [
+    "application_admission_and_lifecycle",
+    "process_protocol_acceptance"
+  ],
+  "full_mariadb_current_source": false,
+  "external_provider_acceptance": "PENDING",
+  "production_ready": false,
+  "independent_acceptance": "PENDING",
+  "real_parallel_process_acceptance": false,
+  "source_inputs": 45
+}

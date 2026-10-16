@@ -1,0 +1,78 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+FFFFFFFFFFFF                                                      12 / 12 (100%)
+
+Time: 00:00.071, Memory: 22.00 MB
+
+There were 12 failures:
+
+1) Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testUnknownRemoteFailureDoesNotFreeCapacityOrAuthorizeSecondCreate
+Failed asserting that null is not null.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:47
+
+2) Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testIncompleteOrMismatchedRemoteAccountNeverActivates@domain with data (['other.test'])
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:40
+
+3) Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testIncompleteOrMismatchedRemoteAccountNeverActivates@plan with data (['foreign'])
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:40
+
+4) Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testIncompleteOrMismatchedRemoteAccountNeverActivates@suspended with data ([1])
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:40
+
+5) Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testIncompleteOrMismatchedRemoteAccountNeverActivates@ip with data (['not-ip'])
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:40
+
+6) Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testIncompleteOrMismatchedRemoteAccountNeverActivates@boolean with data ([false])
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:40
+
+7) Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testProcessingOperationBlocksAnotherDispatch
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:53
+
+8) Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testCallerTransactionIsRejectedBeforeAnyRemoteRequest
+Caller transaction crossed remote effects.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:63
+
+9) Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testPasswordIsStoredOnlyInEncryptedOperationPayload
+Failed asserting that 'fixture-account-password' is null.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:67
+
+10) Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testLateAuditFailureRollsBackActivationAndPlacementTogether
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'pending'
++'active'
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:74
+
+11) Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testServiceChangedDuringRemoteProbeCannotBeActivated
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:79
+
+12) Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testCommittedDispatchCapacityDoesNotExpireDuringRemoteCall
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:84
+
+FAILURES!
+Tests: 12, Assertions: 16, Failures: 12.

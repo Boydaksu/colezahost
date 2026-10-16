@@ -22,6 +22,8 @@ final class CapacityReservationService
     ) {
     }
 
+    public function getConnection(): Connection { return $this->db; }
+
     public function ensureTables(): void
     {
         if ($this->db->getDriverName() === 'mysql' && $this->db->inTransaction()) { throw new RuntimeException('Initialize reservation schema before starting a transaction.'); }
