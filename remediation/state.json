@@ -298,6 +298,8 @@
       "windows-protocols",
       "unsupported-linux-runtime"
     ],
+    "sigv4_suppressed_header_compatibility": true,
+    "intermediate_run": 38872583973,
     "native_database_code_changed": false,
     "native_database_suite_rerun": false,
     "d05_4_completed_gates": 2,

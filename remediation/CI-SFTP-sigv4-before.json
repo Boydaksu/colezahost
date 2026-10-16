@@ -1,0 +1,20 @@
+{
+  "commit": "602f34e12867f27c7f210e79e88a34286a83391b",
+  "run_id": 38872583973,
+  "url": "https://github.com/Boydaksu/colezahost/actions/runs/38872583973",
+  "jobs": {
+    "windows-protocols": "success",
+    "unsupported-linux-runtime": "success",
+    "linux-protocols": "failure"
+  },
+  "linux_php": "8.4.26",
+  "linux_curl": "7.88.1",
+  "linux_ssh": "libssh2/1.10.0",
+  "sha256_host_pin": true,
+  "tests": 52,
+  "errors": 12,
+  "failures": 2,
+  "failed_protocol": "s3",
+  "error": "HTTP 403 from independent SigV4 verifier",
+  "cause": "curl 7.88 includes the suppressed Expect: control header in SignedHeaders although that header is omitted on the wire"
+}

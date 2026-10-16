@@ -5,6 +5,6 @@ Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
 
 ....................................................              52 / 52 (100%)
 
-Time: 00:15.061, Memory: 20.00 MB
+Time: 00:13.609, Memory: 20.00 MB
 
 OK (52 tests, 144 assertions)

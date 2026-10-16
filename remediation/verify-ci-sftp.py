@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 ROOT=Path(__file__).resolve().parent.parent
 R=ROOT/'remediation'
 baseline=json.loads((R/'CI-SFTP-baseline.json').read_text(encoding='utf-8'))
-assert len(baseline['source_sha256'])==3 and len(baseline['migration_sha256'])==26
+assert len(baseline['source_sha256'])==4 and len(baseline['migration_sha256'])==26
 for name,digest in (baseline['source_sha256']|baseline['migration_sha256']).items():
     assert hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest,name
 for kind,count in [('main',2065),('protocols',52)]:

@@ -15,6 +15,6 @@
     "name": "diff_whitespace",
     "exit_code": 0,
     "stdout": "",
-    "stderr": ""
+    "stderr": "warning: in the working copy of 'remediation/CI-SFTP-main.exit', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'remediation/CI-SFTP-main.txt', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'remediation/CI-SFTP-protocols.exit', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'remediation/CI-SFTP-protocols.txt', CRLF will be replaced by LF the next time Git touches it\n"
   }
 ]

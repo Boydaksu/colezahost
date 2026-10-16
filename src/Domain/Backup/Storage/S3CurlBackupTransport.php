@@ -109,7 +109,9 @@ final class S3CurlBackupTransport implements RemoteBackupTransport
         $url = $this->base;
         if ($name !== null) { $url .= '/' . implode('/', array_map('rawurlencode', explode('/', $this->prefix . $name))); }
         if ($query !== '') { $url .= '?' . $query; }
-        $headers = ['Expect:', 'x-amz-content-sha256: ' . ($sha256 ?? hash('sha256', is_string($input) ? $input : ''))];
+        // Older SigV4 signers include a suppressed "Expect:" header in SignedHeaders,
+        // although libcurl never sends it. Let libcurl negotiate 100-continue itself.
+        $headers = ['x-amz-content-sha256: ' . ($sha256 ?? hash('sha256', is_string($input) ? $input : ''))];
         if ($method === 'PUT') { $headers[] = 'If-None-Match: *'; $headers[] = 'Content-Type: application/octet-stream'; }
         if (isset($this->config['session_token'])) { $headers[] = 'x-amz-security-token: ' . BackupCurl::text($this->config, 'session_token'); }
         $options = [CURLOPT_URL => $url, CURLOPT_CUSTOMREQUEST => $method, CURLOPT_AWS_SIGV4 => 'aws:amz:' . $this->region . ':s3',

@@ -3,7 +3,8 @@
   "source_sha256": {
     ".github/workflows/backup-transports.yml": "7df1d77243f57d0876eb514ab36f9ba554f9367b33f67208eb093b6b4d4454f2",
     "src/Domain/Backup/Storage/SftpCurlBackupTransport.php": "931f9024058c76d523c283098895e257ffa69a0058b16895ce5c21c5ac9ad500",
-    "tests/Support/sftp-runtime-probe.php": "46cc2e4a5fa08f46d6ba80c376837903a0c61d0b9451f19de6b093b96ea44482"
+    "tests/Support/sftp-runtime-probe.php": "46cc2e4a5fa08f46d6ba80c376837903a0c61d0b9451f19de6b093b96ea44482",
+    "src/Domain/Backup/Storage/S3CurlBackupTransport.php": "3b28c2b6c03f68215a1451d4f2eec4d7105fec00f98f05848a9fe742281419cf"
   },
   "migration_sha256": {
     "database/migrations/2026_10_09_000001_normalize_identity_rbac.php": "8f5f8f038cc85774caab105132adaddaa77a7fa6f9d9fc7d4290159feb55219c",
@@ -34,5 +35,8 @@
     "database/migrations/2026_10_13_000026_identity_lifecycle.php": "7f851fe55410fb1c2fb86d7ae3ca015bfd371f4cfdb82ebc1b87925e6a693867"
   },
   "failed_github_run": 38870947131,
-  "failed_github_job": 116874624622
+  "failed_github_job": 116874624622,
+  "sigv4_before_reference_commit": "602f34e12867f27c7f210e79e88a34286a83391b",
+  "sigv4_before_source_sha256": "ebf1100f73f37a8f2fb4f6b6051f30d5d30c7e7a53e470ba9db5d15ff3932b6f",
+  "sigv4_failed_github_run": 38872583973
 }
