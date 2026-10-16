@@ -30,13 +30,28 @@ final class SftpCurlBackupTransport implements RemoteBackupTransport
         $this->config['host_key_sha256'] = base64_encode($decoded);
         if (!isset($config['password'])) { BackupCurl::text($config, 'private_key'); }
         else { BackupCurl::text($config, 'password'); }
+        self::assertRuntimeSupport();
+    }
+
+    /** A PHP constant and the SFTP protocol alone do not prove that this SSH backend implements pinning. */
+    public static function assertRuntimeSupport(): void
+    {
+        if (!extension_loaded('curl') || !in_array('sftp', curl_version()['protocols'], true)
+            || !defined('CURLOPT_SSH_HOST_PUBLIC_KEY_SHA256')) {
+            throw new RuntimeException('SFTP requires cURL with SHA256 SSH host-key pinning support.');
+        }
+        $probe = curl_init();
+        if ($probe === false || !curl_setopt($probe, CURLOPT_SSH_HOST_PUBLIC_KEY_SHA256, base64_encode(str_repeat("\0", 32)))) {
+            throw new RuntimeException('SFTP requires working SHA256 SSH host-key pinning in the cURL SSH backend (for example libssh2). No insecure fallback is allowed.');
+        }
     }
 
     public function read(string $name, string $destination): bool
     {
+        $handle = $this->handle($name);
         $output = fopen($destination, 'xb');
         if ($output === false) { throw new RuntimeException('Cannot create private SFTP download.'); }
-        $handle = $this->handle($name); BackupCurl::sink($handle, $output, BackupCurl::limit($this->config, $name));
+        BackupCurl::sink($handle, $output, BackupCurl::limit($this->config, $name));
         try {
             if (curl_exec($handle) === false) {
                 if (curl_errno($handle) === self::REMOTE_FILE_NOT_FOUND) { fclose($output); $output = null; unlink($destination); return false; }

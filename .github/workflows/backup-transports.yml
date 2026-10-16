@@ -1,11 +1,41 @@
 name: Real backup transport regression
-on:
+'on':
   push:
     branches: [main]
   pull_request:
+permissions:
+  contents: read
 jobs:
-  protocols:
-    runs-on: ubuntu-latest
+  linux-protocols:
+    runs-on: ubuntu-24.04
+    container: php:8.4-cli-bookworm
+    timeout-minutes: 15
+    steps:
+      - name: Install isolated Linux test dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends git unzip libzip-dev python3-venv
+          docker-php-ext-install zip
+      - uses: actions/checkout@v4
+      - name: Install verified Composer and project dependencies
+        run: |
+          curl --fail --silent --show-error --location https://getcomposer.org/download/latest-stable/composer.phar --output /tmp/composer.phar
+          curl --fail --silent --show-error --location https://getcomposer.org/download/latest-stable/composer.phar.sha256 --output /tmp/composer.sha256
+          printf '%s  /tmp/composer.phar\n' "$(cat /tmp/composer.sha256)" | sha256sum --check
+          php /tmp/composer.phar install --no-interaction --prefer-dist
+      - name: Install protocol fixtures
+        run: |
+          python3 -m venv /tmp/backup-python
+          /tmp/backup-python/bin/python -m pip install -r tests/Support/backup-protocol-requirements.txt
+      - name: Verify native SHA256 SSH pin support
+        run: php tests/Support/sftp-runtime-probe.php supported
+      - name: Real HTTPS/SigV4 and pinned SFTP lifecycle, failures and retention
+        env:
+          COLEZA_BACKUP_TEST_PYTHON: /tmp/backup-python/bin/python
+        run: vendor/bin/phpunit tests/Integration/Backup/RemoteBackupTransportTest.php tests/Unit/Backup/RemoteBackupConfigurationTest.php --colors=never
+  windows-protocols:
+    runs-on: windows-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
@@ -18,5 +48,20 @@ jobs:
           python-version: '3.11'
       - run: composer install --no-interaction --prefer-dist
       - run: python -m pip install -r tests/Support/backup-protocol-requirements.txt
-      - name: HTTPS SigV4 and pinned SSH transfer, failures and retention
-        run: vendor/bin/phpunit tests/Integration/Backup/RemoteBackupTransportTest.php --colors=never
+      - name: Verify native SHA256 SSH pin support
+        run: php tests/Support/sftp-runtime-probe.php supported
+      - name: Real HTTPS/SigV4 and pinned SFTP lifecycle, failures and retention
+        run: php vendor/phpunit/phpunit/phpunit tests/Integration/Backup/RemoteBackupTransportTest.php tests/Unit/Backup/RemoteBackupConfigurationTest.php --colors=never
+  unsupported-linux-runtime:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: curl, dom, mbstring, simplexml, xml, xmlwriter
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist
+      - name: Unsupported Ubuntu SSH backend must fail before transfer
+        run: php tests/Support/sftp-runtime-probe.php unsupported

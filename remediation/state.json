@@ -280,5 +280,27 @@
     "real_migrations": "PENDING",
     "staged_publication_and_rollback": "PENDING"
   },
-  "d05_signed_update_evidence": "remediation/D05-4-SIGNED-SONUC.md"
+  "d05_signed_update_evidence": "remediation/D05-4-SIGNED-SONUC.md",
+  "ci_sftp_fix": {
+    "status": "IMPLEMENTED_LOCAL_VERIFIED",
+    "evidence": "remediation/CI-SFTP-SONUC.md",
+    "original_failed_run": 38870947131,
+    "main": {
+      "tests": 2065,
+      "assertions": 12977
+    },
+    "protocols": {
+      "tests": 52,
+      "assertions": 144
+    },
+    "github_jobs": [
+      "linux-protocols",
+      "windows-protocols",
+      "unsupported-linux-runtime"
+    ],
+    "native_database_code_changed": false,
+    "native_database_suite_rerun": false,
+    "d05_4_completed_gates": 2,
+    "next_planned_work": "real_migrations"
+  }
 }

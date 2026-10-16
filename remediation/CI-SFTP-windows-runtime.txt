@@ -1,0 +1,1 @@
+{"php":"8.4.24","curl":"8.21.0","ssh":"libssh2/1.11.1","sha256_host_pin":true,"admitted":true,"network_requests":0,"diagnostic":null}

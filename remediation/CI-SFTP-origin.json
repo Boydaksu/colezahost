@@ -1,0 +1,14 @@
+{
+  "failed_commit": "c3c5c5af3027beb2af6d35c23d66497c9b996748",
+  "run_id": 38870947131,
+  "job_id": 116874624622,
+  "run_url": "https://github.com/Boydaksu/colezahost/actions/runs/38870947131",
+  "runner": "ubuntu-24.04",
+  "php": "8.4.26",
+  "phpunit": "13.4.3",
+  "tests": 35,
+  "errors": 12,
+  "failures": 2,
+  "diagnostic": "Cannot configure secure SFTP request.",
+  "local_linux_reproduction": "libcurl/8.5.0 libssh/0.10.6: SHA256 host pin setopt returns CURLE_UNKNOWN_OPTION (48), no network request"
+}
