@@ -1,0 +1,17 @@
+[
+  {
+    "name": "plan",
+    "exit_code": 0,
+    "output": "PLAN VALIDATION PASS: 39 phases, 258 subphases\n"
+  },
+  {
+    "name": "protected_manifest",
+    "exit_code": 0,
+    "output": "==================================================\nColeza Host — Manifest Integrity Verification\n==================================================\nTotal verified files: 97\nSTATUS: ALL LOCKED FILES VERIFIED AND UNCOMPROMISED (PASS)\n"
+  },
+  {
+    "name": "diff_whitespace",
+    "exit_code": 0,
+    "output": ""
+  }
+]

@@ -12,6 +12,7 @@ if($config['database']!==null){
 }
 $db=new Connection($pdo);$root=$config['root'];
 $checkpoint=function(string $stage)use($root,$argv):void{
+    if($argv[2]==='kill:'.$stage){exit(74);}
     if($stage==='package_frozen'&&$argv[2]==='hold'){
         file_put_contents($root.'/ready','ready');$deadline=microtime(true)+20;
         while(!file_exists($root.'/release')&&microtime(true)<$deadline){usleep(10000);}
@@ -20,5 +21,8 @@ $checkpoint=function(string $stage)use($root,$argv):void{
 };
 try{
     $updater=new StagedUpdateService(new PackageSignatureVerifier($config['public']),new ModuleCompatibilityChecker($db),'1.0.0',$db,new PreUpdateBackupService($root.'/backup',$db),$checkpoint);
-    $result=$updater->applyValidatedUpdate($root.'/package',$root.'/app');echo $result['migrations_run'];
+    if($argv[2]==='recover'||str_starts_with($argv[2],'rollback-kill:')){
+        $restore=new \Coleza\Domain\Backup\RestoreWizardService($root.'/restore',checkpoint:function(string $stage)use($argv):void{if($argv[2]==='rollback-kill:'.$stage){exit(75);}});
+        $result=$updater->recoverFailedUpdate($root.'/app',$restore);echo $result['success']?'recovered':'failed';
+    }else{$result=$updater->applyValidatedUpdate($root.'/package',$root.'/app');echo $result['migrations_run'];}
 }catch(Throwable $error){echo $error->getMessage();exit(1);}

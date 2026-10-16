@@ -2,7 +2,7 @@
 declare(strict_types=1);
 namespace Coleza\Domain\Updater;
 
-use Coleza\Domain\Backup\RestoreJournal;
+use Coleza\Domain\Backup\{RestoreJournal,RecoveryLease};
 use Coleza\Domain\OperationalMode\{OperationalMode,OperationalModeManager};
 use Coleza\Foundation\Database\{Connection,Migrator,PdoSchema};
 use RuntimeException;
@@ -14,7 +14,7 @@ use Throwable;
 final class UpdateMigrationSession
 {
     private array $locks=[];
-    private ?string $databaseLock=null;
+    private RecoveryLease $lease;
     private string $journal;
     private string $registry;
     private string $identity;
@@ -22,21 +22,15 @@ final class UpdateMigrationSession
     private ?array $state=null;
     private static ?\WeakMap $memoryDatabases=null;
 
-    public function __construct(private Connection $db,private UpdatePackageSnapshot $package,string $target,string $store)
+    public function __construct(private Connection $db,private ?UpdatePackageSnapshot $package,string $target,string $store,?string $sourceVersion=null)
     {
         $this->journal=RestoreJournal::path($target);
         try {
-            if($db->inTransaction()){throw new RuntimeException('Update cannot run inside a caller transaction.');}
-            $this->fileLock($this->journal.'.lock');
+            $this->lease=new RecoveryLease($db,$target);
             $prior=RestoreJournal::read($this->journal);
-            if($prior!==null&&$prior['state']!=='complete'){throw new RuntimeException('Unfinished update or restore requires explicit recovery.');}
+            if($package!==null&&$prior!==null&&$prior['state']!=='complete'){throw new RuntimeException('Unfinished update or restore requires explicit recovery.');}
             if($db->getDriverName()==='mysql'){
-                if((int)$db->getPdo()->query('SELECT @@autocommit')->fetchColumn()!==1){throw new RuntimeException('Update requires autocommit, without a caller transaction.');}
                 $database=(string)$db->getPdo()->query('SELECT DATABASE()')->fetchColumn();
-                $lock='colezahost:migrations:'.substr(hash('sha256',$database),0,32);
-                $row=$db->selectOne('SELECT GET_LOCK(?, 0) AS acquired',[$lock]);
-                if((int)($row['acquired']??0)!==1){throw new RuntimeException('Database migration lock is busy.');}
-                $this->databaseLock=$lock;
                 $server=$db->selectOne('SELECT @@hostname AS host, @@port AS port');
                 $this->identity=hash('sha256',json_encode([$server,$database],JSON_THROW_ON_ERROR));
                 $this->registry=$store.'/.update-migrations/'.$this->identity;
@@ -59,12 +53,21 @@ final class UpdateMigrationSession
             UpdatePackageSnapshot::assertNoLinks($this->registry);
             if(!is_dir($this->registry)&&!mkdir($this->registry,0700,true)){throw new RuntimeException('Cannot create migration receipt directory.');}
             $this->fileLock($this->registry.'/database.lock');
+            if($package===null){
+                if($prior===null||($prior['purpose']??null)!=='update'||($prior['database']??null)!==$this->identity||($prior['target']??null)!==$target||!is_string($prior['backup_id']??null)||!is_string($prior['source_version']??null)){
+                    throw new RuntimeException('Bound update journal is required for recovery.');
+                }
+                $this->state=$prior;return;
+            }
+            if($sourceVersion!==null&&isset($prior['installed_version'])&&$prior['installed_version']!==$sourceVersion){throw new RuntimeException('Installed version differs from updater source version.');}
             // A failed attempt on another application target sharing this DB must also block updates.
             foreach(glob($this->registry.'/*.json')?:[] as $receipt){
                 $record=RestoreJournal::read($receipt);
                 if(($record['state']??null)!=='complete'){throw new RuntimeException('Incomplete migration receipt requires explicit recovery.');}
             }
             if(PdoSchema::useInstalledSchema($db,['system_settings'=>['setting_key','setting_value']])){
+                $installed=$db->selectOne('SELECT setting_value FROM system_settings WHERE setting_key=?',['system.core_version']);
+                if($sourceVersion!==null&&$installed!==null&&$installed['setting_value']!==$sourceVersion){throw new RuntimeException('Installed database version differs from updater source version.');}
                 $guard=$db->selectOne('SELECT setting_value FROM system_settings WHERE setting_key=?',['system.update_migration_guard']);
                 if($guard!==null){
                     try{$guardState=json_decode($guard['setting_value'],true,flags:JSON_THROW_ON_ERROR);}catch(Throwable $error){throw new RuntimeException('Invalid update guard requires recovery.',0,$error);}
@@ -95,14 +98,28 @@ final class UpdateMigrationSession
         }catch(Throwable $error){$this->close();throw $error;}
     }
 
-    /** Persist intent before loading PHP or executing SQL, including top-level migration code. */
+    public function lease(): RecoveryLease {return $this->lease;}
+    public function context(): ?array {return $this->state;}
+    public function begin(string $backupId,string $sourceVersion,string $target,string $prepared,string $previous,string $backupHash,string $manifestHash): void
+    {
+        (new OperationalModeManager($this->db))->transitionTo(OperationalMode::RECOVERY,'Signed update awaits verified activation');
+        $this->state=['state'=>'preparing','purpose'=>'update','database'=>$this->identity,'target'=>$target,
+            'manifest_sha256'=>hash('sha256',$this->package->manifestBytes),'backup_id'=>$backupId,'backup_sha256'=>$backupHash,'backup_manifest_sha256'=>$manifestHash,
+            'source_version'=>$sourceVersion,'target_version'=>$this->package->manifest->getVersion(),'installed_version'=>$sourceVersion,
+            'prepared_directory'=>$prepared,'previous_directory'=>$previous,'migrations_run'=>0];
+        $this->writeDatabaseGuard('importing');RestoreJournal::write($this->journal,$this->state);
+    }
+    public function step(string $state,array $extra=[]): void
+    {
+        if($this->state===null){throw new RuntimeException('Update journal has not begun.');}
+        $this->state=array_replace($this->state,$extra,['state'=>$state]);RestoreJournal::write($this->journal,$this->state);
+    }
+    /** Intent is durable before require, including top-level PHP. */
     public function run(string $backupId): int
     {
-        if($this->plan===[]){return 0;}
-        (new OperationalModeManager($this->db))->transitionTo(OperationalMode::RECOVERY,'Signed update migration in progress');
-        $this->state=['state'=>'importing','purpose'=>'update','database'=>$this->identity,'manifest_sha256'=>hash('sha256',$this->package->manifestBytes),'backup_id'=>$backupId,'migrations_run'=>0];
-        $this->writeDatabaseGuard('importing');
-        RestoreJournal::write($this->journal,$this->state);
+        if($this->state===null){throw new RuntimeException('Verified update context must begin before migrations.');}
+        $this->lease->assertOwns($this->db,$this->state['target']);
+        $this->step('importing');
         $count=0;
         foreach($this->plan as $entry){
             if($entry['already']){continue;}
@@ -111,6 +128,7 @@ final class UpdateMigrationSession
             // Recheck frozen bytes immediately before require; no path from the live source is loaded.
             if(!hash_equals($entry['hash'],(string)hash_file('sha256',$entry['file']))){throw new RuntimeException('Frozen migration bytes changed.');}
             $applied=(new Migrator($this->db))->migrateOrderedFiles([$entry['file']]);
+            $this->lease->assertOwns($this->db,$this->state['target']);
             if($this->db->inTransaction()||($this->db->getDriverName()==='mysql'&&(int)$this->db->getPdo()->query('SELECT @@autocommit')->fetchColumn()!==1)){
                 throw new RuntimeException('Migration left an open transaction; explicit recovery required.');
             }
@@ -123,11 +141,29 @@ final class UpdateMigrationSession
     }
     public function complete(): void
     {
-        if($this->state!==null){$this->writeDatabaseGuard('complete');$this->state['state']='complete';RestoreJournal::write($this->journal,$this->state);}
+        $this->lease->assertOwns($this->db,$this->state['target']);
+        $this->persistVersion($this->state['target_version']);
+        $this->writeDatabaseGuard('complete');$this->step('complete',['installed_version'=>$this->state['target_version'],'outcome'=>'applied']);
+    }
+    public function finishRollback(): void
+    {
+        // Only this attempt's receipts are removed, after DB/files/key/privacy restore succeeded.
+        foreach(glob($this->registry.'/*.json')?:[] as $file){
+            $record=RestoreJournal::read($file);
+            if(($record['backup_id']??null)===$this->state['backup_id']&&!unlink($file)){throw new RuntimeException('Cannot reconcile rolled-back migration receipt.');}
+        }
+        $this->persistVersion($this->state['source_version']);$this->writeDatabaseGuard('complete');
+        $this->step('complete',['installed_version'=>$this->state['source_version'],'outcome'=>'rolled_back']);
+    }
+    private function persistVersion(string $version): void
+    {
+        UpdatePackageManifest::assertVersion($version);
+        $suffix=$this->db->getDriverName()==='mysql'?' ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)':' ON CONFLICT(setting_key) DO UPDATE SET setting_value=excluded.setting_value';
+        $this->db->statement('INSERT INTO system_settings (setting_key,setting_value) VALUES (?,?)'.$suffix,['system.core_version',$version]);
     }
     public function fail(): void
     {
-        if($this->state!==null){$this->state['state']='failed';RestoreJournal::write($this->journal,$this->state);}
+        if($this->state!==null){$this->step('failed');}
     }
     private function writeDatabaseGuard(string $state): void
     {
@@ -147,7 +183,7 @@ final class UpdateMigrationSession
     }
     public function close(): void
     {
-        try{if($this->databaseLock!==null){$lock=$this->databaseLock;$this->databaseLock=null;$this->db->selectOne('SELECT RELEASE_LOCK(?) AS released',[$lock]);}}
-        finally{foreach(array_reverse($this->locks) as $handle){flock($handle,LOCK_UN);fclose($handle);}$this->locks=[];}
+        try{foreach(array_reverse($this->locks) as $handle){flock($handle,LOCK_UN);fclose($handle);}$this->locks=[];}
+        finally{if(isset($this->lease)){$this->lease->close();}}
     }
 }

@@ -81,7 +81,7 @@ final class LogicalDatabaseDump
         $rows=$db->select('SELECT TABLE_NAME,ENGINE,TABLE_TYPE FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() ORDER BY TABLE_NAME');$names=[];
         foreach($rows as$row){if($row['TABLE_TYPE']!=='BASE TABLE'||strcasecmp((string)$row['ENGINE'],'InnoDB')!==0){throw new RuntimeException('Consistent backup requires InnoDB base tables; unsupported database object found.');}$names[]=$row['TABLE_NAME'];}return $names;
     }
-    private function assertSupportedObjects(Connection $db): void
+    public function assertSupportedObjects(Connection $db): void
     {
         if($db->getDriverName()==='sqlite'){$objects=$db->select("SELECT name FROM sqlite_master WHERE type IN ('view','trigger')");}
         else{$objects=array_merge($db->select('SELECT TRIGGER_NAME FROM information_schema.TRIGGERS WHERE TRIGGER_SCHEMA=DATABASE()'),$db->select('SELECT ROUTINE_NAME FROM information_schema.ROUTINES WHERE ROUTINE_SCHEMA=DATABASE()'),$db->select('SELECT EVENT_NAME FROM information_schema.EVENTS WHERE EVENT_SCHEMA=DATABASE()'));}

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Updater\UpdatePublicationTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\UpdatePublicationTest.php" tests="12" assertions="20" errors="3" failures="8" skipped="0" time="2.357322">
+    <testcase name="testWholeTreeIsPreparedBeforeEitherActiveFileChanges" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php" line="52" class="Coleza\Tests\Unit\Updater\UpdatePublicationTest" classname="Coleza.Tests.Unit.Updater.UpdatePublicationTest" assertions="1" time="0.165507">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\UpdatePublicationTest::testWholeTreeIsPreparedBeforeEitherActiveFileChanges&#13;
+Failed asserting that false is true.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:57</failure>
+    </testcase>
+    <testcase name="testFreshUpdaterCannotReuseStaleConfiguredVersion" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php" line="61" class="Coleza\Tests\Unit\Updater\UpdatePublicationTest" classname="Coleza.Tests.Unit.Updater.UpdatePublicationTest" assertions="3" time="0.279459"/>
+    <testcase name="testMigrationAddedTableAndMutatedRowsAreRestoredFromBackup" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php" line="81" class="Coleza\Tests\Unit\Updater\UpdatePublicationTest" classname="Coleza.Tests.Unit.Updater.UpdatePublicationTest" assertions="2" time="0.230329">
+      <error type="Error">Coleza\Tests\Unit\Updater\UpdatePublicationTest::testMigrationAddedTableAndMutatedRowsAreRestoredFromBackup&#13;
+Error: Call to undefined method Coleza\Domain\Updater\StagedUpdateService::recoverFailedUpdate()
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:84</error>
+    </testcase>
+    <testcase name="testExtraBackupSourcesDoNotBecomeApplicationFilesOnRollback" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php" line="92" class="Coleza\Tests\Unit\Updater\UpdatePublicationTest" classname="Coleza.Tests.Unit.Updater.UpdatePublicationTest" assertions="0" time="0.143621">
+      <error type="Error">Coleza\Tests\Unit\Updater\UpdatePublicationTest::testExtraBackupSourcesDoNotBecomeApplicationFilesOnRollback&#13;
+Error: Call to undefined method Coleza\Domain\Updater\StagedUpdateService::recoverFailedUpdate()
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:96</error>
+    </testcase>
+    <testcase name="testRepeatedCompletedRollbackDoesNotEraseNewChanges" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php" line="111" class="Coleza\Tests\Unit\Updater\UpdatePublicationTest" classname="Coleza.Tests.Unit.Updater.UpdatePublicationTest" assertions="0" time="0.139490">
+      <error type="Error">Coleza\Tests\Unit\Updater\UpdatePublicationTest::testRepeatedCompletedRollbackDoesNotEraseNewChanges&#13;
+Error: Call to undefined method Coleza\Domain\Updater\StagedUpdateService::recoverFailedUpdate()
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:113</error>
+    </testcase>
+    <testcase name="testRollbackCannotStealAnActiveUpdateLease" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php" line="116" class="Coleza\Tests\Unit\Updater\UpdatePublicationTest" classname="Coleza.Tests.Unit.Updater.UpdatePublicationTest" assertions="1" time="0.154127">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\UpdatePublicationTest::testRollbackCannotStealAnActiveUpdateLease&#13;
+Failed asserting that false is true.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:118</failure>
+    </testcase>
+    <testcase name="testFailureBeforeSwapRestoresDatabaseAndExactOldFiles" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php" line="67" class="Coleza\Tests\Unit\Updater\UpdatePublicationTest" classname="Coleza.Tests.Unit.Updater.UpdatePublicationTest" assertions="2" time="0.234471">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\UpdatePublicationTest::testFailureBeforeSwapRestoresDatabaseAndExactOldFiles&#13;
+Failed asserting that 'Failure checkpoint not reached.' [ASCII](length: 31) contains "injected migrations_applied" [ASCII](length: 27).
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:40
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:69</failure>
+    </testcase>
+    <testcase name="testFailureBetweenRenamesCanRecoverMissingActiveDirectory" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php" line="71" class="Coleza\Tests\Unit\Updater\UpdatePublicationTest" classname="Coleza.Tests.Unit.Updater.UpdatePublicationTest" assertions="2" time="0.225066">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\UpdatePublicationTest::testFailureBetweenRenamesCanRecoverMissingActiveDirectory&#13;
+Failed asserting that 'Failure checkpoint not reached.' [ASCII](length: 31) contains "injected old_tree_preserved" [ASCII](length: 27).
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:40
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:73</failure>
+    </testcase>
+    <testcase name="testPostPublicationFailureRemovesNewFilesAndNewTables" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php" line="76" class="Coleza\Tests\Unit\Updater\UpdatePublicationTest" classname="Coleza.Tests.Unit.Updater.UpdatePublicationTest" assertions="2" time="0.208905">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\UpdatePublicationTest::testPostPublicationFailureRemovesNewFilesAndNewTables&#13;
+Failed asserting that 'Failure checkpoint not reached.' [ASCII](length: 31) contains "injected new_tree_published" [ASCII](length: 27).
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:40
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:78</failure>
+    </testcase>
+    <testcase name="testCorruptBackupIsDeniedBeforeRollbackDeletesAnything" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php" line="86" class="Coleza\Tests\Unit\Updater\UpdatePublicationTest" classname="Coleza.Tests.Unit.Updater.UpdatePublicationTest" assertions="2" time="0.221680">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\UpdatePublicationTest::testCorruptBackupIsDeniedBeforeRollbackDeletesAnything&#13;
+Failed asserting that 'Failure checkpoint not reached.' [ASCII](length: 31) contains "injected new_tree_published" [ASCII](length: 27).
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:40
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:88</failure>
+    </testcase>
+    <testcase name="testPreparedTreeTamperingIsRejectedBeforeSwap" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php" line="98" class="Coleza\Tests\Unit\Updater\UpdatePublicationTest" classname="Coleza.Tests.Unit.Updater.UpdatePublicationTest" assertions="3" time="0.137147">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\UpdatePublicationTest::testPreparedTreeTamperingIsRejectedBeforeSwap&#13;
+Failed asserting that false is true.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:101</failure>
+    </testcase>
+    <testcase name="testRollbackFailureIsVisibleAndRetryIsExplicit" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php" line="103" class="Coleza\Tests\Unit\Updater\UpdatePublicationTest" classname="Coleza.Tests.Unit.Updater.UpdatePublicationTest" assertions="2" time="0.217519">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\UpdatePublicationTest::testRollbackFailureIsVisibleAndRetryIsExplicit&#13;
+Failed asserting that 'Failure checkpoint not reached.' [ASCII](length: 31) contains "injected new_tree_published" [ASCII](length: 27).
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:40
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:105</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -1,0 +1,30 @@
+{
+  "phase": "D05",
+  "step": "D05.4",
+  "checkpoint": "staged_publication_and_rollback",
+  "status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
+  "reference_commit": "d9843bb14c93031893265c0c178fb92f0927e5bb",
+  "before": {
+    "tests": 12,
+    "failures": 8,
+    "errors": 3
+  },
+  "main": {
+    "tests": 2112,
+    "assertions": 13341
+  },
+  "native": {
+    "tests": 164,
+    "assertions": 1370
+  },
+  "native_classes": 13,
+  "full_mariadb_current_source": false,
+  "d05_4_complete": true,
+  "completed_gates": 4,
+  "total_gates": 4,
+  "remaining_gates": [],
+  "next_step": "D05.5",
+  "production_ready": false,
+  "independent_acceptance": "PENDING",
+  "rollback_policy": "Explicit offline recoverFailedUpdate; no automatic DDL replay or Normal activation"
+}

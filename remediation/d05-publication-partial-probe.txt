@@ -1,0 +1,18 @@
+[
+    {
+        "driver": "sqlite",
+        "throwing_up_executed": true,
+        "partial_table_before_recovery": false,
+        "failed_migration_ledger_rows": 0,
+        "rollback_success": true,
+        "old_files_and_rows_verified": true
+    },
+    {
+        "driver": "mysql",
+        "throwing_up_executed": true,
+        "partial_table_before_recovery": true,
+        "failed_migration_ledger_rows": 0,
+        "rollback_success": true,
+        "old_files_and_rows_verified": true
+    }
+]

@@ -30,23 +30,23 @@ trait UpdateMigrationCases
     {
         return '<?php return new class implements \\Coleza\\Foundation\\Database\\MigrationInterface { public function up(\\Coleza\\Foundation\\Database\\Connection $db): void { '.$body.' } public function down(\\Coleza\\Foundation\\Database\\Connection $db): void {} };';
     }
-    private function migrationPackage(array $scripts,?array $order=null): string
+    private function migrationPackage(array $scripts,?array $order=null,string $version='1.1.0'): string
     {
         $files=['version.txt'=>hash('sha256','new')];file_put_contents($this->migrationRoot.'/package/files/version.txt','new');
         foreach($scripts as $path=>$code){$file=$this->migrationRoot.'/package/files/'.$path;if(!is_dir(dirname($file))){mkdir(dirname($file),0700,true);}file_put_contents($file,$code);$files[$path]=hash('sha256',$code);}
-        $raw=json_encode((new UpdatePackageManifest('1.1.0','1.0.0','migration tests',$files,migrations:$order??array_keys($scripts)))->toArray(),JSON_THROW_ON_ERROR);
+        $raw=json_encode((new UpdatePackageManifest($version,'1.0.0','migration tests',$files,migrations:$order??array_keys($scripts)))->toArray(),JSON_THROW_ON_ERROR);
         file_put_contents($this->migrationRoot.'/package/manifest.json',$raw);
         file_put_contents($this->migrationRoot.'/package/manifest.sig',PackageSignatureVerifier::signPayload($raw,$this->migrationKeys['private']));
         return $this->migrationRoot.'/package';
     }
-    private function migrationUpdater(?\Closure $checkpoint=null): StagedUpdateService
+    private function migrationUpdater(?\Closure $checkpoint=null,string $version='1.0.0'): StagedUpdateService
     {
-        return new StagedUpdateService(new PackageSignatureVerifier($this->migrationKeys['public']),new ModuleCompatibilityChecker($this->db),'1.0.0',$this->db,new PreUpdateBackupService($this->migrationRoot.'/backup',$this->db),$checkpoint);
+        return new StagedUpdateService(new PackageSignatureVerifier($this->migrationKeys['public']),new ModuleCompatibilityChecker($this->db),$version,$this->db,new PreUpdateBackupService($this->migrationRoot.'/backup',$this->db,$version),$checkpoint);
     }
-    private function applyMigrationPackage(): array {return $this->migrationUpdater()->applyValidatedUpdate($this->migrationRoot.'/package',$this->migrationRoot.'/app');}
-    private function assertMigrationRejected(string $contains): void
+    private function applyMigrationPackage(string $version='1.0.0'): array {return $this->migrationUpdater(version:$version)->applyValidatedUpdate($this->migrationRoot.'/package',$this->migrationRoot.'/app');}
+    private function assertMigrationRejected(string $contains,string $version='1.0.0'): void
     {
-        try{$this->applyMigrationPackage();self::fail('Unsafe migration accepted.');}
+        try{$this->applyMigrationPackage($version);self::fail('Unsafe migration accepted.');}
         catch(RuntimeException $error){self::assertStringContainsString($contains,$error->getMessage());}
     }
     public function testSignedOrderRunsRealSqlAndCountsOnlyNewMigrations(): void
@@ -64,14 +64,16 @@ trait UpdateMigrationCases
         self::assertSame('new',file_get_contents($this->migrationRoot.'/app/version.txt'));
         self::assertSame(OperationalMode::RECOVERY,(new OperationalModeManager($this->db))->getCurrentMode());
         self::assertSame('complete',RestoreJournal::read(RestoreJournal::path($this->migrationRoot.'/app'))['state']);
-        self::assertSame(0,$this->applyMigrationPackage()['migrations_run']);
+        $raw=json_decode(file_get_contents($this->migrationRoot.'/package/manifest.json'),true);$raw['version']='1.2.0';$raw=json_encode($raw,JSON_THROW_ON_ERROR);
+        file_put_contents($this->migrationRoot.'/package/manifest.json',$raw);file_put_contents($this->migrationRoot.'/package/manifest.sig',PackageSignatureVerifier::signPayload($raw,$this->migrationKeys['private']));
+        self::assertSame(0,$this->applyMigrationPackage('1.1.0')['migrations_run']);
         self::assertCount(1,$this->db->select('SELECT * FROM update_probe'));
     }
     public function testChangedPreviouslyAppliedBytesAreDenied(): void
     {
         $this->migrationPackage(['db/once.php'=>$this->migrationCode('$db->statement("CREATE TABLE update_probe (id INT)");')]);$this->applyMigrationPackage();
-        $this->migrationPackage(['db/once.php'=>$this->migrationCode('throw new \\RuntimeException("must not execute");')]);
-        $this->assertMigrationRejected('identity');
+        $this->migrationPackage(['db/once.php'=>$this->migrationCode('throw new \\RuntimeException("must not execute");')],version:'1.2.0');
+        $this->assertMigrationRejected('identity','1.1.0');
         self::assertCount(1,(new Migrator($this->db))->getRanMigrations());
     }
     public function testUnboundExistingLedgerNameIsDenied(): void
@@ -113,7 +115,7 @@ trait UpdateMigrationCases
     public function testDeletedLedgerCannotReuseAnAppliedReceipt(): void
     {
         $this->migrationPackage(['db/once.php'=>$this->migrationCode('')]);$this->applyMigrationPackage();$this->db->statement('DELETE FROM migrations');
-        $this->assertMigrationRejected('identity');
+        $this->migrationPackage(['db/once.php'=>$this->migrationCode('')],version:'1.2.0');$this->assertMigrationRejected('identity','1.1.0');
     }
     public function testNestedUpdateCannotAcquireTargetLock(): void
     {

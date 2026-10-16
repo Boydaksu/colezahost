@@ -3,19 +3,19 @@
   "reference_report": "review/INCELEME.md",
   "plan": "remediation/PLAN.md",
   "phase": "D05",
-  "step": "D05.4",
+  "step": "D05.5",
   "status": "IN_PROGRESS",
-  "step_status": "IN_PROGRESS",
+  "step_status": "PENDING",
   "independent_acceptance": "PENDING",
   "production_ready": false,
-  "next_step": "D05.4",
+  "next_step": "D05.5",
   "next_phase": "D05",
   "tests": {
-    "main_total": 2087,
-    "main_assertions": 13066,
-    "mariadb_total": 137,
-    "mariadb_assertions": 1032,
-    "mariadb_scope": "Exact 12 affected classes / 137 cases: actual update migrations, signed admission, module schema, backup admission/recovery/pre-update, canonical installation/SQL, modes, privacy binding/signing and key lifecycle; not the whole native suite",
+    "main_total": 2112,
+    "main_assertions": 13341,
+    "mariadb_total": 164,
+    "mariadb_assertions": 1370,
+    "mariadb_scope": "Exact 13 affected classes / 164 cases: staged update/rollback, migration/signed admission, module schema, backup/recovery/pre-update, canonical installation/SQL, modes, privacy binding/signing and key lifecycle; not the whole native suite",
     "full_mariadb_current_source": false,
     "last_full_mariadb": {
       "reference_commit": "0d2e3e08d4c121a146f298f77b4bc6b008b6f66e",
@@ -23,8 +23,8 @@
       "assertions": 5399,
       "evidence": "remediation/D02-CLOSEOUT-summary.json"
     },
-    "total": 2224,
-    "assertions": 14098,
+    "total": 2276,
+    "assertions": 14711,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -46,13 +46,12 @@
     "F07": "SERVER_CATALOG_PRICE_AND_MONETARY_INTEGRITY_WITH_CANONICAL_MANUAL_APPLICATION_FLOW_LOCAL_VERIFIED_HTTP_AND_INDEPENDENT_ACCEPTANCE_OPEN_D08_D09",
     "F15": "RENEWAL_AND_PAID_PERIOD_RECEIPT_WITH_MANUAL_APPROVAL_FLOW_LOCAL_NATIVE_VERIFIED_HTTP_PROVIDER_INTEGRATION_AND_INDEPENDENT_ACCEPTANCE_OPEN_D06_D08_D09",
     "F10": "IMPLEMENTED_FAILURE_SAFE_REAL_S3_SFTP_TRANSPORT_AUTH_IDENTITY_PUBLICATION_READBACK_HISTORY_RETENTION_LOCAL_PROTOCOL_VERIFIED_EXTERNAL_ACCOUNT_AND_INDEPENDENT_ACCEPTANCE_PENDING",
-    "F11": "REAL_CONSISTENT_MARIADB_SQLITE_AND_PREUPDATE_COMMON_DUMP_RECURSIVE_SNAPSHOT_VERIFIED_DELIVERY_READBACK_LOCAL_VERIFIED_COMPLETE_UPDATER_ORCHESTRATION_D05_4_AND_INDEPENDENT_ACCEPTANCE_PENDING",
+    "F11": "REAL_CONSISTENT_MARIADB_SQLITE_AND_BOUND_PREUPDATE_DUMP_RECURSIVE_SNAPSHOT_VERIFIED_READBACK_EXPLICIT_UPDATE_ROLLBACK_LOCAL_VERIFIED_INDEPENDENT_ACCEPTANCE_PENDING",
     "F12": "IMPLEMENTED_SUPPORTED_FORMAT_FRESH_OFFLINE_TARGET_STAGED_RESTORE_PACKAGE_SQL_TABLE_ROW_FK_KEY_HEALTH_JOURNAL_LOCAL_VERIFIED_ENTRYPOINT_COMPOSITION_D08_AND_HOST_ACCEPTANCE_D09_PENDING",
     "F20": "RESTORE_AUTHORITATIVE_OUT_OF_BAND_TOMBSTONES_REQUIRED_CORE_CREDENTIAL_AND_DEFINED_RELATED_RESCRUB_FAIL_CLOSED_LOCAL_VERIFIED_WHOLE_PRODUCT_PRIVACY_MAPPING_RETENTION_D07_AND_GATE_BINDING_D08_PENDING",
-    "F13": "PARTIAL_SHARED_SIGNED_PACKAGE_BOUND_VERIFIED_BACKUP_REAL_ORDERED_MIGRATIONS_HASH_LEDGER_PROCESS_DEATH_PARTIAL_DDL_GUARDS_LOCAL_VERIFIED_STAGED_PUBLICATION_VERSION_HEALTH_ROLLBACK_REMAIN_D05_4"
+    "F13": "IMPLEMENTED_LOCAL_VERIFIED_SIGNED_FROZEN_PACKAGE_BOUND_BACKUP_REAL_MIGRATIONS_STAGED_TREE_VERSION_SQL_PHP_KEY_PRIVACY_GATES_AND_EXPLICIT_PINNED_BACKUP_ROLLBACK_ENTRYPOINT_AND_INDEPENDENT_ACCEPTANCE_PENDING_D08_D09"
   },
   "remaining_steps": [
-    "D05.4",
     "D05.5"
   ],
   "remaining_phases": [
@@ -116,7 +115,6 @@
         "D05.3"
       ],
       "remaining_steps": [
-        "D05.4",
         "D05.5"
       ],
       "independent_acceptance": "PENDING"
@@ -134,7 +132,7 @@
     "External AWS/S3-compatible and independent SFTP account acceptance PENDING; real transports and verified remote history implemented/local protocol verified D05.2",
     "Supported consistent MariaDB/SQLite export, recursive files and fresh offline staged restore locally implemented D05.3; unsupported engines/custom DB objects/format-less legacy backups explicitly rejected; independent host acceptance D09",
     "HTTP/CLI/cron/worker must bind the same external restore journal guard in D08; whole-product privacy/retention mapping D07; production activation is never automatic",
-    "Common verified pre-update backup and shared frozen signed package plus non-bypassable correctly bound backup gate locally complete; real migrations locally complete; staged publication/version/health/rollback remain D05.4",
+    "Common verified pre-update backup and shared frozen signed package plus non-bypassable correctly bound backup gate locally complete; real migrations and staged publication/version/local health/explicit rollback locally complete; entrypoint binding D08 and independent host acceptance D09 remain",
     "Extension quarantine, path/archive safety, permissions, migration preview/health/enable lifecycle remains D05.5"
   ],
   "d03_general_secret_audit": {
@@ -248,12 +246,13 @@
       "scope": "Consistent MariaDB InnoDB and SQLite logical exports with exact binary/text/decimal/generated/FK/index/sequence and UTC timestamp preservation; recursive stable file snapshots and exact ZIP inventories; fresh offline DB staged file restore, structural/row/FK/key/privacy gates, durable interruption journal and Recovery guard. Explicit legacy/nonempty rollback compatibility remains non-atomic and update orchestration D05.4; whole-product privacy mapping D07, entrypoint binding D08, independent-host acceptance D09."
     },
     "D05.4": {
-      "status": "IN_PROGRESS",
-      "completed_gates": 3,
+      "status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
+      "completed_gates": 4,
       "total_gates": 4,
       "acceptance": "remediation/D05-4-KABUL.md",
-      "evidence": "remediation/D05-4-MIGRATIONS-SONUC.md",
-      "scope": "Shared signed package and mandatory verified backup plus actual signed-order frozen PHP migrations through canonical runner, name/hash-bound external receipts and installed ledger, target/DB locks, durable process-death and partial-DDL recovery guards. Staged file publication/version/health and actual rollback remain open."
+      "evidence": "remediation/D05-4-PUBLICATION-SONUC.md",
+      "scope": "Four fixed local gates complete: real pre-update backup, shared signed/frozen package admission, ordered real migrations and hash ledger, staged whole-tree publication with external interruption journal and DB/target leases, persistent version/local SQL/FK/PHP/key/privacy admission, explicit pinned-backup exact DB/files rollback including new objects and interrupted recovery. Normal activation, entrypoint fencing and independent host acceptance remain D08/D09.",
+      "closure": "remediation/D05-4-CLOSURE.md"
     }
   },
   "d03_staging_storage_evidence": "remediation/D03-1-STAGING-SONUC.md",
@@ -271,14 +270,14 @@
   "d05_publication_evidence": "remediation/D05-1-SONUC.md",
   "d05_transport_evidence": "remediation/D05-2-SONUC.md",
   "d05_restore_evidence": "remediation/D05-3-SONUC.md",
-  "next_action": "Staged application tree publication, durable installed version/health admission and real verified backup rollback with interruption and failure evidence",
+  "next_action": "D05.5: quarantine extension packages, path/size/permission/module compatibility admission, preview/apply migrations, health/enable and failure recovery matrix",
   "d05_4_acceptance": "remediation/D05-4-KABUL.md",
   "d05_preupdate_backup_evidence": "remediation/D05-4-PREBACKUP-SONUC.md",
   "d05_4_gates": {
     "pre_update_backup": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
     "signed_package_and_backup_gate": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
     "real_migrations": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
-    "staged_publication_and_rollback": "PENDING"
+    "staged_publication_and_rollback": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED"
   },
   "d05_signed_update_evidence": "remediation/D05-4-SIGNED-SONUC.md",
   "ci_sftp_fix": {
@@ -305,5 +304,7 @@
     "d05_4_completed_gates": 2,
     "next_planned_work": "real_migrations"
   },
-  "d05_migration_evidence": "remediation/D05-4-MIGRATIONS-SONUC.md"
+  "d05_migration_evidence": "remediation/D05-4-MIGRATIONS-SONUC.md",
+  "d05_publication_rollback_evidence": "remediation/D05-4-PUBLICATION-SONUC.md",
+  "d05_4_closure": "remediation/D05-4-CLOSURE.md"
 }

@@ -1,0 +1,77 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+[41;37mF[0m.[31;1mE[0m[31;1mE[0m[31;1mE[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m                                                      12 / 12 (100%)
+
+Time: 00:02.362, Memory: 22.00 MB
+
+There were 3 errors:
+
+1) Coleza\Tests\Unit\Updater\UpdatePublicationTest::testMigrationAddedTableAndMutatedRowsAreRestoredFromBackup
+Error: Call to undefined method Coleza\Domain\Updater\StagedUpdateService::recoverFailedUpdate()
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:84
+
+2) Coleza\Tests\Unit\Updater\UpdatePublicationTest::testExtraBackupSourcesDoNotBecomeApplicationFilesOnRollback
+Error: Call to undefined method Coleza\Domain\Updater\StagedUpdateService::recoverFailedUpdate()
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:96
+
+3) Coleza\Tests\Unit\Updater\UpdatePublicationTest::testRepeatedCompletedRollbackDoesNotEraseNewChanges
+Error: Call to undefined method Coleza\Domain\Updater\StagedUpdateService::recoverFailedUpdate()
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:113
+
+--
+
+There were 8 failures:
+
+1) Coleza\Tests\Unit\Updater\UpdatePublicationTest::testWholeTreeIsPreparedBeforeEitherActiveFileChanges
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:57
+
+2) Coleza\Tests\Unit\Updater\UpdatePublicationTest::testRollbackCannotStealAnActiveUpdateLease
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:118
+
+3) Coleza\Tests\Unit\Updater\UpdatePublicationTest::testFailureBeforeSwapRestoresDatabaseAndExactOldFiles
+Failed asserting that 'Failure checkpoint not reached.' [ASCII](length: 31) contains "injected migrations_applied" [ASCII](length: 27).
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:40
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:69
+
+4) Coleza\Tests\Unit\Updater\UpdatePublicationTest::testFailureBetweenRenamesCanRecoverMissingActiveDirectory
+Failed asserting that 'Failure checkpoint not reached.' [ASCII](length: 31) contains "injected old_tree_preserved" [ASCII](length: 27).
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:40
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:73
+
+5) Coleza\Tests\Unit\Updater\UpdatePublicationTest::testPostPublicationFailureRemovesNewFilesAndNewTables
+Failed asserting that 'Failure checkpoint not reached.' [ASCII](length: 31) contains "injected new_tree_published" [ASCII](length: 27).
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:40
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:78
+
+6) Coleza\Tests\Unit\Updater\UpdatePublicationTest::testCorruptBackupIsDeniedBeforeRollbackDeletesAnything
+Failed asserting that 'Failure checkpoint not reached.' [ASCII](length: 31) contains "injected new_tree_published" [ASCII](length: 27).
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:40
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:88
+
+7) Coleza\Tests\Unit\Updater\UpdatePublicationTest::testPreparedTreeTamperingIsRejectedBeforeSwap
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:101
+
+8) Coleza\Tests\Unit\Updater\UpdatePublicationTest::testRollbackFailureIsVisibleAndRetryIsExplicit
+Failed asserting that 'Failure checkpoint not reached.' [ASCII](length: 31) contains "injected new_tree_published" [ASCII](length: 27).
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:40
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdatePublicationCases.php:105
+
+[37;41mERRORS![0m
+[37;41mTests: 12[0m[37;41m, Assertions: 20[0m[37;41m, Errors: 3[0m[37;41m, Failures: 8[0m[37;41m.[0m

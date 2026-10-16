@@ -1,0 +1,38 @@
+# D05.4 — staged dosya geçişi ve gerçek rollback
+
+16.10.2026. D05-4-KABUL.md'nin dördüncü sabit kontrolü tamamlandı. **D05.4: 4/4 yerel kontrol tamam.** Sonraki sabit adım D05.5 extension lifecycle'dır; yeni faz/kapsam eklenmedi. Bağımsız kabul PENDING, production_ready=false.
+
+## Uygulanan davranış
+
+Aktif dosyalar tek tek değiştirilmez. Hedefin bütün mevcut dosya/boş dizinleri aynı parent altındaki özel ağaca kopyalanır; signed frozen payload bu ağaç üzerinde uygulanır. Kaynak ağaç drift'i, birleşik ağacın case/path çakışmaları, imzalı dosya hash'leri ve tam ağaç digest'i kontrol edilir. Hazırlanan dosyalar kalıcı yazılır, eski dosya/dizin izinleri korunur. PHP dosyaları çalıştırılmadan sözdizimi kontrolünden geçer; kaynak başına 4 MiB parser sınırı vardır. İmzalı migration PHP'si sandbox değildir.
+
+Yedek/yeniden okuma ve yerel health kontrollerinden sonra Recovery modu ve journal niyeti kalıcıdır. DB kimliği ve hedef/PDO'ya bağlı canlı RecoveryLease güncelleme ve rollback boyunca tutulur. MariaDB canonical migration named lock, fiziksel SQLite DB için ortak offline lock, hedef için dış file lock vardır. Normal restore aynı lease sözleşmesini kullanır; farklı hedef üzerinden aynı MariaDB/fiziksel SQLite üzerinde update/restore yarışı engellenir. Diğer ürün writer'larının tamamı bu lease'e henüz bağlı değildir; bakımda durmaları gerekir, D08 bu bağlamayı ele alır.
+
+Sıra: tam ağacı hazırla → gerçek migration → modül/SQL/FK/key/privacy ve ağaç doğrulaması → eski ağacı ayrı isimle koru → hazırlanmış ağacı hedefe taşı → ağaç/health doğrula → DB ve journal'a kurulu sürümü yaz. İki rename arasında kesinti olabilir; bu, DB+filesystem için tek transaction veya çalışan siteye sıfır kesinti iddiası değildir. Dış journal ve explicit recovery bu aralığı kapsar. Eski ağaç korunur, otomatik silinmez. Başarı da sistemi kendiliğinden Normal moda açmaz.
+
+Kurulu sürüm DB system.core_version ve journal installed_version üzerinden tutulur; yeni bir updater nesnesi eski yapılandırılmış sürümle tekrar apply yapamaz. Migration atlama/hash/ledger testleri artık geçerli sonraki sürüm paketini kullanır; aynı migration'ın aynı hash ile yeniden çalışmaması ve değiştirilmiş/silinmiş kanıtın reddi korunur. Eski sürümü bildiren context'i kabul ettirerek test geçirme yapılmadı.
+
+## Açık ve doğrulanmış geri dönüş
+
+`StagedUpdateService::recoverFailedUpdate(target, optionalRestoreWizard)` açık bir offline bakım işlemidir. Başarısız/kesilmiş veya son tamamlanmış güncellemenin kendi DB/hedef/journal kaydını ister. Migration PHP'sini tekrar çalıştırmaz. Yedek ID, kaynak sürüm, ZIP ve manifest SHA256'ları journal'a bağlıdır; önce bağımsız okuma yapılır, restore motorunun ayrı aldığı kopya da bu hash'lerle tekrar karşılaştırılır. Başka DB, başka/geçersiz/değiştirilmiş yedek ve mevcut caller transaction reddedilir. Reconciliation için anahtar/privacy bağımlılıkları RestoreWizard ve UpdateHealthGate'e açıkça verilebilir; varsayılan configured kaynaklar eksikse kapı açılmaz.
+
+Ortak RestoreWizard gerçek SQL import, tablo/satır/FK bütünlüğü, application key ve authoritative out-of-band tombstone doğrulaması/reconciliation işlemlerini korur. Rollback bu motorun exact replacement yoludur: yeni tablolar, view/trigger/routine/event dahil başarısız DDL nesneleri mevcut DB namespace'inden temizlenir; yedekteki desteklenen şema/veri geri yüklenir. Eski dosya ağacı yalnız yedekteki uygulama dosyalarından hazırlanır; yeni dosyalar/tablolar kalmaz, _update_extra kaynakları uygulamaya taşınmaz. Hata olursa başarı dönmez, journal ve Recovery gereksinimi görünür kalır. Kesilmiş rollback yalnız açık yeni recovery çağrısıyla yeniden uygulanır.
+
+SQL/key/privacy/files doğrulaması geçtikten sonra yalnız bu güncellemenin migration receipt'leri temizlenir, kaynak sürüm kaydedilir. Tamamlanmış rollback tekrar çağrılırsa veri yeniden içe aktarılmaz; sonraki değişiklikler silinmez. Journal/guard başarıya ancak bütün geri dönüş kontrolleri geçince alınır. Normal aktivasyon ayrıdır.
+
+Bu entegrasyon, geçici UTC import oturumunda tombstone senkronizasyonu yapılıp normal saat dilimine dönünce imza gövdesinin değişebilmesini ortaya çıkardı. Importun yapısal doğrulamasından sonra normal oturum ayarları artık privacy/key/reconciliation öncesi geri yüklenir. MariaDB testi açık +03:00 oturumuyla, yanlış anahtar reddi/yeniden deneme ve sonradan oluşturulan erasure kaydının tekrar uygulanması sonrası yeni verifier ile tekrar doğrulama yapar. İmza karşılaştırması gevşetilmedi, canonical 26 migration değiştirilmedi.
+
+## Kanıt ve sınırlar
+
+- Önceki d9843bb source'undan iki updater sınıfı ayrı süreçte preload edilerek ilk **12 vaka: 8 failure + 3 error** kaydedildi; bir vaka başarılıydı. Sonradan eklenen vakalar bu before toplamına dahil değildir.
+- Son tam ana paket **2112 test / 13341 assertion**, exit 0; failure/error/skip yok. Yeni 25 SQLite publication/rollback vakası ve önceki migration, backup, privacy/key, gerçek 52 S3/SFTP protocol/config vakası dahildir.
+- Son gerçek MariaDB 10.11 **164 test / 1370 assertion**, 13 sınıf. Discovery ve çalıştırılan vaka kimlikleri eşit, exit 0; failure/error/skip yok. Yeni 27 vaka, canonical wrong-key ve +03:00 out-of-band erasure rollback'i dahildir. Bütün MariaDB suite tekrar çalıştırılmış sayılmaz.
+- Ayrı PHP süreçleri hazırlık/migration/eski ağaç rename/yeni ağaç rename/sürüm kaydında exit(74) ile öldürülür; yeni süreç gerçek DB/files yedeğinden geri döner. Rollback importunda exit(75) ve yeni süreçle açık retry vardır. Bunlar exception-only kesinti taklidi değildir.
+- Ek bağımsız kabul probe'u gerçek up() içinde CREATE/UPDATE ardından hata verir: MariaDB'de yeni tablo kalır, SQLite'te up geri alınır; her ikisinde ledger başarısız migration'ı saymaz. recoverFailedUpdate gerçek DB/files yedeğinden eski durumu geri getirir. İki probe ana/native PHPUnit sayılarına eklenmemiştir; kaynak ve stdout/exit d05-publication-partial-probe dosyalarındadır.
+- Gerçek previous-path çakışması, tam olmayan/geçerli fakat sonradan değiştirilmiş yedek, yeni SQL orphan health reddi, ekstra view/trigger temizliği, farklı DB, raw caller transaction ve eşzamanlı lease reddi test edilir. Gerçek disk-full/power-loss/başka fiziksel host kabulü yapılmış sayılmaz.
+- 23 kaynak/test/workflow dosyası final testlerden önce sabitlendi; canonical 26 migration byte olarak aynı. Plan 39 faz/258 alt faz, locked 97 dosya ve whitespace kontrolü geçti. Hedefli protokol denemesindeki eksik Python fixture seçimi uygulama değişikliğiyle gizlenmedi; final paket pinned izole fixture ortamıyla sıfır atlamayla çalıştı.
+- GitHub update-migrations işi artık publication/rollback dahil SQLite updater/Migrator ve 13 affected MariaDB sınıfını çalıştırır. Önceki Linux/Windows/unsupported-runtime transport CI işleri korunur. Canlı GitHub sonucu ayrıca doğrulanır.
+
+HTTP/CLI/cron/worker composition ve Normal aktivasyon D08; bütün ürün privacy/retention D07; bağımsız host, PHP bootstrap/HTTP/browser kabulü ve harici hesap doğrulaması D09 kapsamındadır. Yerel health PHP syntax + gerçek SQL/FK/modül/key/privacy ve dosya bütünlüğüdür; canlı kullanıcı/HTTP boot testi gibi sunulmaz. Bakım writer'ları durmalıdır, staging/backup/DB konumları uygulama ağacından ayrı kalır. İzin/owner ve güç kesintisi davranışı referans host kabulünde ayrıca doğrulanır. Üretim deployment/restore veya harici hesaba yazma yapılmadı.
+
+Kanıt: d05-publication-before/main/native XML/stdout/exit, discovery, baseline, checks, summary ve byte hashes. Denetim: `python -X utf8 remediation/verify-d05-update-publication.py`; bu teslimin kaydedilmiş kaynak byte'ları için geçerlidir. Önceki D05.4 raporları tarihsel kaynak revizyonlarının kanıtlarıdır.
