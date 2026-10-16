@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Integration\Providers\CpanelTransportTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" tests="24" assertions="24" errors="0" failures="21" skipped="0" time="0.018738">
+    <testsuite name="Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidWhmResponsesNeverAuthenticate" tests="10" assertions="10" errors="0" failures="7" skipped="0" time="0.011752">
+      <testcase name="testInvalidWhmResponsesNeverAuthenticate with data set &quot;redirect&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" line="91" class="Coleza\Tests\Integration\Providers\CpanelTransportTest" classname="Coleza.Tests.Integration.Providers.CpanelTransportTest" assertions="1" time="0.004444">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidWhmResponsesNeverAuthenticate with data set "redirect"&#13;
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.</failure>
+      </testcase>
+      <testcase name="testInvalidWhmResponsesNeverAuthenticate with data set &quot;rate-limit&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" line="91" class="Coleza\Tests\Integration\Providers\CpanelTransportTest" classname="Coleza.Tests.Integration.Providers.CpanelTransportTest" assertions="1" time="0.000682">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidWhmResponsesNeverAuthenticate with data set "rate-limit"&#13;
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.</failure>
+      </testcase>
+      <testcase name="testInvalidWhmResponsesNeverAuthenticate with data set &quot;empty&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" line="91" class="Coleza\Tests\Integration\Providers\CpanelTransportTest" classname="Coleza.Tests.Integration.Providers.CpanelTransportTest" assertions="1" time="0.000977">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidWhmResponsesNeverAuthenticate with data set "empty"&#13;
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.</failure>
+      </testcase>
+      <testcase name="testInvalidWhmResponsesNeverAuthenticate with data set &quot;missing-result&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" line="91" class="Coleza\Tests\Integration\Providers\CpanelTransportTest" classname="Coleza.Tests.Integration.Providers.CpanelTransportTest" assertions="1" time="0.000540">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidWhmResponsesNeverAuthenticate with data set "missing-result"&#13;
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.</failure>
+      </testcase>
+      <testcase name="testInvalidWhmResponsesNeverAuthenticate with data set &quot;boolean-result&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" line="91" class="Coleza\Tests\Integration\Providers\CpanelTransportTest" classname="Coleza.Tests.Integration.Providers.CpanelTransportTest" assertions="1" time="0.000531">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidWhmResponsesNeverAuthenticate with data set "boolean-result"&#13;
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.</failure>
+      </testcase>
+      <testcase name="testInvalidWhmResponsesNeverAuthenticate with data set &quot;missing-version&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" line="91" class="Coleza\Tests\Integration\Providers\CpanelTransportTest" classname="Coleza.Tests.Integration.Providers.CpanelTransportTest" assertions="1" time="0.000485">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidWhmResponsesNeverAuthenticate with data set "missing-version"&#13;
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.</failure>
+      </testcase>
+      <testcase name="testInvalidWhmResponsesNeverAuthenticate with data set &quot;invalid-version&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" line="91" class="Coleza\Tests\Integration\Providers\CpanelTransportTest" classname="Coleza.Tests.Integration.Providers.CpanelTransportTest" assertions="1" time="0.000565">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidWhmResponsesNeverAuthenticate with data set "invalid-version"&#13;
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.</failure>
+      </testcase>
+      <testcase name="testInvalidWhmResponsesNeverAuthenticate with data set &quot;malformed&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" line="91" class="Coleza\Tests\Integration\Providers\CpanelTransportTest" classname="Coleza.Tests.Integration.Providers.CpanelTransportTest" assertions="1" time="0.001560"/>
+      <testcase name="testInvalidWhmResponsesNeverAuthenticate with data set &quot;auth&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" line="91" class="Coleza\Tests\Integration\Providers\CpanelTransportTest" classname="Coleza.Tests.Integration.Providers.CpanelTransportTest" assertions="1" time="0.001388"/>
+      <testcase name="testInvalidWhmResponsesNeverAuthenticate with data set &quot;server&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" line="91" class="Coleza\Tests\Integration\Providers\CpanelTransportTest" classname="Coleza.Tests.Integration.Providers.CpanelTransportTest" assertions="1" time="0.000579"/>
+    </testsuite>
+    <testcase name="testHttpFailureWithSuccessBodyCannotCompleteMutationEvenWhenThrowOnErrorFalse" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" line="102" class="Coleza\Tests\Integration\Providers\CpanelTransportTest" classname="Coleza.Tests.Integration.Providers.CpanelTransportTest" assertions="1" time="0.000520">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Providers\CpanelTransportTest::testHttpFailureWithSuccessBodyCannotCompleteMutationEvenWhenThrowOnErrorFalse&#13;
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.</failure>
+    </testcase>
+    <testsuite name="Coleza\Tests\Integration\Providers\CpanelTransportTest::testMissingOrInvalidLoadCannotBecomeHealthy" tests="5" assertions="5" errors="0" failures="5" skipped="0" time="0.002560">
+      <testcase name="testMissingOrInvalidLoadCannotBecomeHealthy with data set #0" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" line="107" class="Coleza\Tests\Integration\Providers\CpanelTransportTest" classname="Coleza.Tests.Integration.Providers.CpanelTransportTest" assertions="1" time="0.000532">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Providers\CpanelTransportTest::testMissingOrInvalidLoadCannotBecomeHealthy with data set #0&#13;
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.</failure>
+      </testcase>
+      <testcase name="testMissingOrInvalidLoadCannotBecomeHealthy with data set #1" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" line="107" class="Coleza\Tests\Integration\Providers\CpanelTransportTest" classname="Coleza.Tests.Integration.Providers.CpanelTransportTest" assertions="1" time="0.000498">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Providers\CpanelTransportTest::testMissingOrInvalidLoadCannotBecomeHealthy with data set #1&#13;
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.</failure>
+      </testcase>
+      <testcase name="testMissingOrInvalidLoadCannotBecomeHealthy with data set #2" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" line="107" class="Coleza\Tests\Integration\Providers\CpanelTransportTest" classname="Coleza.Tests.Integration.Providers.CpanelTransportTest" assertions="1" time="0.000493">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Providers\CpanelTransportTest::testMissingOrInvalidLoadCannotBecomeHealthy with data set #2&#13;
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.</failure>
+      </testcase>
+      <testcase name="testMissingOrInvalidLoadCannotBecomeHealthy with data set #3" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" line="107" class="Coleza\Tests\Integration\Providers\CpanelTransportTest" classname="Coleza.Tests.Integration.Providers.CpanelTransportTest" assertions="1" time="0.000516">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Providers\CpanelTransportTest::testMissingOrInvalidLoadCannotBecomeHealthy with data set #3&#13;
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.</failure>
+      </testcase>
+      <testcase name="testMissingOrInvalidLoadCannotBecomeHealthy with data set #4" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" line="107" class="Coleza\Tests\Integration\Providers\CpanelTransportTest" classname="Coleza.Tests.Integration.Providers.CpanelTransportTest" assertions="1" time="0.000521">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Providers\CpanelTransportTest::testMissingOrInvalidLoadCannotBecomeHealthy with data set #4&#13;
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.</failure>
+      </testcase>
+    </testsuite>
+    <testsuite name="Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidConfigurationCannotCreateCredentialBearingUrl" tests="8" assertions="8" errors="0" failures="8" skipped="0" time="0.003906">
+      <testcase name="testInvalidConfigurationCannotCreateCredentialBearingUrl with data set #0" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" line="113" class="Coleza\Tests\Integration\Providers\CpanelTransportTest" classname="Coleza.Tests.Integration.Providers.CpanelTransportTest" assertions="1" time="0.000472">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidConfigurationCannotCreateCredentialBearingUrl with data set #0&#13;
+Failed asserting that exception of type "InvalidArgumentException" is thrown.</failure>
+      </testcase>
+      <testcase name="testInvalidConfigurationCannotCreateCredentialBearingUrl with data set #1" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" line="113" class="Coleza\Tests\Integration\Providers\CpanelTransportTest" classname="Coleza.Tests.Integration.Providers.CpanelTransportTest" assertions="1" time="0.000487">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidConfigurationCannotCreateCredentialBearingUrl with data set #1&#13;
+Failed asserting that exception of type "InvalidArgumentException" is thrown.</failure>
+      </testcase>
+      <testcase name="testInvalidConfigurationCannotCreateCredentialBearingUrl with data set #2" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" line="113" class="Coleza\Tests\Integration\Providers\CpanelTransportTest" classname="Coleza.Tests.Integration.Providers.CpanelTransportTest" assertions="1" time="0.000503">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidConfigurationCannotCreateCredentialBearingUrl with data set #2&#13;
+Failed asserting that exception of type "InvalidArgumentException" is thrown.</failure>
+      </testcase>
+      <testcase name="testInvalidConfigurationCannotCreateCredentialBearingUrl with data set #3" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" line="113" class="Coleza\Tests\Integration\Providers\CpanelTransportTest" classname="Coleza.Tests.Integration.Providers.CpanelTransportTest" assertions="1" time="0.000471">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidConfigurationCannotCreateCredentialBearingUrl with data set #3&#13;
+Failed asserting that exception of type "InvalidArgumentException" is thrown.</failure>
+      </testcase>
+      <testcase name="testInvalidConfigurationCannotCreateCredentialBearingUrl with data set #4" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" line="113" class="Coleza\Tests\Integration\Providers\CpanelTransportTest" classname="Coleza.Tests.Integration.Providers.CpanelTransportTest" assertions="1" time="0.000501">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidConfigurationCannotCreateCredentialBearingUrl with data set #4&#13;
+Failed asserting that exception of type "InvalidArgumentException" is thrown.</failure>
+      </testcase>
+      <testcase name="testInvalidConfigurationCannotCreateCredentialBearingUrl with data set #5" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" line="113" class="Coleza\Tests\Integration\Providers\CpanelTransportTest" classname="Coleza.Tests.Integration.Providers.CpanelTransportTest" assertions="1" time="0.000508">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidConfigurationCannotCreateCredentialBearingUrl with data set #5&#13;
+Failed asserting that exception of type "InvalidArgumentException" is thrown.</failure>
+      </testcase>
+      <testcase name="testInvalidConfigurationCannotCreateCredentialBearingUrl with data set #6" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" line="113" class="Coleza\Tests\Integration\Providers\CpanelTransportTest" classname="Coleza.Tests.Integration.Providers.CpanelTransportTest" assertions="1" time="0.000473">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidConfigurationCannotCreateCredentialBearingUrl with data set #6&#13;
+Failed asserting that exception of type "InvalidArgumentException" is thrown.</failure>
+      </testcase>
+      <testcase name="testInvalidConfigurationCannotCreateCredentialBearingUrl with data set #7" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php" line="113" class="Coleza\Tests\Integration\Providers\CpanelTransportTest" classname="Coleza.Tests.Integration.Providers.CpanelTransportTest" assertions="1" time="0.000489">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidConfigurationCannotCreateCredentialBearingUrl with data set #7&#13;
+Failed asserting that exception of type "InvalidArgumentException" is thrown.</failure>
+      </testcase>
+    </testsuite>
+  </testsuite>
+</testsuites>

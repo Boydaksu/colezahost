@@ -1,0 +1,9 @@
+{
+  "error_class": "Error",
+  "message": "Undefined constant \"Coleza\\Domain\\Providers\\Cpanel\\startTime\"",
+  "probe_exit": 0,
+  "recorded_requests": 1,
+  "reference_commit": "2640dbe76c1695fae1d0f9c2b4a63d99853d3a36",
+  "fixture_only_tls_bypass_for_original_bug": true,
+  "original_source_sha256": "c6ff061a7afbc51c70b0b2558579febb540f074030853ba21b70c268479d812a"
+}

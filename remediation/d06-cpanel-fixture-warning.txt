@@ -1,0 +1,2 @@
+Initial full run had a Windows fixture teardown warning; exit 0 was not accepted as clean evidence. Fixture shutdown/handle lifecycle was corrected and both final suites rerun.
+Warning: rmdir(C:\Users\alici\AppData\Local\Temp/coleza_cpanel_ad8d79767f002f7270b949eb): Directory not empty in C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php on line 30

@@ -3,19 +3,19 @@
   "reference_report": "review/INCELEME.md",
   "plan": "remediation/PLAN.md",
   "phase": "D06",
-  "step": "D06.1",
+  "step": "D06.2",
   "status": "IN_PROGRESS",
   "step_status": "PENDING",
   "independent_acceptance": "PENDING",
   "production_ready": false,
-  "next_step": "D06.1",
+  "next_step": "D06.2",
   "next_phase": "D06",
   "tests": {
-    "main_total": 2155,
-    "main_assertions": 13497,
-    "mariadb_total": 207,
-    "mariadb_assertions": 1608,
-    "mariadb_scope": "Exact 14 affected classes / 207 cases: extension lifecycle plus previous update/rollback, backup/recovery, module/schema, installation, modes, key and privacy gates; not the whole native suite",
+    "main_total": 2217,
+    "main_assertions": 13578,
+    "mariadb_total": 44,
+    "mariadb_assertions": 396,
+    "mariadb_scope": "Exact 3 affected classes / 44 cases: ProvisioningProbeSafetyTest, ProviderVaultSchemaTest, ProvisioningSecretTest; not the whole native suite",
     "full_mariadb_current_source": false,
     "last_full_mariadb": {
       "reference_commit": "0d2e3e08d4c121a146f298f77b4bc6b008b6f66e",
@@ -23,8 +23,8 @@
       "assertions": 5399,
       "evidence": "remediation/D02-CLOSEOUT-summary.json"
     },
-    "total": 2362,
-    "assertions": 15105,
+    "total": 2261,
+    "assertions": 13974,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -50,9 +50,15 @@
     "F12": "IMPLEMENTED_SUPPORTED_FORMAT_FRESH_OFFLINE_TARGET_STAGED_RESTORE_PACKAGE_SQL_TABLE_ROW_FK_KEY_HEALTH_JOURNAL_LOCAL_VERIFIED_ENTRYPOINT_COMPOSITION_D08_AND_HOST_ACCEPTANCE_D09_PENDING",
     "F20": "RESTORE_AUTHORITATIVE_OUT_OF_BAND_TOMBSTONES_REQUIRED_CORE_CREDENTIAL_AND_DEFINED_RELATED_RESCRUB_FAIL_CLOSED_LOCAL_VERIFIED_WHOLE_PRODUCT_PRIVACY_MAPPING_RETENTION_D07_AND_GATE_BINDING_D08_PENDING",
     "F13": "IMPLEMENTED_LOCAL_VERIFIED_SIGNED_FROZEN_PACKAGE_BOUND_BACKUP_REAL_MIGRATIONS_STAGED_TREE_VERSION_SQL_PHP_KEY_PRIVACY_GATES_AND_EXPLICIT_PINNED_BACKUP_ROLLBACK_ENTRYPOINT_AND_INDEPENDENT_ACCEPTANCE_PENDING_D08_D09",
-    "F31": "EXTENSION_INSTALLER_AND_SCOPED_CONTRACTS_LOCAL_VERIFIED_DECLARATIVE_MIGRATIONS_NO_UPLOADED_PHP_EXECUTION_REAL_ADAPTERS_D06_ENTRYPOINT_COMPOSITION_D08_INDEPENDENT_ACCEPTANCE_D09_PENDING"
+    "F31": "EXTENSION_INSTALLER_AND_SCOPED_CONTRACTS_LOCAL_VERIFIED_DECLARATIVE_MIGRATIONS_NO_UPLOADED_PHP_EXECUTION_REAL_ADAPTERS_D06_ENTRYPOINT_COMPOSITION_D08_INDEPENDENT_ACCEPTANCE_D09_PENDING",
+    "F04": "REAL_HTTPS_TRANSPORT_AND_STRICT_WHM_RESPONSE_HEALTH_LOCAL_VERIFIED_ZERO_TRANSPORT_RETRIES_PROVIDER_LIFECYCLE_UNCERTAIN_RECONCILIATION_REMAINS_D06_2_EXTERNAL_CPANEL_ACCEPTANCE_PENDING"
   },
-  "remaining_steps": [],
+  "remaining_steps": [
+    "D06.2",
+    "D06.3",
+    "D06.4",
+    "D06.5"
+  ],
   "remaining_phases": [
     "D06",
     "D07",
@@ -120,6 +126,21 @@
       "next_phase": "D06",
       "closure": "remediation/D05-CLOSURE.md",
       "evidence": "remediation/D05-5-SONUC.md"
+    },
+    "D06": {
+      "status": "IN_PROGRESS",
+      "plan": "remediation/D06-PLAN.md",
+      "completed_steps": [
+        "D06.1"
+      ],
+      "remaining_steps": [
+        "D06.2",
+        "D06.3",
+        "D06.4",
+        "D06.5"
+      ],
+      "independent_acceptance": "PENDING",
+      "external_provider_acceptance": "PENDING"
     }
   },
   "d03_plan": "remediation/D03-PLAN.md",
@@ -263,6 +284,14 @@
       "evidence": "remediation/D05-5-SONUC.md",
       "independent_acceptance": "PENDING",
       "scope": "Signed frozen private packages; exact approved permissions and digest; Core/API/dependency checks; bounded declarative namespaced create_table migrations and ledger; staged publication, disabled-first atomic audit, real SQL/key/privacy/file health and host-owned adapter admission; scoped public contracts; real process interruption/lease race and explicit pinned-backup rollback. Uploaded PHP is not booted. Provider transports/adapters D06, erasure/retention D07, authenticated entrypoint composition D08 and independent host acceptance D09 remain."
+    },
+    "D06.1": {
+      "status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
+      "date": "2026-10-16",
+      "evidence": "remediation/D06-1-SONUC.md",
+      "independent_acceptance": "PENDING",
+      "external_provider_acceptance": "PENDING",
+      "scope": "One real bounded HTTPS WHM request; TLS peer/host and explicit private CA support, no plaintext/bypass/redirect/replay; monotonic latency; strict HTTP/result/version/load evidence; local HTTPS lifecycle/failures and existing provider/reconciliation/secret regressions. Whole provisioning and external sandbox acceptance remain D06.2/D06.4-D06.5."
     }
   },
   "d03_staging_storage_evidence": "remediation/D03-1-STAGING-SONUC.md",
@@ -280,7 +309,7 @@
   "d05_publication_evidence": "remediation/D05-1-SONUC.md",
   "d05_transport_evidence": "remediation/D05-2-SONUC.md",
   "d05_restore_evidence": "remediation/D05-3-SONUC.md",
-  "next_action": "D06: define fixed provider/automation acceptance gates from the original master plan; connect real provider contracts and recovery boundaries",
+  "next_action": "D06.2: provider lifecycle Application ownership/risk/paid-order and durable workflow/retry/reconciliation acceptance",
   "d05_4_acceptance": "remediation/D05-4-KABUL.md",
   "d05_preupdate_backup_evidence": "remediation/D05-4-PREBACKUP-SONUC.md",
   "d05_4_gates": {
@@ -318,5 +347,7 @@
   "d05_publication_rollback_evidence": "remediation/D05-4-PUBLICATION-SONUC.md",
   "d05_4_closure": "remediation/D05-4-CLOSURE.md",
   "d05_extension_evidence": "remediation/D05-5-SONUC.md",
-  "d05_closure": "remediation/D05-CLOSURE.md"
+  "d05_closure": "remediation/D05-CLOSURE.md",
+  "d06_plan": "remediation/D06-PLAN.md",
+  "d06_cpanel_evidence": "remediation/D06-1-SONUC.md"
 }

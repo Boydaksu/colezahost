@@ -38,7 +38,7 @@ final class CpanelApiClient
     public function testAuthentication(): array
     {
         $response = $this->call('version');
-        $version = (string)($response['data']['version'] ?? 'unknown');
+        $version = $this->verifiedVersion($response);
 
         return [
             'authenticated' => true,
@@ -58,9 +58,16 @@ final class CpanelApiClient
         $response = $this->call('systemloadavg');
         $data = (array)($response['data'] ?? []);
 
-        $one = isset($data['one']) ? (float)$data['one'] : 0.0;
-        $five = isset($data['five']) ? (float)$data['five'] : 0.0;
-        $fifteen = isset($data['fifteen']) ? (float)$data['fifteen'] : 0.0;
+        foreach (['one', 'five', 'fifteen'] as $key) {
+            $value = $data[$key] ?? null;
+            if ((!is_int($value) && !is_float($value) && !is_string($value)) || !is_numeric($value)
+                || !is_finite((float)$value) || (float)$value < 0) {
+                throw new ProviderException('Incomplete or invalid WHM load evidence.', 'INVALID_WHM_RESPONSE');
+            }
+        }
+        $one = (float)$data['one'];
+        $five = (float)$data['five'];
+        $fifteen = (float)$data['fifteen'];
 
         return [
             '1m' => $one,
@@ -76,7 +83,7 @@ final class CpanelApiClient
     public function getVersion(): string
     {
         $res = $this->call('version');
-        return (string)($res['data']['version'] ?? 'unknown');
+        return $this->verifiedVersion($res);
     }
 
     /**
@@ -219,6 +226,9 @@ final class CpanelApiClient
      */
     public function call(string $function, array $params = [], string $method = 'GET', bool $throwOnError = true): array
     {
+        if (!preg_match('/^[a-z][a-z0-9_]{0,63}$/D', $function) || !in_array(strtoupper($method), ['GET', 'POST'], true)) {
+            throw new ProviderException('Invalid WHM function or method.', 'INVALID_WHM_REQUEST');
+        }
         $url = $this->buildUrl($function);
         $headers = $this->buildHeaders();
 
@@ -227,7 +237,7 @@ final class CpanelApiClient
         $bodyParams = null;
 
         if (strtoupper($method) === 'GET') {
-            $queryParams = array_merge($queryParams, $params);
+            $queryParams = array_replace($params, $queryParams);
         } else {
             $bodyParams = $params;
         }
@@ -289,12 +299,14 @@ final class CpanelApiClient
                 context: [
                     'hostname' => $this->config->getHostname(),
                     'status_code' => $statusCode,
-                    'body_preview' => substr($body, 0, 200),
                 ]
             );
         }
 
-        $decoded = json_decode($body, true);
+        if ($statusCode !== 200) {
+            throw new ProviderException('Unexpected cPanel/WHM HTTP status (' . $statusCode . ').', 'WHM_HTTP_ERROR', ['status_code' => $statusCode]);
+        }
+        $decoded = json_decode($body, true, 64);
         if (!is_array($decoded)) {
             throw new ProviderException(
                 message: "Invalid non-JSON response received from cPanel/WHM (HTTP {$statusCode}).",
@@ -302,14 +314,25 @@ final class CpanelApiClient
                 context: [
                     'hostname' => $this->config->getHostname(),
                     'function' => $function,
-                    'body_preview' => substr($body, 0, 200),
                 ]
             );
         }
 
+        $standard = isset($decoded['metadata']) && is_array($decoded['metadata'])
+            && in_array($decoded['metadata']['result'] ?? null, [0, 1, '0', '1'], true);
+        $legacy = !array_key_exists('metadata', $decoded) && is_array($decoded['result'][0] ?? null)
+            && in_array($decoded['result'][0]['status'] ?? null, [0, 1, '0', '1'], true);
+        if (($standard && isset($decoded['metadata']['reason']) && !is_string($decoded['metadata']['reason']))
+            || ($legacy && (count($decoded['result']) !== 1 || (isset($decoded['result'][0]['statusmsg']) && !is_string($decoded['result'][0]['statusmsg']))))) {
+            throw new ProviderException('Invalid WHM result detail.', 'INVALID_WHM_RESPONSE');
+        }
+        if (!$standard && !$legacy) {
+            throw new ProviderException('Missing or invalid WHM result evidence.', 'INVALID_WHM_RESPONSE');
+        }
+
         // WHM API 1 standard response checking
-        if (isset($decoded['metadata'])) {
-            $result = (int)($decoded['metadata']['result'] ?? 1);
+        if ($standard) {
+            $result = (int)$decoded['metadata']['result'];
             if ($result === 0) {
                 $reason = (string)($decoded['metadata']['reason'] ?? 'Unknown WHM error');
                 $classification = ProvisioningErrorClassifier::classify(
@@ -336,7 +359,7 @@ final class CpanelApiClient
         }
 
         // Legacy WHM response format fallback: [{ status: 0, statusmsg: "..." }]
-        if (isset($decoded['result'][0]['status']) && (int)$decoded['result'][0]['status'] === 0) {
+        if ($legacy && (int)$decoded['result'][0]['status'] === 0) {
             $reason = (string)($decoded['result'][0]['statusmsg'] ?? 'Unknown legacy WHM error');
             $classification = ProvisioningErrorClassifier::classify($reason, 'WHM_LEGACY_FAILED', null, $decoded);
 
@@ -360,6 +383,15 @@ final class CpanelApiClient
         ];
 
         return $decoded;
+    }
+
+    private function verifiedVersion(array $response): string
+    {
+        $version = $response['data']['version'] ?? null;
+        if (!is_string($version) || !preg_match('/^[0-9]+(?:\.[0-9]+){1,4}(?:[-+][A-Za-z0-9._-]+)?$/D', $version)) {
+            throw new ProviderException('Missing or invalid WHM version evidence.', 'INVALID_WHM_RESPONSE');
+        }
+        return $version;
     }
 
     private function buildUrl(string $function): string

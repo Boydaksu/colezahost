@@ -1,0 +1,88 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+FFFFFFF...FFFFFFFFFFFFFF                                          24 / 24 (100%)
+
+Time: 00:00.400, Memory: 22.00 MB
+
+There were 21 failures:
+
+1) Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidWhmResponsesNeverAuthenticate@redirect with data (302, [[1], ['11.1']])
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.
+
+2) Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidWhmResponsesNeverAuthenticate@rate-limit with data (429, [[1], ['11.1']])
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.
+
+3) Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidWhmResponsesNeverAuthenticate@empty with data (200, [])
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.
+
+4) Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidWhmResponsesNeverAuthenticate@missing-result with data (200, [[], ['11.1']])
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.
+
+5) Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidWhmResponsesNeverAuthenticate@boolean-result with data (200, [[true], ['11.1']])
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.
+
+6) Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidWhmResponsesNeverAuthenticate@missing-version with data (200, [[1], []])
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.
+
+7) Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidWhmResponsesNeverAuthenticate@invalid-version with data (200, [[1], [[]]])
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.
+
+8) Coleza\Tests\Integration\Providers\CpanelTransportTest::testHttpFailureWithSuccessBodyCannotCompleteMutationEvenWhenThrowOnErrorFalse
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.
+
+9) Coleza\Tests\Integration\Providers\CpanelTransportTest::testMissingOrInvalidLoadCannotBecomeHealthy#0 with data ([])
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.
+
+10) Coleza\Tests\Integration\Providers\CpanelTransportTest::testMissingOrInvalidLoadCannotBecomeHealthy#1 with data ([0, 0])
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.
+
+11) Coleza\Tests\Integration\Providers\CpanelTransportTest::testMissingOrInvalidLoadCannotBecomeHealthy#2 with data (['garbage', 0, 0])
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.
+
+12) Coleza\Tests\Integration\Providers\CpanelTransportTest::testMissingOrInvalidLoadCannotBecomeHealthy#3 with data ([-1, 0, 0])
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.
+
+13) Coleza\Tests\Integration\Providers\CpanelTransportTest::testMissingOrInvalidLoadCannotBecomeHealthy#4 with data ([true, 0, 0])
+Failed asserting that exception of type "Coleza\Domain\Providers\Exceptions\ProviderException" is thrown.
+
+14) Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidConfigurationCannotCreateCredentialBearingUrl#0 with data (['host.test/path'])
+Failed asserting that exception of type "InvalidArgumentException" is thrown.
+
+15) Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidConfigurationCannotCreateCredentialBearingUrl#1 with data (['good.test@evil.test'])
+Failed asserting that exception of type "InvalidArgumentException" is thrown.
+
+16) Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidConfigurationCannotCreateCredentialBearingUrl#2 with data (['https://host.test'])
+Failed asserting that exception of type "InvalidArgumentException" is thrown.
+
+17) Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidConfigurationCannotCreateCredentialBearingUrl#3 with data (['root\r\nInjected: yes'])
+Failed asserting that exception of type "InvalidArgumentException" is thrown.
+
+18) Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidConfigurationCannotCreateCredentialBearingUrl#4 with data ([''])
+Failed asserting that exception of type "InvalidArgumentException" is thrown.
+
+19) Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidConfigurationCannotCreateCredentialBearingUrl#5 with data ([false])
+Failed asserting that exception of type "InvalidArgumentException" is thrown.
+
+20) Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidConfigurationCannotCreateCredentialBearingUrl#6 with data ([0])
+Failed asserting that exception of type "InvalidArgumentException" is thrown.
+
+21) Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidConfigurationCannotCreateCredentialBearingUrl#7 with data (['secret\r\nX: yes'])
+Failed asserting that exception of type "InvalidArgumentException" is thrown.
+
+--
+
+1 test triggered 1 PHP warning:
+
+1) C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Providers\Cpanel\CpanelApiClient.php:41
+Array to string conversion
+
+Triggered by:
+
+* Coleza\Tests\Integration\Providers\CpanelTransportTest::testInvalidWhmResponsesNeverAuthenticate#invalid-version
+  C:\Users\alici\OneDrive\Desktop\colezahost\tests\Integration\Providers\CpanelTransportTest.php:91
+
+FAILURES!
+Tests: 24, Assertions: 24, Failures: 21, Warnings: 1.
