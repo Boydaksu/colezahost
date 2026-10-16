@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Provisioning\HostingDispatchTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Provisioning\HostingDispatchTest.php" tests="3" assertions="3" errors="0" failures="3" skipped="0" time="0.159442">
+    <testcase name="testAdmissionDenialPreventsEveryProviderRequest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php" line="120" class="Coleza\Tests\Unit\Provisioning\HostingDispatchTest" classname="Coleza.Tests.Unit.Provisioning.HostingDispatchTest" assertions="1" time="0.149978">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testAdmissionDenialPreventsEveryProviderRequest&#13;
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+-Array &amp;0 []
++Array &amp;0 [
++    0 =&gt; Array &amp;1 [
++        'method' =&gt; 'GET',
++        'url' =&gt; 'https://fixture.test:2087/json-api/listpkgs',
++        'headers' =&gt; Array &amp;2 [
++            'Accept' =&gt; 'application/json',
++            'User-Agent' =&gt; 'ColezaHost-CpanelClient/1.0',
++            'Authorization' =&gt; 'whm root:fixture-only-token',
++        ],
++        'query_params' =&gt; Array &amp;3 [
++            'api.version' =&gt; 1,
++        ],
++        'body_params' =&gt; null,
++        'timeout' =&gt; 30,
++        'timestamp' =&gt; 1792170259.863299,
++    ],
++    1 =&gt; Array &amp;4 [
++        'method' =&gt; 'GET',
++        'url' =&gt; 'https://fixture.test:2087/json-api/listpkgs',
++        'headers' =&gt; Array &amp;5 [
++            'Accept' =&gt; 'application/json',
++            'User-Agent' =&gt; 'ColezaHost-CpanelClient/1.0',
++            'Authorization' =&gt; 'whm root:fixture-only-token',
++        ],
++        'query_params' =&gt; Array &amp;6 [
++            'api.version' =&gt; 1,
++        ],
++        'body_params' =&gt; null,
++        'timeout' =&gt; 30,
++        'timestamp' =&gt; 1792170259.866925,
++    ],
++    2 =&gt; Array &amp;7 [
++        'method' =&gt; 'POST',
++        'url' =&gt; 'https://fixture.test:2087/json-api/createacct',
++        'headers' =&gt; Array &amp;8 [
++            'Accept' =&gt; 'application/json',
++            'User-Agent' =&gt; 'ColezaHost-CpanelClient/1.0',
++            'Authorization' =&gt; 'whm root:fixture-only-token',
++        ],
++        'query_params' =&gt; Array &amp;9 [
++            'api.version' =&gt; 1,
++        ],
++        'body_params' =&gt; Array &amp;10 [
++            'username' =&gt; 'clientusr',
++            'domain' =&gt; 'client.test',
++            'password' =&gt; 'fixture-account-password',
++            'plan' =&gt; 'starter',
++            'quota' =&gt; 10,
++            'bwlimit' =&gt; 100,
++        ],
++        'timeout' =&gt; 30,
++        'timestamp' =&gt; 1792170259.866941,
++    ],
++    3 =&gt; Array &amp;11 [
++        'method' =&gt; 'GET',
++        'url' =&gt; 'https://fixture.test:2087/json-api/accountsummary',
++        'headers' =&gt; Array &amp;12 [
++            'Accept' =&gt; 'application/json',
++            'User-Agent' =&gt; 'ColezaHost-CpanelClient/1.0',
++            'Authorization' =&gt; 'whm root:fixture-only-token',
++        ],
++        'query_params' =&gt; Array &amp;13 [
++            'user' =&gt; 'clientusr',
++            'api.version' =&gt; 1,
++        ],
++        'body_params' =&gt; null,
++        'timeout' =&gt; 30,
++        'timestamp' =&gt; 1792170259.867184,
++    ],
++]
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:124</failure>
+    </testcase>
+    <testcase name="testAdmissionRevokedAfterRemoteEffectCannotActivate" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php" line="126" class="Coleza\Tests\Unit\Provisioning\HostingDispatchTest" classname="Coleza.Tests.Unit.Provisioning.HostingDispatchTest" assertions="1" time="0.005051">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testAdmissionRevokedAfterRemoteEffectCannotActivate&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:130</failure>
+    </testcase>
+    <testcase name="testAdmissionAuditFailureRollsBackActivation" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php" line="133" class="Coleza\Tests\Unit\Provisioning\HostingDispatchTest" classname="Coleza.Tests.Unit.Provisioning.HostingDispatchTest" assertions="1" time="0.004412">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testAdmissionAuditFailureRollsBackActivation&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:136</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

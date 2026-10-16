@@ -49,11 +49,16 @@ final class HostingProvisioningWorkflow
      * Execute the full 6-step hosting provisioning workflow:
      * validate -> place -> reserve -> remote -> verify -> activate
      */
-    public function execute(HostingProvisioningRequest $request): HostingProvisioningResult
+    public function execute(HostingProvisioningRequest $request, ?HostingAdmission $admission = null): HostingProvisioningResult
     {
         $db=$this->operationService->getConnection();
         if($db->getPdo()->inTransaction()){throw new \LogicException('Provider calls cannot run inside a caller transaction.');}
         $serviceId = $request->getServiceId();
+        if($admission!==null&&$admission->connection()!==$db){throw new \LogicException('Admission requires the workflow connection.');}
+        $receipt=$admission===null?null:$this->operationService->localTransaction(fn()=>$admission->approve($serviceId,ProviderCapability::CREATE_ACCOUNT,$request));
+        $check=function()use($admission,$receipt,$serviceId,$request):void{
+            if($admission!==null&&$receipt!==$admission->approve($serviceId,ProviderCapability::CREATE_ACCOUNT,$request)){throw new RuntimeException('Hosting admission changed.');}
+        };
         /** @var array<string> $completedSteps */
         $completedSteps = [];
 
@@ -72,7 +77,7 @@ final class HostingProvisioningWorkflow
         }
 
         // Idempotency: if already active, treat as completed
-        $held = $this->operationService->findActiveOperationForService($serviceId, ProviderCapability::CREATE_ACCOUNT);
+        $held = $this->operationService->findActiveOperationForService($serviceId);
         if ($held !== null) {
             return HostingProvisioningResult::failure(serviceId: $serviceId, failedStep: HostingProvisioningStep::VALIDATE,
                 errorMessage: 'Remote outcome requires reconciliation before starting another provisioning workflow.',
@@ -219,7 +224,8 @@ final class HostingProvisioningWorkflow
         $completedSteps[]=HostingProvisioningStep::PLACE;
         $reservationToken=null;$op=null;
         try{
-            [$op,$reservationToken]=$this->operationService->localTransaction(function()use($db,$request,$serviceId,$serverId,$selectedServer,$username,$domain,$package,$password,$serviceFingerprint,$service):array{
+            [$op,$reservationToken]=$this->operationService->localTransaction(function()use($db,$request,$serviceId,$serverId,$selectedServer,$username,$domain,$package,$password,$serviceFingerprint,$service,$check,$receipt,$admission):array{
+                $check();
                 $db->lockRow('services',$serviceId);
                 if(serialize($service)!==serialize($this->serviceService->findServiceById($serviceId))||!hash_equals($serviceFingerprint,HostingDispatchBinding::service($db,$serviceId))){throw new RuntimeException('Service changed during placement.');}
                 foreach($this->operationService->listOperationsForService($serviceId) as $prior){if($prior->getAction()===ProviderCapability::CREATE_ACCOUNT){throw new RuntimeException('A create dispatch already exists.');}}
@@ -236,7 +242,10 @@ final class HostingProvisioningWorkflow
                     'status'=>ServicePlacement::STATUS_RESERVED,'package_identifier'=>$package,'disk_limit_mb'=>$request->getRequiredDiskMb(),'bandwidth_limit_mb'=>$request->getRequiredBandwidthMb()]);
                 $payload=['username'=>$username,'domain'=>$domain,'package'=>$package,'password'=>$password,'disk_limit_mb'=>$request->getRequiredDiskMb(),'bandwidth_limit_mb'=>$request->getRequiredBandwidthMb(),
                     '_hosting_dispatch'=>['version'=>1,'service_sha256'=>HostingDispatchBinding::service($db,$serviceId),'server_sha256'=>HostingDispatchBinding::server($db,$serverId),'reservation_token'=>$token]];
+                if($receipt!==null){$payload['_hosting_admission']=$receipt;}
+                if($this->operationService->findActiveOperationForService($serviceId)!==null){throw new RuntimeException('A provider dispatch is already active.');}
                 $queued=$this->operationService->queueOperation($serviceId,$request->getProviderSlug(),ProviderCapability::CREATE_ACCOUNT,$payload,$serverId,correlationId:$request->getCorrelationId());
+                $admission?->record($serviceId,ProviderCapability::CREATE_ACCOUNT,$queued->getOperationUuid(),'prepared');
                 return [$this->operationService->startDispatch($queued),$token];
             });
         }catch(Throwable $error){return HostingProvisioningResult::failure($serviceId,HostingProvisioningStep::RESERVE,'Local dispatch preparation failed; no create request was sent.','DISPATCH_PREPARATION_FAILED',$completedSteps,serverId:$serverId);}
@@ -251,7 +260,12 @@ final class HostingProvisioningWorkflow
             $createOp=new CreateAccountOperation(serviceId:$serviceId,serviceNumber:$service->getServiceNumber(),username:$username,password:$password,domain:$domain,packageIdentifier:$package,
                 resourceQuotas:['disk_limit_mb'=>$request->getRequiredDiskMb(),'bandwidth_limit_mb'=>$request->getRequiredBandwidthMb()],server:$selectedServer->toServerConnectionDto(),
                 metadata:array_merge($request->getMetadata(),['email'=>$request->getContactEmail(),'dedicated_ip'=>$request->requiresDedicatedIp()?1:0]));
-            $remoteResult=$provider->createAccount($createOp);
+            $remoteResult=$provider->createAccount($createOp,function(string $resolvedPackage)use($op,$db,$check,$package):void{
+                if($resolvedPackage!==$package){throw new RuntimeException('Canonical remote package changed before dispatch.');}
+                $this->operationService->commitReconciliation($op,function($current)use($db,$check):void{
+                    $check();HostingDispatchBinding::assertCurrent($db,$current,$this->reservationService);
+                });
+            });
         }catch(Throwable){$remoteResult=ProviderOperationResult::failure(ProviderCapability::CREATE_ACCOUNT,'Remote response is uncertain.','PROVIDER_EXCEPTION');}
         if(!$remoteResult->isSuccess()){return $failure(HostingProvisioningStep::REMOTE,$remoteResult->getErrorCode()??'REMOTE_CREATION_FAILED',$remoteResult);}
         $completedSteps[]=HostingProvisioningStep::REMOTE;
@@ -264,7 +278,8 @@ final class HostingProvisioningWorkflow
         $remoteIp=$summary['ip'];$nameservers=[];
         foreach(['nameserver','nameserver2'] as $key){$value=$remoteResult->getData()[$key]??null;if(is_string($value)&&$value!==''){$nameservers[]=$value;}}
         try{
-            $this->operationService->commitReconciliation($op,function(ProvisioningOperation $current)use($db,$serviceId,$serverId,$selectedServer,$package,$remoteIp,$domain,$username,$remoteResult,$request):void{
+            $this->operationService->commitReconciliation($op,function(ProvisioningOperation $current)use($db,$serviceId,$serverId,$selectedServer,$package,$remoteIp,$domain,$username,$remoteResult,$request,$check,$admission):void{
+                $check();
                 $db->lockRow('servers',$serverId);
                 HostingDispatchBinding::assertCurrent($db,$current,$this->reservationService);
                 $service=$this->serviceService->findServiceById($serviceId);
@@ -275,6 +290,7 @@ final class HostingProvisioningWorkflow
                     'status'=>ServicePlacement::STATUS_PLACED,'package_identifier'=>$package,'dedicated_ip'=>$remoteIp,'hostname'=>$selectedServer->getHostname(),
                     'disk_limit_mb'=>$request->getRequiredDiskMb(),'bandwidth_limit_mb'=>$request->getRequiredBandwidthMb()]);
                 $this->serviceService->activateService($serviceId,['domain'=>$domain,'username'=>$username,'server_name'=>$selectedServer->getName(),'ip_address'=>$remoteIp],$service->getLockVersion());
+                $admission?->record($serviceId,ProviderCapability::CREATE_ACCOUNT,$current->getOperationUuid(),'completed');
                 $this->operationService->recordAttempt($current->getOperationUuid(),$remoteResult);
             });
         }catch(Throwable){return $failure(HostingProvisioningStep::ACTIVATE,'ACTIVATION_FAILED');}

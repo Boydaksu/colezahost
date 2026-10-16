@@ -19,6 +19,22 @@ final class CpanelApiClient
         $this->transport = $transport ?? new CpanelCurlTransport();
     }
 
+    /** A null accountsummary or API failure never proves absence. Root, unfiltered listing only. */
+    public function verifiedAccountAbsent(string $username): bool
+    {
+        if($this->config->getUsername()!=='root'){throw new RuntimeException('Root listing is required to verify deletion.');}
+        $response=$this->call('listaccts');$rows=$response['data']['acct']??null;
+        if(($response['metadata']['result']??null)!==1&&($response['metadata']['result']??null)!=='1'){throw new RuntimeException('Unsuccessful account listing.');}
+        if(!is_array($rows)||!array_is_list($rows)){throw new RuntimeException('Incomplete account listing.');}
+        $users=[];
+        foreach($rows as $row){
+            $user=$row['user']??null;
+            if(!is_string($user)||!preg_match('/^[a-z][a-z0-9]{0,15}$/D',$user)||isset($users[$user])){throw new RuntimeException('Ambiguous account listing.');}
+            $users[$user]=true;
+        }
+        return !isset($users[$username]);
+    }
+
     public function getConfiguration(): CpanelConfiguration
     {
         return $this->config;

@@ -1,0 +1,35 @@
+{
+  "phase": "D06",
+  "step": "D06.2",
+  "checkpoint": "application_admission_and_lifecycle",
+  "status": "IMPLEMENTED_LOCAL_VERIFIED_CHECKPOINT",
+  "step_status": "IN_PROGRESS",
+  "reference_commit": "608c949ab8ec0b5f1ed0711fbf0b40eda88f3b12",
+  "before": {
+    "tests": 3,
+    "failures": 3,
+    "errors": 0
+  },
+  "main": {
+    "tests": 2282,
+    "assertions": 13802
+  },
+  "native": {
+    "tests": 109,
+    "assertions": 742
+  },
+  "native_classes": 5,
+  "new_command_cases": 42,
+  "new_admission_boundary_cases": 3,
+  "completed_gates": 3,
+  "total_gates": 4,
+  "remaining_gates": [
+    "process_protocol_acceptance"
+  ],
+  "full_mariadb_current_source": false,
+  "external_provider_acceptance": "PENDING",
+  "production_ready": false,
+  "independent_acceptance": "PENDING",
+  "real_parallel_process_acceptance": false,
+  "source_inputs": 59
+}

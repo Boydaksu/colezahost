@@ -16,7 +16,7 @@ Referans: `review/INCELEME.md` bulguları F01–F33 ve orijinal master plan. Bu 
 
 Her faz: hedef dosyaları belirle → açığı gösteren test → düzeltme → ilgili regresyonlar → tüm mevcut testler → ham kanıt ve kalan işler. Test beklentisi sırf başarısızlığı gizlemek için değiştirilmez. Gerçek sağlayıcı ve üretim doğrulaması yerel taklitle kapanmış sayılmaz. Gerekli dış erişim/hesap bilgileri ilgili fazda kaydedilir.
 
-Güncel durum: **D06.2 IN_PROGRESS, 2/4 sabit kontrol yerel doğrulandı.** Durable dispatch/capacity ve doğrulanmış atomik aktivasyon tamam; Application actor/owner/paid/risk/lifecycle ve process/protocol acceptance açık. Sabit liste D06-2-KABUL.md, kanıt D06-2-DISPATCH-SONUC.md. D06.1 ve D02–D05 kapalı kalır. D06.3–D06.5 başlamadı; production/harici sağlayıcı/bağımsız kabul PENDING. Aşağıdaki notlar tarihsel revizyonların kanıtlarıdır.
+Güncel durum: **D06.2 IN_PROGRESS, 3/4 sabit kontrol yerel doğrulandı.** Durable dispatch/capacity, doğrulanmış atomik aktivasyon ve Application actor/owner/paid/risk/lifecycle tamam; yalnız process/parallel/crash/real HTTPS workflow acceptance açık. Sabit liste D06-2-KABUL.md, kanıt D06-2-COMMANDS-SONUC.md. D06.1 ve D02–D05 kapalı kalır. D06.3–D06.5 başlamadı; production/harici sağlayıcı/bağımsız kabul PENDING. Aşağıdaki notlar tarihsel revizyonların kanıtlarıdır.
 
 ## CR-D01 / TCR-D01
 

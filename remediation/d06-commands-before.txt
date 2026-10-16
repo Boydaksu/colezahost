@@ -1,0 +1,102 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+[41;37mF[0m[41;37mF[0m[41;37mF[0m                                                                 3 / 3 (100%)
+
+Time: 00:00.164, Memory: 22.00 MB
+
+There were 3 failures:
+
+1) Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testAdmissionDenialPreventsEveryProviderRequest
+Failed asserting that two arrays are identical.
+--- Expected
++++ Actual
+@@ @@
+-Array &0 []
++Array &0 [
++    0 => Array &1 [
++        'method' => 'GET',
++        'url' => 'https://fixture.test:2087/json-api/listpkgs',
++        'headers' => Array &2 [
++            'Accept' => 'application/json',
++            'User-Agent' => 'ColezaHost-CpanelClient/1.0',
++            'Authorization' => 'whm root:fixture-only-token',
++        ],
++        'query_params' => Array &3 [
++            'api.version' => 1,
++        ],
++        'body_params' => null,
++        'timeout' => 30,
++        'timestamp' => 1792170259.863299,
++    ],
++    1 => Array &4 [
++        'method' => 'GET',
++        'url' => 'https://fixture.test:2087/json-api/listpkgs',
++        'headers' => Array &5 [
++            'Accept' => 'application/json',
++            'User-Agent' => 'ColezaHost-CpanelClient/1.0',
++            'Authorization' => 'whm root:fixture-only-token',
++        ],
++        'query_params' => Array &6 [
++            'api.version' => 1,
++        ],
++        'body_params' => null,
++        'timeout' => 30,
++        'timestamp' => 1792170259.866925,
++    ],
++    2 => Array &7 [
++        'method' => 'POST',
++        'url' => 'https://fixture.test:2087/json-api/createacct',
++        'headers' => Array &8 [
++            'Accept' => 'application/json',
++            'User-Agent' => 'ColezaHost-CpanelClient/1.0',
++            'Authorization' => 'whm root:fixture-only-token',
++        ],
++        'query_params' => Array &9 [
++            'api.version' => 1,
++        ],
++        'body_params' => Array &10 [
++            'username' => 'clientusr',
++            'domain' => 'client.test',
++            'password' => 'fixture-account-password',
++            'plan' => 'starter',
++            'quota' => 10,
++            'bwlimit' => 100,
++        ],
++        'timeout' => 30,
++        'timestamp' => 1792170259.866941,
++    ],
++    3 => Array &11 [
++        'method' => 'GET',
++        'url' => 'https://fixture.test:2087/json-api/accountsummary',
++        'headers' => Array &12 [
++            'Accept' => 'application/json',
++            'User-Agent' => 'ColezaHost-CpanelClient/1.0',
++            'Authorization' => 'whm root:fixture-only-token',
++        ],
++        'query_params' => Array &13 [
++            'user' => 'clientusr',
++            'api.version' => 1,
++        ],
++        'body_params' => null,
++        'timeout' => 30,
++        'timestamp' => 1792170259.867184,
++    ],
++]
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:124
+
+2) Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testAdmissionRevokedAfterRemoteEffectCannotActivate
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:130
+
+3) Coleza\Tests\Unit\Provisioning\HostingDispatchTest::testAdmissionAuditFailureRollsBackActivation
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\HostingDispatchCases.php:136
+
+[37;41mFAILURES![0m
+[37;41mTests: 3[0m[37;41m, Assertions: 3[0m[37;41m, Failures: 3[0m[37;41m.[0m

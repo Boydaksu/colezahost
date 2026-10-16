@@ -16,4 +16,4 @@ D06.1 kapsamı dört cPanel sınıfı ve protokol regresyonlarıdır. Paid-order
 
 D06.1 yerel olarak tamamlandı; kanıt D06-1-SONUC.md. Güncel kalan liste sabit dört adım: D06.2, D06.3, D06.4, D06.5. Sonraki D06.2; dış sağlayıcı kabulü PENDING.
 
-D06.2 sabit dört kontrolle yürür: D06-2-KABUL.md. İlk iki kontrol (durable dispatch/capacity ve verified atomic activation) yerel doğrulandı; 2/4, adım IN_PROGRESS. Application admission/lifecycle ve process/protocol acceptance açık. Sonraki üçüncü kontrol; D06.3 başlamadı.
+D06.2 sabit dört kontrolle yürür: D06-2-KABUL.md. Durable dispatch/capacity, verified atomic activation ve Application admission/lifecycle yerel doğrulandı; **3/4, adım IN_PROGRESS**. Sonraki ve son sabit kontrol process/parallel/crash/real HTTPS workflow acceptance; D06.3 başlamadı. Kanıt D06-2-COMMANDS-SONUC.md.

@@ -117,4 +117,24 @@ trait HostingDispatchCases
         $this->expectException(\LogicException::class);new HostingProvisioningWorkflow($f['services'],new ServerService($other,SecretFixtureKey::encryptor()),new PlacementEngine($f['servers']),$f['capacity'],new ProviderRegistry([new CpanelProvider($f['transport'])]),$f['ops']);
     }
 
+    public function testAdmissionDenialPreventsEveryProviderRequest():void
+    {
+        $f=$this->hostingFixture();$policy=new FixtureHostingAdmission($this->db);$policy->allowed=false;
+        try{$f['workflow']->execute($f['request'],$policy);}catch(\RuntimeException){}
+        self::assertSame([],$f['transport']->memory->getRecordedRequests());
+    }
+    public function testAdmissionRevokedAfterRemoteEffectCannotActivate():void
+    {
+        $f=$this->hostingFixture();$policy=new FixtureHostingAdmission($this->db);
+        $f['transport']->after=static function($url)use($policy):void{if(str_contains($url,'/createacct')){$policy->allowed=false;}};
+        self::assertFalse($f['workflow']->execute($f['request'],$policy)->isSuccess());
+        self::assertSame('pending',$f['services']->findServiceById($f['service']->getId())->getStatus());
+    }
+    public function testAdmissionAuditFailureRollsBackActivation():void
+    {
+        $f=$this->hostingFixture();$policy=new FixtureHostingAdmission($this->db);$policy->failAudit=true;
+        self::assertFalse($f['workflow']->execute($f['request'],$policy)->isSuccess());
+        self::assertSame('pending',$f['services']->findServiceById($f['service']->getId())->getStatus());
+    }
+
 }

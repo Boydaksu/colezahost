@@ -99,7 +99,7 @@ final class CpanelProvider extends AbstractProvider
         return $this->transport;
     }
 
-    public function createAccount(CreateAccountOperation $operation): ProviderOperationResult
+    public function createAccount(CreateAccountOperation $operation, ?\Closure $beforeDispatch = null): ProviderOperationResult
     {
         $this->assertCapability(ProviderCapability::CREATE_ACCOUNT);
 
@@ -142,6 +142,7 @@ final class CpanelProvider extends AbstractProvider
                 $params['ip'] = 'y';
             }
 
+            $beforeDispatch?->__invoke($resolvedPackage->getName());
             $response = $client->createAccount($params);
             $result = (int)($response['metadata']['result'] ?? ($response['result'][0]['status'] ?? 0));
             $reason = (string)($response['metadata']['reason'] ?? ($response['result'][0]['statusmsg'] ?? ''));

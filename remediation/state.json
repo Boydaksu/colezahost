@@ -11,11 +11,11 @@
   "next_step": "D06.2",
   "next_phase": "D06",
   "tests": {
-    "main_total": 2237,
-    "main_assertions": 13649,
-    "mariadb_total": 64,
-    "mariadb_assertions": 504,
-    "mariadb_scope": "Exact four affected classes / 64 cases: HostingDispatchTest plus ProvisioningProbeSafetyTest, ProviderVaultSchemaTest, ProvisioningSecretTest; not the whole native suite",
+    "main_total": 2282,
+    "main_assertions": 13802,
+    "mariadb_total": 109,
+    "mariadb_assertions": 742,
+    "mariadb_scope": "Exact five affected classes / 109 cases: HostingCommandTest, HostingDispatchTest, ProvisioningProbeSafetyTest, ProviderVaultSchemaTest, ProvisioningSecretTest; not the whole native suite",
     "full_mariadb_current_source": false,
     "last_full_mariadb": {
       "reference_commit": "0d2e3e08d4c121a146f298f77b4bc6b008b6f66e",
@@ -23,8 +23,8 @@
       "assertions": 5399,
       "evidence": "remediation/D02-CLOSEOUT-summary.json"
     },
-    "total": 2301,
-    "assertions": 14153,
+    "total": 2391,
+    "assertions": 14544,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -295,16 +295,15 @@
     },
     "D06.2": {
       "status": "IN_PROGRESS",
-      "completed_gates": 2,
+      "completed_gates": 3,
       "total_gates": 4,
       "acceptance": "remediation/D06-2-KABUL.md",
-      "evidence": "remediation/D06-2-DISPATCH-SONUC.md",
+      "evidence": "remediation/D06-2-COMMANDS-SONUC.md",
       "remaining_gates": [
-        "application_admission_and_lifecycle",
         "process_protocol_acceptance"
       ],
       "independent_acceptance": "PENDING",
-      "scope": "Durable service-serialized create claim and non-expiring capacity before remote dispatch; conservative hold/no second create on uncertain outcome; strict matching remote postcondition and current service/server/capacity/placement; atomic placement/activation/op/audit; encrypted-only generated credential payload; explicit matching reconciliation. Trusted domain workflow only. Application actor/owner/paid/risk and suspend/unsuspend/terminate command binding plus separate-process/parallel/real HTTPS workflow acceptance remain the last two fixed gates."
+      "scope": "Durable claim/capacity and atomic verified activation plus current authenticated actor/global granular permission, owner/order/product/unit/domain/paid invoice/risk admission; create/suspend/unsuspend/terminate and read-only explicit recovery. Commands recheck at preparation, immediately before mutation and atomic local completion; holding uncertain outcomes preserves capacity. Separate-process/parallel/crash and real HTTPS whole workflow acceptance remain the fourth fixed gate. HTTP/worker composition D08 and independent host/provider acceptance D09 remain open."
     }
   },
   "d03_staging_storage_evidence": "remediation/D03-1-STAGING-SONUC.md",
@@ -322,7 +321,7 @@
   "d05_publication_evidence": "remediation/D05-1-SONUC.md",
   "d05_transport_evidence": "remediation/D05-2-SONUC.md",
   "d05_restore_evidence": "remediation/D05-3-SONUC.md",
-  "next_action": "D06.2 fixed gate3: current actor/owner/paid invoice/risk Application admission and provider lifecycle commands; then fixed gate4 independent processes/concurrency/real HTTPS workflow acceptance",
+  "next_action": "D06.2 last fixed gate4: separate processes, parallel claims, worker crash/explicit recovery and real HTTPS paid-order/provider workflow acceptance; no new gates",
   "d05_4_acceptance": "remediation/D05-4-KABUL.md",
   "d05_preupdate_backup_evidence": "remediation/D05-4-PREBACKUP-SONUC.md",
   "d05_4_gates": {
@@ -364,5 +363,6 @@
   "d06_plan": "remediation/D06-PLAN.md",
   "d06_cpanel_evidence": "remediation/D06-1-SONUC.md",
   "d06_2_acceptance": "remediation/D06-2-KABUL.md",
-  "d06_dispatch_evidence": "remediation/D06-2-DISPATCH-SONUC.md"
+  "d06_dispatch_evidence": "remediation/D06-2-DISPATCH-SONUC.md",
+  "d06_commands_evidence": "remediation/D06-2-COMMANDS-SONUC.md"
 }

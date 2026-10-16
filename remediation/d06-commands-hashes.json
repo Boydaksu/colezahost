@@ -1,0 +1,24 @@
+{
+  "files": {
+    "remediation/d06-commands-baseline.json": "49c16943939e42b1e3181f741f78361161cddf872b8be0004c105a672bb82b96",
+    "remediation/d06-commands-before.exit": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "remediation/d06-commands-before.txt": "57e46e722827328e9fd71f0a78a3e02c7b27a80c12c0fa8fd4c969ac083dd082",
+    "remediation/d06-commands-before.xml": "ced58bba953442428b2247ee0e0378ff86dde19fd9218febb8da96dacd1545a9",
+    "remediation/d06-commands-checks.json": "fe7aadd25688ab662326ca1d1f34b4f97d519fda7c147e44720ac750f22e949f",
+    "remediation/d06-commands-discovery.txt": "dd870f62ee9ad80606fcb31ffdcb7d9199452525580d78544c8fd64a38b79eac",
+    "remediation/d06-commands-discovery.xml": "1871e58cbdd55ee3fcec0e5372fd694f5106d9255871afd00e3fe09c52b70cf4",
+    "remediation/d06-commands-main.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "remediation/d06-commands-main.txt": "5f8c3335609e915a8a98cf164c9cd6474c9c7fbb4fbe4be96402ca899d1434d8",
+    "remediation/d06-commands-main.xml": "42bbda3f6547a7b1db59243923b6d0b5e3312ee0bcd7c97f671e5ed8d65fba13",
+    "remediation/d06-commands-native.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "remediation/d06-commands-native.txt": "7f314dd3fe85f51d60764c2a61783afd540e821b2e6f7c14d4309b621c0b27f8",
+    "remediation/d06-commands-native.xml": "80c2e9bda94d13fd12d4ff26bb418bcded81fd40410fd1b112aa73805da27aa2",
+    "remediation/d06-commands-summary.json": "b631097430b01e0a291910f953d310951abb0c13ffa5a20c020642329dc9b674",
+    "remediation/verify-d06-commands.py": "f83900102c386f5ac01fed5392181c589b59bcd5ef256090c64b12de192b9ef0",
+    "remediation/D06-2-COMMANDS-SONUC.md": "f4044141e91f794ae114259ff71f06dc684b5ea028db39c7fc2c2a325667c12f",
+    "remediation/state.json": "c0bbd3c417ea118e77592cf5425ff10e72326d7a4a000da91129c6a65c241ca3",
+    "remediation/D06-2-KABUL.md": "a1913b16896ac651b226f7d4fcc4efe920eefccace242630aaac56fc7be03b2d",
+    "remediation/D06-PLAN.md": "e5aa45a00157aaae2e9d5055484208d1edb170cfb3afa098aa31f2d64ab70036",
+    "remediation/PLAN.md": "582f23ac7a244c887b70933b0f3d828f0318958da8ebf2c265c1bd25b6d9ebd8"
+  }
+}

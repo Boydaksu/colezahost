@@ -58,5 +58,5 @@ jobs:
           COLEZA_TEST_MARIADB_PASSWORD: colezahost-ci-test-only
         run: >-
           php vendor/phpunit/phpunit/phpunit -c phpunit-mariadb.xml
-          --filter '(HostingDispatchTest|ProvisioningProbeSafetyTest|ProviderVaultSchemaTest|ProvisioningSecretTest)'
+          --filter '(HostingCommandTest|HostingDispatchTest|ProvisioningProbeSafetyTest|ProviderVaultSchemaTest|ProvisioningSecretTest)'
           --colors=never

@@ -13,9 +13,10 @@ use Coleza\Domain\Servers\Services\ServerService;
 final class UncertainResponseReconciliationService
 {
     public function __construct(private ServerService $serverService, private ProviderRegistry $providerRegistry,
-        private ServiceService $serviceService, private ProvisioningOperationService $operationService)
+        private ServiceService $serviceService, private ProvisioningOperationService $operationService,
+        private ?\Coleza\Domain\Provisioning\Workflows\HostingAdmission $admission = null)
     {
-        if ($serviceService->getConnection() !== $operationService->getConnection()) {
+        if ($serviceService->getConnection() !== $operationService->getConnection() || $serverService->getConnection() !== $operationService->getConnection() || ($admission!==null&&$admission->connection()!==$operationService->getConnection())) {
             throw new \LogicException('Reconciliation requires one shared connection for local state and audit.');
         }
     }
@@ -27,6 +28,10 @@ final class UncertainResponseReconciliationService
         $payload = $operation->getPayload();
         $unknown = fn(string $reason): ReconciliationResult => $this->persistObservation($operation,
             ReconciliationResult::unknown($operation->getOperationUuid(), $operation->getServiceId(), $reason));
+        if(isset($payload['_hosting_admission'])){
+            try{$this->operationService->commitReconciliation($operation,fn($current)=>$this->approve($current));}
+            catch(\Throwable){return $unknown('APPLICATION_ADMISSION_REQUIRED_OR_CHANGED');}
+        }
         if ($operation->getAction() !== ProviderCapability::CREATE_ACCOUNT) { return $unknown('UNSUPPORTED_OPERATION_PROBE'); }
         if ($operation->getStatus() === ProvisioningOperation::STATUS_COMPLETED) {
             return ReconciliationResult::unknown($operation->getOperationUuid(), $operation->getServiceId(), 'OPERATION_ALREADY_COMPLETED');
@@ -57,6 +62,10 @@ final class UncertainResponseReconciliationService
             return $unknown('REMOTE_ACCOUNT_IDENTITY_OR_ACTIVE_STATE_MISMATCH');
         }
         return $this->operationService->commitReconciliation($operation, function (ProvisioningOperation $current) use ($payload, $summary, $server, $username): ReconciliationResult {
+            try{$this->approve($current);}catch(\Throwable){
+                $result=ReconciliationResult::unknown($current->getOperationUuid(),$current->getServiceId(),'APPLICATION_ADMISSION_REQUIRED_OR_CHANGED');
+                $this->operationService->recordReconciliationObservation($current,$result);return $result;
+            }
             if(array_key_exists('_hosting_dispatch',$payload)){
                 try{
                     $db=$this->operationService->getConnection();$db->lockRow('servers',$server->getId());
@@ -90,12 +99,21 @@ final class UncertainResponseReconciliationService
                 'server_id' => $server->getId(), 'provider_slug' => $current->getProviderSlug(), 'observed_at' => (new \DateTimeImmutable())->format('c'),
                 'input_fingerprint' => hash('sha256', json_encode([$current->getServiceId(), $current->getServerId(), $current->getProviderSlug(),
                     $current->getAction(), $current->getPayload(), $current->getCorrelationId()], JSON_THROW_ON_ERROR | JSON_PRESERVE_ZERO_FRACTION))];
+            if(isset($payload['_hosting_admission'])){$this->admission->record($current->getServiceId(),$current->getAction(),$current->getOperationUuid(),'reconciled');}
             $this->operationService->recordAttempt($current->getOperationUuid(), ProviderOperationResult::success(ProviderCapability::CREATE_ACCOUNT,
                 'Matching active remote account observed; local provisioning reconciled.', $username,
                 $evidence, $evidence));
             return ReconciliationResult::exists($current->getOperationUuid(), $current->getServiceId(), $summary,
                 'Matching active account observed; original command execution is not independently proven.');
         });
+    }
+    private function approve(ProvisioningOperation $op):void
+    {
+        $stored=$op->getPayload()['_hosting_admission']??null;
+        if($stored===null){return;}
+        if($this->admission===null){throw new \RuntimeException('Authenticated admission context is required.');}
+        $receipt=$this->admission->approve($op->getServiceId(),$op->getAction());
+        if(($stored['version']??null)!==1||($stored['scope_sha256']??null)!==($receipt['scope_sha256']??null)){throw new \RuntimeException('Application admission changed.');}
     }
     private function persistObservation(ProvisioningOperation $operation, ReconciliationResult $result): ReconciliationResult
     {
