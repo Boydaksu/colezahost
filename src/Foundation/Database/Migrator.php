@@ -74,6 +74,18 @@ final class Migrator
         }
 
         sort($files);
+        return $this->migrateFilesUnlocked($files);
+    }
+
+    /** Explicit order is supplied by the signed update manifest, never directory sorting. */
+    public function migrateOrderedFiles(array $files): array
+    {
+        return $this->withMigrationLock(fn (): array => $this->migrateFilesUnlocked($files));
+    }
+
+    private function migrateFilesUnlocked(array $files): array
+    {
+        $this->ensureMigrationsTable();
         $ran = $this->getRanMigrations();
         $batch = $this->getNextBatchNumber();
         $applied = [];

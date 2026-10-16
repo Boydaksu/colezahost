@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Updater\UpdateMigrationTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\UpdateMigrationTest.php" tests="11" assertions="7" errors="5" failures="5" skipped="0" time="0.643687">
+    <testcase name="testSignedOrderRunsRealSqlAndCountsOnlyNewMigrations" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php" line="48" class="Coleza\Tests\Unit\Updater\UpdateMigrationTest" classname="Coleza.Tests.Unit.Updater.UpdateMigrationTest" assertions="0" time="0.072416">
+      <error type="RuntimeException">Coleza\Tests\Unit\Updater\UpdateMigrationTest::testSignedOrderRunsRealSqlAndCountsOnlyNewMigrations&#13;
+RuntimeException: Update migrations require the real migration execution gate; no files were applied.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Updater\StagedUpdateService.php:57
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:42
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:54</error>
+    </testcase>
+    <testcase name="testChangedPreviouslyAppliedBytesAreDenied" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php" line="63" class="Coleza\Tests\Unit\Updater\UpdateMigrationTest" classname="Coleza.Tests.Unit.Updater.UpdateMigrationTest" assertions="0" time="0.047932">
+      <error type="RuntimeException">Coleza\Tests\Unit\Updater\UpdateMigrationTest::testChangedPreviouslyAppliedBytesAreDenied&#13;
+RuntimeException: Update migrations require the real migration execution gate; no files were applied.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Updater\StagedUpdateService.php:57
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:42
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:65</error>
+    </testcase>
+    <testcase name="testUnboundExistingLedgerNameIsDenied" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php" line="70" class="Coleza\Tests\Unit\Updater\UpdateMigrationTest" classname="Coleza.Tests.Unit.Updater.UpdateMigrationTest" assertions="1" time="0.050486">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\UpdateMigrationTest::testUnboundExistingLedgerNameIsDenied&#13;
+Failed asserting that 'Update migrations require the real migration execution gate; no files were applied.' [ASCII](length: 83) contains "identity" [ASCII](length: 8).
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:46
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:74</failure>
+    </testcase>
+    <testcase name="testDuplicateBasenamesAreRejectedBeforeAnyExecution" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php" line="76" class="Coleza\Tests\Unit\Updater\UpdateMigrationTest" classname="Coleza.Tests.Unit.Updater.UpdateMigrationTest" assertions="1" time="0.052517">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\UpdateMigrationTest::testDuplicateBasenamesAreRejectedBeforeAnyExecution&#13;
+Failed asserting that 'Update migrations require the real migration execution gate; no files were applied.' [ASCII](length: 83) contains "Duplicate" [ASCII](length: 9).
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:46
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:79</failure>
+    </testcase>
+    <testcase name="testSyntaxErrorInLaterMigrationPreventsFirstMigration" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php" line="81" class="Coleza\Tests\Unit\Updater\UpdateMigrationTest" classname="Coleza.Tests.Unit.Updater.UpdateMigrationTest" assertions="1" time="0.045126">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\UpdateMigrationTest::testSyntaxErrorInLaterMigrationPreventsFirstMigration&#13;
+Failed asserting that 'Update migrations require the real migration execution gate; no files were applied.' [ASCII](length: 83) contains "syntax" [ASCII](length: 6).
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:46
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:84</failure>
+    </testcase>
+    <testcase name="testPartialDdlFailureRemainsJournaledAndBlocksFilesOnlyRetry" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php" line="87" class="Coleza\Tests\Unit\Updater\UpdateMigrationTest" classname="Coleza.Tests.Unit.Updater.UpdateMigrationTest" assertions="1" time="0.047206">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\UpdateMigrationTest::testPartialDdlFailureRemainsJournaledAndBlocksFilesOnlyRetry&#13;
+Failed asserting that 'Update migrations require the real migration execution gate; no files were applied.' [ASCII](length: 83) contains "deliberate partial failure" [ASCII](length: 26).
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:46
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:90</failure>
+    </testcase>
+    <testcase name="testRawCallerTransactionIsPreserved" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php" line="100" class="Coleza\Tests\Unit\Updater\UpdateMigrationTest" classname="Coleza.Tests.Unit.Updater.UpdateMigrationTest" assertions="1" time="0.042727">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\UpdateMigrationTest::testRawCallerTransactionIsPreserved&#13;
+Failed asserting that 'Update migrations require the real migration execution gate; no files were applied.' [ASCII](length: 83) contains "transaction" [ASCII](length: 11).
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:46
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:103</failure>
+    </testcase>
+    <testcase name="testDeletedLedgerCannotReuseAnAppliedReceipt" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php" line="106" class="Coleza\Tests\Unit\Updater\UpdateMigrationTest" classname="Coleza.Tests.Unit.Updater.UpdateMigrationTest" assertions="0" time="0.044905">
+      <error type="RuntimeException">Coleza\Tests\Unit\Updater\UpdateMigrationTest::testDeletedLedgerCannotReuseAnAppliedReceipt&#13;
+RuntimeException: Update migrations require the real migration execution gate; no files were applied.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Updater\StagedUpdateService.php:57
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:42
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:108</error>
+    </testcase>
+    <testcase name="testNestedUpdateCannotAcquireTargetLock" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php" line="111" class="Coleza\Tests\Unit\Updater\UpdateMigrationTest" classname="Coleza.Tests.Unit.Updater.UpdateMigrationTest" assertions="0" time="0.026531">
+      <error type="RuntimeException">Coleza\Tests\Unit\Updater\UpdateMigrationTest::testNestedUpdateCannotAcquireTargetLock&#13;
+RuntimeException: Update migrations require the real migration execution gate; no files were applied.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Updater\StagedUpdateService.php:57
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:115</error>
+    </testcase>
+    <testcase name="testFrozenMigrationBytesSurviveSourceMutation" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php" line="117" class="Coleza\Tests\Unit\Updater\UpdateMigrationTest" classname="Coleza.Tests.Unit.Updater.UpdateMigrationTest" assertions="0" time="0.043989">
+      <error type="RuntimeException">Coleza\Tests\Unit\Updater\UpdateMigrationTest::testFrozenMigrationBytesSurviveSourceMutation&#13;
+RuntimeException: Update migrations require the real migration execution gate; no files were applied.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Updater\StagedUpdateService.php:57
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:121</error>
+    </testcase>
+    <testcase name="testSignedPhpOutsideMigrationListIsNeverExecuted" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php" line="124" class="Coleza\Tests\Unit\Updater\UpdateMigrationTest" classname="Coleza.Tests.Unit.Updater.UpdateMigrationTest" assertions="2" time="0.169851"/>
+  </testsuite>
+</testsuites>

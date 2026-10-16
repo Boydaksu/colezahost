@@ -1,0 +1,43 @@
+name: Signed update migration acceptance
+'on':
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  sqlite-and-mariadb:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: colezahost-ci-test-only
+          MARIADB_ROOT_HOST: '%'
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: dom, mbstring, pdo_sqlite, pdo_mysql, simplexml, sodium, xml, xmlwriter, zip
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist
+      - name: SQLite signed admission, actual migrations, interruption and concurrency
+        run: vendor/bin/phpunit tests/Unit/Updater tests/Unit/Foundation/Database/MigratorTest.php --colors=never
+      - name: Real MariaDB migration and affected recovery, key and privacy gates
+        env:
+          COLEZA_TEST_MARIADB_DSN: 'mysql:host=127.0.0.1;port=3306;charset=utf8mb4'
+          COLEZA_TEST_MARIADB_USER: root
+          COLEZA_TEST_MARIADB_PASSWORD: colezahost-ci-test-only
+        run: >-
+          vendor/bin/phpunit -c phpunit-mariadb.xml
+          --filter '(UpdateMigrationTest|BackupAdmissionTest|BackupRecoveryTest|PreUpdateRecoveryTest|SignedUpdateAdmissionTest|ModuleSchemaSafetyTest|InstallationAcceptanceTest|KeyLifecycleTest|OperationalModePersistenceTest|PrivacyBindingTest|PrivacySigningTest|SqlPortabilityCloseoutTest)'
+          --colors=never

@@ -1,0 +1,80 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+[31;1mE[0m[31;1mE[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[41;37mF[0m[31;1mE[0m[31;1mE[0m[31;1mE[0m.                                                       11 / 11 (100%)
+
+Time: 00:00.678, Memory: 22.00 MB
+
+There were 5 errors:
+
+1) Coleza\Tests\Unit\Updater\UpdateMigrationTest::testSignedOrderRunsRealSqlAndCountsOnlyNewMigrations
+RuntimeException: Update migrations require the real migration execution gate; no files were applied.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Updater\StagedUpdateService.php:57
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:42
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:54
+
+2) Coleza\Tests\Unit\Updater\UpdateMigrationTest::testChangedPreviouslyAppliedBytesAreDenied
+RuntimeException: Update migrations require the real migration execution gate; no files were applied.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Updater\StagedUpdateService.php:57
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:42
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:65
+
+3) Coleza\Tests\Unit\Updater\UpdateMigrationTest::testDeletedLedgerCannotReuseAnAppliedReceipt
+RuntimeException: Update migrations require the real migration execution gate; no files were applied.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Updater\StagedUpdateService.php:57
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:42
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:108
+
+4) Coleza\Tests\Unit\Updater\UpdateMigrationTest::testNestedUpdateCannotAcquireTargetLock
+RuntimeException: Update migrations require the real migration execution gate; no files were applied.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Updater\StagedUpdateService.php:57
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:115
+
+5) Coleza\Tests\Unit\Updater\UpdateMigrationTest::testFrozenMigrationBytesSurviveSourceMutation
+RuntimeException: Update migrations require the real migration execution gate; no files were applied.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\src\Domain\Updater\StagedUpdateService.php:57
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:121
+
+--
+
+There were 5 failures:
+
+1) Coleza\Tests\Unit\Updater\UpdateMigrationTest::testUnboundExistingLedgerNameIsDenied
+Failed asserting that 'Update migrations require the real migration execution gate; no files were applied.' [ASCII](length: 83) contains "identity" [ASCII](length: 8).
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:46
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:74
+
+2) Coleza\Tests\Unit\Updater\UpdateMigrationTest::testDuplicateBasenamesAreRejectedBeforeAnyExecution
+Failed asserting that 'Update migrations require the real migration execution gate; no files were applied.' [ASCII](length: 83) contains "Duplicate" [ASCII](length: 9).
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:46
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:79
+
+3) Coleza\Tests\Unit\Updater\UpdateMigrationTest::testSyntaxErrorInLaterMigrationPreventsFirstMigration
+Failed asserting that 'Update migrations require the real migration execution gate; no files were applied.' [ASCII](length: 83) contains "syntax" [ASCII](length: 6).
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:46
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:84
+
+4) Coleza\Tests\Unit\Updater\UpdateMigrationTest::testPartialDdlFailureRemainsJournaledAndBlocksFilesOnlyRetry
+Failed asserting that 'Update migrations require the real migration execution gate; no files were applied.' [ASCII](length: 83) contains "deliberate partial failure" [ASCII](length: 26).
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:46
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:90
+
+5) Coleza\Tests\Unit\Updater\UpdateMigrationTest::testRawCallerTransactionIsPreserved
+Failed asserting that 'Update migrations require the real migration execution gate; no files were applied.' [ASCII](length: 83) contains "transaction" [ASCII](length: 11).
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:46
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Support\UpdateMigrationCases.php:103
+
+[37;41mERRORS![0m
+[37;41mTests: 11[0m[37;41m, Assertions: 7[0m[37;41m, Errors: 5[0m[37;41m, Failures: 5[0m[37;41m.[0m

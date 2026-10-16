@@ -11,11 +11,11 @@
   "next_step": "D05.4",
   "next_phase": "D05",
   "tests": {
-    "main_total": 2065,
-    "main_assertions": 12977,
-    "mariadb_total": 114,
-    "mariadb_assertions": 894,
-    "mariadb_scope": "Exact 11 affected classes / 114 cases: signed update, module schema, backup admission/recovery/pre-update, canonical installation/SQL, operational modes, privacy binding/signing and key lifecycle; not the whole native suite",
+    "main_total": 2087,
+    "main_assertions": 13066,
+    "mariadb_total": 137,
+    "mariadb_assertions": 1032,
+    "mariadb_scope": "Exact 12 affected classes / 137 cases: actual update migrations, signed admission, module schema, backup admission/recovery/pre-update, canonical installation/SQL, modes, privacy binding/signing and key lifecycle; not the whole native suite",
     "full_mariadb_current_source": false,
     "last_full_mariadb": {
       "reference_commit": "0d2e3e08d4c121a146f298f77b4bc6b008b6f66e",
@@ -23,8 +23,8 @@
       "assertions": 5399,
       "evidence": "remediation/D02-CLOSEOUT-summary.json"
     },
-    "total": 2179,
-    "assertions": 13871,
+    "total": 2224,
+    "assertions": 14098,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -49,7 +49,7 @@
     "F11": "REAL_CONSISTENT_MARIADB_SQLITE_AND_PREUPDATE_COMMON_DUMP_RECURSIVE_SNAPSHOT_VERIFIED_DELIVERY_READBACK_LOCAL_VERIFIED_COMPLETE_UPDATER_ORCHESTRATION_D05_4_AND_INDEPENDENT_ACCEPTANCE_PENDING",
     "F12": "IMPLEMENTED_SUPPORTED_FORMAT_FRESH_OFFLINE_TARGET_STAGED_RESTORE_PACKAGE_SQL_TABLE_ROW_FK_KEY_HEALTH_JOURNAL_LOCAL_VERIFIED_ENTRYPOINT_COMPOSITION_D08_AND_HOST_ACCEPTANCE_D09_PENDING",
     "F20": "RESTORE_AUTHORITATIVE_OUT_OF_BAND_TOMBSTONES_REQUIRED_CORE_CREDENTIAL_AND_DEFINED_RELATED_RESCRUB_FAIL_CLOSED_LOCAL_VERIFIED_WHOLE_PRODUCT_PRIVACY_MAPPING_RETENTION_D07_AND_GATE_BINDING_D08_PENDING",
-    "F13": "PARTIAL_SHARED_SIGNED_DISTRIBUTION_STAGING_CONTRACT_FROZEN_INVENTORY_PATH_VERSION_MODULE_AND_NONBYPASSABLE_BOUND_DB_TARGET_BACKUP_LOCAL_VERIFIED_REAL_MIGRATION_STAGED_PUBLICATION_ROLLBACK_REMAIN_D05_4"
+    "F13": "PARTIAL_SHARED_SIGNED_PACKAGE_BOUND_VERIFIED_BACKUP_REAL_ORDERED_MIGRATIONS_HASH_LEDGER_PROCESS_DEATH_PARTIAL_DDL_GUARDS_LOCAL_VERIFIED_STAGED_PUBLICATION_VERSION_HEALTH_ROLLBACK_REMAIN_D05_4"
   },
   "remaining_steps": [
     "D05.4",
@@ -134,7 +134,7 @@
     "External AWS/S3-compatible and independent SFTP account acceptance PENDING; real transports and verified remote history implemented/local protocol verified D05.2",
     "Supported consistent MariaDB/SQLite export, recursive files and fresh offline staged restore locally implemented D05.3; unsupported engines/custom DB objects/format-less legacy backups explicitly rejected; independent host acceptance D09",
     "HTTP/CLI/cron/worker must bind the same external restore journal guard in D08; whole-product privacy/retention mapping D07; production activation is never automatic",
-    "Common verified pre-update backup and shared frozen signed package plus non-bypassable correctly bound backup gate locally complete; real migrations and staged update/rollback orchestration remain D05.4",
+    "Common verified pre-update backup and shared frozen signed package plus non-bypassable correctly bound backup gate locally complete; real migrations locally complete; staged publication/version/health/rollback remain D05.4",
     "Extension quarantine, path/archive safety, permissions, migration preview/health/enable lifecycle remains D05.5"
   ],
   "d03_general_secret_audit": {
@@ -249,11 +249,11 @@
     },
     "D05.4": {
       "status": "IN_PROGRESS",
-      "completed_gates": 2,
+      "completed_gates": 3,
       "total_gates": 4,
       "acceptance": "remediation/D05-4-KABUL.md",
-      "evidence": "remediation/D05-4-SIGNED-SONUC.md",
-      "scope": "Shared signed manifest/files contract for distribution ZIP and staged updater, bounded quarantine and private frozen payload, exact membership/path/checksum/SemVer/module checks; non-bypassable same-PDO/source-version backup of automatic target tree and separate explicit extras, independent recheck and target drift denial. Migration-bearing updates fail before effects pending real runner; staged publication/rollback still open."
+      "evidence": "remediation/D05-4-MIGRATIONS-SONUC.md",
+      "scope": "Shared signed package and mandatory verified backup plus actual signed-order frozen PHP migrations through canonical runner, name/hash-bound external receipts and installed ledger, target/DB locks, durable process-death and partial-DDL recovery guards. Staged file publication/version/health and actual rollback remain open."
     }
   },
   "d03_staging_storage_evidence": "remediation/D03-1-STAGING-SONUC.md",
@@ -271,13 +271,13 @@
   "d05_publication_evidence": "remediation/D05-1-SONUC.md",
   "d05_transport_evidence": "remediation/D05-2-SONUC.md",
   "d05_restore_evidence": "remediation/D05-3-SONUC.md",
-  "next_action": "Real runner and durable ledger for only frozen checksummed package migrations, including partial MariaDB DDL/replay/failure admission",
+  "next_action": "Staged application tree publication, durable installed version/health admission and real verified backup rollback with interruption and failure evidence",
   "d05_4_acceptance": "remediation/D05-4-KABUL.md",
   "d05_preupdate_backup_evidence": "remediation/D05-4-PREBACKUP-SONUC.md",
   "d05_4_gates": {
     "pre_update_backup": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
     "signed_package_and_backup_gate": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
-    "real_migrations": "PENDING",
+    "real_migrations": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
     "staged_publication_and_rollback": "PENDING"
   },
   "d05_signed_update_evidence": "remediation/D05-4-SIGNED-SONUC.md",
@@ -304,5 +304,6 @@
     "native_database_suite_rerun": false,
     "d05_4_completed_gates": 2,
     "next_planned_work": "real_migrations"
-  }
+  },
+  "d05_migration_evidence": "remediation/D05-4-MIGRATIONS-SONUC.md"
 }

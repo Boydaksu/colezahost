@@ -8,7 +8,7 @@ use Closure;
 use RuntimeException;
 use Throwable;
 
-/** Signed admission and mandatory verified backup; staged publication/real migration remain separate gates. */
+/** Signed admission, mandatory backup and journaled migrations; staged publication remains separate. */
 final class StagedUpdateService
 {
     public function __construct(
@@ -49,12 +49,11 @@ final class StagedUpdateService
     public function applyValidatedUpdate(string $stagedDir,string $targetAppDir,bool $requireBackup=true,array $backupExtraFiles=[]): array
     {
         if(!$requireBackup){throw new RuntimeException('Mandatory pre-update backup cannot be bypassed.');}
-        [$report,$package]=$this->inspect($stagedDir);
+        [$report,$package]=$this->inspect($stagedDir);$session=null;
         try {
             if(!$report->isReadyToApply()||$package===null){throw new RuntimeException('Cannot apply update: package validation failed: '.($report->getError()??'module mismatch'));}
             if($this->db===null||$this->backupService===null){throw new RuntimeException('Mandatory pre-update backup failed: Database and backup service must be configured.');}
             $this->moduleChecker->assertConnection($this->db);$this->backupService->assertContext($this->db,$this->currentCoreVersion);
-            if($package->manifest->getMigrations()!==[]){throw new RuntimeException('Update migrations require the real migration execution gate; no files were applied.');}
             UpdatePackageSnapshot::assertNoLinks($targetAppDir);$target=realpath($targetAppDir);
             if($target===false||!is_dir($target)){throw new RuntimeException('Update target must be an existing application directory.');}
             $source=realpath($stagedDir);
@@ -63,6 +62,7 @@ final class StagedUpdateService
             if(!is_dir($store)&&!mkdir($store,0700,true)){throw new RuntimeException('Cannot create private update backup storage.');}
             UpdatePackageSnapshot::assertNoLinks($store);$store=realpath($store);
             if($store===false||UpdatePackageSnapshot::overlaps($target,$store)||UpdatePackageSnapshot::overlaps($source,$store)){throw new RuntimeException('Update backup storage must be outside target and staging trees.');}
+            $session=new UpdateMigrationSession($this->db,$package,$target,$store);
             $this->preflightDestinations($target,$package->manifest->getFileChecksums());
             if(file_exists($target.'/_update_extra')){throw new RuntimeException('Target uses the reserved update backup extra namespace.');}
             $this->checkpoint?->__invoke('package_frozen');
@@ -77,14 +77,18 @@ final class StagedUpdateService
             if($expected!==$current){throw new RuntimeException('Application tree changed after backup; stop writers and retry.');}
             $this->preflightDestinations($target,$package->manifest->getFileChecksums());
             if(!$this->moduleChecker->checkCompatibility($package->manifest->getVersion(),$package->manifest->getRequiredModules())['compatible']){throw new RuntimeException('Module compatibility changed after backup.');}
+            $migrations=$session->run($id);
+            if(!$this->moduleChecker->checkCompatibility($package->manifest->getVersion(),$package->manifest->getRequiredModules())['compatible']){throw new RuntimeException('Module compatibility changed during migrations.');}
             $applied=0;
             foreach($package->manifest->getFileChecksums() as $relative=>$hash){
                 $destination=$target.'/'.$relative;
                 if(!is_dir(dirname($destination))&&!mkdir(dirname($destination),0755,true)){throw new RuntimeException('Cannot create update destination parent.');}
                 if(!copy($package->directory().'/files/'.$relative,$destination)||!hash_equals($hash,(string)hash_file('sha256',$destination))){throw new RuntimeException('Cannot publish verified update file.');}$applied++;
             }
-            return ['success'=>true,'target_version'=>$package->manifest->getVersion(),'files_applied'=>$applied,'migrations_run'=>0,'backup_id'=>$id];
-        } finally {$package?->close();}
+            $session->complete();
+            return ['success'=>true,'target_version'=>$package->manifest->getVersion(),'files_applied'=>$applied,'migrations_run'=>$migrations,'backup_id'=>$id];
+        } catch(Throwable $error){$session?->fail();throw $error;}
+        finally {try{$session?->close();}finally{$package?->close();}}
     }
     private function targetPaths(string $root): array
     {
