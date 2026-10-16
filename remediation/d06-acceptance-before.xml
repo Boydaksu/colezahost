@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Provisioning\HostingExecutionTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Provisioning\HostingExecutionTest.php" tests="2" assertions="3" errors="0" failures="2" skipped="0" time="0.071091">
+    <testcase name="testLiveCreateCannotBeCompletedByReentrantRecovery" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Provisioning\HostingExecutionTest.php" line="9" class="Coleza\Tests\Unit\Provisioning\HostingExecutionTest" classname="Coleza.Tests.Unit.Provisioning.HostingExecutionTest" assertions="1" time="0.053990">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Provisioning\HostingExecutionTest::testLiveCreateCannotBeCompletedByReentrantRecovery&#13;
+A live creator was overtaken by recovery.
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Provisioning\HostingExecutionTest.php:15</failure>
+    </testcase>
+    <testcase name="testLiveSuspendCannotBeCompletedByReentrantRecovery" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Provisioning\HostingExecutionTest.php" line="18" class="Coleza\Tests\Unit\Provisioning\HostingExecutionTest" classname="Coleza.Tests.Unit.Provisioning.HostingExecutionTest" assertions="2" time="0.017102">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Provisioning\HostingExecutionTest::testLiveSuspendCannotBeCompletedByReentrantRecovery&#13;
+A live lifecycle worker was overtaken by recovery.
+Failed asserting that an instance of class Coleza\Domain\Provisioning\Entities\ProvisioningOperation is null.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Provisioning\HostingExecutionTest.php:25</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

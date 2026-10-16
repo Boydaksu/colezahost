@@ -1,0 +1,25 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+[41;37mF[0m[41;37mF[0m                                                                  2 / 2 (100%)
+
+Time: 00:00.076, Memory: 24.00 MB
+
+There were 2 failures:
+
+1) Coleza\Tests\Unit\Provisioning\HostingExecutionTest::testLiveCreateCannotBeCompletedByReentrantRecovery
+A live creator was overtaken by recovery.
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Provisioning\HostingExecutionTest.php:15
+
+2) Coleza\Tests\Unit\Provisioning\HostingExecutionTest::testLiveSuspendCannotBeCompletedByReentrantRecovery
+A live lifecycle worker was overtaken by recovery.
+Failed asserting that an instance of class Coleza\Domain\Provisioning\Entities\ProvisioningOperation is null.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Provisioning\HostingExecutionTest.php:25
+
+[37;41mFAILURES![0m
+[37;41mTests: 2[0m[37;41m, Assertions: 3[0m[37;41m, Failures: 2[0m[37;41m.[0m

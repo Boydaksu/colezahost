@@ -5,17 +5,17 @@
   "phase": "D06",
   "step": "D06.2",
   "status": "IN_PROGRESS",
-  "step_status": "IN_PROGRESS",
+  "step_status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
   "independent_acceptance": "PENDING",
   "production_ready": false,
-  "next_step": "D06.2",
+  "next_step": "D06.3",
   "next_phase": "D06",
   "tests": {
-    "main_total": 2282,
-    "main_assertions": 13802,
-    "mariadb_total": 109,
-    "mariadb_assertions": 742,
-    "mariadb_scope": "Exact five affected classes / 109 cases: HostingCommandTest, HostingDispatchTest, ProvisioningProbeSafetyTest, ProviderVaultSchemaTest, ProvisioningSecretTest; not the whole native suite",
+    "main_total": 2307,
+    "main_assertions": 14054,
+    "mariadb_total": 136,
+    "mariadb_assertions": 1054,
+    "mariadb_scope": "Exact seven affected classes / 136 cases including HostingProcessTest, HostingExecutionTest, HostingCommandTest, HostingDispatchTest and previous provider probe/vault/secret regressions; not the whole native suite",
     "full_mariadb_current_source": false,
     "last_full_mariadb": {
       "reference_commit": "0d2e3e08d4c121a146f298f77b4bc6b008b6f66e",
@@ -23,8 +23,8 @@
       "assertions": 5399,
       "evidence": "remediation/D02-CLOSEOUT-summary.json"
     },
-    "total": 2391,
-    "assertions": 14544,
+    "total": 2443,
+    "assertions": 15108,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -37,7 +37,7 @@
     "F16": "ORIGINAL_FINANCIAL_QUEUE_CAPACITY_WEBHOOK_CONCURRENCY_AND_INVOICE_ATOMICITY_LOCAL_VERIFIED_OTHER_ACTOR_PROVIDER_DOMAIN_BOUNDARIES_OPEN_D03_D06",
     "F23": "PARTIAL_CURRENT_COMMERCE_ORGANIZATION_RBAC_AND_IMPERSONATION_SCOPE_IMPLEMENTED_LOCAL_VERIFIED_PROVIDER_OWNER_ADOPTION_AND_HTTP_CONTEXT_COMPOSITION_REMAIN_D06_D08",
     "F26": "PARTIAL_READ_ONLY_CANONICAL_DOCTOR_IMPLEMENTED_REMOTE_PROVIDER_AND_CRON_WRITER_OPEN",
-    "F14": "PARTIAL_DURABLE_AUTOMATION_EVIDENCE_AND_PROVIDER_LIFECYCLE_BOUNDARY_IMPLEMENTED_REAL_PROVIDER_COMMAND_BINDING_RECOVERY_AND_ENTRYPOINTS_OPEN",
+    "F14": "DURABLE_AUTOMATION_EVIDENCE_AND_HOSTING_PROVIDER_APPLICATION_COMMANDS_LOCAL_VERIFIED_AUTOMATION_ADAPTER_AND_RECOVERY_BINDING_D06_3_AND_ENTRYPOINTS_D08_OPEN",
     "F17": "CANONICAL_ANALYTICS_REPORTING_IMPLEMENTED_PENDING_REVIEW_HISTORICAL_SCOPE_AND_ENTRYPOINT_ACCEPTANCE_OPEN",
     "F30": "PARTIAL_CANONICAL_ANALYTICS_AND_MANUAL_COMMERCE_FLOW_LIST_AND_BATCH_BUDGETS_LOCAL_VERIFIED_REAL_PROVIDER_BROWSER_REFERENCE_HOST_AND_RELEASE_ACCEPTANCE_OPEN_D06_D08_D09",
     "F21": "PARTIAL_SUPPORT_SCHEMA_AND_CURRENT_ACTOR_ORGANIZATION_DEPARTMENT_COMMAND_SCOPE_IMPLEMENTED_LOCAL_VERIFIED_FULL_STORAGE_RECOVERY_AND_D07_D08_PRODUCT_FLOW_ACCEPTANCE_OPEN",
@@ -51,10 +51,9 @@
     "F20": "RESTORE_AUTHORITATIVE_OUT_OF_BAND_TOMBSTONES_REQUIRED_CORE_CREDENTIAL_AND_DEFINED_RELATED_RESCRUB_FAIL_CLOSED_LOCAL_VERIFIED_WHOLE_PRODUCT_PRIVACY_MAPPING_RETENTION_D07_AND_GATE_BINDING_D08_PENDING",
     "F13": "IMPLEMENTED_LOCAL_VERIFIED_SIGNED_FROZEN_PACKAGE_BOUND_BACKUP_REAL_MIGRATIONS_STAGED_TREE_VERSION_SQL_PHP_KEY_PRIVACY_GATES_AND_EXPLICIT_PINNED_BACKUP_ROLLBACK_ENTRYPOINT_AND_INDEPENDENT_ACCEPTANCE_PENDING_D08_D09",
     "F31": "EXTENSION_INSTALLER_AND_SCOPED_CONTRACTS_LOCAL_VERIFIED_DECLARATIVE_MIGRATIONS_NO_UPLOADED_PHP_EXECUTION_REAL_ADAPTERS_D06_ENTRYPOINT_COMPOSITION_D08_INDEPENDENT_ACCEPTANCE_D09_PENDING",
-    "F04": "REAL_HTTPS_TRANSPORT_AND_STRICT_WHM_RESPONSE_HEALTH_LOCAL_VERIFIED_ZERO_TRANSPORT_RETRIES_PROVIDER_LIFECYCLE_UNCERTAIN_RECONCILIATION_REMAINS_D06_2_EXTERNAL_CPANEL_ACCEPTANCE_PENDING"
+    "F04": "REAL_HTTPS_STRICT_WHM_AND_HOSTING_APPLICATION_LIFECYCLE_DURABLE_UNCERTAIN_RECOVERY_PROCESS_AND_PROTOCOL_ACCEPTANCE_LOCAL_VERIFIED_EXTERNAL_CPANEL_ACCEPTANCE_PENDING"
   },
   "remaining_steps": [
-    "D06.2",
     "D06.3",
     "D06.4",
     "D06.5"
@@ -131,10 +130,10 @@
       "status": "IN_PROGRESS",
       "plan": "remediation/D06-PLAN.md",
       "completed_steps": [
-        "D06.1"
+        "D06.1",
+        "D06.2"
       ],
       "remaining_steps": [
-        "D06.2",
         "D06.3",
         "D06.4",
         "D06.5"
@@ -294,16 +293,18 @@
       "scope": "One real bounded HTTPS WHM request; TLS peer/host and explicit private CA support, no plaintext/bypass/redirect/replay; monotonic latency; strict HTTP/result/version/load evidence; local HTTPS lifecycle/failures and existing provider/reconciliation/secret regressions. Whole provisioning and external sandbox acceptance remain D06.2/D06.4-D06.5."
     },
     "D06.2": {
-      "status": "IN_PROGRESS",
-      "completed_gates": 3,
+      "status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
+      "date": "2026-10-16",
+      "completed_gates": 4,
       "total_gates": 4,
       "acceptance": "remediation/D06-2-KABUL.md",
-      "evidence": "remediation/D06-2-COMMANDS-SONUC.md",
-      "remaining_gates": [
-        "process_protocol_acceptance"
-      ],
+      "closure": "remediation/D06-2-CLOSURE.md",
+      "evidence": "remediation/D06-2-ACCEPTANCE-SONUC.md",
+      "remaining_gates": [],
       "independent_acceptance": "PENDING",
-      "scope": "Durable claim/capacity and atomic verified activation plus current authenticated actor/global granular permission, owner/order/product/unit/domain/paid invoice/risk admission; create/suspend/unsuspend/terminate and read-only explicit recovery. Commands recheck at preparation, immediately before mutation and atomic local completion; holding uncertain outcomes preserves capacity. Separate-process/parallel/crash and real HTTPS whole workflow acceptance remain the fourth fixed gate. HTTP/worker composition D08 and independent host/provider acceptance D09 remain open."
+      "external_provider_acceptance": "PENDING",
+      "scope": "Fixed four local gates complete: durable dispatch/capacity, strict atomic activation, current authenticated Application actor/owner/payment/risk admission and create/suspend/unsuspend/terminate, separate-process parallel claims/live-worker arbitration/kill-and-read-only recovery and real verified loopback HTTPS paid-order/lifecycle failure acceptance on SQLite and MariaDB. No automatic uncertain replay or absence-based release. HTTP/cron/worker composition D08; independent host and external account acceptance D09 remain open.",
+      "next_step": "D06.3"
     }
   },
   "d03_staging_storage_evidence": "remediation/D03-1-STAGING-SONUC.md",
@@ -321,7 +322,7 @@
   "d05_publication_evidence": "remediation/D05-1-SONUC.md",
   "d05_transport_evidence": "remediation/D05-2-SONUC.md",
   "d05_restore_evidence": "remediation/D05-3-SONUC.md",
-  "next_action": "D06.2 last fixed gate4: separate processes, parallel claims, worker crash/explicit recovery and real HTTPS paid-order/provider workflow acceptance; no new gates",
+  "next_action": "D06.3 fixed automation command binding and recovery scope from D06-PLAN.md; D06.2 fixed four gates locally closed",
   "d05_4_acceptance": "remediation/D05-4-KABUL.md",
   "d05_preupdate_backup_evidence": "remediation/D05-4-PREBACKUP-SONUC.md",
   "d05_4_gates": {
@@ -364,5 +365,7 @@
   "d06_cpanel_evidence": "remediation/D06-1-SONUC.md",
   "d06_2_acceptance": "remediation/D06-2-KABUL.md",
   "d06_dispatch_evidence": "remediation/D06-2-DISPATCH-SONUC.md",
-  "d06_commands_evidence": "remediation/D06-2-COMMANDS-SONUC.md"
+  "d06_commands_evidence": "remediation/D06-2-COMMANDS-SONUC.md",
+  "d06_2_closure": "remediation/D06-2-CLOSURE.md",
+  "d06_process_evidence": "remediation/D06-2-ACCEPTANCE-SONUC.md"
 }

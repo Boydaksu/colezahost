@@ -22,6 +22,12 @@ final class UncertainResponseReconciliationService
     }
     public function reconcile(ProvisioningOperation $operation): ReconciliationResult
     {
+        try{$lease=\Coleza\Domain\Provisioning\Services\HostingExecutionLease::acquire($this->operationService->getConnection(),$operation->getServiceId());}
+        catch(\Coleza\Domain\Provisioning\Services\HostingExecutionBusy){return ReconciliationResult::unknown($operation->getOperationUuid(),$operation->getServiceId(),'HOSTING_EXECUTION_BUSY');}
+        try{return $this->reconcileOwned($operation);}finally{$lease->close();}
+    }
+    private function reconcileOwned(ProvisioningOperation $operation): ReconciliationResult
+    {
         if ($this->operationService->getConnection()->inTransaction()) {
             throw new \LogicException('Remote reconciliation probe must run outside the caller transaction.');
         }
@@ -109,6 +115,7 @@ final class UncertainResponseReconciliationService
     }
     private function approve(ProvisioningOperation $op):void
     {
+        \Coleza\Domain\Provisioning\Services\HostingExecutionLease::assertHeld($this->operationService->getConnection(),$op->getServiceId());
         $stored=$op->getPayload()['_hosting_admission']??null;
         if($stored===null){return;}
         if($this->admission===null){throw new \RuntimeException('Authenticated admission context is required.');}

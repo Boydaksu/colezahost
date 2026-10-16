@@ -26,7 +26,7 @@ jobs:
       - run: composer install --no-interaction --prefer-dist
       - run: python -m pip install -r tests/Support/backup-protocol-requirements.txt
       - name: Real loopback HTTPS and provider regressions
-        run: php vendor/phpunit/phpunit/phpunit tests/Integration/Providers/CpanelTransportTest.php tests/Unit/Providers tests/Unit/Provisioning tests/Unit/Installer/ProvisioningProbeSafetyTest.php tests/Integration/Golden/GoldenMasterScenariosE2ETest.php --colors=never
+        run: php vendor/phpunit/phpunit/phpunit tests/Integration/Providers/CpanelTransportTest.php tests/Integration/Providers/HostingProtocolTest.php tests/Unit/Providers tests/Unit/Provisioning tests/Unit/Installer/ProvisioningProbeSafetyTest.php tests/Integration/Golden/GoldenMasterScenariosE2ETest.php --colors=never
   native-provider:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
@@ -48,9 +48,13 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: dom, mbstring, pdo_mysql, simplexml, sodium, xml, xmlwriter, zip
+          extensions: curl, dom, mbstring, pdo_mysql, pdo_sqlite, simplexml, sodium, xml, xmlwriter, zip
           coverage: none
       - run: composer install --no-interaction --prefer-dist
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r tests/Support/backup-protocol-requirements.txt
       - name: Real MariaDB provider probe and secret/schema regressions
         env:
           COLEZA_TEST_MARIADB_DSN: 'mysql:host=127.0.0.1;port=3306;charset=utf8mb4'
@@ -58,5 +62,5 @@ jobs:
           COLEZA_TEST_MARIADB_PASSWORD: colezahost-ci-test-only
         run: >-
           php vendor/phpunit/phpunit/phpunit -c phpunit-mariadb.xml
-          --filter '(HostingCommandTest|HostingDispatchTest|ProvisioningProbeSafetyTest|ProviderVaultSchemaTest|ProvisioningSecretTest)'
+          --filter '(HostingProcessTest|HostingExecutionTest|HostingCommandTest|HostingDispatchTest|ProvisioningProbeSafetyTest|ProviderVaultSchemaTest|ProvisioningSecretTest)'
           --colors=never

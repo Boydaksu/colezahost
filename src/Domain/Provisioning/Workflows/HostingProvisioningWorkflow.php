@@ -51,12 +51,19 @@ final class HostingProvisioningWorkflow
      */
     public function execute(HostingProvisioningRequest $request, ?HostingAdmission $admission = null): HostingProvisioningResult
     {
+        try{$lease=\Coleza\Domain\Provisioning\Services\HostingExecutionLease::acquire($this->operationService->getConnection(),$request->getServiceId());}
+        catch(\Coleza\Domain\Provisioning\Services\HostingExecutionBusy){return HostingProvisioningResult::failure($request->getServiceId(),HostingProvisioningStep::VALIDATE,'A live hosting execution owns this service.','HOSTING_EXECUTION_BUSY',[]);}
+        try{return $this->executeOwned($request,$admission);}finally{$lease->close();}
+    }
+    private function executeOwned(HostingProvisioningRequest $request, ?HostingAdmission $admission): HostingProvisioningResult
+    {
         $db=$this->operationService->getConnection();
         if($db->getPdo()->inTransaction()){throw new \LogicException('Provider calls cannot run inside a caller transaction.');}
         $serviceId = $request->getServiceId();
         if($admission!==null&&$admission->connection()!==$db){throw new \LogicException('Admission requires the workflow connection.');}
         $receipt=$admission===null?null:$this->operationService->localTransaction(fn()=>$admission->approve($serviceId,ProviderCapability::CREATE_ACCOUNT,$request));
-        $check=function()use($admission,$receipt,$serviceId,$request):void{
+        $check=function()use($admission,$receipt,$serviceId,$request,$db):void{
+            \Coleza\Domain\Provisioning\Services\HostingExecutionLease::assertHeld($db,$serviceId);
             if($admission!==null&&$receipt!==$admission->approve($serviceId,ProviderCapability::CREATE_ACCOUNT,$request)){throw new RuntimeException('Hosting admission changed.');}
         };
         /** @var array<string> $completedSteps */

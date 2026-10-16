@@ -335,7 +335,7 @@ final class ProvisioningOperationService
     public function listOperationsForService(int $serviceId): array
     {
         $rows = $this->db->select(
-            sprintf('SELECT * FROM %s WHERE service_id = ? ORDER BY id DESC', $this->opsTable),
+            sprintf('SELECT * FROM %s WHERE service_id = ? ORDER BY id DESC', $this->opsTable) . $this->db->forUpdate(),
             [$serviceId]
         );
         return array_map([$this, 'hydrateOperation'], $rows);
@@ -366,7 +366,7 @@ final class ProvisioningOperationService
             $params = array_merge([$serviceId], $statuses);
         }
 
-        $row = $this->db->selectOne($sql, $params);
+        $row = $this->db->selectOne($sql . $this->db->forUpdate(), $params);
         return $row ? $this->hydrateOperation($row) : null;
     }
 

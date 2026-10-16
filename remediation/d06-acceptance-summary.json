@@ -1,0 +1,36 @@
+{
+  "phase": "D06",
+  "step": "D06.2",
+  "checkpoint": "process_protocol_acceptance",
+  "status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
+  "step_status": "IMPLEMENTATION_COMPLETE_LOCAL_VERIFIED",
+  "reference_commit": "578f1ca79ec3f2c192bc80d2f66ca11519a1d162",
+  "before": {
+    "tests": 2,
+    "failures": 2,
+    "errors": 0
+  },
+  "main": {
+    "tests": 2307,
+    "assertions": 14054
+  },
+  "native": {
+    "tests": 136,
+    "assertions": 1054
+  },
+  "native_classes": 7,
+  "new_protocol_cases_per_database": 23,
+  "new_reentrant_cases": 2,
+  "new_mariadb_ownership_cases": 4,
+  "completed_gates": 4,
+  "total_gates": 4,
+  "remaining_gates": [],
+  "full_mariadb_current_source": false,
+  "external_provider_acceptance": "PENDING",
+  "production_ready": false,
+  "independent_acceptance": "PENDING",
+  "separate_process_acceptance": true,
+  "real_tls_loopback_acceptance": true,
+  "source_inputs": 70,
+  "next_step": "D06.3"
+}

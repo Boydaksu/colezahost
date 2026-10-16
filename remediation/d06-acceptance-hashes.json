@@ -1,0 +1,25 @@
+{
+  "files": {
+    "remediation/d06-acceptance-baseline.json": "227f5ef346ee211df565b3b6d87b1ec935685dbd3202d501c5b639db41c899d2",
+    "remediation/d06-acceptance-before.exit": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "remediation/d06-acceptance-before.txt": "65bc2569b2e62a24dbcae17484de87210ef4155d829251c4b5e8dcb66c9fc184",
+    "remediation/d06-acceptance-before.xml": "7984ca923413a0f1fd920066704fdf1ec7caa394955c1aecbe0b2eb2aaab47be",
+    "remediation/d06-acceptance-checks.json": "2fb438ce110e713e398273c0e5ebf49df4c8d61316a50f105a9a67c4c9bf0d9c",
+    "remediation/d06-acceptance-discovery.txt": "5919def6b0cf2bab6f9d97819962400661fea0e384adb01c19ff4af8241e7523",
+    "remediation/d06-acceptance-discovery.xml": "64739afe0e725c170b85b343751266a718e42647e22b1205965ecaa3a08757d5",
+    "remediation/d06-acceptance-main.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "remediation/d06-acceptance-main.txt": "a0100153d237c0193e8dca96517f915bf76e00fc2eac717a1e63ae51e780dc8a",
+    "remediation/d06-acceptance-main.xml": "1906b8000369af489c9c17c94ff50863da3b807e7140d0fbd5ba17d53b9d34de",
+    "remediation/d06-acceptance-native.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "remediation/d06-acceptance-native.txt": "ad1e64242dd2f30373cc466f635b690fb728deaf6f97b2f77a82c12526ea7631",
+    "remediation/d06-acceptance-native.xml": "be82e694f05614dfaf9c08f8f0fc8ce33bb547d3d8823224a0c10c685ec2530e",
+    "remediation/d06-acceptance-summary.json": "2edc39b850b1f6d9fb1bf18246af8e7fcf1ccd91c15163260b269f1c24534d32",
+    "remediation/verify-d06-acceptance.py": "d71d7057bb4f055fb5fb8ce1156034fff04fad8bdc5e000103cfd269a0c679f2",
+    "remediation/D06-2-ACCEPTANCE-SONUC.md": "323df3a922f8b27fb6482301bb96f4605e722abe0b13f127278cbe9c3e318c05",
+    "remediation/D06-2-CLOSURE.md": "7e8bad7dd7cb9e8af55c169e5d0fb3024dd79f3e26ef978fa647d8e900e94e19",
+    "remediation/state.json": "c158c742c0ac64d8857d4a3aa5e39492cb090dbfb9c55bc1ae603104b913c5d8",
+    "remediation/D06-2-KABUL.md": "ed9b1bfc832ac83c71702c9972425348800778685270580f8c7674f48d0e5839",
+    "remediation/D06-PLAN.md": "2371c2ea3ace895a0cfb450a15a60f2a2577671e96a17129431b5cf096345f67",
+    "remediation/PLAN.md": "b664ca6f732182dac77bfde7ab11588846659b283a939963ed1ce824d3c3f66f"
+  }
+}

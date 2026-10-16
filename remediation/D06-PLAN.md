@@ -14,6 +14,4 @@ Her adım önce regresyon → düzeltme → etkilenen testler → tam ana test �
 
 D06.1 kapsamı dört cPanel sınıfı ve protokol regresyonlarıdır. Paid-order/queue/lifecycle orchestrator davranışı D06.2'ye aittir; tek transport düzeltmesi bütün hosting akışını tamamlandı yapmaz.
 
-D06.1 yerel olarak tamamlandı; kanıt D06-1-SONUC.md. Güncel kalan liste sabit dört adım: D06.2, D06.3, D06.4, D06.5. Sonraki D06.2; dış sağlayıcı kabulü PENDING.
-
-D06.2 sabit dört kontrolle yürür: D06-2-KABUL.md. Durable dispatch/capacity, verified atomic activation ve Application admission/lifecycle yerel doğrulandı; **3/4, adım IN_PROGRESS**. Sonraki ve son sabit kontrol process/parallel/crash/real HTTPS workflow acceptance; D06.3 başlamadı. Kanıt D06-2-COMMANDS-SONUC.md.
+D06.1 ve D06.2 yerel olarak tamamlandı. D06.2'nin sabit dört kontrolü 4/4; D06-2-CLOSURE.md ve D06-2-ACCEPTANCE-SONUC.md. Yeni kontrol eklenmedi. Kalan üç adım: **D06.3 otomasyon komut bağları/recovery**, D06.4 diğer entegrasyonlar, D06.5 Doctor/faz kabulü. Sonraki D06.3; D06 fazı IN_PROGRESS, dış sağlayıcı kabulü PENDING.

@@ -47,12 +47,18 @@ final class HostingLifecycleWorkflow
     }
     private function check(ProvisioningOperation $op,HostingAdmission $admission):void
     {
+        \Coleza\Domain\Provisioning\Services\HostingExecutionLease::assertHeld($this->operations->getConnection(),$op->getServiceId());
         [$service,$server,$provider,$current]=$this->target($op->getServiceId());$payload=$op->getPayload();
         if($current!==($payload['_hosting_lifecycle']??null)||$server->getId()!==$op->getServerId()){throw new RuntimeException('Durable lifecycle binding changed.');}
         $fresh=$admission->approve($op->getServiceId(),$op->getAction());$stored=$payload['_hosting_admission']??[];
         if(($fresh['scope_sha256']??null)!==($stored['scope_sha256']??null)){throw new RuntimeException('Lifecycle commercial admission changed.');}
     }
     public function execute(int $id,string $action,HostingAdmission $admission,string $reason=''):ProvisioningOperation
+    {
+        $this->outside($admission);$lease=\Coleza\Domain\Provisioning\Services\HostingExecutionLease::acquire($this->operations->getConnection(),$id);
+        try{return $this->executeOwned($id,$action,$admission,$reason);}finally{$lease->close();}
+    }
+    private function executeOwned(int $id,string $action,HostingAdmission $admission,string $reason):ProvisioningOperation
     {
         $this->outside($admission);
         if(!in_array($action,['suspend_account','unsuspend_account','terminate_account'],true)||trim($reason)===''||strlen($reason)>1000){throw new RuntimeException('Supported lifecycle action and bounded reason required.');}
@@ -83,6 +89,11 @@ final class HostingLifecycleWorkflow
     }
     /** Recovery observes only; never repeats a provider mutation. Different currently authorized staff may recover. */
     public function reconcile(ProvisioningOperation $op,HostingAdmission $admission):ProvisioningOperation
+    {
+        $this->outside($admission);$lease=\Coleza\Domain\Provisioning\Services\HostingExecutionLease::acquire($this->operations->getConnection(),$op->getServiceId());
+        try{return $this->reconcileOwned($op,$admission);}finally{$lease->close();}
+    }
+    private function reconcileOwned(ProvisioningOperation $op,HostingAdmission $admission):ProvisioningOperation
     {
         $this->outside($admission);
         if(!in_array($op->getStatus(),['processing','reconciliation_required'],true)||!isset($op->getPayload()['_hosting_lifecycle'])){throw new RuntimeException('Pending bound lifecycle dispatch required.');}
