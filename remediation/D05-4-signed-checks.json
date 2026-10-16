@@ -1,0 +1,37 @@
+[
+  {
+    "name": "plan",
+    "command": [
+      "python",
+      "-X",
+      "utf8",
+      "09-machine-readable/validate_plan.py"
+    ],
+    "exit_code": 0,
+    "stdout": "PLAN VALIDATION PASS: 39 phases, 258 subphases\n",
+    "stderr": ""
+  },
+  {
+    "name": "protected_manifest",
+    "command": [
+      "python",
+      "-X",
+      "utf8",
+      "tools/verify_manifest.py"
+    ],
+    "exit_code": 0,
+    "stdout": "==================================================\nColeza Host — Manifest Integrity Verification\n==================================================\nTotal verified files: 97\nSTATUS: ALL LOCKED FILES VERIFIED AND UNCOMPROMISED (PASS)\n",
+    "stderr": ""
+  },
+  {
+    "name": "diff_whitespace",
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+]

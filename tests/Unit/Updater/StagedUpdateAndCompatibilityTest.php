@@ -43,6 +43,7 @@ final class StagedUpdateAndCompatibilityTest extends TestCase
     {
         $this->removeDirectory($this->tempDir);
         $this->removeDirectory($this->targetAppDir);
+        $this->removeDirectory($this->targetAppDir.'_backups');
 
         parent::tearDown();
     }
@@ -216,9 +217,9 @@ final class StagedUpdateAndCompatibilityTest extends TestCase
 
         $verifier = new PackageSignatureVerifier($this->keyPair['public']);
         $checker = new ModuleCompatibilityChecker($this->db);
-        $updater = new StagedUpdateService($verifier, $checker, '1.0.0', $this->db);
+        $updater = new StagedUpdateService($verifier, $checker, '1.0.0', $this->db, new \Coleza\Domain\Backup\PreUpdateBackupService($this->targetAppDir.'_backups', $this->db));
 
-        $applyResult = $updater->applyValidatedUpdate($this->tempDir, $this->targetAppDir, requireBackup: false);
+        $applyResult = $updater->applyValidatedUpdate($this->tempDir, $this->targetAppDir, requireBackup: true);
 
         $this->assertTrue($applyResult['success']);
         $this->assertSame(1, $applyResult['files_applied']);

@@ -18,6 +18,13 @@ final class PreUpdateBackupService
 
     public function getBackupStorageDir(): string {return $this->backupStorageDir;}
 
+    public function assertContext(Connection $db, string $sourceVersion): void
+    {
+        if ($this->db === null || $this->db->getPdo() !== $db->getPdo() || $this->appVersion !== $sourceVersion) {
+            throw new RuntimeException('Mandatory pre-update backup database/source version differs from updater context.');
+        }
+    }
+
     /**
      * @param array<int|string,string> $extraFilePaths Required files/directories, optionally keyed by relative alias
      * @return array{manifest:BackupManifest,archive_path:string,verification:BackupVerificationReport}

@@ -97,7 +97,7 @@ final class ReleasePackagingAndSignatureSuiteTest extends TestCase
         $this->assertNotFalse($zip->locateName('manifest.sig'));
         $this->assertNotFalse($zip->locateName('CHECKSUMS.sha256'));
         $this->assertNotFalse($zip->locateName('RELEASE_NOTES.md'));
-        $this->assertNotFalse($zip->locateName('payload/src/Kernel.php'));
+        $this->assertNotFalse($zip->locateName('files/src/Kernel.php'));
         $zip->close();
     }
 
@@ -151,8 +151,8 @@ final class ReleasePackagingAndSignatureSuiteTest extends TestCase
 
         $zip = new ZipArchive();
         $zip->open($tamperedZip);
-        $zip->deleteName('payload/file1.txt');
-        $zip->addFromString('payload/file1.txt', 'MALICIOUS MODIFIED CONTENT');
+        $zip->deleteName('files/file1.txt');
+        $zip->addFromString('files/file1.txt', 'MALICIOUS MODIFIED CONTENT');
         $zip->close();
 
         $reportA = $this->service->verifyPackageArchive($tamperedZip, $this->keyPair['public']);

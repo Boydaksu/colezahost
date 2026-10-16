@@ -239,7 +239,8 @@ final class ReleaseRehearsalLifecycleSuiteTest extends TestCase
             signatureVerifier: $verifier,
             moduleChecker: $moduleChecker,
             currentCoreVersion: '1.0.0',
-            db: $db
+            db: $db,
+            backupService: new \Coleza\Domain\Backup\PreUpdateBackupService($this->tempDir.'/update_backups',$db)
         );
 
         $report = $updater->validateStagedPackage($updatePackageDir);
@@ -249,7 +250,7 @@ final class ReleaseRehearsalLifecycleSuiteTest extends TestCase
         $applyResult = $updater->applyValidatedUpdate(
             stagedDir: $updatePackageDir,
             targetAppDir: $targetAppDir,
-            requireBackup: false
+            requireBackup: true
         );
 
         $this->assertTrue($applyResult['success']);

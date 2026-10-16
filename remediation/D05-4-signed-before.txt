@@ -1,0 +1,153 @@
+PHPUnit 13.4.1 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.24
+Configuration: C:\Users\alici\OneDrive\Desktop\colezahost\phpunit.xml
+
+FFEFFF.FF.FFFFFFFFFFFFF                                           23 / 23 (100%)
+
+Time: 00:01.407, Memory: 20.00 MB
+
+There was 1 error:
+
+1) Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMalformedPackageCannotBeReady@non-string hash with data ([[123]])
+TypeError: strtolower(): Argument #1 ($string) must be of type string, int given
+
+C:\Users\alici\OneDrive\Desktop\colezahost\remediation\runtime\d05-4-signed-original\StagedUpdateService.php:148
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:62
+
+--
+
+There were 20 failures:
+
+1) Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMalformedPackageCannotBeReady@empty inventory with data ([[]])
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:62
+
+2) Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMalformedPackageCannotBeReady@wrong inventory type with data (['ignored'])
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:62
+
+3) Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMalformedPackageCannotBeReady@unsafe version with data (['../1.1.0'])
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:62
+
+4) Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMalformedPackageCannotBeReady@downgrade with data (['0.9.0'])
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:62
+
+5) Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMalformedPackageCannotBeReady@same version with data (['1.0.0'])
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:62
+
+6) Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMalformedPackageCannotBeReady@traversal with data ([['31207a2065f46a5b948fce6fe5c13...f6c57b']])
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:62
+
+7) Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMalformedPackageCannotBeReady@absolute path with data ([['11507a0e2f5e69d5dfa40a62a1bd7...21c437']])
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:62
+
+8) Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMalformedPackageCannotBeReady@case collision with data ([['11507a0e2f5e69d5dfa40a62a1bd7...21c437', '11507a0e2f5e69d5dfa40a62a1bd7...21c437']])
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:62
+
+9) Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMalformedPackageCannotBeReady@unhashed migration with data ([['database/migrations/unlisted.php']])
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:62
+
+10) Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMalformedPackageCannotBeReady@missing required module with data ([['1.0.0']])
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:62
+
+11) Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testUnlistedPayloadIsRejected
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:67
+
+12) Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testDuplicateJsonKeysAreRejected
+Failed asserting that true is false.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:73
+
+13) Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testBackupCannotBeBypassed
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'old'
++'new'
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:78
+
+14) Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testBackupMustUseTheUpdaterDatabase
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'old'
++'new'
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:84
+
+15) Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testBackupSourceVersionMustMatch
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'old'
++'new'
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:89
+
+16) Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testAutomaticBackupIncludesExistingTargetTree
+Failed asserting that null is identical to 'cba06b5736faf67e54b07b561eae94395e774c517a7d910a54369e1263ccfbd4'.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:96
+
+17) Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testSourceMutationAfterFreezeCannotChangeAppliedBytesOrManifest
+Failed asserting that false is true.
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:106
+
+18) Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testTargetChangeDuringBackupStopsBeforeWriting
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'concurrent writer'
++'new'
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:113
+
+19) Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testBackupStorageInsideTargetIsRejected
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'old'
++'new'
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:118
+
+20) Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMigrationCannotBeCountedWithoutExecution
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'old'
++'new'
+
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:125
+
+ERRORS!
+Tests: 23, Assertions: 28, Errors: 1, Failures: 20.

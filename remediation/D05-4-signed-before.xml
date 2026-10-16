@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php" tests="23" assertions="28" errors="1" failures="20" skipped="0" time="1.402392">
+    <testsuite name="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMalformedPackageCannotBeReady" tests="13" assertions="12" errors="1" failures="10" skipped="0" time="0.601165">
+      <testcase name="testMalformedPackageCannotBeReady with data set &quot;empty inventory&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php" line="58" class="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest" classname="Coleza.Tests.Unit.Updater.SignedUpdateSafetyTest" assertions="1" time="0.042679">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMalformedPackageCannotBeReady with data set "empty inventory"&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:62</failure>
+      </testcase>
+      <testcase name="testMalformedPackageCannotBeReady with data set &quot;wrong inventory type&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php" line="58" class="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest" classname="Coleza.Tests.Unit.Updater.SignedUpdateSafetyTest" assertions="1" time="0.055887">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMalformedPackageCannotBeReady with data set "wrong inventory type"&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:62</failure>
+      </testcase>
+      <testcase name="testMalformedPackageCannotBeReady with data set &quot;non-string hash&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php" line="58" class="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest" classname="Coleza.Tests.Unit.Updater.SignedUpdateSafetyTest" assertions="0" time="0.054144">
+        <error type="TypeError">Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMalformedPackageCannotBeReady with data set "non-string hash"&#13;
+TypeError: strtolower(): Argument #1 ($string) must be of type string, int given
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\remediation\runtime\d05-4-signed-original\StagedUpdateService.php:148
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:62</error>
+      </testcase>
+      <testcase name="testMalformedPackageCannotBeReady with data set &quot;unsafe version&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php" line="58" class="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest" classname="Coleza.Tests.Unit.Updater.SignedUpdateSafetyTest" assertions="1" time="0.051701">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMalformedPackageCannotBeReady with data set "unsafe version"&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:62</failure>
+      </testcase>
+      <testcase name="testMalformedPackageCannotBeReady with data set &quot;downgrade&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php" line="58" class="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest" classname="Coleza.Tests.Unit.Updater.SignedUpdateSafetyTest" assertions="1" time="0.051172">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMalformedPackageCannotBeReady with data set "downgrade"&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:62</failure>
+      </testcase>
+      <testcase name="testMalformedPackageCannotBeReady with data set &quot;same version&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php" line="58" class="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest" classname="Coleza.Tests.Unit.Updater.SignedUpdateSafetyTest" assertions="1" time="0.037253">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMalformedPackageCannotBeReady with data set "same version"&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:62</failure>
+      </testcase>
+      <testcase name="testMalformedPackageCannotBeReady with data set &quot;prerequisite too new&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php" line="58" class="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest" classname="Coleza.Tests.Unit.Updater.SignedUpdateSafetyTest" assertions="1" time="0.059166"/>
+      <testcase name="testMalformedPackageCannotBeReady with data set &quot;traversal&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php" line="58" class="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest" classname="Coleza.Tests.Unit.Updater.SignedUpdateSafetyTest" assertions="1" time="0.038538">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMalformedPackageCannotBeReady with data set "traversal"&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:62</failure>
+      </testcase>
+      <testcase name="testMalformedPackageCannotBeReady with data set &quot;absolute path&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php" line="58" class="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest" classname="Coleza.Tests.Unit.Updater.SignedUpdateSafetyTest" assertions="1" time="0.033278">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMalformedPackageCannotBeReady with data set "absolute path"&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:62</failure>
+      </testcase>
+      <testcase name="testMalformedPackageCannotBeReady with data set &quot;backslash&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php" line="58" class="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest" classname="Coleza.Tests.Unit.Updater.SignedUpdateSafetyTest" assertions="1" time="0.042594"/>
+      <testcase name="testMalformedPackageCannotBeReady with data set &quot;case collision&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php" line="58" class="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest" classname="Coleza.Tests.Unit.Updater.SignedUpdateSafetyTest" assertions="1" time="0.052298">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMalformedPackageCannotBeReady with data set "case collision"&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:62</failure>
+      </testcase>
+      <testcase name="testMalformedPackageCannotBeReady with data set &quot;unhashed migration&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php" line="58" class="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest" classname="Coleza.Tests.Unit.Updater.SignedUpdateSafetyTest" assertions="1" time="0.034242">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMalformedPackageCannotBeReady with data set "unhashed migration"&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:62</failure>
+      </testcase>
+      <testcase name="testMalformedPackageCannotBeReady with data set &quot;missing required module&quot;" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php" line="58" class="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest" classname="Coleza.Tests.Unit.Updater.SignedUpdateSafetyTest" assertions="1" time="0.048212">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMalformedPackageCannotBeReady with data set "missing required module"&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:62</failure>
+      </testcase>
+    </testsuite>
+    <testcase name="testUnlistedPayloadIsRejected" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php" line="64" class="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest" classname="Coleza.Tests.Unit.Updater.SignedUpdateSafetyTest" assertions="1" time="0.031898">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testUnlistedPayloadIsRejected&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:67</failure>
+    </testcase>
+    <testcase name="testDuplicateJsonKeysAreRejected" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php" line="69" class="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest" classname="Coleza.Tests.Unit.Updater.SignedUpdateSafetyTest" assertions="1" time="0.045157">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testDuplicateJsonKeysAreRejected&#13;
+Failed asserting that true is false.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:73</failure>
+    </testcase>
+    <testcase name="testBackupCannotBeBypassed" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php" line="75" class="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest" classname="Coleza.Tests.Unit.Updater.SignedUpdateSafetyTest" assertions="2" time="0.034212">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testBackupCannotBeBypassed&#13;
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'old'
++'new'
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:78</failure>
+    </testcase>
+    <testcase name="testBackupMustUseTheUpdaterDatabase" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php" line="80" class="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest" classname="Coleza.Tests.Unit.Updater.SignedUpdateSafetyTest" assertions="2" time="0.100093">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testBackupMustUseTheUpdaterDatabase&#13;
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'old'
++'new'
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:84</failure>
+    </testcase>
+    <testcase name="testBackupSourceVersionMustMatch" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php" line="86" class="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest" classname="Coleza.Tests.Unit.Updater.SignedUpdateSafetyTest" assertions="2" time="0.111897">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testBackupSourceVersionMustMatch&#13;
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'old'
++'new'
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:89</failure>
+    </testcase>
+    <testcase name="testAutomaticBackupIncludesExistingTargetTree" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php" line="91" class="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest" classname="Coleza.Tests.Unit.Updater.SignedUpdateSafetyTest" assertions="1" time="0.092178">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testAutomaticBackupIncludesExistingTargetTree&#13;
+Failed asserting that null is identical to 'cba06b5736faf67e54b07b561eae94395e774c517a7d910a54369e1263ccfbd4'.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:96</failure>
+    </testcase>
+    <testcase name="testSourceMutationAfterFreezeCannotChangeAppliedBytesOrManifest" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php" line="99" class="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest" classname="Coleza.Tests.Unit.Updater.SignedUpdateSafetyTest" assertions="1" time="0.087801">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testSourceMutationAfterFreezeCannotChangeAppliedBytesOrManifest&#13;
+Failed asserting that false is true.
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:106</failure>
+    </testcase>
+    <testcase name="testTargetChangeDuringBackupStopsBeforeWriting" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php" line="109" class="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest" classname="Coleza.Tests.Unit.Updater.SignedUpdateSafetyTest" assertions="2" time="0.096124">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testTargetChangeDuringBackupStopsBeforeWriting&#13;
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'concurrent writer'
++'new'
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:113</failure>
+    </testcase>
+    <testcase name="testBackupStorageInsideTargetIsRejected" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php" line="115" class="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest" classname="Coleza.Tests.Unit.Updater.SignedUpdateSafetyTest" assertions="2" time="0.093825">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testBackupStorageInsideTargetIsRejected&#13;
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'old'
++'new'
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:118</failure>
+    </testcase>
+    <testcase name="testMigrationCannotBeCountedWithoutExecution" file="C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php" line="120" class="Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest" classname="Coleza.Tests.Unit.Updater.SignedUpdateSafetyTest" assertions="2" time="0.108042">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Coleza\Tests\Unit\Updater\SignedUpdateSafetyTest::testMigrationCannotBeCountedWithoutExecution&#13;
+Failed asserting that two strings are identical.
+--- Expected
++++ Actual
+@@ @@
+-'old'
++'new'
+&#13;
+C:\Users\alici\OneDrive\Desktop\colezahost\tests\Unit\Updater\SignedUpdateSafetyTest.php:125</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

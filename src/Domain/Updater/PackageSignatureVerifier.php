@@ -23,6 +23,12 @@ final class PackageSignatureVerifier
         private string $publicKey,
         private string $scheme = 'ed25519'
     ) {
+        self::assertScheme($scheme);
+    }
+
+    private static function assertScheme(string $scheme): void
+    {
+        if (!in_array($scheme, ['ed25519','rsa-sha256'], true)) {throw new RuntimeException('Unsupported package signature scheme.');}
     }
 
     public function getPublicKey(): string
@@ -51,7 +57,7 @@ final class PackageSignatureVerifier
 
         if ($this->scheme === 'ed25519') {
             try {
-                $pubBinary = hex2bin($this->publicKey);
+                $pubBinary = ctype_xdigit($this->publicKey) && strlen($this->publicKey)%2===0 ? hex2bin($this->publicKey) : false;
                 if ($pubBinary === false || strlen($pubBinary) !== SODIUM_CRYPTO_SIGN_PUBLICKEYBYTES) {
                     $pubBinary = base64_decode($this->publicKey, true);
                 }
@@ -69,7 +75,7 @@ final class PackageSignatureVerifier
         // OpenSSL RSA fallback
         try {
             $pubKeyResource = openssl_pkey_get_public($this->publicKey);
-            if ($pubKeyResource === false) {
+            if ($pubKeyResource === false || (openssl_pkey_get_details($pubKeyResource)['type'] ?? null) !== OPENSSL_KEYTYPE_RSA) {
                 return false;
             }
 
@@ -90,8 +96,9 @@ final class PackageSignatureVerifier
      */
     public static function signPayload(string $payload, string $privateKey, string $scheme = 'ed25519'): string
     {
+        self::assertScheme($scheme);
         if ($scheme === 'ed25519') {
-            $privBinary = hex2bin($privateKey);
+            $privBinary = ctype_xdigit($privateKey) && strlen($privateKey)%2===0 ? hex2bin($privateKey) : false;
             if ($privBinary === false || strlen($privBinary) !== SODIUM_CRYPTO_SIGN_SECRETKEYBYTES) {
                 $privBinary = base64_decode($privateKey, true);
             }
@@ -105,8 +112,8 @@ final class PackageSignatureVerifier
         }
 
         $privKeyResource = openssl_pkey_get_private($privateKey);
-        if ($privKeyResource === false) {
-            throw new RuntimeException('Invalid private key provided to sign payload.');
+        if ($privKeyResource === false || (openssl_pkey_get_details($privKeyResource)['type'] ?? null) !== OPENSSL_KEYTYPE_RSA) {
+            throw new RuntimeException('Invalid RSA private key provided to sign payload.');
         }
 
         $signature = '';
@@ -126,6 +133,7 @@ final class PackageSignatureVerifier
      */
     public static function generateKeyPair(string $scheme = 'ed25519'): array
     {
+        self::assertScheme($scheme);
         if ($scheme === 'ed25519') {
             $kp = sodium_crypto_sign_keypair();
             $secretKey = sodium_crypto_sign_secretkey($kp);

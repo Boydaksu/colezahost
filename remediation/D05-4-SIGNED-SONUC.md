@@ -1,0 +1,34 @@
+# D05.4 — imzalı paket ve zorunlu doğru hedef yedeği
+
+Dört sabit kontrolden ilk ikisi yerel uygulama/doğrulama olarak tamamlandı. D05.4 devam ediyor: gerçek migration ile staged yayınlama/kesinti/rollback iki açık kontroldür. Sonraki iş gerçek runner/kalıcı ledger'dır. D05-4-KABUL.md kapsamı sabitler.
+
+## Değişen davranış
+
+ReleasePackagingService ve StagedUpdateService artık aynı UpdatePackageManifest ve manifest.json/manifest.sig/files sözleşmesini kullanır. Release build kaynak dosyalarını önce özel snapshot'a alır ve bu byte'ları hash/sign/ZIP'e koyar. Hedef sürüm/minimum kaynak sürümü, release notes, required modules ve sıralı migration yolları imzalı manifest'tedir. Üretilen ZIP doğrudan updater'a verilebilir; yeniden paketleme veya manuel manifest değişikliği gerekmez. Eski payload/ düzenindeki release paketleri yeni kuralla kabul edilmez; doğrulanmış kaynaklardan yetkili imza anahtarıyla tekrar üretilmelidir. Mevcut imzalı files/ staging sözleşmesi, alanlar geçerliyse çalışır. Var olan release ZIP'i sessizce silinip üzerine yazılmaz.
+
+UpdatePackageSnapshot, ZIP'i bounded özel quarantine'de stream eder; generic extractTo yoktur. Traversal/absolute/backslash/ADS/reserved path, symlink/special entry, duplicate/case/file-directory collision, unlisted/missing files reddedilir. Paket envanteri boş olamaz; toplam uncompressed payload/quarantine 1 GiB ve 100000 entry ile sınırlıdır. Manifest/notes/checksums metadata 4 MiB, signature 16 KiB sınırındadır. Directory intake da bounded private frozen copy üretir; doğrulamadan sonra kaynak manifest veya dosyanın değişmesi uygulanacak byte'ları değiştirmez. Her private file hash'i imzalı envantere eşittir. Geçici alanlar owned cleanup ile kapanır.
+
+Manifest JSON duplicate keys (escaped eşdeğer dahil), yanlış tip/null ile kısıt silme, bozuk hash, case-colliding parent, geçersiz/same/downgrade/prerequisite version ve envanterde olmayan migration reddedilir. Sürüm karşılaştırması build metadata'yı yok sayar, prerelease numeric/ASCII sırasını ve büyük numeric bileşenleri korur; birincil sözleşme [SemVer 2.0.0](https://semver.org/). Bilinmeyen signature scheme fallback yapmaz; RSA scheme EC key/signature kabul etmez. Ed25519 hex/Base64 ve RSA-SHA256 round-trip/tamper testleri vardır.
+
+Module compatibility artık eksik/devre dışı zorunlu modülü ve malformed enabled module manifest/version bounds durumunu başarılı saymaz. Hem minimum/maksimum core hem gerekli module version kısıtları kontrol edilir. Uyumluluk yedek sonrası da tekrar okunur. Checker'ın DB bağlantısı da updater ile aynı olmak zorundadır; salt okunur inventory/caller transaction sözleşmesi korunur.
+
+requireBackup=false açık hata verir. DB ve backup service olmadan update yapılamaz. Backup service aynı PDO ve kaynak uygulama sürümüne bağlıdır. Target/staging/backup alanları ayrılır; hedef mevcut uygulama dizini olmalıdır. Hedef ağacın bütün girişleri updater tarafından otomatik seçilir, kritik dosyaların extraFiles olarak elle verilmesine bağımlı değildir. Ek kaynaklar _update_extra/ altında ayrı tutulur; uygulama dosyası/alias üzerine yazamaz. Bilinen destination collision ve symlink effect öncesi reddedilir. Gerçek ortak pre-update backup tamamlandıktan sonra paket tekrar okunur, hedef dosya envanteri yedekle karşılaştırılır; yedek bozulması veya target drift yazmadan durur. Yedek önceki version/config byte'larını taşır.
+
+Sahte migration sayacı kaldırıldı. Migration listesi boş değilse gerçek runner tamamlanana kadar update backup/file etkisinden önce açık hata verir; files-only kabulde migrations_run=0 gerçek durumdur. Bu bir migration uygulaması değildir.
+
+## Kanıt
+
+- Düzeltme öncesi **23 vaka, 20 failure + 1 TypeError**: yedek bypass/wrong DB/source version/target tree, malformed inventory/hash/version/path, missing module, unsigned extra payload, duplicate JSON ve fake migration gibi başarısızlıklar kaydedildi. Dört updater sınıfı referans commit byte'larıyla ayrı PHP sürecine preload edilmiştir; çalışma ağacı geri alınmamıştır. Mutasyon fixture'ı callback'in gerçekten tetiklendiğini ve staging byte'larının değiştiğini ayrıca doğrular. Bu sayılar tamamı başarısızmış gibi sunulmaz.
+- Son tam ana paket: **2065 test / 12977 assertion**, exit 0; failure/error/skip yok. Yeni 23 signed safety + 25 package admission + 15 version vakası; önceki 35 gerçek S3/SFTP protocol ve pre-update/restore/key/privacy regresyonları dahildir.
+- Son izole MariaDB 10.11: **114 test / 894 assertion**, exit 0; exact discovery/result ID eşitliğiyle 11 sınıf. Yeni dört vaka canonical 26 migration sonrası gerçek DB/target yedeğiyle doğrudan dağıtım ZIP'i apply, missing module effect denial, yanlış DB reddi ve caller transaction korunmasını kapsar. ModuleSchemaSafety 11 ve önceki ilgili 99 native vaka dahildir. Bütün native suite tekrar çalıştırılmış sayılmaz.
+- Archive/path/ZIP symlink/declared bomb, target collision/drift, backup mutation, extra namespace, late incompatible module, Base64/RSA ve gerçek file before/after doğrulamaları geçti. Windows OpenSSL fixture ilk varsayılan config'siz key generation denemesinden sonra yalnız teste ait geçici config ile anahtar üretir; production config değiştirilmedi. Hiçbir key materyali kanıt dosyalarına yazılmadı.
+- İki eski update acceptance fixture'ı backup bypass yerine gerçek verified backup sağlayacak şekilde değişti; release fixture'ları yeni files/ kontratını bekler. Negatif gate beklentileri gevşetilmedi.
+- Son byte sayacı kaynak stat değerine değil fiilen kopyalanan toplam byte'a bağlıdır. Bu son düzeltmeden sonra main/native paketler yeniden çalıştırıldı. Son testler öncesinde 15 source/test dosyası donduruldu; 26 canonical migration byte olarak değişmedi. Plan/locked manifest/whitespace kontrolleri ayrı kayıttadır.
+
+## Açık sınırlar
+
+Bu teslim files-only update'in dosyalarını hâlâ aktif ağaca tek tek yazar. Disk/full/copy failure veya process kill bütün dosyaları geri almaz; DB/file atomicity, durable update journal, exclusive update lock, persisted version/health ve otomatik/manuel tam rollback dördüncü kontrolde uygulanacak. Restore/key/privacy kapıları gevşetilmedi; yedekte bulunmayan yeni tabloların temizlenmesi ve _update_extra dışındaki exact old tree restore'u rollback tasarımında ele alınmalıdır. Normal moda veya üretime otomatik açılış yoktur.
+
+Dosya/DDL/DB yazarları bakım sırasında durdurulmalıdır. Target inventory recheck bu operasyonel gerekliliğin yerine bütün ürün writer fencing sağlamaz. HTTP/CLI/cron/worker composition D08, bütün ürün privacy/retention D07, harici host ve bağımsız kabul D09 kapsamındadır. Deployment veya production restore yapılmadı. D05.1–D05.3 kapanışları ve D05.5 kapsamı değişmedi.
+
+Kanıt: D05-4-signed-before/main/native XML/stdout/exit, native discovery, baseline, summary, checks ve final byte hash'leri. Denetim: `python -X utf8 remediation/verify-d05-signed-update.py`; yalnız bu teslimin kaydedilmiş kaynak revizyonu için geçerlidir.
